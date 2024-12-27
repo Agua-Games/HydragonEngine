@@ -12,4 +12,6 @@ This project uses a **dual licensing model**:
 
 See [LICENSE.md](./LICENSE.md) for an overview of the licensing terms.
 
+![Hydragon promo image](./docs/images/header_image_04_blue-eye.png)
+
 
