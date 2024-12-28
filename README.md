@@ -15,5 +15,5 @@ See [LICENSE.md](./LICENSE.md) for an overview of the licensing terms.
 ![Hydragon promo image](./docs/images/header_image_04_blue-eye.png)
 
 ### Legal
-Use of this software is governed by the [Software Terms Conditions.md](./Software-Terms-Conditions.md). By using this software, you agree to comply with these terms, including acceptable use policies and ethical guidelines. For detailed licensing information, please see the [Non-Commercial License](./LICENSE-NONCOMMERCIAL.md) and the [Commercial License](./LICENSE-COMMERCIAL.md).
+Use of this software is governed by the [Software Terms Conditions](./Software-Terms-Conditions.md). By using this software, you agree to comply with these terms, including acceptable use policies and ethical guidelines. For detailed licensing information, please see the [Non-Commercial License](./LICENSE-NONCOMMERCIAL.md) and the [Commercial License](./LICENSE-COMMERCIAL.md).
 
