@@ -56,7 +56,7 @@ Agua Games reserves the right to terminate your license to use the Software at a
 ---
 
 ### 9. **Privacy**
-Agua Games respects your privacy and does not collect or store personal data through the Software unless explicitly stated. Any data collected will be governed by our [Privacy Policy](#).
+Agua Games respects your privacy and does not collect or store personal data through the Software unless explicitly stated. Any data collected will be governed by our [Privacy Policy](./Privacy-Policy.md).
 
 ---
 
@@ -76,7 +76,8 @@ When installing or updating the software, you will be presented with the current
 If you have any questions or concerns about these Terms, please contact us at:
 
 **Agua Games**  
-**athos.sampaio@aguagames.com 
+**athos.sampaio@aguagames.com**
+
 Rua da Fonte do Boi, 55, Rio Vermelho. Salvador, BA. Brazil. 41940-360.
 +55 71 991312036
 
