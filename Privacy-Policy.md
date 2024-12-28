@@ -80,7 +80,8 @@ We may update this Privacy Policy periodically to reflect changes in our practic
 
 ## 10. **Contact Us**
 If you have questions or concerns about this Privacy Policy or our data practices, contact us at:  
-**Email:** [athos.sampaio@gmail.com ]
+**Email:** **athos.sampaio@gmail.com**
+
 **Mailing Address:** Rua da Fonte do Boi, 55, Rio Vermelho. Salvador, BA. Brazil. 41940-360.
 
 ---
