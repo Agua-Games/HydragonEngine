@@ -18,5 +18,8 @@ This software is licensed to you under the following conditions:
 
 4. **Disclaimer of Warranty**:
    - This software is provided "as is," without warranty of any kind. Use at your own risk.
+  
+5. **Additional Terms**:
+   - This non-commercial license is governed by the broader [Terms and Conditions](./Software-Terms-Conditions.md). Users must adhere to these terms, which define acceptable and prohibited uses of the software.
 
 For licensing inquiries or further information, please refer to [LICENSE.md](./LICENSE.md) or contact **AguaGames** at **athos.sampaio@aguagames.com**.
