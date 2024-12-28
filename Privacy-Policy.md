@@ -59,7 +59,7 @@ You have the right to:
 2. Withdraw consent for data processing where applicable.
 3. Lodge a complaint with a relevant data protection authority.
 
-To exercise these rights, contact us at [Insert Contact Information].
+To exercise these rights, contact us at **athos.sampaio@aguagames.com**.
 
 ---
 
@@ -80,7 +80,7 @@ We may update this Privacy Policy periodically to reflect changes in our practic
 
 ## 10. **Contact Us**
 If you have questions or concerns about this Privacy Policy or our data practices, contact us at:  
-**Email:** **athos.sampaio@gmail.com**
+**Email:** **athos.sampaio@aguagames.com**
 
 **Mailing Address:** Rua da Fonte do Boi, 55, Rio Vermelho. Salvador, BA. Brazil. 41940-360.
 
