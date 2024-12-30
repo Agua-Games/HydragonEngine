@@ -1,18 +1,34 @@
 
 # Ignore intermediate folders
-/Binaries/
-/BuildOutput/
-/Cache/
-/.vscode/
+Binaries/
+BuildOutput/
+Cache/
+.vscode/
 
 # Ignore third-party dependencies
 /ThirdParty/
 
 # Ignore CMake's cache and temporary files
 /CMakeCache.txt
-/CMakeFiles/
+CMakeFiles/
 /Makefile
 
+# Ignore PLugin files which get generated
+#when compiling the engine
+/Plugins/**/*.dll
+/Plugins/**/*.so
+/Plugins/**/*.dylib
+
+# Ignore ThirdParty files which get generated
+#when compiling the engine
+/ThirdParty/**/*.dll
+/ThirdParty/**/*.so
+/ThirdParty/**/*.dylib
+
+# Ignore Tools files which get generated
+#when compiling the engine
+/Tools/**/*.exe
+/Tools/**/*.dll
 
 # Ignore temporary files
 *.log
