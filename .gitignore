@@ -1,7 +1,18 @@
 
 # Ignore intermediate folders
+/Binaries/
 /BuildOutput/
 /Cache/
+/.vscode/
+
+# Ignore third-party dependencies
+/ThirdParty/
+
+# Ignore CMake's cache and temporary files
+/CMakeCache.txt
+/CMakeFiles/
+/Makefile
+
 
 # Ignore temporary files
 *.log
@@ -13,4 +24,6 @@
 Thumbs.db
 
 # Ignore IDEs files
-.vscode/
+*.user
+*.suo
+*.userosscache
