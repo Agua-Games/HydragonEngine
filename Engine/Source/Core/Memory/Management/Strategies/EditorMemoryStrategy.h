@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Editor-specific memory management strategy
+ */
+
 #pragma once
 #include "IMemoryStrategy.h"
 #include <array>

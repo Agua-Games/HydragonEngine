@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Concurrent memory allocator for Hydragon
+ */
+
 #include "ConcurrentAllocator.h"
 #include "Core/Platform/Memory.h"
 #include "Core/Threading/ThreadId.h"

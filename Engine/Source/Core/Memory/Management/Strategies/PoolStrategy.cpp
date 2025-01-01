@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Pool memory management strategy for Hydragon
+ */
+
 #include "PoolStrategy.h"
 #include "Core/Profiling/MemoryProfiler.h"
 

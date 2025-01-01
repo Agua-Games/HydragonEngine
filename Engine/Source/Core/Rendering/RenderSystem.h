@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Core rendering system and API abstraction
+ */
+
 #pragma once
 #include "Core/Memory/Management/Strategies/GraphicsMemoryStrategy.h"
 

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * GPU memory management for Hydragon
+ */
+
 #pragma once
 #include "../Management/MemoryManager.h"
 #include <vulkan/vulkan.h>  // Example, can be made API-agnostic

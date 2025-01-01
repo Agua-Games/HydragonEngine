@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Memory heatmap view for Hydragon
+ */
+
 #pragma once
 #include <QGraphicsView>
 #include "Core/Memory/MemoryTypes.h"

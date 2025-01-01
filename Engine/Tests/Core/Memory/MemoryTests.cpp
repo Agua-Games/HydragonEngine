@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Memory tests for Hydragon
+ */
+
 #include "Core/Memory/MemorySystem.h"
 #include "gtest/gtest.h"
 

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Memory timeline system for Hydragon
+ */
+
+#include "MemoryTimelineSystem.h"   
+
 void MemoryTimelineSystem::pruneOldSnapshots() {
     const size_t maxStorageBytes = 100 * 1024 * 1024;  // 100MB default
     size_t currentStorageSize = 0;

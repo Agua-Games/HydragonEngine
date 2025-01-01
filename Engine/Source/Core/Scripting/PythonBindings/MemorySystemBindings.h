@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Python bindings for memory system functionality
+ */
+
 #pragma once
 #include <pybind11/pybind11.h>
 #include "Core/Memory/MemorySystem.h"

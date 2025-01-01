@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Memory system for Hydragon
+ */
+
 #include "MemorySystem.h"
 #include "Management/Strategies/DefaultMemoryStrategy.h"
 #include "Management/Strategies/PoolStrategy.h"
