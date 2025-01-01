@@ -4,6 +4,9 @@
 #include "MemorySecurity.h"
 #include <functional>
 #include "NetworkMemorySecurity.h"
+#include "Types/MemoryBlock.h"
+#include "Management/IMemoryStrategy.h"
+#include "Management/StreamingMemoryManager.h"
 
 namespace Hydragon {
 

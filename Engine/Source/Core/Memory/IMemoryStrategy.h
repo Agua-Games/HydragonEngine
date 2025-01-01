@@ -1,17 +1,23 @@
 #pragma once
+#include "Types/MemoryTypes.h"
 
 namespace Hydragon {
+namespace Memory {
 
 class IMemoryStrategy {
 public:
     virtual ~IMemoryStrategy() = default;
     
-    virtual void* Allocate(size_t size, size_t alignment) = 0;
-    virtual void Deallocate(void* ptr) = 0;
+    virtual void* allocate(size_t size, const AllocationInfo& info) = 0;
+    virtual void deallocate(void* ptr) = 0;
+    virtual bool owns(void* ptr) const = 0;
     
-    // Future expansion hooks
-    virtual void OnLowMemory() {}
-    virtual void OnDefragmentRequest() {}
+    // Memory stats
+    virtual MemoryStats getStats() const = 0;
+    
+    // Optional: Strategy-specific operations
+    virtual void compact() {}
+    virtual void reset() {}
 };
 
-} // namespace Hydragon 
+}} // namespace Hydragon::Memory 

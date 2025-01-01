@@ -1,81 +1,81 @@
 #include "MemorySystem.h"
-#include "Management/MemoryManager.h"
-#include "Profiling/MemoryProfiler.h"
-#include "Security/MemorySecurity.h"
+#include "Management/Strategies/DefaultMemoryStrategy.h"
+#include "Management/Strategies/PoolStrategy.h"
+#include "Core/Profiling/MemoryProfiler.h"
 
 namespace Hydragon {
+namespace Memory {
 
-std::unique_ptr<MemorySystem> MemorySystem::s_Instance;
+void MemorySystem::initialize(const MemoryConfig& config) {
+    if (m_Initialized) return;
 
-void MemorySystem::Initialize(const Config& config) {
-    s_Instance = std::make_unique<MemorySystem>();
-    
-    // Initialize subsystems
-    s_Instance->m_Manager = std::make_unique<Memory::MemoryManager>();
-    
+    // Create and register default strategies
+    auto defaultStrategy = std::make_unique<DefaultMemoryStrategy>();
+    auto poolStrategy = std::make_unique<PoolStrategy>();
+
+    addStrategy("Default", std::move(defaultStrategy));
+    addStrategy("Pool", std::move(poolStrategy));
+    setDefaultStrategy("Default");
+
+    // Initialize profiling if enabled
     if (config.enableProfiling) {
-        s_Instance->m_Profiler = std::make_unique<Memory::MemoryProfiler>();
+        MemoryProfiler::Get().initialize();
     }
-    
-    if (config.enableSecurity) {
-        s_Instance->m_Security = std::make_unique<Memory::MemorySecurity>();
-    }
+
+    m_Initialized = true;
 }
 
-void* MemorySystem::Allocate(size_t size, size_t alignment) {
-    void* ptr = GetManager().Allocate(size, alignment);
-    
-    if (s_Instance->m_Security) {
-        s_Instance->m_Security->OnAllocation(ptr, size);
+void* MemorySystem::allocate(size_t size, const AllocationInfo& info) {
+    HD_ASSERT(m_Initialized, "Memory system not initialized!");
+    HD_PROFILE_SCOPE("MemorySystem::Allocate");
+
+    // Select appropriate strategy based on allocation info
+    IMemoryStrategy* strategy = m_DefaultStrategy;
+    if (info.strategy == AllocationStrategy::Pool) {
+        strategy = m_Strategies["Pool"].get();
     }
-    
-    if (s_Instance->m_Profiler) {
-        s_Instance->m_Profiler->TrackAllocation(ptr, size);
+
+    // Perform allocation
+    void* ptr = strategy->allocate(size, info);
+    if (!ptr) {
+        // Handle allocation failure
+        handleAllocationFailure(size, info);
+        return nullptr;
     }
-    
+
     return ptr;
 }
 
-void MemorySystem::Shutdown() {
-    if (s_Instance) {
-        // Ensure proper cleanup order
-        if (s_Instance->m_Profiler) {
-            s_Instance->m_Profiler->EndCapture();
-            s_Instance->m_Profiler.reset();
-        }
-        
-        if (s_Instance->m_Security) {
-            s_Instance->m_Security->ValidateAllMemory();
-            s_Instance->m_Security.reset();
-        }
-        
-        s_Instance->m_Manager.reset();
-        s_Instance.reset();
+void MemorySystem::addStrategy(const std::string& name, 
+                             std::unique_ptr<IMemoryStrategy> strategy) {
+    HD_ASSERT(strategy, "Invalid strategy");
+    m_Strategies[name] = std::move(strategy);
+}
+
+MemoryStats MemorySystem::getSystemStats() const {
+    MemoryStats total{};
+    
+    // Aggregate stats from all strategies
+    for (const auto& [name, strategy] : m_Strategies) {
+        const auto stats = strategy->getStats();
+        total.totalAllocated += stats.totalAllocated;
+        total.currentUsage += stats.currentUsage;
+        total.peakUsage = std::max(total.peakUsage, stats.peakUsage);
+        total.allocationCount += stats.allocationCount;
     }
+    
+    return total;
 }
 
-void MemorySystem::BeginMemoryCapture(const char* tag) {
-    if (s_Instance && s_Instance->m_Profiler) {
-        s_Instance->m_Profiler->BeginCapture(tag);
-    }
+private:
+void MemorySystem::handleAllocationFailure(size_t size, 
+                                         const AllocationInfo& info) {
+    // Try to free memory
+    compact();
+    
+    // Log failure
+    HD_LOG_ERROR("Memory allocation failed: size={}, tag={}", 
+                 size, info.tag);
 }
 
-void MemorySystem::EndMemoryCapture() {
-    if (s_Instance && s_Instance->m_Profiler) {
-        s_Instance->m_Profiler->EndCapture();
-        
-        // Auto-generate report if enabled
-        if (s_Instance->m_Config.autoGenerateReports) {
-            s_Instance->m_Profiler->GenerateReport("memory_capture.html");
-        }
-    }
-}
-
-bool MemorySystem::ValidateMemoryAccess(void* ptr, size_t size) {
-    if (!s_Instance || !s_Instance->m_Security) return true;
-    return s_Instance->m_Security->ValidateMemory(ptr, size);
-}
-
-// ... (implement other interface methods)
-
-} // namespace Hydragon 
+}} // namespace Hydragon::Memory 

@@ -1,48 +1,36 @@
 #pragma once
-#include "Management/MemoryManager.h"
-#include "Profiling/MemoryProfiler.h"
-#include "Security/MemorySecurity.h"
-#include <memory>
+#include "Types/MemoryTypes.h"
+#include "Management/IMemoryStrategy.h"
 
 namespace Hydragon {
+namespace Memory {
 
 class MemorySystem {
 public:
-    struct Config {
-        bool enableSecurity = true;
-        bool enableProfiling = true;
-        bool enableNetworking = false;
-        std::string configPath;  // For external configuration
-    };
-
-    // Initialization and shutdown
-    static void Initialize(const Config& config = Config());
-    static void Shutdown();
+    static MemorySystem& Get();
     
-    // Core systems access
-    static MemoryManager& GetManager() { return *s_Instance->m_Manager; }
-    static MemoryProfiler& GetProfiler() { return *s_Instance->m_Profiler; }
-    static MemorySecurity& GetSecurity() { return *s_Instance->m_Security; }
+    // Initialization
+    void initialize(const MemoryConfig& config = {});
+    void shutdown();
     
-    // High-level memory operations
-    static void* Allocate(size_t size, size_t alignment = alignof(std::max_align_t));
-    static void Deallocate(void* ptr);
+    // Core memory operations
+    void* allocate(size_t size, const AllocationInfo& info = {});
+    void deallocate(void* ptr);
     
-    // Profiling shortcuts
-    static void BeginMemoryCapture(const char* tag);
-    static void EndMemoryCapture();
+    // Memory management
+    void addStrategy(const std::string& name, IMemoryStrategy* strategy);
+    void setDefaultStrategy(const std::string& name);
     
-    // Security shortcuts
-    static void EnableSecurityFeatures(bool enable);
-    static bool ValidateMemoryAccess(void* ptr, size_t size);
+    // System state
+    MemoryStats getSystemStats() const;
+    bool isInitialized() const { return m_Initialized; }
 
 private:
     MemorySystem() = default;
-    static std::unique_ptr<MemorySystem> s_Instance;
     
-    std::unique_ptr<MemoryManager> m_Manager;
-    std::unique_ptr<MemoryProfiler> m_Profiler;
-    std::unique_ptr<MemorySecurity> m_Security;
+    bool m_Initialized = false;
+    std::unordered_map<std::string, std::unique_ptr<IMemoryStrategy>> m_Strategies;
+    IMemoryStrategy* m_DefaultStrategy = nullptr;
 };
 
-} // namespace Hydragon 
+}} // namespace Hydragon::Memory 
