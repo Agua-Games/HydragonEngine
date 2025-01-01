@@ -2,12 +2,13 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
- * Terrain streaming and memory management
+ * Terrain streaming system
  */
 
 #pragma once
-#include "Core/Memory/Management/Strategies/StreamingMemoryStrategy.h"
 #include "Core/Memory/Virtualization/VirtualMemoryManager.h"
+#include "TerrainStreamingErrors.h"
+#include "TerrainTypes.h"
 
 namespace Hydragon {
 namespace Terrain {
@@ -15,124 +16,56 @@ namespace Terrain {
 class TerrainStreamingSystem {
 public:
     struct StreamingConfig {
-        // Memory and performance settings
-        struct MemoryBudget {
-            size_t maxResidentMemory = 2048 * 1024 * 1024;  // 2GB
-            size_t targetWorkingSet = 512 * 1024 * 1024;    // 512MB
-            float highWaterMark = 0.8f;                     // 80% threshold
-        };
-
-        // Streaming tile configuration
-        struct TileConfig {
-            uint32_t baseTileSize = 1024;      // Base resolution
-            uint32_t maxLodLevels = 8;         // LOD hierarchy
-            uint32_t streamingDistance = 4;    // In tiles
-            bool enableGeometryStreaming = true;
-            bool enableTextureStreaming = true;
-            bool enableMaterialStreaming = true;
-        };
+        uint32_t maxActiveRegions = 16;
+        uint32_t streamingBudgetMB = 512;
+        float streamingDistance = 1000.0f;
+        bool enablePrioritization = true;
+        uint32_t maxPendingRequests = 64;
     };
 
-    class TerrainStreamingController {
-    public:
-        // Predictive loading based on camera movement
-        void updateStreamingState(const CameraInfo& camera) {
-            Vector3 velocity = camera.getVelocity();
-            Vector3 predictedPosition = predictNextPosition(camera);
-            
-            // Update priority of tiles based on prediction
-            updateTilePriorities(predictedPosition, velocity);
-            
-            // Handle streaming requests
-            processStreamingQueue();
-        }
+    TerrainStreamingSystem(const StreamingConfig& config);
+    ~TerrainStreamingSystem();
 
-        // Intelligent memory management
-        void manageTileResidency() {
-            if (m_MemoryUsage > m_Config.budget.highWaterMark) {
-                evictDistantTiles();
-                compactWorkingSet();
-            }
-        }
+    // Region management
+    Result<void> registerStreamingRegion(const StreamingRegion& region);
+    void unregisterStreamingRegion(uint32_t regionId);
+    void updateRegionPriorities(const Vector3& viewerPosition);
 
-    private:
-        struct StreamingTile {
-            uint32_t x, y;
-            uint32_t lod;
-            float priority;
-            bool isResident;
-            Memory::VirtualMemoryRegion region;
-        };
+    // Streaming operations
+    Result<void> streamRegion(uint32_t regionId);
+    Result<void> unloadRegion(uint32_t regionId);
+    void processStreamingQueue();
 
-        // Efficient tile management
-        void processStreamingQueue() {
-            // Process requests in priority order
-            for (auto& request : m_PendingRequests) {
-                if (canStreamTile(request)) {
-                    streamTile(request);
-                }
-            }
-        }
+    // Status and metrics
+    bool isRegionLoaded(uint32_t regionId) const;
+    float getRegionLoadProgress(uint32_t regionId) const;
+    const StreamingMetrics& getMetrics() const { return m_Metrics; }
 
-        // Memory optimization
-        void compactWorkingSet() {
-            // Defragment memory if needed
-            if (m_FragmentationRatio > FRAGMENTATION_THRESHOLD) {
-                m_MemoryManager.defragmentRegion(m_TerrainRegion);
-            }
-        }
-
-        Memory::StreamingMemoryStrategy m_MemoryStrategy;
-        Memory::VirtualMemoryManager m_VirtualMemory;
-        std::priority_queue<StreamRequest> m_PendingRequests;
+private:
+    struct StreamingRequest {
+        uint32_t regionId;
+        float priority;
+        bool isLoad;  // true = load, false = unload
     };
 
-    // Detail system for close-up terrain
-    class TerrainDetailSystem {
-    public:
-        struct DetailConfig {
-            float detailDistance = 100.0f;
-            uint32_t patchSize = 64;
-            bool enableGeometryDetail = true;
-            bool enableMaterialDetail = true;
-        };
-
-        // Stream high-resolution details
-        void streamDetails(const ViewInfo& view) {
-            // Use virtual texturing for material details
-            m_MaterialStreamer.updateRegion(view.getFrustum());
-            
-            // Stream geometry patches
-            m_GeometryStreamer.updatePatches(view.getPosition());
-        }
+    struct ActiveRegion {
+        StreamingRegion region;
+        float loadProgress;
+        bool isLoading;
+        Time::Point lastAccess;
     };
+
+    StreamingConfig m_Config;
+    Memory::VirtualMemoryManager m_VirtualMemory;
+    std::unordered_map<uint32_t, ActiveRegion> m_ActiveRegions;
+    std::priority_queue<StreamingRequest> m_PendingRequests;
+    StreamingMetrics m_Metrics;
+
+    // Internal helpers
+    bool validateRegion(const StreamingRegion& region) const;
+    Result<void> allocateRegionMemory(uint32_t regionId);
+    void updateMetrics(const StreamingRequest& request);
+    void cleanupUnusedRegions();
 };
-
-// Python-friendly streaming control
-/*
-    import hydragon as hd
-    
-    terrain = hd.terrain.create()
-    
-    # Configure streaming
-    terrain.streaming.configure(
-        tile_size=1024,
-        lod_levels=8,
-        memory_budget="2GB"
-    )
-    
-    # Add detail layers
-    with terrain.detail_system() as detail:
-        detail.add_layer("rocks", {
-            "resolution": "high",
-            "distance": 100,
-            "blend_start": 80
-        })
-        
-    # Monitor streaming status
-    stats = terrain.streaming.get_stats()
-    print(f"Resident tiles: {stats.resident_tiles}")
-    print(f"Memory usage: {stats.memory_used}")
-*/
 
 }} // namespace Hydragon::Terrain 
