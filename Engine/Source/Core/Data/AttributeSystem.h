@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Flexible attribute system for data management
+ */
+
 #pragma once
 #include "Core/Memory/Management/Strategies/DataMemoryStrategy.h"
 
@@ -6,13 +13,6 @@ namespace Data {
 
 class AttributeSystem {
 public:
-    /*
-     * Copyright (c) 2024 Agua Games. All rights reserved.
-     * Licensed under the Agua Games License 1.0
-     *
-     * Flexible attribute system for data management
-     */
-
     // Flexible attribute container inspired by Houdini
     template<typename T>
     class Attribute {

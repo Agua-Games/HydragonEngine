@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Terrain simulation and procedural generation
+ */
+
 #pragma once
 #include "Core/Memory/Management/Strategies/SimulationMemoryStrategy.h"
 
@@ -108,10 +115,3 @@ public:
             water_table_depth=50
         )
 */ 
-
-/*
- * Copyright (c) 2024 Agua Games. All rights reserved.
- * Licensed under the Agua Games License 1.0
- *
- * Terrain simulation and procedural generation
- */ 

@@ -1,15 +1,15 @@
-#pragma once
-#include "Core/Memory/Management/Strategies/SceneMemoryStrategy.h"
-
-namespace Hydragon {
-namespace Scene {
-
 /*
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
  * Scene description and serialization system
  */
+
+#pragma once
+#include "Core/Memory/Management/Strategies/SceneMemoryStrategy.h"
+
+namespace Hydragon {
+namespace Scene {
 
 // Inspired by RSL/OSL but optimized for real-time
 class SceneDescriptionSystem {

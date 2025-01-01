@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Node-based terrain processing system
+ */
+
 #pragma once
 #include "Core/Data/AttributeSystem.h"
 

@@ -1,16 +1,16 @@
-#pragma once
-#include "Core/Memory/Management/Strategies/StreamingMemoryStrategy.h"
-#include "Core/Memory/Virtualization/VirtualMemoryManager.h"
-
-namespace Hydragon {
-namespace Terrain {
-
 /*
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
  * Terrain streaming and memory management
  */
+
+#pragma once
+#include "Core/Memory/Management/Strategies/StreamingMemoryStrategy.h"
+#include "Core/Memory/Virtualization/VirtualMemoryManager.h"
+
+namespace Hydragon {
+namespace Terrain {
 
 class TerrainStreamingSystem {
 public:
