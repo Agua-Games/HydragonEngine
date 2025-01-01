@@ -29,4 +29,11 @@ public:
     player.add_component("mesh", model="character.fbx")
 */
 
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Core scene management system
+ */
+
 }} // namespace Hydragon::Scene 

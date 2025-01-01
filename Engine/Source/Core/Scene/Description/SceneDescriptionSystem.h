@@ -4,6 +4,13 @@
 namespace Hydragon {
 namespace Scene {
 
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Scene description and serialization system
+ */
+
 // Inspired by RSL/OSL but optimized for real-time
 class SceneDescriptionSystem {
 public:

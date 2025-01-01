@@ -70,3 +70,10 @@ public:
     scatter.source = "trees.fbx"
     scatter.target_group = steep  # Use groups naturally
 */ 
+
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Node-based terrain processing system
+ */ 

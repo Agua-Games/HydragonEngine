@@ -5,6 +5,13 @@
 namespace Hydragon {
 namespace Terrain {
 
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Terrain streaming and memory management
+ */
+
 class TerrainStreamingSystem {
 public:
     struct StreamingConfig {
