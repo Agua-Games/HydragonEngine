@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"Hydragon Engine Coding Standards"</title>
         <link rel="stylesheet" href="D:\AguaGames\HydragonEngine\alpha\Engine\Tools\DocumentationTool\Templates\style.css">
-    </head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
 <body>
     <nav class="sidebar">
         <div class="nav-header">
@@ -100,5 +102,36 @@
         </section>
         </section>
     </main>
+    <script>
+        // Initialize syntax highlighting
+        hljs.highlightAll();
+        
+        // Add copy buttons to code blocks
+        document.querySelectorAll('pre code').forEach((block) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+            
+            const button = document.createElement('button');
+            button.className = 'copy-button';
+            button.textContent = 'Copy';
+            
+            button.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(block.textContent);
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = 'Copy';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                    button.textContent = 'Error';
+                }
+            });
+            
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+            wrapper.appendChild(button);
+        });
+    </script>
 </body>
 </html> 

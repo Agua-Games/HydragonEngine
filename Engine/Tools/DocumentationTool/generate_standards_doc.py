@@ -130,7 +130,9 @@ def generate_standards_doc():
                 '--template', str(TEMPLATES_DIR / 'html5_template.html'),
                 '--toc',
                 '--toc-depth=3',
-                '--section-divs'
+                '--section-divs',
+                '--highlight-style=pygments',
+                '--no-highlight'
             ]
         )
         
