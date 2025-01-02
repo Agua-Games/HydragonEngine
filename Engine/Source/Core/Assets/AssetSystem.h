@@ -11,8 +11,15 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 namespace Hydragon::Assets {
+
+struct AssetDependencyGraph {
+    std::vector<AssetHandle> dependencies;
+    std::vector<AssetHandle> dependents;
+    UpdateStrategy updateStrategy;
+};
 
 class AssetSystem {
 public:

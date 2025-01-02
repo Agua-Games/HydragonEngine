@@ -15,6 +15,12 @@
 
 namespace Hydragon::Profiling {
 
+struct SystemMetrics {
+    PerformanceTimeline timeline;
+    ResourceUtilization resources;
+    BottleneckAnalysis bottlenecks;
+};
+
 class ProfilerSystem {
 public:
     struct ProfilerConfig {

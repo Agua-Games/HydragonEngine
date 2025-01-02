@@ -62,4 +62,26 @@ struct ProfilerStats {
     size_t peakMemoryUsage;
 };
 
+struct PerformanceTimeline {
+    std::vector<TimelineEvent> events;
+    double startTime;
+    double endTime;
+    uint32_t markerCount;
+};
+
+struct ResourceUtilization {
+    float cpuUsage;
+    float gpuUsage;
+    size_t memoryUsage;
+    float networkBandwidth;
+    float diskIORate;
+};
+
+struct BottleneckAnalysis {
+    std::vector<BottleneckInfo> detectedBottlenecks;
+    float severityScore;
+    std::string primaryBottleneck;
+    uint32_t occurrenceCount;
+};
+
 } // namespace Hydragon::Profiling 

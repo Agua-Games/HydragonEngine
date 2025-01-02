@@ -32,6 +32,13 @@ enum class LoadPriority {
     Critical
 };
 
+enum class UpdateStrategy {
+    Immediate,
+    Deferred,
+    Manual,
+    Cascade
+};
+
 struct LoadParams {
     LoadPriority priority = LoadPriority::Normal;
     bool asyncLoad = true;

@@ -15,6 +15,12 @@
 
 namespace Hydragon::Collaboration {
 
+struct CollaborationContext {
+    VersionControlHandle vcs;
+    ConflictResolutionStrategy strategy;
+    SyncPolicy syncPolicy;
+};
+
 struct CollaborationConfig {
     bool enableRealTimeSync = true;
     bool enableVersionControl = true;
