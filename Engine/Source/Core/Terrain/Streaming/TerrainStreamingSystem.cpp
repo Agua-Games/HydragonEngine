@@ -1,171 +1,116 @@
 /*
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
- *
- * Terrain streaming system implementation
  */
 
 #include "TerrainStreamingSystem.h"
+
+#include "Core/Memory/Management/MemoryManager.h"
+#include "Core/Memory/NUMA/NumaAllocator.h"
+#include "Core/Memory/GPU/GPUMemoryPool.h"
 #include "Core/Profiling/Profiler.h"
-#include "Core/Memory/MemoryManager.h"
+#include "Core/Tasks/TaskScheduler.h"
+#include "Core/Time/TimeSystem.h"
 
 namespace Hydragon {
 namespace Terrain {
 
+class TerrainStreamingSystem::Impl {
+    struct StreamingCache {
+        NUMAMemoryPool m_heightfieldPool;
+        GPUMemoryPool m_texturePool;
+        std::unordered_map<ChunkId, StreamingStatus> m_chunkStatus;
+    };
+
+    TaskScheduler m_streamingTasks;
+    StreamingCache m_cache;
+    MemoryProfiler m_memoryProfiler;
+};
+
 TerrainStreamingSystem::TerrainStreamingSystem(const StreamingConfig& config)
-    : m_Config(config) {
+    : m_impl(std::make_unique<Impl>())
+    , m_config(config) {
     
-    HD_PROFILE_SCOPE("TerrainStreamingSystem::Initialize");
+    // Initialize memory pools
+    NUMAMemoryDesc heightfieldDesc{
+        .size = config.heightfieldCacheSize,
+        .nodePreference = NUMANodePreference::Local,
+        .name = "TerrainHeightfieldCache"
+    };
+    m_impl->m_cache.m_heightfieldPool.Initialize(heightfieldDesc);
 
-    // Initialize virtual memory for streaming
-    Memory::VirtualMemoryManager::Config vmConfig;
-    vmConfig.pageSize = 1024 * 1024;  // 1MB pages
-    vmConfig.maxVirtualMemory = static_cast<size_t>(config.streamingBudgetMB) * 1024 * 1024;
+    // Initialize task system
+    m_impl->m_streamingTasks.Initialize(config.maxStreamingThreads);
+}
+
+void TerrainStreamingSystem::Update(const ViewInfo& viewInfo) {
+    PROFILE_SCOPE("TerrainStreamingSystem::Update");
+
+    // Update streaming priorities
+    UpdateStreamingPriorities(viewInfo);
+
+    // Process streaming queue
+    ProcessStreamingQueue();
+
+    // Update memory tracking
+    UpdateMemoryStats();
+}
+
+void TerrainStreamingSystem::UpdateStreamingPriorities(const ViewInfo& viewInfo) {
+    struct ChunkPriority {
+        ChunkId id;
+        float priority;
+    };
     
-    auto result = m_VirtualMemory.initialize(vmConfig);
-    if (!result) {
-        throw StreamingError::deviceNotSupported("Virtual memory initialization failed");
-    }
-}
+    std::vector<ChunkPriority> priorities;
+    priorities.reserve(m_activeChunks.size());
 
-Result<void> TerrainStreamingSystem::registerStreamingRegion(const StreamingRegion& region) {
-    HD_PROFILE_SCOPE("TerrainStreamingSystem::RegisterRegion");
-
-    if (!validateRegion(region)) {
-        return Error("Invalid streaming region");
+    // Calculate priorities for all chunks
+    for (const auto& chunk : m_activeChunks) {
+        float distance = CalculateChunkDistance(chunk, viewInfo.position);
+        float priority = CalculateStreamingPriority(chunk, distance);
+        priorities.push_back({chunk.id, priority});
     }
 
-    if (m_ActiveRegions.size() >= m_Config.maxActiveRegions) {
-        cleanupUnusedRegions();
-        if (m_ActiveRegions.size() >= m_Config.maxActiveRegions) {
-            return StreamingError::outOfMemory("Maximum active regions reached");
+    // Sort by priority
+    std::sort(priorities.begin(), priorities.end(),
+        [](const auto& a, const auto& b) {
+            return a.priority > b.priority;
+        });
+
+    // Queue high priority chunks for streaming
+    for (const auto& p : priorities) {
+        if (p.priority > m_config.streamingThreshold) {
+            QueueChunkForStreaming(p.id);
         }
     }
-
-    ActiveRegion activeRegion;
-    activeRegion.region = region;
-    activeRegion.loadProgress = 0.0f;
-    activeRegion.isLoading = false;
-    activeRegion.lastAccess = Time::now();
-
-    m_ActiveRegions[region.id] = std::move(activeRegion);
-    return Success;
 }
 
-void TerrainStreamingSystem::processStreamingQueue() {
-    HD_PROFILE_SCOPE("TerrainStreamingSystem::ProcessQueue");
+void TerrainStreamingSystem::ProcessStreamingQueue() {
+    while (!m_streamingQueue.empty() && 
+           m_impl->m_streamingTasks.HasAvailableThreads()) {
+        
+        auto request = m_streamingQueue.front();
+        m_streamingQueue.pop();
 
-    while (!m_PendingRequests.empty()) {
-        auto request = m_PendingRequests.top();
-        m_PendingRequests.pop();
+        // Create streaming task
+        auto task = [this, request]() {
+            StreamChunkData(request);
+        };
 
-        auto it = m_ActiveRegions.find(request.regionId);
-        if (it == m_ActiveRegions.end()) {
-            continue;  // Region no longer exists
-        }
-
-        if (request.isLoad) {
-            auto result = streamRegion(request.regionId);
-            if (!result) {
-                HD_LOG_ERROR("Failed to stream region {}: {}", 
-                            request.regionId, result.error());
-            }
-        } else {
-            auto result = unloadRegion(request.regionId);
-            if (!result) {
-                HD_LOG_ERROR("Failed to unload region {}: {}", 
-                            request.regionId, result.error());
-            }
-        }
-
-        updateMetrics(request);
+        m_impl->m_streamingTasks.ScheduleTask(std::move(task));
     }
 }
 
-Result<void> TerrainStreamingSystem::streamRegion(uint32_t regionId) {
-    HD_PROFILE_SCOPE("TerrainStreamingSystem::StreamRegion");
+void TerrainStreamingSystem::UpdateMemoryStats() {
+    auto& profiler = m_impl->m_memoryProfiler;
 
-    auto it = m_ActiveRegions.find(regionId);
-    if (it == m_ActiveRegions.end()) {
-        return Error("Invalid region ID");
-    }
-
-    auto& region = it->second;
-    if (region.isLoading) {
-        return Error("Region is already loading");
-    }
-
-    // Allocate memory for the region
-    auto result = allocateRegionMemory(regionId);
-    if (!result) {
-        return result;
-    }
-
-    region.isLoading = true;
-    region.lastAccess = Time::now();
-
-    // Start async loading
-    auto loadResult = beginAsyncLoad(region);
-    if (!loadResult) {
-        region.isLoading = false;
-        return loadResult;
-    }
-
-    return Success;
+    profiler.UpdateStats({
+        .heightfieldMemory = m_impl->m_cache.m_heightfieldPool.GetUsedSize(),
+        .textureMemory = m_impl->m_cache.m_texturePool.GetUsedSize(),
+        .activeChunks = m_impl->m_cache.m_chunkStatus.size(),
+        .pendingRequests = m_streamingQueue.size()
+    });
 }
 
-bool TerrainStreamingSystem::validateRegion(const StreamingRegion& region) const {
-    if (region.bounds.isEmpty()) {
-        HD_LOG_ERROR("Empty region bounds");
-        return false;
-    }
-
-    if (region.priority < 0.0f || region.priority > 1.0f) {
-        HD_LOG_ERROR("Invalid region priority");
-        return false;
-    }
-
-    if (region.resolution == 0) {
-        HD_LOG_ERROR("Invalid region resolution");
-        return false;
-    }
-
-    return true;
-}
-
-void TerrainStreamingSystem::updateMetrics(const StreamingRequest& request) {
-    auto& region = m_ActiveRegions[request.regionId];
-    
-    if (request.isLoad) {
-        m_Metrics.totalBytesStreamed += region.region.getMemorySize();
-        m_Metrics.activeRegionCount++;
-    } else {
-        m_Metrics.totalBytesUnloaded += region.region.getMemorySize();
-        m_Metrics.activeRegionCount--;
-    }
-
-    m_Metrics.peakActiveRegions = 
-        std::max(m_Metrics.peakActiveRegions, m_Metrics.activeRegionCount);
-}
-
-void TerrainStreamingSystem::cleanupUnusedRegions() {
-    HD_PROFILE_SCOPE("TerrainStreamingSystem::CleanupRegions");
-
-    const auto now = Time::now();
-    std::vector<uint32_t> regionsToUnload;
-
-    for (const auto& pair : m_ActiveRegions) {
-        const auto& region = pair.second;
-        auto timeSinceAccess = Time::duration(region.lastAccess, now);
-
-        if (timeSinceAccess > Time::seconds(30) && !region.isLoading) {
-            regionsToUnload.push_back(pair.first);
-        }
-    }
-
-    for (auto regionId : regionsToUnload) {
-        unloadRegion(regionId);
-    }
-}
-
-}} // namespace Hydragon::Terrain 
+} // namespace Hydragon::Terrain 

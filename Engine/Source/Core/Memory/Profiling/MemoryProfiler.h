@@ -2,31 +2,48 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
- * Memory profiler for Hydragon
+ * Memory profiling and tracking system
  */
 
 #pragma once
-#include "../Management/MemoryManager.h"
-#include "MemoryBenchmark.h"
+#include "Core/Memory/Types/MemoryTypes.h"
+#include "Core/Profiling/ProfilerTypes.h"
 #include <chrono>
+#include <vector>
 
-namespace Hydragon {
-namespace Memory {
+namespace Hydragon::Memory {
 
 class MemoryProfiler {
 public:
-    void BeginCapture(const char* tag);
-    void EndCapture();
+    struct AllocationRecord {
+        void* address;
+        size_t size;
+        std::string tag;
+        std::chrono::steady_clock::time_point timestamp;
+        uint32_t threadId;
+        std::string callstack;
+    };
+
+    struct ProfilerStats {
+        size_t totalAllocations;
+        size_t peakMemoryUsage;
+        std::vector<AllocationRecord> largestAllocations;
+        float fragmentationRatio;
+        std::unordered_map<std::string, size_t> allocationsByTag;
+    };
+
+    static void Initialize();
+    static void Shutdown();
     
-    void EnableProfiling(bool enable);
-    BenchmarkResult GetLastResult() const;
+    static void TrackAllocation(const AllocationRecord& record);
+    static void UntrackAllocation(void* ptr);
     
-    // Integration with visualization
-    void GenerateReport(const char* outputPath);
-    
+    static ProfilerStats GetStats();
+    static void ResetStats();
+
 private:
-    std::unique_ptr<MemoryBenchmark> m_Benchmark;
-    // ... (profiling internals)
+    static void UpdateFragmentationMetrics();
+    static void PruneAllocationHistory();
 };
 
-}} // namespace Hydragon::Memory 
+} // namespace Hydragon::Memory 

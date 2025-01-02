@@ -114,14 +114,27 @@ void MemoryManager::RandomizePoolSizes() {
 }
 
 void* MemoryManager::BaseAllocate(size_t size, size_t alignment) {
-    // Inlined fast path for basic allocations
+    // Add error logging
+    if (size == 0) {
+        HD_LOG_ERROR("Memory", "Attempted to allocate 0 bytes");
+        return nullptr;
+    }
+
     #if defined(_MSC_VER)
-        return _aligned_malloc(size, alignment);
+        void* ptr = _aligned_malloc(size, alignment);
+        if (!ptr) {
+            HD_LOG_ERROR("Memory", "Failed to allocate {} bytes", size);
+            return nullptr;
+        }
+        return ptr;
     #else
         void* ptr = nullptr;
-        if (posix_memalign(&ptr, alignment, size) == 0)
-            return ptr;
-        return nullptr;
+        int result = posix_memalign(&ptr, alignment, size);
+        if (result != 0) {
+            HD_LOG_ERROR("Memory", "Failed to allocate {} bytes: {}", size, strerror(result));
+            return nullptr;
+        }
+        return ptr;
     #endif
 }
 

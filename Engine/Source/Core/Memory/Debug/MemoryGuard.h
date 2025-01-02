@@ -8,34 +8,33 @@
 #pragma once
 #include <cstdint>
 
-namespace Hydragon {
-namespace Memory {
+namespace Hydragon::Memory {
 
+/**
+ * Provides memory corruption detection through guard patterns
+ */
 class MemoryGuard {
 public:
     static constexpr uint64_t HEAD_PATTERN = 0xDEADBEEFDEADBEEF;
     static constexpr uint64_t TAIL_PATTERN = 0xFEEDFACEFEEDFACE;
     static constexpr size_t GUARD_SIZE = sizeof(uint64_t);
 
-    static void* addGuards(void* ptr, size_t size) {
-        auto* head = static_cast<uint64_t*>(ptr);
-        *head = HEAD_PATTERN;
-        
-        auto* tail = reinterpret_cast<uint64_t*>(
-            static_cast<char*>(ptr) + GUARD_SIZE + size);
-        *tail = TAIL_PATTERN;
-        
-        return static_cast<char*>(ptr) + GUARD_SIZE;
-    }
+    /**
+     * Adds guard patterns around a memory block
+     * @param ptr Pointer to memory block
+     * @param size Size of memory block
+     * @return Pointer to usable memory (after guard)
+     * @throws std::bad_alloc if memory cannot be guarded
+     */
+    static void* addGuards(void* ptr, size_t size);
 
-    static bool validateGuards(void* ptr, size_t size) {
-        auto* head = reinterpret_cast<uint64_t*>(
-            static_cast<char*>(ptr) - GUARD_SIZE);
-        auto* tail = reinterpret_cast<uint64_t*>(
-            static_cast<char*>(ptr) + size);
-            
-        return *head == HEAD_PATTERN && *tail == TAIL_PATTERN;
-    }
+    /**
+     * Validates guard patterns around a memory block
+     * @param ptr Pointer to memory block
+     * @param size Size of memory block
+     * @return True if guards are intact
+     */
+    static bool validateGuards(void* ptr, size_t size);
 };
 
-}} // namespace Hydragon::Memory 
+} // namespace Hydragon::Memory 

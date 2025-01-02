@@ -6,8 +6,11 @@
  */
 
 #include "TerrainVirtualTexturing.h"
+#include "Core/Debug/ImGui/ImGuiRenderer.h"
 #include "Core/Graphics/RenderAPI/CommandBuffer.h"
+#include "Core/Memory/GPU/GPUMemoryTypes.h"
 #include "Core/Profiling/Profiler.h"
+#include "TerrainStreamingSystem.h"
 
 namespace Hydragon {
 namespace Terrain {

@@ -9,25 +9,27 @@
 #include <pybind11/pybind11.h>
 #include "Core/Memory/MemorySystem.h"
 
-namespace Hydragon {
-namespace Scripting {
+namespace Hydragon::Scripting {
 
-// Internal C++ class with standard naming
+/**
+ * Provides Python bindings for memory system functionality
+ */
 class MemorySystemBindings {
 private:
-    // C++ side maintains engine naming standards
+    /**
+     * Registers memory-related bindings with Python
+     * @param m Python module to bind to
+     */
     void registerMemoryBindings(pybind11::module& m) {
         namespace py = pybind11;
         
-        // Use lowercase for more Pythonic naming
+        // Use Pythonic naming (PEP 8)
         py::class_<Memory::MemorySystem>(m, "memory")
             .def("get_usage", &Memory::MemorySystem::getUsage)
             .def("clear_cache", &Memory::MemorySystem::clearCache)
             .def("watch_allocation", &Memory::MemorySystem::trackAllocation)
-            
-            // Context manager for memory tracking
-            .def("track_node", [](const char* nodeName) {
-                return Memory::MemorySystem::Get().beginNodeMemoryTracking(nodeName);
+            .def("track_node", [](const char* node_name) {
+                return Memory::MemorySystem::get().beginNodeMemoryTracking(node_name);
             });
     }
 };
@@ -50,4 +52,4 @@ private:
         pass
 */
 
-}} // namespace Hydragon::Scripting 
+} // namespace Hydragon::Scripting 

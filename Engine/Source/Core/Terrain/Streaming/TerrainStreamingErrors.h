@@ -6,7 +6,9 @@
  */
 
 #pragma once
+
 #include "Core/Common/Error.h"
+#include "Core/Common/Result.h"
 
 namespace Hydragon {
 namespace Terrain {
@@ -40,8 +42,17 @@ public:
             fmt::format("Device doesn't support: {}", feature).c_str());
     }
 
+    // Consider adding:
+    // - More specific error creation helpers
+    // - Better error context information
+    // - Integration with memory tracking/profiling
+
 private:
     StreamingErrorCode m_Code;
 };
+
+// Type alias for common Result usage
+template<typename T>
+using StreamingResult = Common::Result<T, StreamingError>;
 
 }} // namespace Hydragon::Terrain 

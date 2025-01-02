@@ -2,41 +2,48 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
- * Asset system for Hydragon
+ * Core asset management system
  */
 
 #pragma once
+#include "AssetTypes.h"
 #include "Core/Memory/Virtualization/VirtualMemoryManager.h"
+#include <string>
+#include <memory>
+#include <unordered_map>
 
-namespace Hydragon {
-namespace Assets {
+namespace Hydragon::Assets {
 
 class AssetSystem {
 public:
-    // Support for both editor and runtime asset management
-    struct AssetLoadConfig {
-        bool enableVirtualization = true;
-        bool allowPartialLoading = true;
-        size_t streamingBudget = 512 * 1024 * 1024;  // 512MB
+    struct AssetConfig {
+        size_t virtualMemoryBudget = 8 * 1024 * 1024 * 1024ull;  // 8GB
+        size_t maxLoadedAssets = 10000;
+        bool enableAsyncLoading = true;
+        bool enableHotReload = true;
+        std::string assetRootPath;
     };
 
-    // Python-friendly asset operations
-    AssetHandle loadAsset(const char* path, const LoadParams& params = {}) {
-        return internalLoadAsset(path, params);
-    }
+    static AssetSystem& Get();
+    
+    void Initialize(const AssetConfig& config = {});
+    void Shutdown();
+
+    AssetHandle LoadAsset(const std::string& path, const LoadParams& params = {});
+    void UnloadAsset(AssetHandle handle);
+    
+    bool IsAssetLoaded(AssetHandle handle) const;
+    const AssetInfo& GetAssetInfo(AssetHandle handle) const;
+    const AssetStats& GetStats() const { return m_Stats; }
+
+private:
+    AssetSystem() = default;
+    
+    AssetConfig m_Config;
+    AssetStats m_Stats;
+    std::unique_ptr<Memory::VirtualMemoryManager> m_VirtualMemory;
+    std::unordered_map<AssetHandle, AssetInfo> m_LoadedAssets;
+    bool m_Initialized = false;
 };
 
-// Python bindings would look like:
-/*
-    import hydragon as hd
-    
-    # Simple asset loading
-    model = hd.assets.load("models/character.fbx")
-    
-    # With streaming options
-    texture = hd.assets.load("textures/large.dds", 
-                           streaming=True, 
-                           priority="high")
-*/
-
-}} // namespace Hydragon::Assets 
+} // namespace Hydragon::Assets 

@@ -6,43 +6,56 @@
  */
 
 #pragma once
-#include "Core/Memory/Management/Strategies/SceneMemoryStrategy.h"
+#include "SceneDescriptionTypes.h"
+#include "Core/Memory/Management/IMemoryStrategy.h"
+#include <memory>
+#include <string>
+#include <vector>
 
-namespace Hydragon {
-namespace Scene {
+namespace Hydragon::Scene {
 
-// Inspired by RSL/OSL but optimized for real-time
 class SceneDescriptionSystem {
 public:
-    // Flexible parameter system similar to RenderMan's
-    struct Parameter {
-        enum class Type {
-            Float, Vector, Color, Normal, Point,
-            String, Shader, Connection, Array
-        };
-        
-        // Support for both immediate and deferred evaluation
-        template<typename T>
-        T evaluate(const EvaluationContext& context) {
-            if (isLazy()) {
-                return evaluateProcedural<T>(context);
-            }
-            return m_Value.get<T>();
-        }
+    struct DescriptionConfig {
+        bool enableLazyEvaluation = true;
+        bool enableCaching = true;
+        bool enableCompression = true;
+        bool enableValidation = true;
+        uint32_t maxNodes = 1000000;
+        uint32_t maxConnections = 2000000;
+        size_t memoryBudget = 512 * 1024 * 1024;  // 512MB
     };
 
-    // Shader network system inspired by RSL/OSL but real-time focused
-    class ShaderNetwork {
-    public:
-        // Support for both AOT and JIT compilation
-        void compile(const CompileOptions& options) {
-            if (options.enableGPUAcceleration) {
-                compileToGPU();
-            } else {
-                compileToCPU();
-            }
-        }
-    };
+    static SceneDescriptionSystem& Get();
+    
+    void Initialize(const DescriptionConfig& config = {});
+    void Shutdown();
+    
+    NodeHandle CreateNode(const NodeDesc& desc);
+    void DestroyNode(NodeHandle handle);
+    
+    void Connect(NodeHandle from, NodeHandle to, const ConnectionDesc& desc);
+    void Disconnect(NodeHandle from, NodeHandle to);
+    
+    void SetParameter(NodeHandle node, const char* name, const Parameter& value);
+    Parameter GetParameter(NodeHandle node, const char* name) const;
+    
+    void Serialize(const std::string& path);
+    void Deserialize(const std::string& path);
+    
+    void Validate();
+    void Optimize();
+    
+    const DescriptionStats& GetStats() const { return m_Stats; }
+
+private:
+    SceneDescriptionSystem() = default;
+    
+    DescriptionConfig m_Config;
+    DescriptionStats m_Stats;
+    std::unique_ptr<IDescriptionProcessor> m_Processor;
+    std::vector<Node> m_Nodes;
+    bool m_Initialized = false;
 };
 
-}} // namespace Hydragon::Scene 
+} // namespace Hydragon::Scene 

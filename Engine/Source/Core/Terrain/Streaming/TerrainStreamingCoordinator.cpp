@@ -4,7 +4,11 @@
  */
 
 #include "TerrainStreamingCoordinator.h"
+
+#include "Core/Camera/Camera.h"
+#include "Core/Math/Bounds.h"
 #include "Core/Profiling/Profiler.h"
+#include "Core/Time/TimeSystem.h"
 
 namespace Hydragon {
 namespace Terrain {

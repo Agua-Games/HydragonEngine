@@ -30,7 +30,16 @@ public:
     thread_local static ThreadLocalCache* current;
 };
 
-// Lock-free allocator for small allocations
+/**
+ * @brief Thread-safe memory allocator optimized for concurrent access
+ * 
+ * Provides a lock-free allocation strategy using thread-local caches
+ * and a central buffer pool. Designed to minimize contention in 
+ * multi-threaded scenarios.
+ * 
+ * @note Thread-local caches are automatically sized based on the config
+ * @see ThreadLocalCache for cache implementation details
+ */
 class ConcurrentAllocator : public IMemoryStrategy {
 public:
     struct Config {

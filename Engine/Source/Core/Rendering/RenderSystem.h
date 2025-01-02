@@ -2,40 +2,69 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
- * Core rendering system and API abstraction
+ * Core rendering system
  */
 
 #pragma once
-#include "Core/Memory/Management/Strategies/GraphicsMemoryStrategy.h"
+#include "RenderTypes.h"
+#include "Core/Memory/Management/IMemoryStrategy.h"
+#include <memory>
+#include <vector>
+#include <string>
 
-namespace Hydragon {
-namespace Rendering {
+namespace Hydragon::Rendering {
 
 class RenderSystem {
 public:
-    // Support for both editor viewport and final output
-    struct ViewportDesc {
-        uint32_t width;
-        uint32_t height;
-        bool enableRealTimeUpdate = true;
-        float refreshRate = 60.0f;
+    struct RenderConfig {
+        bool enableMultithreading = true;
+        bool enableRayTracing = false;
+        bool enableVRS = true;
+        bool enableMeshShaders = true;
+        bool enableAsyncCompute = true;
+        uint32_t maxDrawCalls = 100000;
+        uint32_t maxMaterials = 10000;
+        uint32_t maxTextures = 5000;
+        size_t gpuMemoryBudget = 4 * 1024 * 1024 * 1024ull;  // 4GB
     };
 
-    // Integration with node graph system
-    void executeRenderGraph(const RenderGraph& graph) {
-        Memory::ScopedAllocation alloc(m_MemoryStrategy);
-        // Execute render passes
-    }
+    static RenderSystem& Get();
+    
+    void Initialize(const RenderConfig& config = {});
+    void Shutdown();
+    
+    void BeginFrame();
+    void EndFrame();
+    
+    void ExecuteRenderGraph(const RenderGraph& graph);
+    void SubmitCommandBuffer(const CommandBuffer& buffer);
+    
+    ResourceHandle CreateResource(const ResourceDesc& desc);
+    void DestroyResource(ResourceHandle handle);
+    
+    PipelineHandle CreatePipeline(const PipelineDesc& desc);
+    void DestroyPipeline(PipelineHandle handle);
+    
+    void UpdateBuffer(BufferHandle handle, const void* data, size_t size);
+    void UpdateTexture(TextureHandle handle, const void* data, const TextureRegion& region);
+    
+    void SetViewport(const Viewport& viewport);
+    void SetScissor(const Scissor& scissor);
+    
+    void BeginRenderPass(const RenderPassDesc& desc);
+    void EndRenderPass();
+    
+    const RenderStats& GetStats() const { return m_Stats; }
+
+private:
+    RenderSystem() = default;
+    
+    RenderConfig m_Config;
+    RenderStats m_Stats;
+    std::unique_ptr<IRenderDevice> m_Device;
+    std::unique_ptr<ICommandQueue> m_Queue;
+    std::vector<CommandBuffer> m_PendingCommands;
+    bool m_Initialized = false;
 };
 
-/*
-    Python usage:
-    viewport = hd.render.viewport()
-    
-    with hd.render.graph() as g:
-        g.add_pass("geometry")
-        g.add_pass("lighting")
-        viewport.show(g)
-*/
-
-}} // namespace Hydragon::Rendering 
+} // namespace Hydragon::Rendering 

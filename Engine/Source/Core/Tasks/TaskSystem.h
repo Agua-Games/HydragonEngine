@@ -2,31 +2,57 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
- * Task system for Hydragon
+ * Task management system
  */
 
 #pragma once
-#include "Core/Memory/MemorySystem.h"
+#include "TaskTypes.h"
+#include "Core/Memory/Management/IMemoryStrategy.h"
+#include <memory>
+#include <vector>
 
-namespace Hydragon {
-namespace Tasks {
+namespace Hydragon::Tasks {
 
 class TaskSystem {
 public:
     struct TaskConfig {
-        bool enableFibers = true;
-        uint32_t workerThreadCount = 0;  // 0 = auto based on CPU
-        size_t fiberStackSize = 64 * 1024;
+        uint32_t maxTasks = 10000;
+        uint32_t maxDependencies = 1000;
+        bool enablePrioritization = true;
+        bool enableWorkStealing = true;
+        bool enableProfiling = true;
+        size_t memoryBudget = 32 * 1024 * 1024;  // 32MB
     };
 
-    // Support for both immediate and deferred execution
-    template<typename T>
-    TaskHandle<T> schedule(const TaskDesc& desc) {
-        // Integration with memory system for task allocations
-        auto* memory = Memory::MemorySystem::Get().allocateTaskMemory(
-            calculateTaskMemory(desc));
-        return createTask(desc, memory);
-    }
+    static TaskSystem& Get();
+    
+    void Initialize(const TaskConfig& config = {});
+    void Shutdown();
+    
+    void Update();
+    
+    TaskHandle CreateTask(const TaskDesc& desc);
+    void DestroyTask(TaskHandle handle);
+    
+    void SubmitTask(TaskHandle handle);
+    void WaitForTask(TaskHandle handle);
+    
+    void AddDependency(TaskHandle dependent, TaskHandle dependency);
+    void RemoveDependency(TaskHandle dependent, TaskHandle dependency);
+    
+    bool IsTaskComplete(TaskHandle handle) const;
+    float GetTaskProgress(TaskHandle handle) const;
+    
+    const TaskStats& GetStats() const { return m_Stats; }
+
+private:
+    TaskSystem() = default;
+    
+    TaskConfig m_Config;
+    TaskStats m_Stats;
+    std::vector<Task> m_Tasks;
+    std::unique_ptr<ITaskScheduler> m_Scheduler;
+    bool m_Initialized = false;
 };
 
-}} // namespace Hydragon::Tasks 
+} // namespace Hydragon::Tasks 
