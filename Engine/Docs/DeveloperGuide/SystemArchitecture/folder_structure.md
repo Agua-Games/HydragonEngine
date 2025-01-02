@@ -1,222 +1,146 @@
 # Engine Folder Structure Documentation
+(as this list is not yet automated, please update it as needed)
 
-## System Overview
+## Main Directory Structure
 
-### Key System Relationships
-```mermaid
-graph TD
-    A[Memory Management] --> B[Resource Management]
-    B --> C[Asset System]
-    C --> D[Graphics Pipeline]
-    
-    E[Node System] --> F[Scripting VM]
-    F --> G[Memory Management]
-    
-    H[Terrain System] --> I[Streaming]
-    I --> J[Memory Management]
-    
-    K[Editor Tools] --> L[Asset System]
-    L --> M[Hot Reload]
-```
+### Root Directories
+- `Engine/` - Root engine directory
+  - `Build/` - Build system files
+    - `CI/` - Continuous Integration configuration
+  - `Source/` - Source code
+  - `Tools/` - Compiled tools and utilities
+    - `BuildTools/` - Build utilities
+    - `Documentation/` - Documentation tools
+  - `Docs/` - Documentation
+    - `DeveloperGuide/` - Developer documentation
+      - `SystemArchitecture/` - System architecture docs
+    - `UserGuide/` - User documentation
 
-## Core Engine Folders
+### Core Systems (`/Engine/Source/Core/`)
 
-### Memory Management
-Core memory management infrastructure handling all allocation strategies.
+#### AI
+- `/Engine/Source/Core/AI/Behavior/` - AI behavior tree and decision making systems
+- `/Engine/Source/Core/AI/Generation/` - AI-driven content generation tools
+- `/Engine/Source/Core/AI/PathFinding/` - Navigation and pathfinding algorithms
+- `/Engine/Source/Core/AI/Pipeline/` - AI processing and inference pipeline
+- `/Engine/Source/Core/AI/Training/` - AI model training infrastructure
 
-- `Engine/Source/Core/Memory/` - Core memory management systems
-  - Handles memory allocation, deallocation, and tracking
-  - Implements custom allocators and memory pools
-  - Manages memory budgets and pressure handling
-- `Engine/Source/Core/Memory/Debug/` - Memory debugging utilities
-  - Memory leak detection and reporting
-  - Allocation tracking and profiling
-  - Memory corruption detection
-- `Engine/Source/Core/Memory/GPU/` - GPU memory management
-- `Engine/Source/Core/Memory/Management/` - Memory management strategies
-- `Engine/Source/Core/Memory/Management/Strategies/` - Specific allocation strategies
-- `Engine/Source/Core/Memory/NUMA/` - NUMA-aware memory management
-- `Engine/Source/Core/Memory/Profiling/` - Memory profiling tools
-- `Engine/Source/Core/Memory/Threading/` - Thread-safe memory operations
-- `Engine/Source/Core/Memory/Types/` - Memory type definitions
-- `Engine/Source/Core/Memory/Virtualization/` - Virtual memory management
+#### Animation & Physics
+- `/Engine/Source/Core/Animation/Rigging/` - Character rigging and skeletal animation
+- `/Engine/Source/Core/Physics/Collision/` - Physics collision detection and response
 
-### Asset Management
-- `Engine/Source/Core/Assets/` - Asset management system
-- `Engine/Source/Core/Assets/HotReload/` - Hot reloading functionality
+#### Asset Management
+- `/Engine/Source/Core/Assets/HotReload/` - Hot reload functionality for assets
+- `/Engine/Source/Core/Resources/Cache/` - Resource caching system
+- `/Engine/Source/Core/Resources/Compression/` - Asset compression algorithms
+- `/Engine/Source/Core/Resources/Packaging/` - Content packaging tools
+- `/Engine/Source/Core/Resources/Streaming/` - Asset streaming system
+- `/Engine/Source/Core/Resources/Version/` - Resource version control
 
-### Core Systems
-- `Engine/Source/Core/Collaboration/` - Multi-user collaboration features
-- `Engine/Source/Core/Data/` - Data management and structures
-- `Engine/Source/Core/Debug/Visualization/` - Debug visualization tools
-- `Engine/Source/Core/Plugin/` - Plugin system
-- `Engine/Source/Core/Profiling/` - Performance profiling
-- `Engine/Source/Core/Tasks/` - Task management system
+#### Audio
+- `/Engine/Source/Core/Audio/Effects/` - Audio effects processing
+- `/Engine/Source/Core/Audio/Spatializer/` - 3D audio spatialization
+- `/Engine/Source/Core/Audio/Streaming/` - Audio streaming system
 
-### Graphics & Terrain
-- `Engine/Source/Core/Graphics/Meshlet/` - Meshlet processing
-- `Engine/Source/Core/Graphics/RenderAPI/` - Rendering API abstraction
-- `Engine/Source/Core/Terrain/Rendering/` - Terrain rendering
-- `Engine/Source/Core/Terrain/Streaming/` - Terrain streaming system
+#### Core Infrastructure
+- `/Engine/Source/Core/Collaboration/` - Multi-user collaboration features
+- `/Engine/Source/Core/Config/` - Engine configuration system
+- `/Engine/Source/Core/Data/` - Core data structures and management
+- `/Engine/Source/Core/Plugin/` - Plugin system infrastructure
+- `/Engine/Source/Core/Tasks/` - Task and job management
+- `/Engine/Source/Core/Utilities/` - Common utility functions
 
-### Rendering Pipeline
-- `Engine/Source/Core/Graphics/Pipeline/` - Render pipeline management
-- `Engine/Source/Core/Graphics/PostProcess/` - Post-processing effects
-- `Engine/Source/Core/Graphics/Materials/` - Material system
-- `Engine/Source/Core/Graphics/Lighting/` - Lighting and shadows
+#### Debug & Profiling
+- `/Engine/Source/Core/Debug/Visualization/` - Debug visualization tools
 
-### Physics & Animation
-- `Engine/Source/Core/Physics/` - Physics simulation
-- `Engine/Source/Core/Animation/` - Animation system
-- `Engine/Source/Core/Animation/Rigging/` - Character rigging
-- `Engine/Source/Core/Physics/Collision/` - Collision detection
+#### Graphics
+- `/Engine/Source/Core/Graphics/Lighting/` - Lighting and shadow systems
+- `/Engine/Source/Core/Graphics/Materials/` - Material system
+- `/Engine/Source/Core/Graphics/Meshlet/` - Meshlet processing
+- `/Engine/Source/Core/Graphics/Pipeline/` - Rendering pipeline
+- `/Engine/Source/Core/Graphics/PostProcess/` - Post-processing effects
+- `/Engine/Source/Core/Graphics/RenderAPI/` - Rendering API abstraction
 
-### Scene Management
-- `Engine/Source/Core/Scene/Graph/` - Scene graph management
-- `Engine/Source/Core/Scene/Culling/` - Visibility culling
-- `Engine/Source/Core/Scene/Serialization/` - Scene saving/loading
-- `Engine/Source/Core/Scene/Description/` - Scene description system
+#### Hardware & Platform
+- `/Engine/Source/Core/Hardware/CPU/` - CPU-specific optimizations
+- `/Engine/Source/Core/Hardware/GPU/` - GPU capabilities and management
+- `/Engine/Source/Core/Platform/Linux/` - Linux platform support
+- `/Engine/Source/Core/Platform/Mobile/` - Mobile platform support
+- `/Engine/Source/Core/Platform/Windows/` - Windows platform support
 
-### AI & Navigation
-- `Engine/Source/Core/AI/PathFinding/` - Path finding systems
-- `Engine/Source/Core/AI/Behavior/` - AI behavior trees
-- `Engine/Source/Core/Navigation/` - Navigation mesh generation
-- `Engine/Source/Core/Navigation/Streaming/` - Navigation data streaming
+#### Input
+- `/Engine/Source/Core/Input/Devices/` - Input device support
+- `/Engine/Source/Core/Input/Mapping/` - Input mapping system
 
-### Audio
-- `Engine/Source/Core/Audio/` - Audio engine
-- `Engine/Source/Core/Audio/Streaming/` - Audio streaming
-- `Engine/Source/Core/Audio/Spatializer/` - 3D audio
-- `Engine/Source/Core/Audio/Effects/` - Audio effects
+#### Integration
+- `/Engine/Source/Core/Integration/AI/` - AI service integration
+- `/Engine/Source/Core/Integration/DCC/` - Digital content creation tool integration
 
-### Tools & Editor
-- `Engine/Source/Editor/Core/` - Editor core functionality
-- `Engine/Source/Tools/MemoryVisualizer/` - Memory visualization tools
-- `Engine/Source/Tools/MaterialEditor/` - Material editing
-- `Engine/Source/Tools/TerrainEditor/` - Terrain editing
-- `Engine/Source/Tools/ShaderEditor/` - Shader development
-- `Engine/Source/Tools/AssetProcessor/` - Asset processing pipeline
-- `Engine/Source/Tools/SceneEditor/` - Scene editing
+#### Memory Management
+- `/Engine/Source/Core/Memory/Debug/` - Memory debugging tools
+- `/Engine/Source/Core/Memory/GPU/` - GPU memory management
+- `/Engine/Source/Core/Memory/Management/Strategies/` - Memory allocation strategies
+- `/Engine/Source/Core/Memory/NUMA/` - NUMA-aware memory management
+- `/Engine/Source/Core/Memory/Profiling/` - Memory profiling tools
+- `/Engine/Source/Core/Memory/Threading/` - Thread-safe memory operations
+- `/Engine/Source/Core/Memory/Types/` - Memory type definitions
+- `/Engine/Source/Core/Memory/Virtualization/` - Virtual memory management
 
-### Documentation
-- `Engine/Docs/DeveloperGuide/RoadmapChat/` - Development roadmap and documentation
-- `Engine/Docs/DeveloperGuide/SystemArchitecture/` - System architecture documentation
-- `Engine/Docs/API/` - API documentation
-- `Engine/Docs/Tutorials/` - Developer tutorials
+#### Navigation & Networking
+- `/Engine/Source/Core/Navigation/Streaming/` - Navigation data streaming
+- `/Engine/Source/Core/Network/Prediction/` - Network prediction systems
+- `/Engine/Source/Core/Network/Replication/` - Network state replication
+- `/Engine/Source/Core/Network/Security/` - Network security features
+- `/Engine/Source/Core/Network/Transport/` - Network transport layer
 
-### Shaders
-- `Engine/Shaders/Terrain/` - Terrain-specific shaders
-- `Engine/Shaders/Memory/` - Memory-related shaders
-- `Engine/Shaders/Debug/` - Debug visualization shaders
-- `Engine/Shaders/PostProcess/` - Post-processing shaders
-- `Engine/Shaders/Materials/` - Material shaders
+#### Node System
+- `/Engine/Source/Core/Nodes/Execution/` - Node execution engine
+- `/Engine/Source/Core/Nodes/Graph/` - Node graph system
+- `/Engine/Source/Core/Nodes/Types/` - Node type definitions
 
-### Build & Development
-- `Engine/Source/Build/` - Build system
-- `Engine/Source/Build/Automation/` - Build automation
-- `Engine/Source/Build/Dependencies/` - Third-party management
-- `Engine/Source/Build/Testing/` - Test framework
+#### Output System
+- `/Engine/Source/Core/Output/Encoders/` - Output encoding systems
+- `/Engine/Source/Core/Output/Platforms/` - Platform-specific output handling
+- `/Engine/Source/Core/Output/RenderTargets/` - Render target management
 
-### Networking & Multiplayer
-- `Engine/Source/Core/Network/` - Core networking system
-- `Engine/Source/Core/Network/Transport/` - Transport layer protocols
-- `Engine/Source/Core/Network/Replication/` - State replication
-- `Engine/Source/Core/Network/Prediction/` - Client-side prediction
-- `Engine/Source/Core/Network/Security/` - Network security
+#### Procedural Generation
+- `/Engine/Source/Core/Procedural/Algorithms/` - Procedural generation algorithms
 
-### Scripting & Node System
-- `Engine/Source/Core/Scripting/VM/` - Script virtual machine
-- `Engine/Source/Core/Scripting/Bindings/` - Language bindings
-- `Engine/Source/Core/Scripting/Nodes/` - Node graph system
-- `Engine/Source/Core/Scripting/Debug/` - Script debugging tools
-- `Engine/Source/Core/Scripting/HotReload/` - Script hot reloading
+#### Scene Management
+- `/Engine/Source/Core/Scene/Culling/` - Scene culling systems
+- `/Engine/Source/Core/Scene/Description/` - Scene description framework
+- `/Engine/Source/Core/Scene/Graph/` - Scene graph management
+- `/Engine/Source/Core/Scene/Serialization/` - Scene serialization
 
-### UI & Input
-- `Engine/Source/Core/UI/Framework/` - UI framework
-- `Engine/Source/Core/UI/Widgets/` - Common widgets
-- `Engine/Source/Core/UI/Animation/` - UI animations
-- `Engine/Source/Core/Input/Devices/` - Input device support
-- `Engine/Source/Core/Input/Mapping/` - Input mapping system
+#### Scripting
+- `/Engine/Source/Core/Scripting/Bindings/` - Script language bindings
+- `/Engine/Source/Core/Scripting/Debug/` - Script debugging tools
+- `/Engine/Source/Core/Scripting/HotReload/` - Script hot reload system
+- `/Engine/Source/Core/Scripting/Nodes/` - Script node system
+- `/Engine/Source/Core/Scripting/VM/` - Script virtual machine
 
-### Resource Management
-- `Engine/Source/Core/Resources/Cache/` - Resource caching
-- `Engine/Source/Core/Resources/Streaming/` - Resource streaming
-- `Engine/Source/Core/Resources/Compression/` - Asset compression
-- `Engine/Source/Core/Resources/Packaging/` - Content packaging
-- `Engine/Source/Core/Resources/Version/` - Version control integration
+#### Terrain
+- `/Engine/Source/Core/Terrain/Rendering/` - Terrain rendering system
+- `/Engine/Source/Core/Terrain/Streaming/` - Terrain data streaming
 
-### Platform & Hardware
-- `Engine/Source/Core/Platform/Windows/` - Windows-specific code
-- `Engine/Source/Core/Platform/Linux/` - Linux-specific code
-- `Engine/Source/Core/Platform/Mobile/` - Mobile platform support
-- `Engine/Source/Core/Hardware/GPU/` - GPU capabilities
-- `Engine/Source/Core/Hardware/CPU/` - CPU optimization 
+#### UI System
+- `/Engine/Source/Core/UI/Animation/` - UI animation system
+- `/Engine/Source/Core/UI/Framework/` - Core UI framework
+- `/Engine/Source/Core/UI/Widgets/` - UI widget library
 
-### AI-Powered Content Creation
-- `Engine/Source/Core/AI/Generation/` - AI content generation
-  - Image generation pipeline integration
-  - Procedural content creation
-  - Natural language processing for content description
-- `Engine/Source/Core/AI/Pipeline/` - AI processing pipeline
-  - Model loading and management
-  - Inference optimization
-  - GPU acceleration for AI tasks
-- `Engine/Source/Core/AI/Training/` - Training infrastructure
-  - Training data management
-  - Model fine-tuning capabilities
-  - Training progress monitoring
+### Development Tools (`/Engine/Source/DevTools/`)
+- `/Engine/Source/DevTools/Build/Dependency/` - Build dependency management
+- `/Engine/Source/DevTools/Debug/Console/` - Debug console implementation
+- `/Engine/Source/DevTools/Experimental/` - Experimental features
+- `/Engine/Source/DevTools/TestFrameworks/` - Testing infrastructure
 
-### Node Graph System
-- `Engine/Source/Core/Nodes/Graph/` - Core node graph system
-  - Visual programming framework
-  - Node execution engine
-  - Graph serialization/deserialization
-- `Engine/Source/Core/Nodes/Types/` - Node type definitions
-  - Standard node library
-  - Custom node framework
-  - Node validation system
-- `Engine/Source/Core/Nodes/Execution/` - Node execution
-  - Graph evaluation engine
-  - Parallel execution support
-  - Hot-reload capability
+### Editor (`/Engine/Source/Editor/`)
+- `/Engine/Source/Editor/Core/` - Core editor functionality
+- `/Engine/Source/Editor/Tools/AssetManager/` - Asset management tools
+- `/Engine/Source/Editor/Tools/Plugins/` - Editor plugin system
+- `/Engine/Source/Editor/Tools/UI/` - Editor UI tools
 
-### Integration Systems
-- `Engine/Source/Core/Integration/DCC/` - DCC tool integration
-  - Blender integration
-  - Maya/3ds Max bridges
-  - Substance integration
-- `Engine/Source/Core/Integration/AI/` - AI service integration
-  - Image generation API connections
-  - Language model integration
-  - Training service connections
+### Tools (`/Engine/Source/Tools/`)
+- Standalone tools and utilities
 
-## System Interactions
-
-### Content Creation Flow
-```mermaid
-graph TD
-    A[AI Generation] --> B[Node Graph]
-    B --> C[Asset Processing]
-    C --> D[Resource Management]
-    D --> E[Runtime Systems]
-    
-    F[User Input] --> G[Natural Language]
-    G --> A
-    
-    H[DCC Tools] --> I[Asset Import]
-    I --> C
-```
-
-### Memory Management Flow
-```mermaid
-graph TD
-    A[Application] --> B[Memory Manager]
-    B --> C[Strategy Selection]
-    C --> D[Allocation]
-    
-    E[Profiling] --> F[Optimization]
-    F --> B
-    
-    G[AI Systems] --> H[GPU Memory]
-    H --> B
-``` 
+Note: This documentation reflects only the folders that currently exist in the codebase. Additional folders will be documented as they are implemented.
