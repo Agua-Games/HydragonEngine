@@ -75,6 +75,16 @@ def parse_standards(file_path: Path) -> dict:
         logger.error(f"Error parsing standards file: {e}")
         raise
 
+def get_engine_version() -> str:
+    """Get the current Hydragon Engine version"""
+    try:
+        # For now, return a default version
+        # TODO: Implement proper version detection from Engine's version file
+        return "0.1.0-alpha"
+    except Exception as e:
+        logger.warning(f"Could not determine engine version: {e}")
+        return "development"
+
 def generate_standards_doc():
     """Generate coding standards documentation"""
     try:
@@ -126,6 +136,8 @@ def generate_standards_doc():
             to_format='html5',
             extra_args=[
                 '--metadata', 'title="Hydragon Engine Coding Standards"',
+                '--metadata', f'version="{get_engine_version()}"',
+                '--metadata', 'language="C++"',
                 '--css', str(TEMPLATES_DIR / 'style.css'),
                 '--template', str(TEMPLATES_DIR / 'html5_template.html'),
                 '--toc',

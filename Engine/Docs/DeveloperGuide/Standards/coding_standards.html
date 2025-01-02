@@ -1,18 +1,114 @@
-<!DOCTYPE html>
-<html lang="en" class="light-mode">
+<!DOCTYPE html> 
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"Hydragon Engine Coding Standards"</title>
         <link rel="stylesheet" href="D:\AguaGames\HydragonEngine\alpha\Engine\Tools\DocumentationTool\Templates\style.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-</head>
+    </head>
 <body>
-    <nav class="sidebar">
-        <div class="nav-header">
-            <h2>Contents</h2>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <span class="title">"Hydragon Engine Coding Standards"</span>
+        <ul class="nav-links">
+            <li><a href="#user-guide">User Guide</a></li>
+            <li><a href="#developer-guide">Developer Guide</a></li>
+            <li><a href="#api-reference">API Reference</a></li>
+        </ul>
+        <a href="https://hydragon.com" class="website-link" target="_blank">➤ Hydragon Website</a>
+    </nav>
+
+    <!-- Left Sidebar -->
+    <nav class="left-sidebar">
+        <div class="search-container">
+            <input type="text" placeholder="Search documentation" aria-label="Search">
+            <span class="search-icon">🔍</span>
         </div>
+        <div class="doc-nav">
+            
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        <main class="content">
+            <header>
+            	<h1>"Hydragon Engine Coding Standards"</h1>
+            </header>
+            <section id="hydragon-engine-coding-standards"
+            class="level1">
+            <h1>Hydragon Engine Coding Standards</h1>
+            <p>This document outlines the coding standards for all
+            development in the Hydragon Engine.</p>
+            <section id="general-standards" class="level2">
+            <h2>General Standards</h2>
+            <ul>
+            <li>Always include at the top of the file, inside proper
+            comment brackets</li>
+            <li>for each language and standardized, the copyright notice
+            below:</li>
+            <li>Copyright (c) 2024 Agua Games. All rights reserved.</li>
+            <li>Licensed under the Agua Games License 1.0</li>
+            <li>Adopt the standard for the coding language.</li>
+            <li>standardize code comments.</li>
+            <li>standardize code documentation.</li>
+            <li>standardize code documentation blocks.</li>
+            <li>Always implement error catching and detection.</li>
+            <li>Always implement logging.</li>
+            <li>Always implement documentation, but strive to be
+            concise.</li>
+            <li>Always implement code formatting, following each
+            language’s standard.</li>
+            <li>Always use unified namespace style.</li>
+            <li>C++ SPECIFIC:</li>
+            <li>Adopt the C++ Core Guidelines standard for C++
+            code.</li>
+            <li>standardize C++ code guards. Ex: #pragma once</li>
+            <li>always check includes for correct usage, consistency,
+            and correct order.</li>
+            </ul>
+            </section>
+            <section id="language-specific-standards" class="level2">
+            <h2>Language-Specific Standards</h2>
+            <section id="c-standards" class="level3">
+            <h3>C++ Standards</h3>
+            <ul>
+            <li>Adopt the C++ Core Guidelines standard for C++
+            code.</li>
+            <li>standardize C++ code guards. Ex: #pragma once</li>
+            <li>always check includes for correct usage, consistency,
+            and correct order.</li>
+            </ul>
+            </section>
+            <section id="python-standards" class="level3">
+            <h3>Python Standards</h3>
+            <ul>
+            <li>Adopt the Python standard for Python code. Prefer PEP
+            8.</li>
+            </ul>
+            </section>
+            </section>
+            <section id="implementation-notes" class="level2">
+            <h2>Implementation Notes</h2>
+            <ul>
+            <li>These standards are enforced through automated tooling
+            in the CI/CD pipeline</li>
+            <li>Documentation coverage is automatically checked and must
+            maintain &gt;80% coverage</li>
+            <li>Style violations will trigger build warnings</li>
+            <li>Breaking changes to these standards require team
+            review</li>
+            </ul>
+            </section>
+            </section>
+            <!-- Feedback Box -->
+            <div class="feedback-box">
+                <p>Did you find this page useful?</p>
+                <a href="#" class="report-problem-link">Report a problem on this page</a>
+            </div>
+        </main>
+        <aside class="right-sidebar">
+            <div class="toc">
                 <ul>
                 <li><a href="#hydragon-engine-coding-standards"
                 id="toc-hydragon-engine-coding-standards">Hydragon
@@ -34,104 +130,22 @@
                 Notes</a></li>
                 </ul></li>
                 </ul>
-            </nav>
-    <main class="content">
-        <header>
-            <h1>"Hydragon Engine Coding Standards"</h1>
-        </header>
-        <section id="hydragon-engine-coding-standards" class="level1">
-        <h1>Hydragon Engine Coding Standards</h1>
-        <p>This document outlines the coding standards for all
-        development in the Hydragon Engine.</p>
-        <section id="general-standards" class="level2">
-        <h2>General Standards</h2>
-        <ul>
-        <li>Always include at the top of the file, inside proper comment
-        brackets</li>
-        <li>for each language and standardized, the copyright notice
-        below:</li>
-        <li>Copyright (c) 2024 Agua Games. All rights reserved.</li>
-        <li>Licensed under the Agua Games License 1.0</li>
-        <li>Adopt the standard for the coding language.</li>
-        <li>standardize code comments.</li>
-        <li>standardize code documentation.</li>
-        <li>standardize code documentation blocks.</li>
-        <li>Always implement error catching and detection.</li>
-        <li>Always implement logging.</li>
-        <li>Always implement documentation, but strive to be
-        concise.</li>
-        <li>Always implement code formatting, following each language’s
-        standard.</li>
-        <li>Always use unified namespace style.</li>
-        <li>C++ SPECIFIC:</li>
-        <li>Adopt the C++ Core Guidelines standard for C++ code.</li>
-        <li>standardize C++ code guards. Ex: #pragma once</li>
-        <li>always check includes for correct usage, consistency, and
-        correct order.</li>
-        </ul>
-        </section>
-        <section id="language-specific-standards" class="level2">
-        <h2>Language-Specific Standards</h2>
-        <section id="c-standards" class="level3">
-        <h3>C++ Standards</h3>
-        <ul>
-        <li>Adopt the C++ Core Guidelines standard for C++ code.</li>
-        <li>standardize C++ code guards. Ex: #pragma once</li>
-        <li>always check includes for correct usage, consistency, and
-        correct order.</li>
-        </ul>
-        </section>
-        <section id="python-standards" class="level3">
-        <h3>Python Standards</h3>
-        <ul>
-        <li>Adopt the Python standard for Python code. Prefer PEP
-        8.</li>
-        </ul>
-        </section>
-        </section>
-        <section id="implementation-notes" class="level2">
-        <h2>Implementation Notes</h2>
-        <ul>
-        <li>These standards are enforced through automated tooling in
-        the CI/CD pipeline</li>
-        <li>Documentation coverage is automatically checked and must
-        maintain &gt;80% coverage</li>
-        <li>Style violations will trigger build warnings</li>
-        <li>Breaking changes to these standards require team review</li>
-        </ul>
-        </section>
-        </section>
-    </main>
-    <script>
-        // Initialize syntax highlighting
-        hljs.highlightAll();
-        
-        // Add copy buttons to code blocks
-        document.querySelectorAll('pre code').forEach((block) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'code-block-wrapper';
-            
-            const button = document.createElement('button');
-            button.className = 'copy-button';
-            button.textContent = 'Copy';
-            
-            button.addEventListener('click', async () => {
-                try {
-                    await navigator.clipboard.writeText(block.textContent);
-                    button.textContent = 'Copied!';
-                    setTimeout(() => {
-                        button.textContent = 'Copy';
-                    }, 2000);
-                } catch (err) {
-                    console.error('Failed to copy:', err);
-                    button.textContent = 'Error';
-                }
-            });
-            
-            block.parentNode.insertBefore(wrapper, block);
-            wrapper.appendChild(block);
-            wrapper.appendChild(button);
-        });
-    </script>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <span>&copy; 2025 Agua Games</span>
+            <span>|</span>
+            <span>Hydragon Engine v1.0</span>
+            <span>|</span>
+            <span>Built with Hydragon Documentation Tool</span>
+        </div>
+        <div class="report-issue">
+            <a href="#" class="report-issue-button">Report an issue</a>
+        </div>
+    </footer>
 </body>
-</html> 
+</html>
