@@ -144,7 +144,8 @@ def generate_standards_doc():
                 '--toc-depth=3',
                 '--section-divs',
                 '--highlight-style=pygments',
-                '--no-highlight'
+                '--no-highlight',
+                '--lua-filter', str(TOOL_ROOT / 'filters' / 'remove_first_heading.lua')
             ]
         )
         
