@@ -1,0 +1,17 @@
+# Configuration for automatic documentation updates
+
+watch_paths:
+  - Engine/Source/**/*.h
+  - Engine/Source/**/*.cpp
+  - Engine/Docs/**/*.md
+
+triggers:
+  - on_commit: true
+  - on_push: true
+  - on_pr: true
+  - schedule: "0 0 * * *"  # Daily
+
+notifications:
+  slack: true
+  email: true
+  github: true 

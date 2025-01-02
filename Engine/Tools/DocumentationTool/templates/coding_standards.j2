@@ -1,0 +1,28 @@
+# Hydragon Engine Coding Standards
+
+This document outlines the coding standards for all development in the Hydragon Engine.
+
+## General Standards
+
+{% for standard in general_standards %}
+- {{ standard }}
+{% endfor %}
+
+## Language-Specific Standards
+
+### C++ Standards
+{% for standard in cpp_standards %}
+- {{ standard }}
+{% endfor %}
+
+### Python Standards
+{% for standard in python_standards %}
+- {{ standard }}
+{% endfor %}
+
+## Implementation Notes
+
+- These standards are enforced through automated tooling in the CI/CD pipeline
+- Documentation coverage is automatically checked and must maintain >80% coverage
+- Style violations will trigger build warnings
+- Breaking changes to these standards require team review 

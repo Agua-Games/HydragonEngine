@@ -1,0 +1,39 @@
+site_name: Hydragon Engine Documentation
+theme:
+  name: material
+  palette:
+    primary: blue
+    accent: light blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+
+plugins:
+  - search
+  - mermaid
+  - git-revision-date
+  - api-reference
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.emoji
+  - admonition
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - User Guide:
+    - Getting Started: user-guide/getting-started.md
+    - Features: user-guide/features.md
+  - Developer Guide:
+    - Architecture: developer-guide/architecture.md
+    - Contributing: developer-guide/contributing.md
+  - API Reference:
+    - Core Systems: api-reference/core.md
+    - Editor: api-reference/editor.md 
