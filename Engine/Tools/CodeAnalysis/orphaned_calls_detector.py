@@ -39,9 +39,9 @@ class CodeElement:
 class OrphanedCallsResult:
     """Analysis results"""
     orphaned_elements: Dict[str, List[CodeElement]] = field(default_factory=lambda: {
-        'functions': [], 
-        'variables': [], 
-        'classes': []
+        'function_calls': [], 
+        'variable_calls': [], 
+        'class_calls': []
     })
     statistics: Dict[str, int] = field(default_factory=dict)
     suggestions: List[str] = field(default_factory=list)
@@ -56,20 +56,20 @@ class OrphanedCallsDetector:
         self._current_source = ""
         self._current_scope = None
         self._declarations = {
-            'functions': {},
-            'variables': {},
-            'classes': {}
+            'function_calls': {},
+            'variable_calls': {},
+            'class_calls': {}
         }
         self._references = {
-            'functions': set(),
-            'variables': set(),
-            'classes': set()
+            'function_calls': set(),
+            'variable_calls': set(),
+            'class_calls': set()
         }
         # Track both our code and third-party separately
         self._third_party_stats = {
-            'functions': 0,
-            'variables': 0,
-            'classes': 0
+            'function_calls': 0,
+            'variable_calls': 0,
+            'class_calls': 0
         }
         self.excluded_paths = {
             '.venv', 
@@ -146,13 +146,14 @@ class OrphanedCallsDetector:
     def _add_reference(self, name: str) -> None:
         """Add a reference to a name"""
         # Check all categories since we don't know the type
-        for category in ['functions', 'variables', 'classes']:
+        categories = ['function_calls', 'variable_calls', 'class_calls']
+        for category in categories:
             if name in self._declarations[category]:
                 self._references[category].add(name)
 
     def _update_statistics(self, result: OrphanedCallsResult) -> None:
         """Update result statistics"""
-        for category in ['functions', 'variables', 'classes']:
+        for category in ['function_calls', 'variable_calls', 'class_calls']:
             declarations = self._declarations[category]
             references = self._references[category]
             
@@ -183,7 +184,7 @@ class OrphanedCallsDetector:
             locations=[location],
             is_public=not node.name.startswith('_')
         )
-        self._declarations['functions'][node.name] = element
+        self._declarations['function_calls'][node.name] = element
 
     def _add_python_class(self, node: ast.ClassDef, file_path: Path, result: OrphanedCallsResult) -> None:
         """Add Python class to results"""
@@ -201,7 +202,7 @@ class OrphanedCallsDetector:
             locations=[location],
             is_public=not node.name.startswith('_')
         )
-        self._declarations['classes'][node.name] = element
+        self._declarations['class_calls'][node.name] = element
 
     def _add_python_variable(self, node: ast.Name, file_path: Path, result: OrphanedCallsResult) -> None:
         """Add Python variable to results"""
@@ -220,7 +221,7 @@ class OrphanedCallsDetector:
             locations=[location],
             is_public=not node.id.startswith('_')
         )
-        self._declarations['variables'][node.id] = element
+        self._declarations['variable_calls'][node.id] = element
         logger.debug(f"Added variable: {node.id} in scope {self._current_scope}")
 
     def _load_cache(self) -> None:
@@ -240,7 +241,7 @@ class OrphanedCallsDetector:
             Dict with counts of functions, variables, and classes
         """
         root_dir = Path(root_dir)
-        stats = {'functions': 0, 'variables': 0, 'classes': 0}
+        stats = {'function_calls': 0, 'variable_calls': 0, 'class_calls': 0}
         
         try:
             # Look in site-packages directories
@@ -254,12 +255,12 @@ class OrphanedCallsDetector:
                             
                         for node in ast.walk(tree):
                             if isinstance(node, ast.FunctionDef):
-                                stats['functions'] += 1
+                                stats['function_calls'] += 1
                             elif isinstance(node, ast.ClassDef):
-                                stats['classes'] += 1
+                                stats['class_calls'] += 1
                                 logger.debug(f"Found third-party class: {node.name} in {py_file}")
                             elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
-                                stats['variables'] += 1
+                                stats['variable_calls'] += 1
                                 
                     except Exception as e:
                         logger.error(f"Error analyzing third-party file {py_file}: {e}")

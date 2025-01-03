@@ -25,24 +25,42 @@ def main():
         logger.info("\nAnalyzing third-party packages...")
         third_party_stats = detector.analyze_third_party(engine_root)
         
-        # Print results
+        # Print results with updated terminology
         logger.info("\nAnalysis Results:")
+        category_display_names = {
+            'function_calls': 'Orphaned Function Calls',
+            'variable_calls': 'Orphaned Variable References',
+            'class_calls': 'Orphaned Class References'
+        }
+        
         for category, elements in results.orphaned_elements.items():
-            logger.info(f"\n{category.title()}:")
+            display_name = category_display_names.get(category, category.title())
+            logger.info(f"\n{display_name}:")
             for element in elements:
                 locations = [f"{loc.file_path}:{loc.line_number}" for loc in element.locations]
                 logger.info(f"- {element.name} ({len(locations)} locations)")
                 for loc in locations:
                     logger.info(f"  • {loc}")
         
-        # Print statistics
+        # Print statistics with updated terminology
         logger.info("\nEngine Codebase Statistics:")
+        stat_display_names = {
+            'total_function_calls': 'Total Function Declarations',
+            'orphaned_function_calls': 'Orphaned Function Calls',
+            'total_variable_calls': 'Total Variable Declarations',
+            'orphaned_variable_calls': 'Orphaned Variable References',
+            'total_class_calls': 'Total Class Declarations',
+            'orphaned_class_calls': 'Orphaned Class References'
+        }
+        
         for key, value in results.statistics.items():
-            logger.info(f"{key}: {value}")
+            display_name = stat_display_names.get(key, key)
+            logger.info(f"{display_name}: {value}")
             
         logger.info("\nThird-Party Package Statistics:")
         for category, count in third_party_stats.items():
-            logger.info(f"total_{category}: {count}")
+            display_name = stat_display_names.get(f"total_{category}", category)
+            logger.info(f"{display_name}: {count}")
             
     except Exception as e:
         logger.error(f"Error running detector: {e}")
