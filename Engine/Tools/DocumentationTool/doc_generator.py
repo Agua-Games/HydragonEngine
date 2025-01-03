@@ -5,9 +5,12 @@ Licensed under the Agua Games License 1.0
 Documentation generation core functionality.
 """
 
+import os
+import sys
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional
+from dataclasses import dataclass
 
 from Engine.Tools.DocumentationTool.doc_tester import DocumentationTester, DocTestConfig
 from Engine.Tools.DocumentationTool.parsers.python_parser import PythonParser
@@ -31,31 +34,34 @@ class GeneratorConfig:
     clean_output: bool = True
 
 class DocumentationGenerator:
+    """Documentation generation core functionality"""
+    
     def __init__(self, config: GeneratorConfig):
         self.config = config
-        self._setup_components()
         
-    def _setup_components(self):
-        """Initialize documentation components"""
-        try:
-            if self.config.enable_interactive:
-                self.interactive_generator = InteractiveExampleGenerator()
-                if not DOCKER_AVAILABLE:
-                    logger.warning("Docker not available - falling back to static examples")
-                    self.config.enable_interactive = False
-        except Exception as e:
-            logger.warning(f"Failed to initialize interactive examples: {e}")
-            self.config.enable_interactive = False
-
-        if self.config.enable_api_tracking:
+        # Initialize core components
+        self.doc_tester = DocumentationTester(DocTestConfig(
+            source_dir=config.source_dir,
+            output_dir=config.output_dir
+        ))
+        
+        # Initialize optional components
+        if config.enable_interactive:
             try:
-                api_config = APITrackerConfig(
-                    repo_path=str(Path().absolute()),
-                    track_changes=True,
-                    generate_changelog=True
-                )
-                self.api_tracker = APIChangeTracker(api_config)
-            except Exception as e:
+                from Engine.Tools.DocumentationTool.interactive_examples import InteractiveExampleGenerator
+                self.interactive_generator = InteractiveExampleGenerator()
+            except (ImportError, Exception) as e:
+                logger.warning(f"Failed to initialize interactive examples: {e}")
+                self.config.enable_interactive = False
+        
+        if config.enable_api_tracking:
+            try:
+                from Engine.Tools.DocumentationTool.api_tracker import APIChangeTracker, APITrackerConfig
+                self.api_tracker = APIChangeTracker(APITrackerConfig(
+                    repo_path=str(Path(config.source_dir).parent),
+                    output_path=config.output_dir
+                ))
+            except (ImportError, Exception) as e:
                 logger.warning(f"Failed to initialize API tracker: {e}")
                 self.config.enable_api_tracking = False
 
