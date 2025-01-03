@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Set, Optional, Union
 from concurrent.futures import ThreadPoolExecutor
+import git
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,17 @@ class CodeElement:
     namespace: Optional[str] = None
     is_public: bool = True
     dependencies: List[str] = field(default_factory=list)
+    last_used: Optional[str] = None  # Git timestamp of last usage
+    severity: str = "unknown"  # high/medium/low/unknown
+
+    def calculate_severity(self) -> str:
+        """Calculate severity based on various factors"""
+        if self.is_public:
+            return "low"  # Public APIs might be used externally
+        if not self.last_used:
+            return "high"  # Never used
+        # Add more severity logic here
+        return "medium"
 
 @dataclass
 class OrphanedCallsResult:
@@ -79,6 +91,11 @@ class OrphanedCallsDetector:
             'build'
         }
         self._load_cache()
+        try:
+            self.repo = git.Repo(Path(self.config.get('repo_path', '.')))
+        except Exception as e:
+            logger.warning(f"Git repository not available: {e}")
+            self.repo = None
 
     def _should_analyze_file(self, file_path: Path) -> bool:
         """Determine if a file should be analyzed"""
@@ -270,3 +287,25 @@ class OrphanedCallsDetector:
         except Exception as e:
             logger.error(f"Error analyzing third-party packages: {e}")
             return stats 
+
+    def _get_last_usage(self, file_path: Path, line_number: int) -> Optional[str]:
+        """Get last git blame date for a line"""
+        if not self.repo:
+            return None
+        try:
+            blame = self.repo.blame('HEAD', str(file_path))
+            for commit, lines in blame:
+                for line in lines:
+                    if line.lineno == line_number:
+                        return commit.committed_date
+        except Exception as e:
+            logger.debug(f"Could not get git blame: {e}")
+        return None
+
+    def _suggest_action(self, element: CodeElement) -> str:
+        """Suggest action based on element analysis"""
+        if element.severity == "high":
+            return "DELETE: No recent usage, safe to remove"
+        if element.severity == "medium":
+            return "REVIEW: Consider refactoring or documenting usage"
+        return "KEEP: Still in active use or public API" 

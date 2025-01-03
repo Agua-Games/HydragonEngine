@@ -39,12 +39,25 @@ def main():
                 logger.info(f"\n{display_name}:")
                 for element in elements:
                     locations = element.locations
-                    logger.info(f"- {element.name} ({len(locations)} locations)")
+                    severity = element.severity.upper()
+                    logger.info(f"- {element.name} ({len(locations)} locations) [{severity}]")
+                    
+                    # Show last usage time if available
+                    if element.last_used:
+                        from datetime import datetime
+                        last_used = datetime.fromtimestamp(element.last_used)
+                        logger.info(f"  Last used: {last_used.strftime('%Y-%m-%d')}")
+                    
+                    # Show locations
                     for loc in locations:
                         logger.info(f"  in file: {loc.file_path}")
                         logger.info(f"  line: {loc.line_number}")
                         if loc.scope:
                             logger.info(f"  scope: {loc.scope}")
+                    
+                    # Show suggested action
+                    action = detector._suggest_action(element)
+                    logger.info(f"  Suggested action: {action}")
                     logger.info("")  # Add blank line between elements
         
         # Print statistics with updated terminology
