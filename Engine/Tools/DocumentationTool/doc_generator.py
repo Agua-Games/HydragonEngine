@@ -2,22 +2,16 @@
 Copyright (c) 2024 Agua Games. All rights reserved.
 Licensed under the Agua Games License 1.0
 
-Core documentation generation system that integrates all documentation components.
+Documentation generation core functionality.
 """
 
-import os
-import sys
 import logging
-import yaml
 from pathlib import Path
-from typing import Dict, List, Optional, Set
-from dataclasses import dataclass
-from concurrent.futures import ThreadPoolExecutor
+from typing import Dict, List, Optional
 
-from Documentation.doc_tester import DocumentationTester, DocTestConfig
-from Documentation.example_manager import CodeExampleManager, ExampleConfig
-from Documentation.interactive_examples import InteractiveExampleGenerator, DOCKER_AVAILABLE
-from Documentation.api_tracker import APIChangeTracker, APITrackerConfig
+from Engine.Tools.DocumentationTool.doc_tester import DocumentationTester, DocTestConfig
+from Engine.Tools.DocumentationTool.parsers.python_parser import PythonParser
+from Engine.Tools.DocumentationTool.parsers.cpp_parser import CppParser
 
 logger = logging.getLogger(__name__)
 

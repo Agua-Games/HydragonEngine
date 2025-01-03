@@ -7,7 +7,14 @@ Tests for documentation testing functionality.
 
 import pytest
 from pathlib import Path
-from ..doc_tester import DocumentationTester, DocTestConfig, CoverageResult, LinkCheckResult
+
+# Use absolute imports
+from Engine.Tools.DocumentationTool.doc_tester import (
+    DocumentationTester, 
+    DocTestConfig, 
+    CoverageResult, 
+    LinkCheckResult
+)
 
 def test_coverage_check_empty_file(clean_test_env):
     """Test coverage check with empty file"""

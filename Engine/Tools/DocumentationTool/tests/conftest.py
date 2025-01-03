@@ -2,39 +2,32 @@
 Copyright (c) 2024 Agua Games. All rights reserved.
 Licensed under the Agua Games License 1.0
 
-Test configuration and shared fixtures.
+Pytest configuration and fixtures.
 """
 
 import pytest
-import shutil
+import logging
 from pathlib import Path
+import shutil
+import tempfile
 
-@pytest.fixture(scope="session")
-def test_root():
-    """Create and manage test root directory"""
-    root = Path("test_files")
-    root.mkdir(exist_ok=True)
-    yield root
-    shutil.rmtree(root)
-
-@pytest.fixture(scope="function")
-def clean_test_env(test_root):
-    """Provide clean test environment for each test"""
-    # Clean existing files
-    for item in test_root.glob("*"):
-        if item.is_file():
-            item.unlink()
-        elif item.is_dir():
-            shutil.rmtree(item)
+@pytest.fixture
+def clean_test_env(tmp_path):
+    """Create a clean test environment"""
+    test_dir = tmp_path / "doc_tool_test"
+    test_dir.mkdir(parents=True, exist_ok=True)
     
-    # Create standard test directories
-    dirs = ["docs", "source", "examples", "templates", "output"]
-    for dir_name in dirs:
-        (test_root / dir_name).mkdir(exist_ok=True)
+    # Create standard directories
+    (test_dir / "source").mkdir()
+    (test_dir / "docs").mkdir()
+    (test_dir / "examples").mkdir()
     
-    yield test_root
+    yield test_dir
+    
+    # Cleanup
+    shutil.rmtree(test_dir, ignore_errors=True)
 
 @pytest.fixture
 def mock_logger(mocker):
-    """Mock logger for testing log messages"""
+    """Mock logger for testing"""
     return mocker.patch("logging.getLogger") 

@@ -12,4 +12,11 @@ setup(
     version="1.0.0",
     packages=find_packages(),
     python_requires=">=3.8",
+    install_requires=[
+        "pytest>=7.0.0",
+        "requests>=2.25.0",
+        "psutil>=5.8.0",
+        "pytest-timeout>=2.1.0",
+        "pytest-mock>=3.10.0",
+    ],
 ) 

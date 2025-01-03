@@ -12,10 +12,10 @@ import tempfile
 import shutil
 from typing import Dict, List
 
-# Use relative imports
-from ..parsers.python_parser import PythonParser
-from ..parsers.cpp_parser import CppParser
-from ..generate_api_docs import generate_api_docs, setup_logging
+# Use absolute imports
+from Engine.Tools.DocumentationTool.parsers.python_parser import PythonParser
+from Engine.Tools.DocumentationTool.parsers.cpp_parser import CppParser
+from Engine.Tools.DocumentationTool.generate_api_docs import generate_api_docs, setup_logging
 
 logger = logging.getLogger(__name__)
 
