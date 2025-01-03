@@ -25,7 +25,7 @@ def main():
         logger.info("\nAnalyzing third-party packages...")
         third_party_stats = detector.analyze_third_party(engine_root)
         
-        # Print results with updated terminology
+        # Print results with updated terminology and improved formatting
         logger.info("\nAnalysis Results:")
         category_display_names = {
             'function_calls': 'Orphaned Function Calls',
@@ -35,12 +35,17 @@ def main():
         
         for category, elements in results.orphaned_elements.items():
             display_name = category_display_names.get(category, category.title())
-            logger.info(f"\n{display_name}:")
-            for element in elements:
-                locations = [f"{loc.file_path}:{loc.line_number}" for loc in element.locations]
-                logger.info(f"- {element.name} ({len(locations)} locations)")
-                for loc in locations:
-                    logger.info(f"  • {loc}")
+            if elements:  # Only show category if it has elements
+                logger.info(f"\n{display_name}:")
+                for element in elements:
+                    locations = element.locations
+                    logger.info(f"- {element.name} ({len(locations)} locations)")
+                    for loc in locations:
+                        logger.info(f"  in file: {loc.file_path}")
+                        logger.info(f"  line: {loc.line_number}")
+                        if loc.scope:
+                            logger.info(f"  scope: {loc.scope}")
+                    logger.info("")  # Add blank line between elements
         
         # Print statistics with updated terminology
         logger.info("\nEngine Codebase Statistics:")
