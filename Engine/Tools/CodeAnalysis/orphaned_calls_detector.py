@@ -14,8 +14,46 @@ from pathlib import Path
 from typing import Dict, List, Set, Optional, Union
 from concurrent.futures import ThreadPoolExecutor
 import git
+from enum import Enum
+from datetime import datetime
+import html
 
 logger = logging.getLogger(__name__)
+
+class LogFormat(Enum):
+    """Output format for logs"""
+    TERMINAL = "terminal"
+    HTML = "html"
+    PLAIN = "plain"
+
+@dataclass
+class LoggingConfig:
+    """Configuration for log output"""
+    format: LogFormat = LogFormat.TERMINAL
+    output_file: Optional[Path] = None
+    use_colors: bool = True
+
+class ColorScheme:
+    """ANSI and HTML color definitions"""
+    # Terminal colors
+    TERMINAL = {
+        'high': '\033[91m',  # Red
+        'medium': '\033[93m',  # Yellow
+        'low': '\033[92m',  # Green
+        'reset': '\033[0m',
+        'bold': '\033[1m',
+        'header': '\033[95m',  # Purple
+        'info': '\033[94m',  # Blue
+    }
+    
+    # HTML colors
+    HTML = {
+        'high': '#ff4444',
+        'medium': '#ffbb33',
+        'low': '#00C851',
+        'header': '#9933CC',
+        'info': '#33b5e5',
+    }
 
 @dataclass
 class CodeLocation:
@@ -41,11 +79,12 @@ class CodeElement:
     def calculate_severity(self) -> str:
         """Calculate severity based on various factors"""
         if self.is_public:
-            return "low"  # Public APIs might be used externally
-        if not self.last_used:
-            return "high"  # Never used
-        # Add more severity logic here
-        return "medium"
+            self.severity = "low"  # Public APIs might be used externally
+        elif not self.last_used:
+            self.severity = "high"  # Never used
+        else:
+            self.severity = "medium"  # Default for private used elements
+        return self.severity
 
 @dataclass
 class OrphanedCallsResult:
