@@ -53,25 +53,44 @@ class OrphanedCallsDetector:
         self.config = config or {}
         self.cache_dir = Path(self.config.get('cache_dir', 'Engine/Tools/CodeAnalysis/cache'))
         self.supported_extensions = {'.py'}
-        self._current_source = ""  # For storing current file source
-        self._current_scope = None  # For tracking current namespace/scope
+        self._current_source = ""
+        self._current_scope = None
+        self._declarations = {
+            'functions': {},
+            'variables': {},
+            'classes': {}
+        }
+        self._references = {
+            'functions': set(),
+            'variables': set(),
+            'classes': set()
+        }
+        # Add path filtering
+        self.excluded_paths = {
+            '.venv', 
+            'site-packages',
+            '__pycache__',
+            'dist',
+            'build'
+        }
         self._load_cache()
 
+    def _should_analyze_file(self, file_path: Path) -> bool:
+        """Determine if a file should be analyzed"""
+        # Skip files in excluded directories
+        parts = file_path.parts
+        return not any(excluded in parts for excluded in self.excluded_paths)
+
     def analyze_codebase(self, root_dir: Union[str, Path]) -> OrphanedCallsResult:
-        """Analyze codebase for orphaned elements
-        
-        Args:
-            root_dir: Root directory to analyze
-            
-        Returns:
-            OrphanedCallsResult: Analysis results
-        """
         root_dir = Path(root_dir)
         result = OrphanedCallsResult()
         
         try:
-            # Find all Python files
-            python_files = list(root_dir.rglob('*.py'))
+            # Find all Python files, excluding third-party packages
+            python_files = [
+                f for f in root_dir.rglob('*.py')
+                if self._should_analyze_file(f)
+            ]
             logger.info(f"Found {len(python_files)} Python files to analyze")
             
             # Process files in parallel
@@ -82,7 +101,6 @@ class OrphanedCallsDetector:
                     except Exception as e:
                         logger.error(f"Error analyzing file {file_path}: {e}")
                         
-            # Update statistics
             self._update_statistics(result)
             return result
             
@@ -97,6 +115,8 @@ class OrphanedCallsDetector:
                 self._current_source = f.read()
                 
             tree = ast.parse(self._current_source)
+            
+            # First pass: collect declarations
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
                     self._add_python_function(node, file_path, result)
@@ -104,9 +124,43 @@ class OrphanedCallsDetector:
                     self._add_python_class(node, file_path, result)
                 elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
                     self._add_python_variable(node, file_path, result)
-                    
+            
+            # Second pass: collect references
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+                    self._add_reference(node.id)
+                elif isinstance(node, ast.Call):
+                    if isinstance(node.func, ast.Name):
+                        self._add_reference(node.func.id)
+                    elif isinstance(node.func, ast.Attribute):
+                        self._add_reference(node.func.attr)
+                        
         except Exception as e:
             logger.error(f"Error analyzing Python file {file_path}: {e}")
+
+    def _add_reference(self, name: str) -> None:
+        """Add a reference to a name"""
+        # Check all categories since we don't know the type
+        for category in ['functions', 'variables', 'classes']:
+            if name in self._declarations[category]:
+                self._references[category].add(name)
+
+    def _update_statistics(self, result: OrphanedCallsResult) -> None:
+        """Update result statistics"""
+        for category in ['functions', 'variables', 'classes']:
+            declarations = self._declarations[category]
+            references = self._references[category]
+            
+            # Update total counts
+            result.statistics[f'total_{category}'] = len(declarations)
+            
+            # Find truly orphaned elements (declared but never referenced)
+            orphaned = [
+                elem for name, elem in declarations.items()
+                if name not in references and not elem.is_public
+            ]
+            result.orphaned_elements[category] = orphaned
+            result.statistics[f'orphaned_{category}'] = len(orphaned)
 
     def _add_python_function(self, node: ast.FunctionDef, file_path: Path, result: OrphanedCallsResult) -> None:
         """Add Python function to results"""
@@ -121,9 +175,10 @@ class OrphanedCallsDetector:
         element = CodeElement(
             name=node.name,
             element_type='function',
-            locations=[location]
+            locations=[location],
+            is_public=not node.name.startswith('_')
         )
-        result.orphaned_elements['functions'].append(element)
+        self._declarations['functions'][node.name] = element
 
     def _add_python_class(self, node: ast.ClassDef, file_path: Path, result: OrphanedCallsResult) -> None:
         """Add Python class to results"""
@@ -138,12 +193,17 @@ class OrphanedCallsDetector:
         element = CodeElement(
             name=node.name,
             element_type='class',
-            locations=[location]
+            locations=[location],
+            is_public=not node.name.startswith('_')
         )
-        result.orphaned_elements['classes'].append(element)
+        self._declarations['classes'][node.name] = element
 
     def _add_python_variable(self, node: ast.Name, file_path: Path, result: OrphanedCallsResult) -> None:
         """Add Python variable to results"""
+        # Only track module-level variables
+        if not isinstance(node.ctx, ast.Store) or self._current_scope is not None:
+            return
+            
         location = CodeLocation(
             file_path=file_path,
             line_number=node.lineno,
@@ -155,17 +215,10 @@ class OrphanedCallsDetector:
         element = CodeElement(
             name=node.id,
             element_type='variable',
-            locations=[location]
+            locations=[location],
+            is_public=not node.id.startswith('_')
         )
-        result.orphaned_elements['variables'].append(element)
-
-    def _update_statistics(self, result: OrphanedCallsResult) -> None:
-        """Update result statistics"""
-        for category, elements in result.orphaned_elements.items():
-            result.statistics[f'total_{category}'] = len(elements)
-            result.statistics[f'orphaned_{category}'] = len(
-                [e for e in elements if not e.dependencies]
-            )
+        self._declarations['variables'][node.id] = element
 
     def _load_cache(self) -> None:
         """Load analysis cache"""
