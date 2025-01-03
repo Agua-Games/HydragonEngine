@@ -11,6 +11,7 @@ from pathlib import Path
 import subprocess
 import re
 from datetime import datetime
+import yaml
 
 # Use standard imports for local modules
 import version
@@ -88,29 +89,81 @@ def get_engine_version() -> str:
         return "development"
 
 def get_template_variables():
-    """Get variables for template rendering"""
+    """Get variables for template substitution"""
     try:
+        # Load engine config
         config_path = ENGINE_ROOT / "Config" / "engine_config.yaml"
-        
-        import yaml
         with open(config_path, 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
             
         template_vars = {
             'current_year': str(datetime.now().year),
-            'company_name': config['engine']['company'],
-            'engine_name': config['engine']['name'],
-            'engine_version': config['engine']['version'],
-            'tool_name': config['documentation']['tool_name'],
-            'tool_version': config['documentation']['tool_version'],
-            'website_name': config['documentation']['website_name'],
-            'website_url': config['documentation']['website_url']
+            'company_name': config["engine"]["company"],
+            'engine_name': config["engine"]["name"],
+            'engine_version': config["engine"]["version"],
+            'tool_name': config["documentation"]["tool_name"],
+            'tool_version': config["documentation"]["tool_version"],
+            'website_name': config["documentation"]["website_name"],
+            'website_url': config["documentation"]["website_url"]
         }
         
+        logger.debug(f"Template variables: {template_vars}")
         return template_vars
         
     except Exception as e:
-        logger.error(f"Error loading engine config: {e}")
+        logger.error(f"Error loading template variables: {e}")
+        raise
+
+def generate_markdown(standards: dict) -> str:
+    """Generate markdown content from parsed standards"""
+    try:
+        markdown = []
+        
+        # Add title
+        markdown.append("# Hydragon Engine Coding Standards\n")
+        markdown.append("This document outlines the coding standards for all development in the Hydragon Engine.\n")
+        
+        # Add general standards
+        markdown.append("## General Standards\n")
+        if 'general' in standards:
+            for item in standards['general'].split('\n'):
+                if item.strip():
+                    markdown.append(f"- {item.strip()}")
+            markdown.append("\n")
+            
+        # Add language-specific standards
+        markdown.append("## Language-Specific Standards\n")
+        
+        # C++ Standards
+        if 'cpp' in standards:
+            markdown.append("### C++ Standards\n")
+            for item in standards['cpp'].split('\n'):
+                if item.strip():
+                    markdown.append(f"- {item.strip()}")
+            markdown.append("\n")
+            
+        # Python Standards
+        if 'python' in standards:
+            markdown.append("### Python Standards\n")
+            for item in standards['python'].split('\n'):
+                if item.strip():
+                    markdown.append(f"- {item.strip()}")
+            markdown.append("\n")
+            
+        # Add implementation notes
+        markdown.append("## Implementation Notes\n")
+        markdown.extend([
+            "- These standards are enforced through automated tooling in the CI/CD pipeline",
+            "- Documentation coverage is automatically checked and must maintain >80% coverage",
+            "- Style violations will trigger build warnings",
+            "- Breaking changes to these standards require team review\n"
+        ])
+        
+        logger.debug("Generated markdown content successfully")
+        return "\n".join(markdown)
+        
+    except Exception as e:
+        logger.error(f"Error generating markdown: {e}")
         raise
 
 def generate_standards_doc():
@@ -119,65 +172,54 @@ def generate_standards_doc():
         setup_logging()
         logger.info("Generating coding standards documentation...")
         
-        # Verify standards file exists
-        if not STANDARDS_FILE.exists():
-            logger.error(f"Standards file not found at: {STANDARDS_FILE}")
-            logger.info("Expected location: Engine/Docs/DeveloperGuide/RoadmapChat/CodingStandards.h")
-            raise FileNotFoundError(f"Standards file not found at: {STANDARDS_FILE}")
-
-        # Parse standards from header file
-        standards = parse_standards(STANDARDS_FILE)
+        # Create output directories
+        STANDARDS_DIR.mkdir(parents=True, exist_ok=True)
+        BUILD_OUTPUT.mkdir(parents=True, exist_ok=True)
         
-        # Generate markdown
-        template_mgr = TemplateManager(TemplateConfig(
-            template_dir=str(TEMPLATES_DIR),
-            output_dir=str(STANDARDS_DIR)
-        ))
-        
-        md_path = STANDARDS_DIR / "coding_standards.md"
-        md_content = template_mgr.render_template(
-            "coding_standards.j2",
-            **standards
-        )
-        
-        logger.info(f"Writing markdown to {md_path}")
-        md_path.write_text(md_content)
-        
-        # Convert to HTML
+        # Initialize the converter
         converter = FormatConverter(ConversionConfig(
-            preserve_code_blocks=True,
             preserve_links=True,
             output_dir=str(STANDARDS_DIR),
             temp_dir=str(BUILD_OUTPUT / "temp")
         ))
         
+        # Parse standards from header file
+        standards = parse_standards(STANDARDS_FILE)
+        
+        # Generate markdown
+        md_path = STANDARDS_DIR / "coding_standards.md"
+        logger.info(f"Generating markdown: {md_path}")
+        
+        with open(md_path, 'w', encoding='utf-8') as f:
+            f.write(generate_markdown(standards))
+            
+        # Load config for template variables
+        config_path = ENGINE_ROOT / "Config" / "engine_config.yaml"
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+            
+        # Convert to HTML using pandoc
+        css_path = TEMPLATES_DIR / "style.css"
         html_path = STANDARDS_DIR / "coding_standards.html"
         logger.info(f"Converting to HTML: {html_path}")
         
-        # Get the title from the markdown file or use a default
-        title = "Hydragon Engine Coding Standards"  # Default title
-        
-        # Get template variables
-        template_vars = get_template_variables()
-        
-        # Get relative path to CSS file for HTML output
-        css_path = TEMPLATES_DIR / "style.css"
-        
-        # Add template variables to pandoc args
+        # Add all required metadata
         extra_args = [
-            '--metadata', f'title="{title}"',
-            '--metadata', f'version="{get_engine_version()}"',
-            '--metadata', f'language="C++"',
+            '--metadata', 'title=Hydragon Engine Coding Standards',
+            '--metadata', f'current_year={datetime.now().year}',
+            '--metadata', f'company_name={config["engine"]["company"]}',
+            '--metadata', f'engine_name={config["engine"]["name"]}',
+            '--metadata', f'engine_version={config["engine"]["version"]}',
+            '--metadata', f'tool_name={config["documentation"]["tool_name"]}',
+            '--metadata', f'tool_version={config["documentation"]["tool_version"]}',
+            '--metadata', f'website_name={config["documentation"]["website_name"]}',
+            '--metadata', f'website_url={config["documentation"]["website_url"]}',
             '--css', str(css_path),
             '--standalone',
             '--template', str(TEMPLATES_DIR / "html5_template.html"),
             '--toc',
             '--toc-depth=3'
         ]
-
-        # Add each template variable
-        for key, value in template_vars.items():
-            extra_args.extend(['--metadata', f'{key}="{value}"'])
 
         converter.convert_file(
             md_path,
