@@ -17,6 +17,11 @@ This document outlines the coding standards for all development in the Hydragon 
 - Always implement documentation, but strive to be concise.
 - Always implement code formatting, following each language's standard.
 - Always use unified namespace style.
+- Avoid absolute paths as much as possible.
+- Avoid hardcoded values, paths and any value which should be procedural,
+- configurable or dynamic.
+- Always have in mind the existing engine's codebase and its structure, its
+- existing API and documentation.
 - C++ SPECIFIC:
 - Adopt the C++ Core Guidelines standard for C++ code.
 - standardize C++ code guards. Ex: #pragma once

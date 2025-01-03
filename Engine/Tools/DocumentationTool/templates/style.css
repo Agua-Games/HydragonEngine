@@ -98,20 +98,19 @@ a:hover {
 
 /* Right Sidebar */
 .right-sidebar {
-    position: fixed;
-    top: 3rem;
-    right: 0;
     width: 250px;
     height: calc(100vh - 3rem);
     background-color: var(--sidebar-bg);
     padding: 1rem;
     box-sizing: border-box;
     overflow-y: auto;
-    z-index: 100;
+    border-left: 1px solid var(--light-gray);
+    position: sticky;
+    top: 3rem;
 }
 
 .right-sidebar .toc {
-    color: black;
+    color: var(--text-color);
     background-color: var(--sidebar-bg);
     padding: 0.5rem;
     border-radius: 5px;
@@ -120,12 +119,9 @@ a:hover {
 /* Main Content */
 .main-layout {
     display: flex;
-    margin-left: 250px;  /* Match left sidebar width */
-    margin-right: 250px; /* Match right sidebar width */
-    margin-top: 3rem;    /* Match top nav height */
+    margin-left: 250px; /* For left sidebar which is fixed */
     min-height: calc(100vh - 3rem);
     position: relative;
-    z-index: 1;
 }
 
 .content header h1 {
@@ -219,6 +215,34 @@ footer {
     padding: 2em;
     box-sizing: border-box;
     background: var(--background-color);
-    position: relative;
-    z-index: 1;
+}
+
+/* Table of Contents */
+.toc {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.toc ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.toc > ul {
+    padding-left: 1rem;
+}
+
+.toc li {
+    margin: 0.5rem 0;
+    color: var(--text-color);
+}
+
+.toc a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.toc a:hover {
+    color: var(--primary-color);
 }

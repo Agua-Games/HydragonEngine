@@ -89,17 +89,29 @@ def get_engine_version() -> str:
 
 def get_template_variables():
     """Get variables for template rendering"""
-    config = EngineConfig()
-    return {
-        'website_url': config.website_url,
-        'website_name': config.website_name,
-        'company_name': config.company_name,
-        'engine_name': config.engine_name,
-        'engine_version': config.engine_version,
-        'tool_name': config.tool_name,
-        'tool_version': version.__version__,
-        'current_year': config.current_year
-    }
+    try:
+        config_path = ENGINE_ROOT / "Config" / "engine_config.yaml"
+        
+        import yaml
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+            
+        template_vars = {
+            'current_year': str(datetime.now().year),
+            'company_name': config['engine']['company'],
+            'engine_name': config['engine']['name'],
+            'engine_version': config['engine']['version'],
+            'tool_name': config['documentation']['tool_name'],
+            'tool_version': config['documentation']['tool_version'],
+            'website_name': config['documentation']['website_name'],
+            'website_url': config['documentation']['website_url']
+        }
+        
+        return template_vars
+        
+    except Exception as e:
+        logger.error(f"Error loading engine config: {e}")
+        raise
 
 def generate_standards_doc():
     """Generate coding standards documentation"""
@@ -148,22 +160,22 @@ def generate_standards_doc():
         # Get template variables
         template_vars = get_template_variables()
         
+        # Get relative path to CSS file for HTML output
+        css_path = TEMPLATES_DIR / "style.css"
+        
         # Add template variables to pandoc args
         extra_args = [
             '--metadata', f'title="{title}"',
             '--metadata', f'version="{get_engine_version()}"',
             '--metadata', f'language="C++"',
-            '--css', str(TEMPLATES_DIR / 'style.css'),
-            '--template', str(TEMPLATES_DIR / 'html5_template.html'),
+            '--css', str(css_path),
+            '--standalone',
+            '--template', str(TEMPLATES_DIR / "html5_template.html"),
             '--toc',
-            '--toc-depth=3',
-            '--section-divs',
-            '--highlight-style=pygments',
-            '--no-highlight',
-            '--lua-filter', str(SCRIPT_DIR / 'filters' / 'remove_first_heading.lua')
+            '--toc-depth=3'
         ]
 
-        # Add all template variables as metadata
+        # Add each template variable
         for key, value in template_vars.items():
             extra_args.extend(['--metadata', f'{key}="{value}"'])
 

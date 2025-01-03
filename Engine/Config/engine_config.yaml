@@ -11,4 +11,5 @@ engine:
 documentation:
   website_name: "Hydragon Website"
   website_url: "https://hydragon.com"
-  tool_name: "Hydragon Documentation Tool" 
+  tool_name: "Hydragon Documentation Tool"
+  tool_version: "1.0.0"
