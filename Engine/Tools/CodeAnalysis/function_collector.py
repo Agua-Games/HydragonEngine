@@ -7,10 +7,26 @@ Simple script to collect all function declarations from Python files.
 
 import ast
 import logging
+import site
 from pathlib import Path
 from typing import Dict, Set, Tuple
 
 logger = logging.getLogger(__name__)
+
+def _is_third_party_path(file_path: Path) -> bool:
+    """Check if path is from third-party libraries
+    
+    Args:
+        file_path: Path to check
+        
+    Returns:
+        bool: True if path is in site-packages or dist-packages
+    """
+    str_path = str(file_path).lower()
+    return any(
+        x in str_path 
+        for x in ['site-packages', 'dist-packages', '.local/lib/python']
+    )
 
 def collect_function_declarations(root_dir: Path) -> Dict[str, Path]:
     """Collect all function declarations from Python files
@@ -26,6 +42,10 @@ def collect_function_declarations(root_dir: Path) -> Dict[str, Path]:
         
         # Find all Python files
         for file_path in root_dir.rglob('*.py'):
+            # Skip third-party libraries
+            if _is_third_party_path(file_path):
+                continue
+                
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     tree = ast.parse(f.read())
