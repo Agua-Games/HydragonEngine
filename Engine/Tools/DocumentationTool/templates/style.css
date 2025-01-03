@@ -134,15 +134,16 @@ a:hover {
 
 /* Feedback Box */
 .feedback-box {
-    margin-top: 2rem;
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
     padding: 1.2rem;
     background-color: var(--pale-yellow);
     text-align: center;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .feedback-box p {
@@ -213,8 +214,10 @@ footer {
     flex: 1;
     min-width: 0;
     padding: 2em;
+    padding-bottom: 4rem; /* Add padding for feedback box */
     box-sizing: border-box;
     background: var(--background-color);
+    position: relative; /* For absolute positioning of feedback box */
 }
 
 /* Table of Contents */
