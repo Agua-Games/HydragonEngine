@@ -2,7 +2,7 @@
 Copyright (c) 2024 Agua Games. All rights reserved.
 Licensed under the Agua Games License 1.0
 
-Enhanced orphaned calls detector with Python and Lua support.
+Python code orphaned calls detector.
 """
 
 import ast
@@ -13,8 +13,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Set, Optional, Union
 from concurrent.futures import ThreadPoolExecutor
-import luaparser.ast
-from luaparser import ast as lua_ast
 
 logger = logging.getLogger(__name__)
 
@@ -49,15 +47,14 @@ class OrphanedCallsResult:
     suggestions: List[str] = field(default_factory=list)
 
 class OrphanedCallsDetector:
-    """Detects orphaned code elements in Python and Lua files"""
+    """Detects orphaned code elements in Python files"""
 
     def __init__(self, config: Optional[Dict] = None):
         self.config = config or {}
         self.cache_dir = Path(self.config.get('cache_dir', 'Engine/Tools/CodeAnalysis/cache'))
-        self.supported_extensions = {
-            'python': {'.py'},
-            'lua': {'.lua'}
-        }
+        self.supported_extensions = {'.py'}
+        self._current_source = ""  # For storing current file source
+        self._current_scope = None  # For tracking current namespace/scope
         self._load_cache()
 
     def analyze_codebase(self, root_dir: Union[str, Path]) -> OrphanedCallsResult:
@@ -67,84 +64,103 @@ class OrphanedCallsDetector:
             root_dir: Root directory to analyze
             
         Returns:
-            OrphanedCallsResult containing analysis results
+            OrphanedCallsResult: Analysis results
         """
+        root_dir = Path(root_dir)
+        result = OrphanedCallsResult()
+        
         try:
-            root_path = Path(root_dir)
-            result = OrphanedCallsResult()
-            
-            # Collect all supported files
-            python_files = list(root_path.rglob("*.py"))
-            lua_files = list(root_path.rglob("*.lua"))
+            # Find all Python files
+            python_files = list(root_dir.rglob('*.py'))
+            logger.info(f"Found {len(python_files)} Python files to analyze")
             
             # Process files in parallel
             with ThreadPoolExecutor() as executor:
-                python_futures = [
-                    executor.submit(self._analyze_python_file, file)
-                    for file in python_files
-                ]
-                lua_futures = [
-                    executor.submit(self._analyze_lua_file, file)
-                    for file in lua_files
-                ]
-                
-                # Collect results
-                for future in python_futures + lua_futures:
+                for file_path in python_files:
                     try:
-                        file_result = future.result()
-                        self._merge_results(result, file_result)
+                        self._analyze_file(file_path, result)
                     except Exception as e:
-                        logger.error(f"Error processing file: {e}")
-            
+                        logger.error(f"Error analyzing file {file_path}: {e}")
+                        
+            # Update statistics
             self._update_statistics(result)
             return result
             
         except Exception as e:
             logger.error(f"Error analyzing codebase: {e}")
-            return OrphanedCallsResult()
+            return result
 
-    def _analyze_python_file(self, file_path: Path) -> OrphanedCallsResult:
-        """Analyze Python file for code elements"""
+    def _analyze_file(self, file_path: Path, result: OrphanedCallsResult) -> None:
+        """Analyze a single Python file"""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                tree = ast.parse(f.read(), filename=str(file_path))
-            
-            result = OrphanedCallsResult()
+                self._current_source = f.read()
+                
+            tree = ast.parse(self._current_source)
             for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if isinstance(node, ast.FunctionDef):
                     self._add_python_function(node, file_path, result)
                 elif isinstance(node, ast.ClassDef):
                     self._add_python_class(node, file_path, result)
                 elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
                     self._add_python_variable(node, file_path, result)
-            
-            return result
-            
+                    
         except Exception as e:
             logger.error(f"Error analyzing Python file {file_path}: {e}")
-            return OrphanedCallsResult()
 
-    def _analyze_lua_file(self, file_path: Path) -> OrphanedCallsResult:
-        """Analyze Lua file for code elements"""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                tree = luaparser.ast.parse(f.read())
-            
-            result = OrphanedCallsResult()
-            self._traverse_lua_ast(tree, file_path, result)
-            return result
-            
-        except Exception as e:
-            logger.error(f"Error analyzing Lua file {file_path}: {e}")
-            return OrphanedCallsResult()
+    def _add_python_function(self, node: ast.FunctionDef, file_path: Path, result: OrphanedCallsResult) -> None:
+        """Add Python function to results"""
+        location = CodeLocation(
+            file_path=file_path,
+            line_number=node.lineno,
+            column=node.col_offset,
+            context=ast.get_source_segment(self._current_source, node),
+            scope=self._current_scope
+        )
+        
+        element = CodeElement(
+            name=node.name,
+            element_type='function',
+            locations=[location]
+        )
+        result.orphaned_elements['functions'].append(element)
 
-    def _merge_results(self, target: OrphanedCallsResult, source: OrphanedCallsResult) -> None:
-        """Merge analysis results"""
-        for category in target.orphaned_elements:
-            target.orphaned_elements[category].extend(source.orphaned_elements[category])
+    def _add_python_class(self, node: ast.ClassDef, file_path: Path, result: OrphanedCallsResult) -> None:
+        """Add Python class to results"""
+        location = CodeLocation(
+            file_path=file_path,
+            line_number=node.lineno,
+            column=node.col_offset,
+            context=ast.get_source_segment(self._current_source, node),
+            scope=self._current_scope
+        )
+        
+        element = CodeElement(
+            name=node.name,
+            element_type='class',
+            locations=[location]
+        )
+        result.orphaned_elements['classes'].append(element)
+
+    def _add_python_variable(self, node: ast.Name, file_path: Path, result: OrphanedCallsResult) -> None:
+        """Add Python variable to results"""
+        location = CodeLocation(
+            file_path=file_path,
+            line_number=node.lineno,
+            column=node.col_offset,
+            context=ast.get_source_segment(self._current_source, node),
+            scope=self._current_scope
+        )
+        
+        element = CodeElement(
+            name=node.id,
+            element_type='variable',
+            locations=[location]
+        )
+        result.orphaned_elements['variables'].append(element)
 
     def _update_statistics(self, result: OrphanedCallsResult) -> None:
-        """Update analysis statistics"""
+        """Update result statistics"""
         for category, elements in result.orphaned_elements.items():
             result.statistics[f'total_{category}'] = len(elements)
             result.statistics[f'orphaned_{category}'] = len(
