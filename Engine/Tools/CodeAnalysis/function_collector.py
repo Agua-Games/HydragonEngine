@@ -10,6 +10,7 @@ import logging
 import site
 from pathlib import Path
 from typing import Dict, Set, Tuple, List
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -115,22 +116,65 @@ def collect_function_calls(root_dir: Path) -> Dict[str, List[Path]]:
         logger.error(f"Error collecting function calls: {e}")
         return {}
 
+def collect_orphaned_function_calls(root_dir: Path) -> Dict[str, List[Path]]:
+    """Collect function calls that have no matching declarations
+    
+    Args:
+        root_dir: Root directory to search for Python files
+        
+    Returns:
+        Dictionary mapping orphaned function names to lists of files where they're called
+    """
+    try:
+        # Get all declarations and calls
+        declarations = collect_function_declarations(root_dir)
+        all_calls = collect_function_calls(root_dir)
+        
+        # Find orphaned calls
+        orphaned_calls = {}
+        
+        for func_name, call_locations in all_calls.items():
+            # If function name isn't in declarations, it's orphaned
+            if func_name not in declarations:
+                orphaned_calls[func_name] = call_locations
+                
+        return orphaned_calls
+        
+    except Exception as e:
+        logger.error(f"Error collecting orphaned function calls: {e}")
+        return {}
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     
-    engine_root = Path(__file__).parent.parent.parent
-    declarations = collect_function_declarations(engine_root)
-    calls = collect_function_calls(engine_root)
-    
-    logger.info(f"\nFound {len(declarations)} function declarations:")
-    for func_name, file_path in sorted(declarations.items()):
-        logger.info(f"- {func_name} in {file_path}")
+    # Use specific test file instead of scanning entire engine
+    test_file_path = Path(__file__).parent.parent.parent / "BuildOutput" / "orphaned_calls_test.py"
+    if not test_file_path.exists():
+        logger.error(f"Test file not found: {test_file_path}")
+        sys.exit(1)
         
-    logger.info(f"\nFound {len(calls)} unique function calls:")
+    # Create a Path object containing just the test file's directory
+    test_root = test_file_path.parent
+    
+    declarations = collect_function_declarations(test_root)
+    calls = collect_function_calls(test_root)
+    orphans = collect_orphaned_function_calls(test_root)
+    
+    logger.info("\n=== Analysis of orphaned_calls_test.py ===")
+    
+    logger.info(f"\nFunction Declarations ({len(declarations)}):")
+    for func_name, file_path in sorted(declarations.items()):
+        logger.info(f"- {func_name} in {file_path.name}")
+        
+    logger.info(f"\nFunction Calls ({len(calls)}):")
     for func_name, file_paths in sorted(calls.items()):
-        logger.info(f"- {func_name} called in {len(file_paths)} files:")
-        for path in file_paths:
-            logger.info(f"  - {path}")
+        logger.info(f"- {func_name} called in {file_paths[0].name}")
             
-    logger.info(f"\nTotal function declarations found: {len(declarations)}")
-    logger.info(f"Total unique function calls found: {len(calls)}") 
+    logger.info(f"\nOrphaned Function Calls ({len(orphans)}):")
+    for func_name, file_paths in sorted(orphans.items()):
+        logger.info(f"- {func_name} called but never declared")
+            
+    logger.info("\n=== Summary ===")
+    logger.info(f"Total declarations: {len(declarations)}")
+    logger.info(f"Total unique calls: {len(calls)}")
+    logger.info(f"Total orphaned calls: {len(orphans)}") 
