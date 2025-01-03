@@ -10,23 +10,25 @@ import logging
 from pathlib import Path
 import subprocess
 import re
+from datetime import datetime
 
-# Get Engine root directory relative to this script
-ENGINE_ROOT = Path(__file__).parent.parent.parent
-TOOL_ROOT = Path(__file__).parent
-
-# Import local modules
+# Use standard imports for local modules
+import version
 from template_manager import TemplateManager, TemplateConfig
 from format_converter import FormatConverter, ConversionConfig
+sys.path.append(str(Path(__file__).parent.parent))
+from Common.config_manager import EngineConfig
 
-# Standardize paths
-DOCS_ROOT = ENGINE_ROOT / "Docs"
-STANDARDS_DIR = DOCS_ROOT / "DeveloperGuide" / "Standards"
+# Setup paths relative to this script
+SCRIPT_DIR = Path(__file__).parent
+ENGINE_ROOT = SCRIPT_DIR.parent.parent
+STANDARDS_FILE = ENGINE_ROOT / "Docs" / "DeveloperGuide" / "RoadmapChat" / "CodingStandards.h"
+STANDARDS_DIR = ENGINE_ROOT / "Docs" / "DeveloperGuide" / "Standards"
 BUILD_OUTPUT = ENGINE_ROOT / "BuildOutput" / "DocumentationTool"
 LOGS_DIR = ENGINE_ROOT / "Shared" / "Logs" / "DocumentationTool"
-TEMPLATES_DIR = TOOL_ROOT / "Templates"
+TEMPLATES_DIR = SCRIPT_DIR / "templates"
 
-# Configure logging first
+# Setup logging
 logger = logging.getLogger(__name__)
 
 def setup_logging():
@@ -85,23 +87,34 @@ def get_engine_version() -> str:
         logger.warning(f"Could not determine engine version: {e}")
         return "development"
 
+def get_template_variables():
+    """Get variables for template rendering"""
+    config = EngineConfig()
+    return {
+        'website_url': config.website_url,
+        'website_name': config.website_name,
+        'company_name': config.company_name,
+        'engine_name': config.engine_name,
+        'engine_version': config.engine_version,
+        'tool_name': config.tool_name,
+        'tool_version': version.__version__,
+        'current_year': config.current_year
+    }
+
 def generate_standards_doc():
     """Generate coding standards documentation"""
     try:
-        # Setup logging first
         setup_logging()
-        logger.info("Starting standards documentation generation...")
+        logger.info("Generating coding standards documentation...")
         
-        # Ensure directories exist
-        STANDARDS_DIR.mkdir(parents=True, exist_ok=True)
-        BUILD_OUTPUT.mkdir(parents=True, exist_ok=True)
+        # Verify standards file exists
+        if not STANDARDS_FILE.exists():
+            logger.error(f"Standards file not found at: {STANDARDS_FILE}")
+            logger.info("Expected location: Engine/Docs/DeveloperGuide/RoadmapChat/CodingStandards.h")
+            raise FileNotFoundError(f"Standards file not found at: {STANDARDS_FILE}")
 
-        # Parse standards
-        standards_file = DOCS_ROOT / "DeveloperGuide" / "RoadmapChat" / "CodingStandards.h"
-        if not standards_file.exists():
-            raise FileNotFoundError(f"Standards file not found at: {standards_file}")
-            
-        standards_data = parse_standards(standards_file)
+        # Parse standards from header file
+        standards = parse_standards(STANDARDS_FILE)
         
         # Generate markdown
         template_mgr = TemplateManager(TemplateConfig(
@@ -112,7 +125,7 @@ def generate_standards_doc():
         md_path = STANDARDS_DIR / "coding_standards.md"
         md_content = template_mgr.render_template(
             "coding_standards.j2",
-            **standards_data
+            **standards
         )
         
         logger.info(f"Writing markdown to {md_path}")
@@ -129,24 +142,37 @@ def generate_standards_doc():
         html_path = STANDARDS_DIR / "coding_standards.html"
         logger.info(f"Converting to HTML: {html_path}")
         
+        # Get the title from the markdown file or use a default
+        title = "Hydragon Engine Coding Standards"  # Default title
+        
+        # Get template variables
+        template_vars = get_template_variables()
+        
+        # Add template variables to pandoc args
+        extra_args = [
+            '--metadata', f'title="{title}"',
+            '--metadata', f'version="{get_engine_version()}"',
+            '--metadata', f'language="C++"',
+            '--css', str(TEMPLATES_DIR / 'style.css'),
+            '--template', str(TEMPLATES_DIR / 'html5_template.html'),
+            '--toc',
+            '--toc-depth=3',
+            '--section-divs',
+            '--highlight-style=pygments',
+            '--no-highlight',
+            '--lua-filter', str(SCRIPT_DIR / 'filters' / 'remove_first_heading.lua')
+        ]
+
+        # Add all template variables as metadata
+        for key, value in template_vars.items():
+            extra_args.extend(['--metadata', f'{key}="{value}"'])
+
         converter.convert_file(
             md_path,
             html_path,
             from_format='markdown',
             to_format='html5',
-            extra_args=[
-                '--metadata', 'title="Hydragon Engine Coding Standards"',
-                '--metadata', f'version="{get_engine_version()}"',
-                '--metadata', 'language="C++"',
-                '--css', str(TEMPLATES_DIR / 'style.css'),
-                '--template', str(TEMPLATES_DIR / 'html5_template.html'),
-                '--toc',
-                '--toc-depth=3',
-                '--section-divs',
-                '--highlight-style=pygments',
-                '--no-highlight',
-                '--lua-filter', str(TOOL_ROOT / 'filters' / 'remove_first_heading.lua')
-            ]
+            extra_args=extra_args
         )
         
         logger.info("\nDocumentation generated successfully!")

@@ -1,0 +1,14 @@
+# Engine Configuration
+engine:
+  name: "Hydragon Engine"
+  version: "alpha"
+  company: "Agua Games"
+  website: "https://hydragon.com"
+  copyright_year: 2024
+  license: "Agua Games License 1.0"
+
+# Documentation settings
+documentation:
+  website_name: "Hydragon Website"
+  website_url: "https://hydragon.com"
+  tool_name: "Hydragon Documentation Tool" 

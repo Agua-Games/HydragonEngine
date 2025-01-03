@@ -10,16 +10,15 @@ import sys
 import os
 from pathlib import Path
 
-# Get Engine root directory relative to this script
-ENGINE_ROOT = Path(__file__).parent.parent.parent
-TOOL_ROOT = Path(__file__).parent
-VENV_DIR = TOOL_ROOT / ".venv"
+# Use relative paths
+SCRIPT_DIR = Path(__file__).parent
+VENV_DIR = SCRIPT_DIR / ".venv"
 
 def ensure_venv():
     """Ensure virtual environment exists"""
     if not VENV_DIR.exists():
         print("Virtual environment not found. Running installer...")
-        subprocess.run([sys.executable, str(TOOL_ROOT / "install_dependencies.py")])
+        subprocess.run([sys.executable, str(SCRIPT_DIR / "install_dependencies.py")])
 
 def run_tool(tool_name: str, args: list = None):
     """Run a documentation tool using the virtual environment"""
@@ -27,17 +26,17 @@ def run_tool(tool_name: str, args: list = None):
         args = []
         
     python_path = VENV_DIR / ("Scripts" if os.name == "nt" else "bin") / "python"
-    tool_path = TOOL_ROOT / tool_name
+    tool_path = SCRIPT_DIR / tool_name
     
-    if not tool_path.exists():
-        print(f"Tool not found: {tool_path}")
-        print("Available tools:")
-        for tool in TOOL_ROOT.glob("*.py"):
-            if tool.name not in ["run_doc_tools.py", "install_dependencies.py"]:
-                print(f"  {tool.name}")
-        sys.exit(1)
-        
-    subprocess.run([str(python_path), str(tool_path)] + args)
+    # Add the Engine/Tools directory to PYTHONPATH
+    env = os.environ.copy()
+    tools_path = SCRIPT_DIR.parent
+    if 'PYTHONPATH' in env:
+        env['PYTHONPATH'] = f"{tools_path}{os.pathsep}{env['PYTHONPATH']}"
+    else:
+        env['PYTHONPATH'] = str(tools_path)
+    
+    subprocess.run([str(python_path), str(tool_path)] + args, env=env)
 
 if __name__ == "__main__":
     ensure_venv()
