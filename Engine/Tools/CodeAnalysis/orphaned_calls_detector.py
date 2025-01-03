@@ -65,7 +65,12 @@ class OrphanedCallsDetector:
             'variables': set(),
             'classes': set()
         }
-        # Add path filtering
+        # Track both our code and third-party separately
+        self._third_party_stats = {
+            'functions': 0,
+            'variables': 0,
+            'classes': 0
+        }
         self.excluded_paths = {
             '.venv', 
             'site-packages',
@@ -200,10 +205,7 @@ class OrphanedCallsDetector:
 
     def _add_python_variable(self, node: ast.Name, file_path: Path, result: OrphanedCallsResult) -> None:
         """Add Python variable to results"""
-        # Only track module-level variables
-        if not isinstance(node.ctx, ast.Store) or self._current_scope is not None:
-            return
-            
+        # Track all variables, including function/class scope
         location = CodeLocation(
             file_path=file_path,
             line_number=node.lineno,
@@ -219,6 +221,7 @@ class OrphanedCallsDetector:
             is_public=not node.id.startswith('_')
         )
         self._declarations['variables'][node.id] = element
+        logger.debug(f"Added variable: {node.id} in scope {self._current_scope}")
 
     def _load_cache(self) -> None:
         """Load analysis cache"""
@@ -226,3 +229,43 @@ class OrphanedCallsDetector:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
         except Exception as e:
             logger.error(f"Error creating cache directory: {e}") 
+
+    def analyze_third_party(self, root_dir: Union[str, Path]) -> Dict[str, int]:
+        """Analyze third-party packages for element counts
+        
+        Args:
+            root_dir: Root directory containing site-packages
+            
+        Returns:
+            Dict with counts of functions, variables, and classes
+        """
+        root_dir = Path(root_dir)
+        stats = {'functions': 0, 'variables': 0, 'classes': 0}
+        
+        try:
+            # Look in site-packages directories
+            site_packages = list(root_dir.rglob('site-packages'))
+            for site_pkg in site_packages:
+                logger.info(f"Analyzing third-party packages in: {site_pkg}")
+                for py_file in site_pkg.rglob('*.py'):
+                    try:
+                        with open(py_file, 'r', encoding='utf-8') as f:
+                            tree = ast.parse(f.read())
+                            
+                        for node in ast.walk(tree):
+                            if isinstance(node, ast.FunctionDef):
+                                stats['functions'] += 1
+                            elif isinstance(node, ast.ClassDef):
+                                stats['classes'] += 1
+                                logger.debug(f"Found third-party class: {node.name} in {py_file}")
+                            elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                                stats['variables'] += 1
+                                
+                    except Exception as e:
+                        logger.error(f"Error analyzing third-party file {py_file}: {e}")
+                        
+            return stats
+            
+        except Exception as e:
+            logger.error(f"Error analyzing third-party packages: {e}")
+            return stats 

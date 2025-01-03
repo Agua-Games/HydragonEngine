@@ -17,8 +17,13 @@ def main():
         detector = OrphanedCallsDetector()
         engine_root = Path(__file__).parent.parent.parent
         
-        logger.info(f"Analyzing codebase in: {engine_root}")
+        # First analyze our codebase
+        logger.info(f"Analyzing engine codebase in: {engine_root}")
         results = detector.analyze_codebase(engine_root)
+        
+        # Then analyze third-party packages
+        logger.info("\nAnalyzing third-party packages...")
+        third_party_stats = detector.analyze_third_party(engine_root)
         
         # Print results
         logger.info("\nAnalysis Results:")
@@ -31,9 +36,13 @@ def main():
                     logger.info(f"  • {loc}")
         
         # Print statistics
-        logger.info("\nStatistics:")
+        logger.info("\nEngine Codebase Statistics:")
         for key, value in results.statistics.items():
             logger.info(f"{key}: {value}")
+            
+        logger.info("\nThird-Party Package Statistics:")
+        for category, count in third_party_stats.items():
+            logger.info(f"total_{category}: {count}")
             
     except Exception as e:
         logger.error(f"Error running detector: {e}")
