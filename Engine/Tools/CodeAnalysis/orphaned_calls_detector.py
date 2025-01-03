@@ -98,14 +98,18 @@ class OrphanedCallsResult:
     suggestions: List[str] = field(default_factory=list)
 
 class OrphanedCallsDetector:
-    """Detects orphaned code elements in Python files"""
-
-    def __init__(self, config: Optional[Dict] = None):
-        self.config = config or {}
-        self.cache_dir = Path(self.config.get('cache_dir', 'Engine/Tools/CodeAnalysis/cache'))
-        self.supported_extensions = {'.py'}
-        self._current_source = ""
-        self._current_scope = None
+    """Detects orphaned calls in Python code"""
+    
+    def __init__(self):
+        """Initialize detector"""
+        self.excluded_paths = {'__pycache__', '.git', '.venv', 'venv', 'env'}
+        self.repo = None
+        try:
+            self.repo = git.Repo(search_parent_directories=True)
+        except git.InvalidGitRepositoryError:
+            logger.warning("Not running from a git repository")
+            
+        # Initialize tracking dictionaries
         self._declarations = {
             'function_calls': {},
             'variable_calls': {},
@@ -116,235 +120,216 @@ class OrphanedCallsDetector:
             'variable_calls': set(),
             'class_calls': set()
         }
-        # Track both our code and third-party separately
-        self._third_party_stats = {
-            'function_calls': 0,
-            'variable_calls': 0,
-            'class_calls': 0
-        }
-        self.excluded_paths = {
-            '.venv', 
-            'site-packages',
-            '__pycache__',
-            'dist',
-            'build'
-        }
-        self._load_cache()
-        try:
-            self.repo = git.Repo(Path(self.config.get('repo_path', '.')))
-        except Exception as e:
-            logger.warning(f"Git repository not available: {e}")
-            self.repo = None
+        self._current_source = ""
+        self._current_scope = None
 
-    def _should_analyze_file(self, file_path: Path) -> bool:
-        """Determine if a file should be analyzed"""
-        # Skip files in excluded directories
-        parts = file_path.parts
-        return not any(excluded in parts for excluded in self.excluded_paths)
-
-    def analyze_codebase(self, root_dir: Union[str, Path]) -> OrphanedCallsResult:
-        root_dir = Path(root_dir)
-        result = OrphanedCallsResult()
-        
+    def _collect_references(self, file_path: Path) -> None:
+        """Collect all references from a file"""
         try:
-            # Find all Python files, excluding third-party packages
-            python_files = [
-                f for f in root_dir.rglob('*.py')
-                if self._should_analyze_file(f)
-            ]
-            logger.info(f"Found {len(python_files)} Python files to analyze")
-            
-            # Process files in parallel
-            with ThreadPoolExecutor() as executor:
-                for file_path in python_files:
-                    try:
-                        self._analyze_file(file_path, result)
-                    except Exception as e:
-                        logger.error(f"Error analyzing file {file_path}: {e}")
+            with open(file_path, 'r', encoding='utf-8') as f:
+                tree = ast.parse(f.read())
+                
+            for node in ast.walk(tree):
+                # Function calls and references
+                if isinstance(node, ast.Call):
+                    if isinstance(node.func, ast.Name):
+                        self._add_orphaned_call('function_calls', node.func.id)
+                    elif isinstance(node.func, ast.Attribute):
+                        self._add_orphaned_call('function_calls', node.func.attr)
+                
+                # Variable references
+                elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+                    self._add_orphaned_call('variable_calls', node.id)
+                
+                # Class references
+                elif isinstance(node, ast.Name) and not isinstance(node.ctx, ast.Store):
+                    self._add_orphaned_call('class_calls', node.id)
+                elif isinstance(node, ast.Attribute):
+                    self._add_orphaned_call('class_calls', node.attr)
                         
+        except Exception as e:
+            logger.error(f"Error analyzing Python file {file_path}: {e}") 
+
+    def analyze_codebase(self, root_dir: Path) -> OrphanedCallsResult:
+        """Analyze Python codebase for orphaned calls
+        
+        Args:
+            root_dir: Root directory of the codebase to analyze
+            
+        Returns:
+            OrphanedCallsResult containing analysis results
+        """
+        try:
+            result = OrphanedCallsResult()
+            logger.info(f"Found {sum(1 for _ in root_dir.rglob('*.py'))} Python files to analyze")
+
+            # First pass: collect all declarations
+            for file_path in root_dir.rglob('*.py'):
+                if any(excluded in file_path.parts for excluded in self.excluded_paths):
+                    continue
+                    
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        tree = ast.parse(f.read())
+                        
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.FunctionDef):
+                            self._declarations['function_calls'][node.name] = node
+                        elif isinstance(node, ast.ClassDef):
+                            self._declarations['class_calls'][node.name] = node
+                        elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                            self._declarations['variable_calls'][node.id] = node
+                            
+                except Exception as e:
+                    logger.error(f"Error collecting declarations from {file_path}: {e}")
+
+            # Second pass: collect references and identify orphaned calls
+            for file_path in root_dir.rglob('*.py'):
+                if any(excluded in file_path.parts for excluded in self.excluded_paths):
+                    continue
+                self._collect_references(file_path)
+
+            # Update statistics
             self._update_statistics(result)
+            
             return result
             
         except Exception as e:
             logger.error(f"Error analyzing codebase: {e}")
-            return result
+            raise 
 
-    def _analyze_file(self, file_path: Path, result: OrphanedCallsResult) -> None:
-        """Analyze a single Python file"""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                self._current_source = f.read()
-                
-            tree = ast.parse(self._current_source)
-            
-            # First pass: collect declarations
-            for node in ast.walk(tree):
-                if isinstance(node, ast.FunctionDef):
-                    self._add_python_function(node, file_path, result)
-                elif isinstance(node, ast.ClassDef):
-                    self._add_python_class(node, file_path, result)
-                elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
-                    self._add_python_variable(node, file_path, result)
-            
-            # Second pass: collect references
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
-                    self._add_reference(node.id)
-                elif isinstance(node, ast.Call):
-                    if isinstance(node.func, ast.Name):
-                        self._add_reference(node.func.id)
-                    elif isinstance(node.func, ast.Attribute):
-                        self._add_reference(node.func.attr)
-                        
-        except Exception as e:
-            logger.error(f"Error analyzing Python file {file_path}: {e}")
-
-    def _add_reference(self, name: str) -> None:
-        """Add a reference to a name"""
-        # Check all categories since we don't know the type
-        categories = ['function_calls', 'variable_calls', 'class_calls']
-        for category in categories:
-            if name in self._declarations[category]:
-                self._references[category].add(name)
-
-    def _update_statistics(self, result: OrphanedCallsResult) -> None:
-        """Update result statistics"""
-        for category in ['function_calls', 'variable_calls', 'class_calls']:
-            declarations = self._declarations[category]
-            references = self._references[category]
-            
-            # Update total counts
-            result.statistics[f'total_{category}'] = len(declarations)
-            
-            # Find truly orphaned elements (declared but never referenced)
-            orphaned = [
-                elem for name, elem in declarations.items()
-                if name not in references and not elem.is_public
-            ]
-            result.orphaned_elements[category] = orphaned
-            result.statistics[f'orphaned_{category}'] = len(orphaned)
-
-    def _add_python_function(self, node: ast.FunctionDef, file_path: Path, result: OrphanedCallsResult) -> None:
-        """Add Python function to results"""
-        location = CodeLocation(
-            file_path=file_path,
-            line_number=node.lineno,
-            column=node.col_offset,
-            context=ast.get_source_segment(self._current_source, node),
-            scope=self._current_scope
-        )
-        
-        element = CodeElement(
-            name=node.name,
-            element_type='function',
-            locations=[location],
-            is_public=not node.name.startswith('_')
-        )
-        self._declarations['function_calls'][node.name] = element
-
-    def _add_python_class(self, node: ast.ClassDef, file_path: Path, result: OrphanedCallsResult) -> None:
-        """Add Python class to results"""
-        location = CodeLocation(
-            file_path=file_path,
-            line_number=node.lineno,
-            column=node.col_offset,
-            context=ast.get_source_segment(self._current_source, node),
-            scope=self._current_scope
-        )
-        
-        element = CodeElement(
-            name=node.name,
-            element_type='class',
-            locations=[location],
-            is_public=not node.name.startswith('_')
-        )
-        self._declarations['class_calls'][node.name] = element
-
-    def _add_python_variable(self, node: ast.Name, file_path: Path, result: OrphanedCallsResult) -> None:
-        """Add Python variable to results"""
-        # Track all variables, including function/class scope
-        location = CodeLocation(
-            file_path=file_path,
-            line_number=node.lineno,
-            column=node.col_offset,
-            context=ast.get_source_segment(self._current_source, node),
-            scope=self._current_scope
-        )
-        
-        element = CodeElement(
-            name=node.id,
-            element_type='variable',
-            locations=[location],
-            is_public=not node.id.startswith('_')
-        )
-        self._declarations['variable_calls'][node.id] = element
-        logger.debug(f"Added variable: {node.id} in scope {self._current_scope}")
-
-    def _load_cache(self) -> None:
-        """Load analysis cache"""
-        try:
-            self.cache_dir.mkdir(parents=True, exist_ok=True)
-        except Exception as e:
-            logger.error(f"Error creating cache directory: {e}") 
-
-    def analyze_third_party(self, root_dir: Union[str, Path]) -> Dict[str, int]:
-        """Analyze third-party packages for element counts
+    def _add_orphaned_call(self, category: str, name: str) -> None:
+        """Add an orphaned call to the results
         
         Args:
-            root_dir: Root directory containing site-packages
+            category: Category of the call ('function_calls', 'variable_calls', 'class_calls')
+            name: Name of the referenced element
+        """
+        try:
+            # Skip built-in names and common imports
+            if name in dir(__builtins__) or name in {'logging', 'Path', 'Optional', 'List', 'Set', 'Dict'}:
+                return
+                
+            # Skip if the name is declared
+            if name in self._declarations[category]:
+                return
+                
+            # Add to references set
+            self._references[category].add(name)
+                
+        except Exception as e:
+            logger.error(f"Error adding orphaned call {name}: {e}")
+
+    def _update_statistics(self, result: OrphanedCallsResult) -> None:
+        """Update result statistics
+        
+        Args:
+            result: OrphanedCallsResult to update
+        """
+        try:
+            for category in ['function_calls', 'variable_calls', 'class_calls']:
+                # Count total declarations
+                result.statistics[f'total_{category}'] = len(self._declarations[category])
+                
+                # Count orphaned calls (referenced but not declared)
+                orphaned = self._references[category] - set(self._declarations[category].keys())
+                result.statistics[f'orphaned_{category}'] = len(orphaned)
+                
+                # Add orphaned elements to result
+                for name in orphaned:
+                    element = CodeElement(
+                        name=name,
+                        element_type=category,
+                        locations=[],  # Locations would be added when found
+                        severity="high"  # Undefined references are high severity
+                    )
+                    result.orphaned_elements[category].append(element)
+                    
+        except Exception as e:
+            logger.error(f"Error updating statistics: {e}") 
+
+    def analyze_third_party(self, root_dir: Path) -> Dict[str, int]:
+        """Analyze third-party packages for declarations
+        
+        Args:
+            root_dir: Root directory containing third-party packages
             
         Returns:
-            Dict with counts of functions, variables, and classes
+            Dict mapping categories to total declaration counts
         """
-        root_dir = Path(root_dir)
-        stats = {'function_calls': 0, 'variable_calls': 0, 'class_calls': 0}
-        
         try:
-            # Look in site-packages directories
-            site_packages = list(root_dir.rglob('site-packages'))
-            for site_pkg in site_packages:
-                logger.info(f"Analyzing third-party packages in: {site_pkg}")
-                for py_file in site_pkg.rglob('*.py'):
-                    try:
-                        with open(py_file, 'r', encoding='utf-8') as f:
-                            tree = ast.parse(f.read())
-                            
-                        for node in ast.walk(tree):
-                            if isinstance(node, ast.FunctionDef):
-                                stats['function_calls'] += 1
-                            elif isinstance(node, ast.ClassDef):
-                                stats['class_calls'] += 1
-                                logger.debug(f"Found third-party class: {node.name} in {py_file}")
-                            elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
-                                stats['variable_calls'] += 1
-                                
-                    except Exception as e:
-                        logger.error(f"Error analyzing third-party file {py_file}: {e}")
+            # Look for site-packages in common virtual environment locations
+            venv_paths = [
+                root_dir / 'Tools' / 'DocumentationTool' / '.venv' / 'Lib' / 'site-packages',
+                root_dir / '.venv' / 'Lib' / 'site-packages',
+                root_dir / 'venv' / 'Lib' / 'site-packages'
+            ]
+            
+            site_packages = next((p for p in venv_paths if p.exists()), None)
+            if not site_packages:
+                logger.warning("No site-packages directory found")
+                return {}
+                
+            logger.info(f"Analyzing third-party packages in: {site_packages}")
+            
+            # Track only declaration counts for third-party
+            stats = {
+                'functions': 0,
+                'variables': 0,
+                'classes': 0
+            }
+            
+            # Analyze .py files in site-packages
+            for file_path in site_packages.rglob('*.py'):
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        tree = ast.parse(f.read())
                         
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.FunctionDef):
+                            stats['functions'] += 1
+                        elif isinstance(node, ast.ClassDef):
+                            stats['classes'] += 1
+                        elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                            stats['variables'] += 1
+                            
+                except Exception as e:
+                    logger.debug(f"Error analyzing third-party file {file_path}: {e}")
+                    continue
+                    
             return stats
             
         except Exception as e:
             logger.error(f"Error analyzing third-party packages: {e}")
-            return stats 
-
-    def _get_last_usage(self, file_path: Path, line_number: int) -> Optional[str]:
-        """Get last git blame date for a line"""
-        if not self.repo:
-            return None
-        try:
-            blame = self.repo.blame('HEAD', str(file_path))
-            for commit, lines in blame:
-                for line in lines:
-                    if line.lineno == line_number:
-                        return commit.committed_date
-        except Exception as e:
-            logger.debug(f"Could not get git blame: {e}")
-        return None
+            return {} 
 
     def _suggest_action(self, element: CodeElement) -> str:
-        """Suggest action based on element analysis"""
-        if element.severity == "high":
-            return "DELETE: No recent usage, safe to remove"
-        if element.severity == "medium":
-            return "REVIEW: Consider refactoring or documenting usage"
-        return "KEEP: Still in active use or public API" 
+        """Suggest an action for handling an orphaned element
+        
+        Args:
+            element: CodeElement to analyze
+            
+        Returns:
+            str: Suggested action for handling the element
+        """
+        try:
+            # Base suggestion on severity and element type
+            if element.severity == "high":
+                if element.element_type == "function_calls":
+                    return "Remove call or implement missing function"
+                elif element.element_type == "variable_calls":
+                    return "Define variable or remove reference"
+                elif element.element_type == "class_calls":
+                    return "Implement missing class or update reference"
+                    
+            elif element.severity == "medium":
+                return "Review usage and consider deprecation if unused"
+                
+            elif element.severity == "low":
+                return "Document usage or mark as intentionally undefined"
+                
+            return "Review and determine appropriate action"
+            
+        except Exception as e:
+            logger.error(f"Error suggesting action for {element.name}: {e}")
+            return "Unable to determine action - review manually" 

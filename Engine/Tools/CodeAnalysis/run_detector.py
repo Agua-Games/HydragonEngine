@@ -53,7 +53,7 @@ def main():
     try:
         # Add logging configuration
         logging_config = LoggingConfig(
-            format=LogFormat.TERMINAL,  # or HTML, or PLAIN
+            format=LogFormat.TERMINAL,
             output_file=Path("orphaned_calls_report.html") if LogFormat.HTML else None,
             use_colors=True
         )
@@ -61,27 +61,10 @@ def main():
         detector = OrphanedCallsDetector()
         engine_root = Path(__file__).parent.parent.parent
         
-        if logging_config.format == LogFormat.HTML:
-            # Start HTML document
-            html_output = ["""
-                <html>
-                <head>
-                    <style>
-                        body { font-family: monospace; padding: 20px; }
-                        .high { color: #ff4444; }
-                        .medium { color: #ffbb33; }
-                        .low { color: #00C851; }
-                        .header { color: #9933CC; font-weight: bold; }
-                        .info { color: #33b5e5; }
-                        .element { margin: 10px 0; }
-                        .location { margin-left: 20px; }
-                    </style>
-                </head>
-                <body>
-            """]
-        
-        # First analyze our codebase
+        # First analyze our codebase including BuildOutput
         logger.info(f"Analyzing engine codebase in: {engine_root}")
+        
+        # Explicitly include BuildOutput in analysis
         results = detector.analyze_codebase(engine_root)
         
         # Then analyze third-party packages
