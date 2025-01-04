@@ -147,8 +147,8 @@ def collect_orphaned_function_calls(root_dir: Path) -> Dict[str, List[Path]]:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     
-    # Use specific test file instead of scanning entire engine
-    test_file_path = Path(__file__).parent.parent.parent / "BuildOutput" / "orphaned_calls_test.py"
+    # Use specific test file in the current directory
+    test_file_path = Path(__file__).parent / "orphaned_calls_test.py"
     if not test_file_path.exists():
         logger.error(f"Test file not found: {test_file_path}")
         sys.exit(1)
