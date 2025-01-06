@@ -1,0 +1,10 @@
+
+## Classes
+
+### AnimationType
+
+
+
+### InterpolationType
+
+

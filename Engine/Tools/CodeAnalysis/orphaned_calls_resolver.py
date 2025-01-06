@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Optional
 import requests
-from function_collector import collect_orphaned_function_calls
+from declarations_calls_collector import collect_orphaned_function_calls
 
 # PyPI API endpoint for package verification
 PYPI_API_URL = "https://pypi.org/pypi/{package}/json"

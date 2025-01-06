@@ -1,0 +1,6 @@
+
+## Classes
+
+### ICollaborationProvider
+
+

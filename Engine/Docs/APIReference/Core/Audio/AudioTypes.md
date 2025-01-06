@@ -1,0 +1,14 @@
+
+## Classes
+
+### SoundType
+
+
+
+### AudioFormat
+
+
+
+### EffectType
+
+

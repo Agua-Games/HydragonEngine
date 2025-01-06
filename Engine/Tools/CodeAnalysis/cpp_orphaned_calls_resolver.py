@@ -8,7 +8,7 @@ Tool to resolve orphaned function calls in C++ code.
 from pathlib import Path
 from typing import Dict, List, Optional
 from base_orphaned_calls_resolver import BaseOrphanedCallsResolver
-from cpp_function_collector import CppFunctionCollector
+from cpp_declarations_calls_collector import CppFunctionCollector
 
 class CppOrphanedCallsResolver(BaseOrphanedCallsResolver):
     """Resolves orphaned function calls in C++ code"""

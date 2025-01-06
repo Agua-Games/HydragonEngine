@@ -63,7 +63,7 @@ class PythonFunctionCollector(BaseFunctionCollector):
                         function_locations[func_name] = file_path
                         
         except Exception as e:
-            self.log_error(f"Error processing {file_path}: {e}")
+            print(f"Error processing {file_path}: {e}")
             raise
             
     def collect_function_calls(self, root_dir: Path) -> Dict[str, List[Path]]:
@@ -94,7 +94,7 @@ class PythonFunctionCollector(BaseFunctionCollector):
                             function_calls[func_name].append(file_path)
                             
         except Exception as e:
-            self.log_error(f"Error processing calls in {file_path}: {e}")
+            print(f"Error processing calls in {file_path}: {e}")
             raise
             
     def collect_implementation_status(self, root_dir: Path) -> Dict[str, str]:

@@ -1,0 +1,10 @@
+
+## Classes
+
+### IPluginInterface
+
+
+
+### InterfaceManager
+
+

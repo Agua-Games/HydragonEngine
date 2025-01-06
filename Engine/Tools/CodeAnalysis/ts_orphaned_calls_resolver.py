@@ -8,7 +8,7 @@ TypeScript orphaned call resolver implementation.
 from pathlib import Path
 from typing import Dict, List
 from .base_resolver import BaseOrphanedCallResolver
-from .ts_function_collector import TypeScriptFunctionCollector
+from .ts_declarations_calls_collector import TypeScriptFunctionCollector
 
 class TypeScriptOrphanedCallResolver(BaseOrphanedCallResolver):
     """Resolves orphaned TypeScript function calls"""

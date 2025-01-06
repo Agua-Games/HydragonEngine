@@ -7,7 +7,7 @@ Python orphaned call resolver implementation.
 from pathlib import Path
 from typing import Dict, List
 from Engine.Tools.CodeAnalysis.base_resolver import BaseOrphanedCallResolver
-from Engine.Tools.CodeAnalysis.python_function_collector import PythonFunctionCollector
+from Engine.Tools.CodeAnalysis.python_declarations_calls_collector import PythonFunctionCollector
 
 class PythonOrphanedCallResolver(BaseOrphanedCallResolver):
     """Resolves orphaned Python function calls"""
@@ -114,8 +114,15 @@ def {func_name}(*args, **kwargs):
                 with open(call_file, 'r', encoding='utf-8') as f:
                     lines = f.readlines()
                     
-                new_lines = [line for line in lines if func_name not in line]
+                # Remove lines containing function calls
+                new_lines = []
+                for line in lines:
+                    # Skip lines containing function calls
+                    if f"{func_name}(" in line:
+                        continue
+                    new_lines.append(line)
                 
+                # Only write if changes were made
                 if len(new_lines) != len(lines):
                     with open(call_file, 'w', encoding='utf-8') as f:
                         f.writelines(new_lines)
