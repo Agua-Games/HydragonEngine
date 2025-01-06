@@ -88,11 +88,9 @@
 
 
 
-- **Parameters:** {
-            .isStreamable = true,
-            .priority = request.priority,
-            .expectedLifetime = request.expectedLifetime
-        }
+- **Parameters:** `{
+            .isStreamable = true`, `.priority = request.priority`, `.expectedLifetime = request.expectedLifetime
+        }`
 
 - **Return:** `return`
 

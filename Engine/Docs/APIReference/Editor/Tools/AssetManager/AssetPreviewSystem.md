@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AssetPreviewSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const AssetPreviewConfig& config = {}
+- **Parameters:** `const AssetPreviewConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const std::string& assetPath
+- **Parameters:** `const std::string& assetPath`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** const std::string& assetPath
+- **Parameters:** `const std::string& assetPath`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** uint32_t size
+- **Parameters:** `uint32_t size`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** PreviewQuality quality
+- **Parameters:** `PreviewQuality quality`
 
 - **Return:** `void`
 
@@ -202,8 +202,7 @@
 
 
 
-- **Parameters:** const std::string& assetType, 
-                                std::unique_ptr<IPreviewGenerator> generator
+- **Parameters:** `const std::string& assetType`, `std::unique_ptr<IPreviewGenerator> generator`
 
 - **Return:** `void`
 
@@ -213,7 +212,7 @@
 
 
 
-- **Parameters:** const std::string& assetPath
+- **Parameters:** `const std::string& assetPath`
 
 - **Return:** `void`
 
@@ -223,7 +222,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

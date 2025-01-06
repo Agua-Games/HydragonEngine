@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static ScriptSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const ScriptConfig& config = {}
+- **Parameters:** `const ScriptConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** float deltaTime
+- **Parameters:** `float deltaTime`
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const ScriptDesc& desc
+- **Parameters:** `const ScriptDesc& desc`
 
 - **Return:** `ScriptHandle`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** ScriptHandle handle
+- **Parameters:** `ScriptHandle handle`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** ScriptHandle handle
+- **Parameters:** `ScriptHandle handle`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** ScriptHandle handle
+- **Parameters:** `ScriptHandle handle`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** const std::string& name, const ScriptValue& value
+- **Parameters:** `const std::string& name`, `const ScriptValue& value`
 
 - **Return:** `void`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** ScriptHandle script, const std::string& function
+- **Parameters:** `ScriptHandle script`, `const std::string& function`
 
 - **Return:** `CoroutineHandle`
 
@@ -222,7 +222,7 @@
 
 
 
-- **Parameters:** CoroutineHandle handle
+- **Parameters:** `CoroutineHandle handle`
 
 - **Return:** `void`
 

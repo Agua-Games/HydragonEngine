@@ -36,7 +36,7 @@
 
 
 
-- **Parameters:** const FilterCriteria& filter
+- **Parameters:** `const FilterCriteria& filter`
 
 - **Return:** `void`
 
@@ -46,7 +46,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -56,7 +56,7 @@
 
 
 
-- **Parameters:** size_t matchingBlocks
+- **Parameters:** `size_t matchingBlocks`
 
 - **Return:** `void`
 

@@ -223,9 +223,7 @@
 
 
 
-- **Parameters:** const std::string& filename, 
-                   const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
-                   const std::vector<AttributeDesc>& descriptions
+- **Parameters:** `const std::string& filename`, `const std::vector<std::shared_ptr<IAttributeStorage>>& attributes`, `const std::vector<AttributeDesc>& descriptions`
 
 - **Return:** `bool`
 
@@ -235,9 +233,7 @@
 
 
 
-- **Parameters:** const std::string& filename,
-                     std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
-                     std::vector<AttributeDesc>& descriptions
+- **Parameters:** `const std::string& filename`, `std::vector<std::shared_ptr<IAttributeStorage>>& attributes`, `std::vector<AttributeDesc>& descriptions`
 
 - **Return:** `bool`
 
@@ -247,7 +243,7 @@
 
 
 
-- **Parameters:** const std::string& filename
+- **Parameters:** `const std::string& filename`
 
 - **Return:** `static bool`
 
@@ -257,7 +253,7 @@
 
 
 
-- **Parameters:** const std::string& filename
+- **Parameters:** `const std::string& filename`
 
 - **Return:** `static uint32_t`
 
@@ -267,7 +263,7 @@
 
 
 
-- **Parameters:** const std::string& filename
+- **Parameters:** `const std::string& filename`
 
 - **Return:** `static SerializationStats`
 
@@ -277,9 +273,7 @@
 
 
 
-- **Parameters:** std::ostream& stream,
-                   const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
-                   const std::vector<AttributeDesc>& descriptions
+- **Parameters:** `std::ostream& stream`, `const std::vector<std::shared_ptr<IAttributeStorage>>& attributes`, `const std::vector<AttributeDesc>& descriptions`
 
 - **Return:** `bool`
 
@@ -289,9 +283,7 @@
 
 
 
-- **Parameters:** std::istream& stream,
-                   std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
-                   std::vector<AttributeDesc>& descriptions
+- **Parameters:** `std::istream& stream`, `std::vector<std::shared_ptr<IAttributeStorage>>& attributes`, `std::vector<AttributeDesc>& descriptions`
 
 - **Return:** `bool`
 
@@ -301,9 +293,7 @@
 
 
 
-- **Parameters:** std::ostream& stream,
-                 const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
-                 const std::vector<AttributeDesc>& descriptions
+- **Parameters:** `std::ostream& stream`, `const std::vector<std::shared_ptr<IAttributeStorage>>& attributes`, `const std::vector<AttributeDesc>& descriptions`
 
 - **Return:** `bool`
 
@@ -313,9 +303,7 @@
 
 
 
-- **Parameters:** std::istream& stream,
-                 std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
-                 std::vector<AttributeDesc>& descriptions
+- **Parameters:** `std::istream& stream`, `std::vector<std::shared_ptr<IAttributeStorage>>& attributes`, `std::vector<AttributeDesc>& descriptions`
 
 - **Return:** `bool`
 
@@ -325,7 +313,7 @@
 
 
 
-- **Parameters:** std::ostream& stream, const T& value
+- **Parameters:** `std::ostream& stream`, `const T& value`
 
 - **Return:** `bool`
 
@@ -335,7 +323,7 @@
 
 
 
-- **Parameters:** std::istream& stream, T& value
+- **Parameters:** `std::istream& stream`, `T& value`
 
 - **Return:** `bool`
 

@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static ResourceSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const ResourceConfig& config = {}
+- **Parameters:** `const ResourceConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const ResourceDesc& desc
+- **Parameters:** `const ResourceDesc& desc`
 
 - **Return:** `ResourceHandle`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** ResourceHandle handle
+- **Parameters:** `ResourceHandle handle`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** ResourceHandle handle
+- **Parameters:** `ResourceHandle handle`
 
 - **Return:** `void*`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** ResourceHandle handle, const ResourceCallback& callback
+- **Parameters:** `ResourceHandle handle`, `const ResourceCallback& callback`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

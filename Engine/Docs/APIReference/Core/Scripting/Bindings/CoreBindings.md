@@ -112,7 +112,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static CoreBindings&`
 
@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** const CoreBindingsConfig& config = {}
+- **Parameters:** `const CoreBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** const std::string& name, const TypeInfo& typeInfo
+- **Parameters:** `const std::string& name`, `const TypeInfo& typeInfo`
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** const std::string& name, const FunctionInfo& funcInfo
+- **Parameters:** `const std::string& name`, `const FunctionInfo& funcInfo`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** const std::string& name, const EnumInfo& enumInfo
+- **Parameters:** `const std::string& name`, `const EnumInfo& enumInfo`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** const TypePair& types, std::unique_ptr<ITypeConverter> converter
+- **Parameters:** `const TypePair& types`, `std::unique_ptr<ITypeConverter> converter`
 
 - **Return:** `void`
 
@@ -222,7 +222,7 @@
 
 
 
-- **Parameters:** const TypePair& types
+- **Parameters:** `const TypePair& types`
 
 - **Return:** `void`
 

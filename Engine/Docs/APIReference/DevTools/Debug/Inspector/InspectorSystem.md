@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static InspectorSystem&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** const InspectorConfig& config = {}
+- **Parameters:** `const InspectorConfig& config = {}`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const std::string& name, const WatchCallback& callback
+- **Parameters:** `const std::string& name`, `const WatchCallback& callback`
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** const std::string& location
+- **Parameters:** `const std::string& location`
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** const std::string& location
+- **Parameters:** `const std::string& location`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** const void* object, const TypeInfo& typeInfo
+- **Parameters:** `const void* object`, `const TypeInfo& typeInfo`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** const std::string& name, const Variable& value
+- **Parameters:** `const std::string& name`, `const Variable& value`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -230,7 +230,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

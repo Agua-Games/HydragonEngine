@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static GeometrySystem&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** const GeometryConfig& config = {}
+- **Parameters:** `const GeometryConfig& config = {}`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** const Ray& ray, const Triangle& triangle, float* t = nullptr
+- **Parameters:** `const Ray& ray`, `const Triangle& triangle`, `float* t = nullptr`
 
 - **Return:** `bool`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const Ray& ray, const Mesh& mesh, RayHit* hit = nullptr
+- **Parameters:** `const Ray& ray`, `const Mesh& mesh`, `RayHit* hit = nullptr`
 
 - **Return:** `bool`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** const Sphere& a, const Sphere& b
+- **Parameters:** `const Sphere& a`, `const Sphere& b`
 
 - **Return:** `bool`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** const Vector3& point, const Line& line
+- **Parameters:** `const Vector3& point`, `const Line& line`
 
 - **Return:** `float`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** const Vector3& point, const Plane& plane
+- **Parameters:** `const Vector3& point`, `const Plane& plane`
 
 - **Return:** `float`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** Mesh* mesh
+- **Parameters:** `Mesh* mesh`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** Mesh* mesh
+- **Parameters:** `Mesh* mesh`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** Mesh* mesh, const MeshOptimizationParams& params
+- **Parameters:** `Mesh* mesh`, `const MeshOptimizationParams& params`
 
 - **Return:** `void`
 

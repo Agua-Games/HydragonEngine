@@ -324,7 +324,7 @@
 
 
 
-- **Parameters:** const std::string& name, const RuleDesc& desc = {}
+- **Parameters:** `const std::string& name`, `const RuleDesc& desc = {}`
 
 - **Return:** `static RuleHandle`
 
@@ -334,7 +334,7 @@
 
 
 
-- **Parameters:** const RuleCondition& condition
+- **Parameters:** `const RuleCondition& condition`
 
 - **Return:** `void`
 
@@ -344,7 +344,7 @@
 
 
 
-- **Parameters:** const RuleAction& action
+- **Parameters:** `const RuleAction& action`
 
 - **Return:** `void`
 
@@ -354,7 +354,7 @@
 
 
 
-- **Parameters:** RuleSeverity severity
+- **Parameters:** `RuleSeverity severity`
 
 - **Return:** `void`
 
@@ -364,7 +364,7 @@
 
 
 
-- **Parameters:** bool enabled
+- **Parameters:** `bool enabled`
 
 - **Return:** `void`
 
@@ -374,7 +374,7 @@
 
 
 
-- **Parameters:** RuleHandle parent
+- **Parameters:** `RuleHandle parent`
 
 - **Return:** `void`
 
@@ -384,7 +384,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -394,7 +394,7 @@
 
 
 
-- **Parameters:** const Variant& value
+- **Parameters:** `const Variant& value`
 
 - **Return:** `void`
 
@@ -404,7 +404,7 @@
 
 
 
-- **Parameters:** const ValidationError& error
+- **Parameters:** `const ValidationError& error`
 
 - **Return:** `void`
 
@@ -414,7 +414,7 @@
 
 
 
-- **Parameters:** const ValidationError& warning
+- **Parameters:** `const ValidationError& warning`
 
 - **Return:** `void`
 

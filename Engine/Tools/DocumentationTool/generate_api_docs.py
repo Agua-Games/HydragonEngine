@@ -273,7 +273,9 @@ class DocGenerator:
                     markdown.append(f"## {func['name']}\n")
                     if 'docstring' in func:
                         markdown.append(f"{func['docstring']}\n")
-                    markdown.append(f"- **Parameters:** {func['params']}\n")
+                    # Format parameters with backticks
+                    formatted_params = ', '.join([f'`{p.strip()}`' for p in func['params'].split(',')])
+                    markdown.append(f"- **Parameters:** {formatted_params}\n")
                     if 'return_type' in func:
                         markdown.append(f"- **Return:** `{func['return_type']}`\n")
                     markdown.append("---\n")

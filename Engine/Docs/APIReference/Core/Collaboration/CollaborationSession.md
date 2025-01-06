@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const SessionConfig& config = {}
+- **Parameters:** `const SessionConfig& config = {}`
 
 - **Return:** `explicit`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** const std::string& identifier
+- **Parameters:** `const std::string& identifier`
 
 - **Return:** `bool`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** float deltaTime
+- **Parameters:** `float deltaTime`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** const UserInfo& user
+- **Parameters:** `const UserInfo& user`
 
 - **Return:** `bool`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** const UserId& userId
+- **Parameters:** `const UserId& userId`
 
 - **Return:** `bool`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** const UserId& userId, bool active
+- **Parameters:** `const UserId& userId`, `bool active`
 
 - **Return:** `bool`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** const Change& change
+- **Parameters:** `const Change& change`
 
 - **Return:** `bool`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** ChangeId changeId
+- **Parameters:** `ChangeId changeId`
 
 - **Return:** `bool`
 
@@ -222,7 +222,7 @@
 
 
 
-- **Parameters:** ChangeId changeId
+- **Parameters:** `ChangeId changeId`
 
 - **Return:** `bool`
 
@@ -232,7 +232,7 @@
 
 
 
-- **Parameters:** ChangeId changeId
+- **Parameters:** `ChangeId changeId`
 
 - **Return:** `bool`
 
@@ -242,7 +242,7 @@
 
 
 
-- **Parameters:** const UserId& userId, const ResourceId& resourceId
+- **Parameters:** `const UserId& userId`, `const ResourceId& resourceId`
 
 - **Return:** `bool`
 
@@ -252,7 +252,7 @@
 
 
 
-- **Parameters:** const UserId& userId, const ResourceId& resourceId
+- **Parameters:** `const UserId& userId`, `const ResourceId& resourceId`
 
 - **Return:** `bool`
 
@@ -262,7 +262,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `bool`
 
@@ -272,7 +272,7 @@
 
 
 
-- **Parameters:** float interval
+- **Parameters:** `float interval`
 
 - **Return:** `void`
 
@@ -282,7 +282,7 @@
 
 
 
-- **Parameters:** std::shared_ptr<ICollaborationEventHandler> handler
+- **Parameters:** `std::shared_ptr<ICollaborationEventHandler> handler`
 
 - **Return:** `void`
 
@@ -292,7 +292,7 @@
 
 
 
-- **Parameters:** const std::string& handlerId
+- **Parameters:** `const std::string& handlerId`
 
 - **Return:** `void`
 
@@ -302,7 +302,7 @@
 
 
 
-- **Parameters:** const std::vector<Change>& changes
+- **Parameters:** `const std::vector<Change>& changes`
 
 - **Return:** `bool`
 
@@ -312,7 +312,7 @@
 
 
 
-- **Parameters:** const CollaborationEvent& event
+- **Parameters:** `const CollaborationEvent& event`
 
 - **Return:** `void`
 
@@ -322,7 +322,7 @@
 
 
 
-- **Parameters:** const std::vector<Change>& changes, std::vector<uint8_t>& compressed
+- **Parameters:** `const std::vector<Change>& changes`, `std::vector<uint8_t>& compressed`
 
 - **Return:** `bool`
 
@@ -332,7 +332,7 @@
 
 
 
-- **Parameters:** const std::vector<uint8_t>& compressed, std::vector<Change>& changes
+- **Parameters:** `const std::vector<uint8_t>& compressed`, `std::vector<Change>& changes`
 
 - **Return:** `bool`
 

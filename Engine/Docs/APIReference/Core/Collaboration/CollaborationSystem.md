@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static CollaborationSystem&`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** const CollaborationConfig& config = {}
+- **Parameters:** `const CollaborationConfig& config = {}`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** const std::string& identifier
+- **Parameters:** `const std::string& identifier`
 
 - **Return:** `SessionHandle`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** SessionHandle handle, const UserInfo& user
+- **Parameters:** `SessionHandle handle`, `const UserInfo& user`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** SessionHandle handle
+- **Parameters:** `SessionHandle handle`
 
 - **Return:** `void`
 
@@ -230,7 +230,7 @@
 
 
 
-- **Parameters:** SessionHandle handle
+- **Parameters:** `SessionHandle handle`
 
 - **Return:** `void`
 
@@ -240,7 +240,7 @@
 
 
 
-- **Parameters:** SessionHandle handle, const ChangeSet& changes
+- **Parameters:** `SessionHandle handle`, `const ChangeSet& changes`
 
 - **Return:** `void`
 
@@ -250,7 +250,7 @@
 
 
 
-- **Parameters:** SessionHandle handle, const ChangeId& changeId
+- **Parameters:** `SessionHandle handle`, `const ChangeId& changeId`
 
 - **Return:** `void`
 
@@ -260,7 +260,7 @@
 
 
 
-- **Parameters:** SessionHandle handle, const ChangeId& changeId
+- **Parameters:** `SessionHandle handle`, `const ChangeId& changeId`
 
 - **Return:** `void`
 
@@ -270,7 +270,7 @@
 
 
 
-- **Parameters:** SessionHandle handle, const ChangeId& changeId
+- **Parameters:** `SessionHandle handle`, `const ChangeId& changeId`
 
 - **Return:** `void`
 
@@ -280,7 +280,7 @@
 
 
 
-- **Parameters:** SessionHandle handle
+- **Parameters:** `SessionHandle handle`
 
 - **Return:** `void`
 
@@ -290,7 +290,7 @@
 
 
 
-- **Parameters:** SessionHandle handle, const ResourceId& resourceId
+- **Parameters:** `SessionHandle handle`, `const ResourceId& resourceId`
 
 - **Return:** `void`
 
@@ -300,7 +300,7 @@
 
 
 
-- **Parameters:** SessionHandle handle, const ResourceId& resourceId
+- **Parameters:** `SessionHandle handle`, `const ResourceId& resourceId`
 
 - **Return:** `void`
 
@@ -310,7 +310,7 @@
 
 
 
-- **Parameters:** std::unique_ptr<ICollaborationEventHandler> handler
+- **Parameters:** `std::unique_ptr<ICollaborationEventHandler> handler`
 
 - **Return:** `void`
 
@@ -320,7 +320,7 @@
 
 
 
-- **Parameters:** const std::string& handlerId
+- **Parameters:** `const std::string& handlerId`
 
 - **Return:** `void`
 

@@ -56,7 +56,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static MemorySystem&`
 
@@ -66,7 +66,7 @@
 
 
 
-- **Parameters:** const MemoryConfig& config = {}
+- **Parameters:** `const MemoryConfig& config = {}`
 
 - **Return:** `void`
 
@@ -76,7 +76,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -86,7 +86,7 @@
 
 
 
-- **Parameters:** size_t size, const AllocationInfo& info = {}
+- **Parameters:** `size_t size`, `const AllocationInfo& info = {}`
 
 - **Return:** `void*`
 
@@ -96,7 +96,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `void`
 
@@ -106,7 +106,7 @@
 
 
 
-- **Parameters:** const std::string& name, IMemoryStrategy* strategy
+- **Parameters:** `const std::string& name`, `IMemoryStrategy* strategy`
 
 - **Return:** `void`
 
@@ -116,7 +116,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 

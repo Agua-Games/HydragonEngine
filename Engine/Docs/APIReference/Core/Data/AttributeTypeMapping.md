@@ -67,7 +67,7 @@
 
 
 
-- **Parameters:** ValueType from, ValueType to
+- **Parameters:** `ValueType from`, `ValueType to`
 
 - **Return:** `static bool`
 
@@ -77,7 +77,7 @@
 
 
 
-- **Parameters:** ValueType type
+- **Parameters:** `ValueType type`
 
 - **Return:** `string`
 
@@ -87,7 +87,7 @@
 
 
 
-- **Parameters:** ValueType expected, ValueType actual
+- **Parameters:** `ValueType expected`, `ValueType actual`
 
 - **Return:** `static bool`
 
@@ -97,7 +97,7 @@
 
 
 
-- **Parameters:** ValueType type, const std::string& value
+- **Parameters:** `ValueType type`, `const std::string& value`
 
 - **Return:** `static bool`
 
@@ -107,7 +107,7 @@
 
 
 
-- **Parameters:** ValueType type, const std::string& value
+- **Parameters:** `ValueType type`, `const std::string& value`
 
 - **Return:** `static bool`
 
@@ -117,7 +117,7 @@
 
 
 
-- **Parameters:** value, desc.type
+- **Parameters:** `value`, `desc.type`
 
 - **Return:** `return`
 

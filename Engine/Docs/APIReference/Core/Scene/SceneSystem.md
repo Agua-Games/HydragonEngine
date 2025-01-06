@@ -114,7 +114,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static SceneSystem&`
 
@@ -124,7 +124,7 @@
 
 
 
-- **Parameters:** const SceneConfig& config = {}
+- **Parameters:** `const SceneConfig& config = {}`
 
 - **Return:** `void`
 
@@ -134,7 +134,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** const SceneDesc& desc
+- **Parameters:** `const SceneDesc& desc`
 
 - **Return:** `SceneHandle`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** SceneHandle handle
+- **Parameters:** `SceneHandle handle`
 
 - **Return:** `void`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** const std::string& path, const LoadSceneParams& params = {}
+- **Parameters:** `const std::string& path`, `const LoadSceneParams& params = {}`
 
 - **Return:** `void`
 
@@ -174,7 +174,7 @@
 
 
 
-- **Parameters:** SceneHandle handle
+- **Parameters:** `SceneHandle handle`
 
 - **Return:** `void`
 
@@ -184,7 +184,7 @@
 
 
 
-- **Parameters:** SceneHandle handle
+- **Parameters:** `SceneHandle handle`
 
 - **Return:** `EntityManager*`
 

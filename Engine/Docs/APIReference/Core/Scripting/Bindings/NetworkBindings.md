@@ -128,7 +128,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static NetworkBindings&`
 
@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** const NetworkBindingsConfig& config = {}
+- **Parameters:** `const NetworkBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** const std::string& address, uint16_t port
+- **Parameters:** `const std::string& address`, `uint16_t port`
 
 - **Return:** `ConnectionHandle`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** ConnectionHandle handle
+- **Parameters:** `ConnectionHandle handle`
 
 - **Return:** `void`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** ConnectionHandle handle, const NetworkMessage& message
+- **Parameters:** `ConnectionHandle handle`, `const NetworkMessage& message`
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** const NetworkMessage& message
+- **Parameters:** `const NetworkMessage& message`
 
 - **Return:** `void`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** MessageType type, const MessageHandler& handler
+- **Parameters:** `MessageType type`, `const MessageHandler& handler`
 
 - **Return:** `void`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** MessageType type
+- **Parameters:** `MessageType type`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** const std::string& name, const ReplicatedObject& object
+- **Parameters:** `const std::string& name`, `const ReplicatedObject& object`
 
 - **Return:** `void`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** const std::string& name, const ReplicatedState& state
+- **Parameters:** `const std::string& name`, `const ReplicatedState& state`
 
 - **Return:** `void`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** uint32_t milliseconds
+- **Parameters:** `uint32_t milliseconds`
 
 - **Return:** `void`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** float percentage
+- **Parameters:** `float percentage`
 
 - **Return:** `void`
 

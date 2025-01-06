@@ -114,7 +114,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AssetValidationSystem&`
 
@@ -124,7 +124,7 @@
 
 
 
-- **Parameters:** const AssetValidationConfig& config = {}
+- **Parameters:** `const AssetValidationConfig& config = {}`
 
 - **Return:** `void`
 
@@ -134,7 +134,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -174,7 +174,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -184,8 +184,7 @@
 
 
 
-- **Parameters:** const std::string& assetType, 
-                          const ValidationRule& rule
+- **Parameters:** `const std::string& assetType`, `const ValidationRule& rule`
 
 - **Return:** `void`
 
@@ -195,8 +194,7 @@
 
 
 
-- **Parameters:** const std::string& assetType, 
-                            const std::string& ruleName
+- **Parameters:** `const std::string& assetType`, `const std::string& ruleName`
 
 - **Return:** `void`
 
@@ -206,8 +204,7 @@
 
 
 
-- **Parameters:** const std::string& assetType, 
-                         std::unique_ptr<IAssetValidator> validator
+- **Parameters:** `const std::string& assetType`, `std::unique_ptr<IAssetValidator> validator`
 
 - **Return:** `void`
 

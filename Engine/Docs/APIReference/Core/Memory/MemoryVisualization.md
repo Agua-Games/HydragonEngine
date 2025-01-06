@@ -14,7 +14,7 @@
 
 
 
-- **Parameters:** const std::vector<MemoryBenchmark::BenchmarkResult>& results
+- **Parameters:** `const std::vector<MemoryBenchmark::BenchmarkResult>& results`
 
 - **Return:** `string`
 
@@ -24,7 +24,7 @@
 
 
 
-- **Parameters:** const MemoryBenchmark::BenchmarkResult& result
+- **Parameters:** `const MemoryBenchmark::BenchmarkResult& result`
 
 - **Return:** `string`
 
@@ -34,7 +34,7 @@
 
 
 
-- **Parameters:** const MemoryBenchmark::BenchmarkResult& result
+- **Parameters:** `const MemoryBenchmark::BenchmarkResult& result`
 
 - **Return:** `string`
 
@@ -44,8 +44,7 @@
 
 
 
-- **Parameters:** const std::vector<MemoryBenchmark::BenchmarkResult>& results, 
-                           const std::string& filepath
+- **Parameters:** `const std::vector<MemoryBenchmark::BenchmarkResult>& results`, `const std::string& filepath`
 
 - **Return:** `static bool`
 
@@ -55,7 +54,7 @@
 
 
 
-- **Parameters:** const BenchmarkResult::AccessPatternMetrics& metrics
+- **Parameters:** `const BenchmarkResult::AccessPatternMetrics& metrics`
 
 - **Return:** `string`
 
@@ -65,7 +64,7 @@
 
 
 
-- **Parameters:** const BenchmarkResult::FragmentationMetrics& metrics
+- **Parameters:** `const BenchmarkResult::FragmentationMetrics& metrics`
 
 - **Return:** `string`
 
@@ -75,7 +74,7 @@
 
 
 
-- **Parameters:** const std::vector<BenchmarkResult::AccessPatternMetrics::HotSpot>& hotspots
+- **Parameters:** `const std::vector<BenchmarkResult::AccessPatternMetrics::HotSpot>& hotspots`
 
 - **Return:** `string`
 

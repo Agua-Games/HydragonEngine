@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static RuntimeCinematicSystem&`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** const RuntimeCinematicConfig& config = {}
+- **Parameters:** `const RuntimeCinematicConfig& config = {}`
 
 - **Return:** `void`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -174,7 +174,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -184,7 +184,7 @@
 
 
 
-- **Parameters:** const CinematicDesc& desc
+- **Parameters:** `const CinematicDesc& desc`
 
 - **Return:** `CinematicHandle`
 
@@ -194,7 +194,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle
+- **Parameters:** `CinematicHandle handle`
 
 - **Return:** `void`
 
@@ -204,7 +204,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, const PlaybackParams& params = {}
+- **Parameters:** `CinematicHandle handle`, `const PlaybackParams& params = {}`
 
 - **Return:** `void`
 
@@ -214,7 +214,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle
+- **Parameters:** `CinematicHandle handle`
 
 - **Return:** `void`
 
@@ -224,7 +224,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle
+- **Parameters:** `CinematicHandle handle`
 
 - **Return:** `void`
 
@@ -234,7 +234,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle
+- **Parameters:** `CinematicHandle handle`
 
 - **Return:** `void`
 
@@ -244,7 +244,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, float time
+- **Parameters:** `CinematicHandle handle`, `float time`
 
 - **Return:** `void`
 
@@ -254,7 +254,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, float speed
+- **Parameters:** `CinematicHandle handle`, `float speed`
 
 - **Return:** `void`
 
@@ -264,7 +264,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, float weight
+- **Parameters:** `CinematicHandle handle`, `float weight`
 
 - **Return:** `void`
 
@@ -274,7 +274,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, const TrackDesc& desc
+- **Parameters:** `CinematicHandle handle`, `const TrackDesc& desc`
 
 - **Return:** `void`
 
@@ -284,7 +284,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, TrackHandle track
+- **Parameters:** `CinematicHandle handle`, `TrackHandle track`
 
 - **Return:** `void`
 
@@ -294,7 +294,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, TrackHandle track, bool enabled
+- **Parameters:** `CinematicHandle handle`, `TrackHandle track`, `bool enabled`
 
 - **Return:** `void`
 
@@ -304,7 +304,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, EntityHandle target
+- **Parameters:** `CinematicHandle handle`, `EntityHandle target`
 
 - **Return:** `void`
 
@@ -314,7 +314,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, CameraBlendMode mode
+- **Parameters:** `CinematicHandle handle`, `CameraBlendMode mode`
 
 - **Return:** `void`
 
@@ -324,7 +324,7 @@
 
 
 
-- **Parameters:** const std::string& event, const CinematicEventHandler& handler
+- **Parameters:** `const std::string& event`, `const CinematicEventHandler& handler`
 
 - **Return:** `void`
 
@@ -334,7 +334,7 @@
 
 
 
-- **Parameters:** const std::string& event
+- **Parameters:** `const std::string& event`
 
 - **Return:** `void`
 
@@ -344,7 +344,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, const std::string& name
+- **Parameters:** `CinematicHandle handle`, `const std::string& name`
 
 - **Return:** `void`
 
@@ -354,7 +354,7 @@
 
 
 
-- **Parameters:** CinematicHandle handle, const std::string& name
+- **Parameters:** `CinematicHandle handle`, `const std::string& name`
 
 - **Return:** `void`
 

@@ -128,7 +128,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static InputBindings&`
 
@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** const InputBindingsConfig& config = {}
+- **Parameters:** `const InputBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** const std::string& name, const ActionDesc& desc
+- **Parameters:** `const std::string& name`, `const ActionDesc& desc`
 
 - **Return:** `ActionHandle`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** ActionHandle handle
+- **Parameters:** `ActionHandle handle`
 
 - **Return:** `void`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** ActionHandle handle, const ActionBinding& binding
+- **Parameters:** `ActionHandle handle`, `const ActionBinding& binding`
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** ActionHandle handle
+- **Parameters:** `ActionHandle handle`
 
 - **Return:** `void`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** const std::string& name, const ActionCallback& callback
+- **Parameters:** `const std::string& name`, `const ActionCallback& callback`
 
 - **Return:** `void`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** const std::string& name, const GesturePattern& pattern
+- **Parameters:** `const std::string& name`, `const GesturePattern& pattern`
 
 - **Return:** `void`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** const std::string& device, const HapticEffect& effect
+- **Parameters:** `const std::string& device`, `const HapticEffect& effect`
 
 - **Return:** `void`
 

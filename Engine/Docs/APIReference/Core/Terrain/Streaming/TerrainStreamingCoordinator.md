@@ -250,7 +250,7 @@
 
 
 
-- **Parameters:** const Camera& camera
+- **Parameters:** `const Camera& camera`
 
 - **Return:** `void`
 
@@ -260,7 +260,7 @@
 
 
 
-- **Parameters:** const Vector3& position, float priority
+- **Parameters:** `const Vector3& position`, `float priority`
 
 - **Return:** `void`
 
@@ -270,7 +270,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -280,7 +280,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -290,7 +290,7 @@
 
 
 
-- **Parameters:** CommandBuffer* cmd
+- **Parameters:** `CommandBuffer* cmd`
 
 - **Return:** `void`
 
@@ -300,7 +300,7 @@
 
 
 
-- **Parameters:** const AssetReloadEvent& event
+- **Parameters:** `const AssetReloadEvent& event`
 
 - **Return:** `void`
 
@@ -310,7 +310,7 @@
 
 
 
-- **Parameters:** AssetSystem& assetSystem
+- **Parameters:** `AssetSystem& assetSystem`
 
 - **Return:** `void`
 
@@ -320,7 +320,7 @@
 
 
 
-- **Parameters:** const CollaboratorUpdate& update
+- **Parameters:** `const CollaboratorUpdate& update`
 
 - **Return:** `void`
 
@@ -330,7 +330,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -340,7 +340,7 @@
 
 
 
-- **Parameters:** AttributeSystem& attributes
+- **Parameters:** `AttributeSystem& attributes`
 
 - **Return:** `void`
 
@@ -350,7 +350,7 @@
 
 
 
-- **Parameters:** size_t budgetMB
+- **Parameters:** `size_t budgetMB`
 
 - **Return:** `void`
 
@@ -360,7 +360,7 @@
 
 
 
-- **Parameters:** const BoundingBox& region, float priority
+- **Parameters:** `const BoundingBox& region`, `float priority`
 
 - **Return:** `void`
 
@@ -370,7 +370,7 @@
 
 
 
-- **Parameters:** StreamingQuality quality
+- **Parameters:** `StreamingQuality quality`
 
 - **Return:** `void`
 
@@ -380,7 +380,7 @@
 
 
 
-- **Parameters:** const Camera& camera
+- **Parameters:** `const Camera& camera`
 
 - **Return:** `void`
 
@@ -390,7 +390,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -400,7 +400,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -410,7 +410,7 @@
 
 
 
-- **Parameters:** const StreamingError& error
+- **Parameters:** `const StreamingError& error`
 
 - **Return:** `void`
 
@@ -420,7 +420,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -430,7 +430,7 @@
 
 
 
-- **Parameters:** const StreamingEvent& event
+- **Parameters:** `const StreamingEvent& event`
 
 - **Return:** `void`
 
@@ -440,7 +440,7 @@
 
 
 
-- **Parameters:** uint32_t regionId
+- **Parameters:** `uint32_t regionId`
 
 - **Return:** `void`
 
@@ -450,7 +450,7 @@
 
 
 
-- **Parameters:** const BoundingBox& bounds, float distance
+- **Parameters:** `const BoundingBox& bounds`, `float distance`
 
 - **Return:** `float`
 

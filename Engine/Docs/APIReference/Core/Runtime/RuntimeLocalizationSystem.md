@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static RuntimeLocalizationSystem&`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** const RuntimeLocalizationConfig& config = {}
+- **Parameters:** `const RuntimeLocalizationConfig& config = {}`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** const std::string& locale, bool setActive = false
+- **Parameters:** `const std::string& locale`, `bool setActive = false`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** const std::string& locale
+- **Parameters:** `const std::string& locale`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** const std::string& locale
+- **Parameters:** `const std::string& locale`
 
 - **Return:** `void`
 
@@ -230,7 +230,7 @@
 
 
 
-- **Parameters:** const std::string& key, const LocalizationParams& params = {}
+- **Parameters:** `const std::string& key`, `const LocalizationParams& params = {}`
 
 - **Return:** `string`
 
@@ -240,7 +240,7 @@
 
 
 
-- **Parameters:** const std::string& key, int count, const LocalizationParams& params = {}
+- **Parameters:** `const std::string& key`, `int count`, `const LocalizationParams& params = {}`
 
 - **Return:** `string`
 
@@ -250,7 +250,7 @@
 
 
 
-- **Parameters:** const std::string& key, const std::string& context, const LocalizationParams& params = {}
+- **Parameters:** `const std::string& key`, `const std::string& context`, `const LocalizationParams& params = {}`
 
 - **Return:** `string`
 
@@ -260,7 +260,7 @@
 
 
 
-- **Parameters:** const std::string& name, std::unique_ptr<ILocalizationFormatter> formatter
+- **Parameters:** `const std::string& name`, `std::unique_ptr<ILocalizationFormatter> formatter`
 
 - **Return:** `void`
 
@@ -270,7 +270,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 

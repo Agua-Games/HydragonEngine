@@ -114,7 +114,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static PipelineSystem&`
 
@@ -124,7 +124,7 @@
 
 
 
-- **Parameters:** const PipelineConfig& config = {}
+- **Parameters:** `const PipelineConfig& config = {}`
 
 - **Return:** `void`
 
@@ -134,7 +134,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** const PipelineDesc& desc
+- **Parameters:** `const PipelineDesc& desc`
 
 - **Return:** `PipelineHandle`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** PipelineHandle handle
+- **Parameters:** `PipelineHandle handle`
 
 - **Return:** `void`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** const ShaderDesc& desc
+- **Parameters:** `const ShaderDesc& desc`
 
 - **Return:** `ShaderHandle`
 
@@ -174,7 +174,7 @@
 
 
 
-- **Parameters:** ShaderHandle handle
+- **Parameters:** `ShaderHandle handle`
 
 - **Return:** `void`
 
@@ -184,7 +184,7 @@
 
 
 
-- **Parameters:** PipelineHandle handle
+- **Parameters:** `PipelineHandle handle`
 
 - **Return:** `void`
 
@@ -194,7 +194,7 @@
 
 
 
-- **Parameters:** PipelineHandle handle, const PipelineState& state
+- **Parameters:** `PipelineHandle handle`, `const PipelineState& state`
 
 - **Return:** `void`
 

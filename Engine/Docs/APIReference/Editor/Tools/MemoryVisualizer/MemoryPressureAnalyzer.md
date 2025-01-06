@@ -83,7 +83,7 @@
 
 
 
-- **Parameters:** const Memory::MemoryState& state
+- **Parameters:** `const Memory::MemoryState& state`
 
 - **Return:** `PressureLevel`
 
@@ -93,7 +93,7 @@
 
 
 
-- **Parameters:** const Memory::MemoryState& state
+- **Parameters:** `const Memory::MemoryState& state`
 
 - **Return:** `PressureMetrics`
 
@@ -103,7 +103,7 @@
 
 
 
-- **Parameters:** float medium, float high, float critical
+- **Parameters:** `float medium`, `float high`, `float critical`
 
 - **Return:** `void`
 

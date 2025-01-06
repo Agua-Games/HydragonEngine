@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static ConfigSystem&`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `bool`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -174,7 +174,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -184,7 +184,7 @@
 
 
 
-- **Parameters:** const std::string& name, const ConfigDesc& desc = {}
+- **Parameters:** `const std::string& name`, `const ConfigDesc& desc = {}`
 
 - **Return:** `ConfigHandle`
 
@@ -194,7 +194,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle
+- **Parameters:** `ConfigHandle handle`
 
 - **Return:** `void`
 
@@ -204,7 +204,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `bool`
 
@@ -214,7 +214,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, const std::string& path = ""
+- **Parameters:** `ConfigHandle handle`, `const std::string& path = ""`
 
 - **Return:** `bool`
 
@@ -224,7 +224,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, const std::string& key, const Variant& value
+- **Parameters:** `ConfigHandle handle`, `const std::string& key`, `const Variant& value`
 
 - **Return:** `void`
 
@@ -234,7 +234,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, const std::string& key
+- **Parameters:** `ConfigHandle handle`, `const std::string& key`
 
 - **Return:** `void`
 
@@ -244,7 +244,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, const std::string& section
+- **Parameters:** `ConfigHandle handle`, `const std::string& section`
 
 - **Return:** `void`
 
@@ -254,7 +254,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, const std::string& section
+- **Parameters:** `ConfigHandle handle`, `const std::string& section`
 
 - **Return:** `void`
 
@@ -264,7 +264,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, const ConfigSchema& schema
+- **Parameters:** `ConfigHandle handle`, `const ConfigSchema& schema`
 
 - **Return:** `void`
 
@@ -274,7 +274,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, const std::string& description = ""
+- **Parameters:** `ConfigHandle handle`, `const std::string& description = ""`
 
 - **Return:** `void`
 
@@ -284,7 +284,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, uint32_t version
+- **Parameters:** `ConfigHandle handle`, `uint32_t version`
 
 - **Return:** `void`
 
@@ -294,7 +294,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, const std::string& key
+- **Parameters:** `ConfigHandle handle`, `const std::string& key`
 
 - **Return:** `void`
 
@@ -304,7 +304,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle
+- **Parameters:** `ConfigHandle handle`
 
 - **Return:** `void`
 
@@ -314,7 +314,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle
+- **Parameters:** `ConfigHandle handle`
 
 - **Return:** `void`
 
@@ -324,7 +324,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle
+- **Parameters:** `ConfigHandle handle`
 
 - **Return:** `void`
 
@@ -334,7 +334,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle
+- **Parameters:** `ConfigHandle handle`
 
 - **Return:** `void`
 
@@ -344,7 +344,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle
+- **Parameters:** `ConfigHandle handle`
 
 - **Return:** `void`
 
@@ -354,7 +354,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -364,7 +364,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle, const std::string& path
+- **Parameters:** `ConfigHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -374,7 +374,7 @@
 
 
 
-- **Parameters:** ConfigHandle handle
+- **Parameters:** `ConfigHandle handle`
 
 - **Return:** `void`
 

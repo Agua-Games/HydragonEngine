@@ -90,7 +90,7 @@
 
 
 
-- **Parameters:** const EntityConfig& config = {}
+- **Parameters:** `const EntityConfig& config = {}`
 
 - **Return:** `explicit`
 
@@ -100,7 +100,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `EntityHandle`
 
@@ -110,7 +110,7 @@
 
 
 
-- **Parameters:** EntityHandle entity
+- **Parameters:** `EntityHandle entity`
 
 - **Return:** `void`
 
@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** EntityHandle entity
+- **Parameters:** `EntityHandle entity`
 
 - **Return:** `T*`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** EntityHandle entity
+- **Parameters:** `EntityHandle entity`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** EntityHandle entity
+- **Parameters:** `EntityHandle entity`
 
 - **Return:** `T*`
 

@@ -91,8 +91,7 @@
 
 
 
-- **Parameters:** NodeHandle root, const VisitorFunc& visitor, 
-                               const TraversalOptions& options = {}
+- **Parameters:** `NodeHandle root`, `const VisitorFunc& visitor`, `const TraversalOptions& options = {}`
 
 - **Return:** `static void`
 
@@ -102,7 +101,7 @@
 
 
 
-- **Parameters:** NodeHandle node, const VisitorFunc& visitor
+- **Parameters:** `NodeHandle node`, `const VisitorFunc& visitor`
 
 - **Return:** `static void`
 
@@ -112,7 +111,7 @@
 
 
 
-- **Parameters:** NodeHandle node, const VisitorFunc& visitor
+- **Parameters:** `NodeHandle node`, `const VisitorFunc& visitor`
 
 - **Return:** `static void`
 
@@ -122,7 +121,7 @@
 
 
 
-- **Parameters:** NodeHandle a, NodeHandle b
+- **Parameters:** `NodeHandle a`, `NodeHandle b`
 
 - **Return:** `static NodeHandle`
 
@@ -132,7 +131,7 @@
 
 
 
-- **Parameters:** NodeHandle node
+- **Parameters:** `NodeHandle node`
 
 - **Return:** `static uint32_t`
 
@@ -142,8 +141,7 @@
 
 
 
-- **Parameters:** NodeHandle node, const VisitorFunc& visitor, 
-                                const TraversalOptions& options, uint32_t depth
+- **Parameters:** `NodeHandle node`, `const VisitorFunc& visitor`, `const TraversalOptions& options`, `uint32_t depth`
 
 - **Return:** `static void`
 
@@ -153,8 +151,7 @@
 
 
 
-- **Parameters:** NodeHandle node, const VisitorFunc& visitor,
-                                 const TraversalOptions& options, uint32_t depth
+- **Parameters:** `NodeHandle node`, `const VisitorFunc& visitor`, `const TraversalOptions& options`, `uint32_t depth`
 
 - **Return:** `static void`
 
@@ -164,8 +161,7 @@
 
 
 
-- **Parameters:** NodeHandle root, const VisitorFunc& visitor,
-                                    const TraversalOptions& options
+- **Parameters:** `NodeHandle root`, `const VisitorFunc& visitor`, `const TraversalOptions& options`
 
 - **Return:** `static void`
 

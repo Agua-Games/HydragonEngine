@@ -76,7 +76,7 @@
 
 
 
-- **Parameters:** const PoolConfig& config
+- **Parameters:** `const PoolConfig& config`
 
 - **Return:** `explicit`
 
@@ -86,7 +86,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -96,7 +96,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `MemoryPool*`
 

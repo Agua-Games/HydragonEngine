@@ -88,7 +88,7 @@
 
 
 
-- **Parameters:** const SchedulerConfig& config = {}
+- **Parameters:** `const SchedulerConfig& config = {}`
 
 - **Return:** `explicit`
 
@@ -98,7 +98,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -108,7 +108,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -118,7 +118,7 @@
 
 
 
-- **Parameters:** const TaskDesc& desc
+- **Parameters:** `const TaskDesc& desc`
 
 - **Return:** `TaskHandle`
 
@@ -128,7 +128,7 @@
 
 
 
-- **Parameters:** TaskHandle handle
+- **Parameters:** `TaskHandle handle`
 
 - **Return:** `void`
 
@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** TaskHandle handle
+- **Parameters:** `TaskHandle handle`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** TaskHandle completedTask
+- **Parameters:** `TaskHandle completedTask`
 
 - **Return:** `void`
 

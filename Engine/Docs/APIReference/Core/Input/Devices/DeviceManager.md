@@ -104,7 +104,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static DeviceManager&`
 
@@ -114,7 +114,7 @@
 
 
 
-- **Parameters:** const DeviceConfig& config = {}
+- **Parameters:** `const DeviceConfig& config = {}`
 
 - **Return:** `void`
 
@@ -124,7 +124,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -134,7 +134,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** DeviceHandle handle, const DeviceConfig& config
+- **Parameters:** `DeviceHandle handle`, `const DeviceConfig& config`
 
 - **Return:** `void`
 

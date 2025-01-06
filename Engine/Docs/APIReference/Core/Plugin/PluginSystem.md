@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static PluginSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const PluginConfig& config = {}
+- **Parameters:** `const PluginConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `PluginHandle`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** PluginHandle handle
+- **Parameters:** `PluginHandle handle`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** PluginHandle handle
+- **Parameters:** `PluginHandle handle`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** PluginHandle handle
+- **Parameters:** `PluginHandle handle`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** PluginHandle handle, const std::string& name
+- **Parameters:** `PluginHandle handle`, `const std::string& name`
 
 - **Return:** `void*`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** const std::string& name, void* interface
+- **Parameters:** `const std::string& name`, `void* interface`
 
 - **Return:** `void`
 

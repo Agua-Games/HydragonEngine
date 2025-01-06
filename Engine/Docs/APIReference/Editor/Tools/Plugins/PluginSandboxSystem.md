@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static PluginSandboxSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const PluginSandboxConfig& config = {}
+- **Parameters:** `const PluginSandboxConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const std::string& pluginId
+- **Parameters:** `const std::string& pluginId`
 
 - **Return:** `SandboxHandle`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** SandboxHandle handle
+- **Parameters:** `SandboxHandle handle`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** SandboxHandle handle, const ResourceLimits& limits
+- **Parameters:** `SandboxHandle handle`, `const ResourceLimits& limits`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** SandboxHandle handle, const SandboxPermissions& permissions
+- **Parameters:** `SandboxHandle handle`, `const SandboxPermissions& permissions`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** SandboxHandle handle, ResourceType type
+- **Parameters:** `SandboxHandle handle`, `ResourceType type`
 
 - **Return:** `void`
 

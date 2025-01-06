@@ -106,7 +106,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static MathSystem&`
 
@@ -116,7 +116,7 @@
 
 
 
-- **Parameters:** const MathConfig& config = {}
+- **Parameters:** `const MathConfig& config = {}`
 
 - **Return:** `void`
 
@@ -126,7 +126,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** const Matrix4x4* matrices, uint32_t count, Matrix4x4* results
+- **Parameters:** `const Matrix4x4* matrices`, `uint32_t count`, `Matrix4x4* results`
 
 - **Return:** `void`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** const Matrix4x4* matrices, uint32_t count, Matrix4x4* results
+- **Parameters:** `const Matrix4x4* matrices`, `uint32_t count`, `Matrix4x4* results`
 
 - **Return:** `void`
 
@@ -166,8 +166,7 @@
 
 
 
-- **Parameters:** const Vector4* vectors, const Matrix4x4& transform, 
-                         uint32_t count, Vector4* results
+- **Parameters:** `const Vector4* vectors`, `const Matrix4x4& transform`, `uint32_t count`, `Vector4* results`
 
 - **Return:** `void`
 
@@ -177,7 +176,7 @@
 
 
 
-- **Parameters:** const Vector4* vectors, uint32_t count, Vector4* results
+- **Parameters:** `const Vector4* vectors`, `uint32_t count`, `Vector4* results`
 
 - **Return:** `void`
 
@@ -187,8 +186,7 @@
 
 
 
-- **Parameters:** const Quaternion* start, const Quaternion* end, 
-                         float* t, uint32_t count, Quaternion* results
+- **Parameters:** `const Quaternion* start`, `const Quaternion* end`, `float* t`, `uint32_t count`, `Quaternion* results`
 
 - **Return:** `void`
 
@@ -198,7 +196,7 @@
 
 
 
-- **Parameters:** const ComputeTask& task
+- **Parameters:** `const ComputeTask& task`
 
 - **Return:** `void`
 
@@ -208,7 +206,7 @@
 
 
 
-- **Parameters:** const ComputeTask& task
+- **Parameters:** `const ComputeTask& task`
 
 - **Return:** `void`
 

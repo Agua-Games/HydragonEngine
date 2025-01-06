@@ -125,7 +125,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static LogSystem&`
 
@@ -135,7 +135,7 @@
 
 
 
-- **Parameters:** const LogConfig& config = {}
+- **Parameters:** `const LogConfig& config = {}`
 
 - **Return:** `void`
 
@@ -145,7 +145,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -155,7 +155,7 @@
 
 
 
-- **Parameters:** const std::string& message
+- **Parameters:** `const std::string& message`
 
 - **Return:** `void`
 
@@ -165,7 +165,7 @@
 
 
 
-- **Parameters:** const std::string& message
+- **Parameters:** `const std::string& message`
 
 - **Return:** `void`
 
@@ -175,7 +175,7 @@
 
 
 
-- **Parameters:** const std::string& message
+- **Parameters:** `const std::string& message`
 
 - **Return:** `void`
 
@@ -185,7 +185,7 @@
 
 
 
-- **Parameters:** const std::string& message
+- **Parameters:** `const std::string& message`
 
 - **Return:** `void`
 
@@ -195,7 +195,7 @@
 
 
 
-- **Parameters:** const std::string& message
+- **Parameters:** `const std::string& message`
 
 - **Return:** `void`
 
@@ -205,7 +205,7 @@
 
 
 
-- **Parameters:** const std::string& message
+- **Parameters:** `const std::string& message`
 
 - **Return:** `void`
 
@@ -215,7 +215,7 @@
 
 
 
-- **Parameters:** LogLevel level
+- **Parameters:** `LogLevel level`
 
 - **Return:** `void`
 
@@ -225,7 +225,7 @@
 
 
 
-- **Parameters:** std::unique_ptr<ILogHandler> handler
+- **Parameters:** `std::unique_ptr<ILogHandler> handler`
 
 - **Return:** `void`
 

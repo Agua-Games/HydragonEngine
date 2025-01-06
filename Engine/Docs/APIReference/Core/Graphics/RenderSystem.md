@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static RenderSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const RenderConfig& config = {}
+- **Parameters:** `const RenderConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** const RenderCommand& command
+- **Parameters:** `const RenderCommand& command`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** const Viewport& viewport
+- **Parameters:** `const Viewport& viewport`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** RenderTargetHandle target
+- **Parameters:** `RenderTargetHandle target`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** const MaterialDesc& desc
+- **Parameters:** `const MaterialDesc& desc`
 
 - **Return:** `MaterialHandle`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** MaterialHandle handle
+- **Parameters:** `MaterialHandle handle`
 
 - **Return:** `void`
 
@@ -222,7 +222,7 @@
 
 
 
-- **Parameters:** const TextureDesc& desc
+- **Parameters:** `const TextureDesc& desc`
 
 - **Return:** `TextureHandle`
 
@@ -232,7 +232,7 @@
 
 
 
-- **Parameters:** TextureHandle handle
+- **Parameters:** `TextureHandle handle`
 
 - **Return:** `void`
 
@@ -242,7 +242,7 @@
 
 
 
-- **Parameters:** BufferHandle handle, const void* data, size_t size
+- **Parameters:** `BufferHandle handle`, `const void* data`, `size_t size`
 
 - **Return:** `void`
 
@@ -252,7 +252,7 @@
 
 
 
-- **Parameters:** MaterialHandle material, const char* name, const void* data
+- **Parameters:** `MaterialHandle material`, `const char* name`, `const void* data`
 
 - **Return:** `void`
 

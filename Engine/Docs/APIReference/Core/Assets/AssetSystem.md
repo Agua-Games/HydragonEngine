@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AssetSystem&`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** const AssetConfig& config = {}
+- **Parameters:** `const AssetConfig& config = {}`
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const std::string& path, const LoadParams& params = {}
+- **Parameters:** `const std::string& path`, `const LoadParams& params = {}`
 
 - **Return:** `AssetHandle`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** AssetHandle handle
+- **Parameters:** `AssetHandle handle`
 
 - **Return:** `void`
 

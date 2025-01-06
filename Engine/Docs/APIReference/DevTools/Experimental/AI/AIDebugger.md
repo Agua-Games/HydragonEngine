@@ -112,7 +112,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AIDebugger&`
 
@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** const AIDebuggerConfig& config = {}
+- **Parameters:** `const AIDebuggerConfig& config = {}`
 
 - **Return:** `void`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** float deltaTime
+- **Parameters:** `float deltaTime`
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** EntityHandle entity
+- **Parameters:** `EntityHandle entity`
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** EntityHandle entity
+- **Parameters:** `EntityHandle entity`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** EntityHandle entity
+- **Parameters:** `EntityHandle entity`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** EntityHandle entity
+- **Parameters:** `EntityHandle entity`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** EntityHandle entity
+- **Parameters:** `EntityHandle entity`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** const std::string& snapshot1, const std::string& snapshot2
+- **Parameters:** `const std::string& snapshot1`, `const std::string& snapshot2`
 
 - **Return:** `void`
 

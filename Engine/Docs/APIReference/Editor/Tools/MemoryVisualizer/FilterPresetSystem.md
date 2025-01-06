@@ -92,7 +92,7 @@
 
 
 
-- **Parameters:** const QString& name, const FilterCriteria& criteria
+- **Parameters:** `const QString& name`, `const FilterCriteria& criteria`
 
 - **Return:** `void`
 
@@ -102,7 +102,7 @@
 
 
 
-- **Parameters:** const QString& name
+- **Parameters:** `const QString& name`
 
 - **Return:** `void`
 
@@ -112,7 +112,7 @@
 
 
 
-- **Parameters:** const QString& name
+- **Parameters:** `const QString& name`
 
 - **Return:** `void`
 
@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** size_t count
+- **Parameters:** `size_t count`
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

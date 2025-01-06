@@ -60,7 +60,7 @@
 
 
 
-- **Parameters:** const MemoryState& state
+- **Parameters:** `const MemoryState& state`
 
 - **Return:** `void`
 
@@ -70,7 +70,7 @@
 
 
 
-- **Parameters:** const StreamingState& state
+- **Parameters:** `const StreamingState& state`
 
 - **Return:** `void`
 

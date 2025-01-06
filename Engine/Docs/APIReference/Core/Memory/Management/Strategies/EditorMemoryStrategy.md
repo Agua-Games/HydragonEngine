@@ -184,7 +184,7 @@
 
 
 
-- **Parameters:** const Config& config = {}
+- **Parameters:** `const Config& config = {}`
 
 - **Return:** `explicit`
 
@@ -194,7 +194,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

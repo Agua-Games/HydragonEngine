@@ -58,7 +58,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -68,7 +68,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -78,7 +78,7 @@
 
 
 
-- **Parameters:** const StreamingEvent& event
+- **Parameters:** `const StreamingEvent& event`
 
 - **Return:** `void`
 
@@ -88,7 +88,7 @@
 
 
 
-- **Parameters:** const StreamingStats& stats
+- **Parameters:** `const StreamingStats& stats`
 
 - **Return:** `void`
 
@@ -98,7 +98,7 @@
 
 
 
-- **Parameters:** const StreamingEvent& event
+- **Parameters:** `const StreamingEvent& event`
 
 - **Return:** `void`
 
@@ -108,7 +108,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

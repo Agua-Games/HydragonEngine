@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AnimationSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const AnimationConfig& config = {}
+- **Parameters:** `const AnimationConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** float deltaTime
+- **Parameters:** `float deltaTime`
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const AnimationDesc& desc
+- **Parameters:** `const AnimationDesc& desc`
 
 - **Return:** `AnimationHandle`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** AnimationHandle handle
+- **Parameters:** `AnimationHandle handle`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** const SkeletonDesc& desc
+- **Parameters:** `const SkeletonDesc& desc`
 
 - **Return:** `SkeletonHandle`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** SkeletonHandle handle
+- **Parameters:** `SkeletonHandle handle`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** AnimationHandle anim, SkeletonHandle skeleton
+- **Parameters:** `AnimationHandle anim`, `SkeletonHandle skeleton`
 
 - **Return:** `void`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** AnimationHandle anim, SkeletonHandle skeleton
+- **Parameters:** `AnimationHandle anim`, `SkeletonHandle skeleton`
 
 - **Return:** `void`
 
@@ -222,7 +222,7 @@
 
 
 
-- **Parameters:** AnimationHandle from, AnimationHandle to, float blendTime
+- **Parameters:** `AnimationHandle from`, `AnimationHandle to`, `float blendTime`
 
 - **Return:** `void`
 
@@ -232,7 +232,7 @@
 
 
 
-- **Parameters:** AnimationHandle handle, float time
+- **Parameters:** `AnimationHandle handle`, `float time`
 
 - **Return:** `void`
 
@@ -242,7 +242,7 @@
 
 
 
-- **Parameters:** AnimationHandle handle, float speed
+- **Parameters:** `AnimationHandle handle`, `float speed`
 
 - **Return:** `void`
 

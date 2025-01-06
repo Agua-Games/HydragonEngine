@@ -112,7 +112,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static PluginLoader&`
 
@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** const PluginLoaderConfig& config = {}
+- **Parameters:** `const PluginLoaderConfig& config = {}`
 
 - **Return:** `void`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `PluginHandle`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** PluginHandle handle
+- **Parameters:** `PluginHandle handle`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** PluginHandle handle
+- **Parameters:** `PluginHandle handle`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** PluginHandle handle, bool enable
+- **Parameters:** `PluginHandle handle`, `bool enable`
 
 - **Return:** `void`
 

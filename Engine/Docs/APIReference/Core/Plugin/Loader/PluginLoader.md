@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const LoaderConfig& config = {}
+- **Parameters:** `const LoaderConfig& config = {}`
 
 - **Return:** `explicit`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** const ScriptConfig& config = {}
+- **Parameters:** `const ScriptConfig& config = {}`
 
 - **Return:** `explicit`
 

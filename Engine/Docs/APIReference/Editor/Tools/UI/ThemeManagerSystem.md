@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static ThemeManagerSystem&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** const ThemeManagerConfig& config = {}
+- **Parameters:** `const ThemeManagerConfig& config = {}`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** const ColorCustomization& customization
+- **Parameters:** `const ColorCustomization& customization`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** const std::string& element, const StyleDesc& style
+- **Parameters:** `const std::string& element`, `const StyleDesc& style`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** const std::string& element
+- **Parameters:** `const std::string& element`
 
 - **Return:** `void`
 

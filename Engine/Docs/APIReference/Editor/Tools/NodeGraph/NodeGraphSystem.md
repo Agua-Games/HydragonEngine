@@ -128,7 +128,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static NodeGraphSystem&`
 
@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** const NodeGraphConfig& config = {}
+- **Parameters:** `const NodeGraphConfig& config = {}`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** const NodeDesc& desc
+- **Parameters:** `const NodeDesc& desc`
 
 - **Return:** `NodeHandle`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** NodeHandle handle
+- **Parameters:** `NodeHandle handle`
 
 - **Return:** `void`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** NodeHandle handle
+- **Parameters:** `NodeHandle handle`
 
 - **Return:** `void`
 
@@ -198,8 +198,7 @@
 
 
 
-- **Parameters:** NodeHandle output, uint32_t outputPin,
-                                NodeHandle input, uint32_t inputPin
+- **Parameters:** `NodeHandle output`, `uint32_t outputPin`, `NodeHandle input`, `uint32_t inputPin`
 
 - **Return:** `ConnectionHandle`
 
@@ -209,7 +208,7 @@
 
 
 
-- **Parameters:** ConnectionHandle handle
+- **Parameters:** `ConnectionHandle handle`
 
 - **Return:** `void`
 
@@ -219,7 +218,7 @@
 
 
 
-- **Parameters:** NodeHandle handle, const Vector2& position
+- **Parameters:** `NodeHandle handle`, `const Vector2& position`
 
 - **Return:** `void`
 
@@ -229,7 +228,7 @@
 
 
 
-- **Parameters:** NodeHandle handle, const std::string& comment
+- **Parameters:** `NodeHandle handle`, `const std::string& comment`
 
 - **Return:** `void`
 
@@ -239,7 +238,7 @@
 
 
 
-- **Parameters:** const std::vector<NodeHandle>& nodes, const std::string& name
+- **Parameters:** `const std::vector<NodeHandle>& nodes`, `const std::string& name`
 
 - **Return:** `void`
 
@@ -249,7 +248,7 @@
 
 
 
-- **Parameters:** GroupHandle handle
+- **Parameters:** `GroupHandle handle`
 
 - **Return:** `void`
 
@@ -259,7 +258,7 @@
 
 
 
-- **Parameters:** const NodeTypeInfo& info
+- **Parameters:** `const NodeTypeInfo& info`
 
 - **Return:** `void`
 
@@ -269,7 +268,7 @@
 
 
 
-- **Parameters:** const std::string& type
+- **Parameters:** `const std::string& type`
 
 - **Return:** `void`
 

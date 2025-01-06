@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static PlatformSystem&`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** const PlatformConfig& config = {}
+- **Parameters:** `const PlatformConfig& config = {}`
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** const WindowDesc& desc
+- **Parameters:** `const WindowDesc& desc`
 
 - **Return:** `WindowHandle`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, const std::string& title
+- **Parameters:** `WindowHandle handle`, `const std::string& title`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+- **Parameters:** `WindowHandle handle`, `uint32_t width`, `uint32_t height`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `bool`
 

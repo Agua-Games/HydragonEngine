@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static DialogManagerSystem&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** const DialogManagerConfig& config = {}
+- **Parameters:** `const DialogManagerConfig& config = {}`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const std::string& type, const DialogDesc& desc
+- **Parameters:** `const std::string& type`, `const DialogDesc& desc`
 
 - **Return:** `DialogHandle`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** DialogHandle handle
+- **Parameters:** `DialogHandle handle`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** const std::string& type, const DialogDesc& desc
+- **Parameters:** `const std::string& type`, `const DialogDesc& desc`
 
 - **Return:** `DialogHandle`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** DialogHandle handle
+- **Parameters:** `DialogHandle handle`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** const std::string& type, std::unique_ptr<IDialog> dialog
+- **Parameters:** `const std::string& type`, `std::unique_ptr<IDialog> dialog`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** const std::string& type
+- **Parameters:** `const std::string& type`
 
 - **Return:** `void`
 

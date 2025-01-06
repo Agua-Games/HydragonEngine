@@ -115,7 +115,7 @@
 
 
 
-- **Parameters:** const BenchmarkResult& result
+- **Parameters:** `const BenchmarkResult& result`
 
 - **Return:** `static void`
 
@@ -125,7 +125,7 @@
 
 
 
-- **Parameters:** const BenchmarkResult& result
+- **Parameters:** `const BenchmarkResult& result`
 
 - **Return:** `static void`
 

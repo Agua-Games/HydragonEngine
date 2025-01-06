@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static MenuManagerSystem&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** const MenuManagerConfig& config = {}
+- **Parameters:** `const MenuManagerConfig& config = {}`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const std::string& path, const MenuDesc& desc
+- **Parameters:** `const std::string& path`, `const MenuDesc& desc`
 
 - **Return:** `MenuHandle`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** MenuHandle handle
+- **Parameters:** `MenuHandle handle`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** MenuHandle menu, const MenuItemDesc& desc
+- **Parameters:** `MenuHandle menu`, `const MenuItemDesc& desc`
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** MenuHandle menu, const std::string& id
+- **Parameters:** `MenuHandle menu`, `const std::string& id`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** const std::string& id, const MenuActionCallback& callback
+- **Parameters:** `const std::string& id`, `const MenuActionCallback& callback`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** const std::string& id
+- **Parameters:** `const std::string& id`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** const std::string& type, const Vector2& position
+- **Parameters:** `const std::string& type`, `const Vector2& position`
 
 - **Return:** `void`
 
@@ -230,7 +230,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

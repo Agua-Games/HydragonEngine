@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** const FormatterConfig& config = {}
+- **Parameters:** `const FormatterConfig& config = {}`
 
 - **Return:** `explicit`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** const JSONConfig& config = {}
+- **Parameters:** `const JSONConfig& config = {}`
 
 - **Return:** `explicit`
 

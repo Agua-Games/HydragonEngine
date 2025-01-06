@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static CollaborationBindings&`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** const CollaborationBindingsConfig& config = {}
+- **Parameters:** `const CollaborationBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** const std::string& name, const SessionDesc& desc = {}
+- **Parameters:** `const std::string& name`, `const SessionDesc& desc = {}`
 
 - **Return:** `SessionHandle`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** const std::string& sessionId, const JoinParams& params = {}
+- **Parameters:** `const std::string& sessionId`, `const JoinParams& params = {}`
 
 - **Return:** `void`
 
@@ -206,7 +206,7 @@
 
 
 
-- **Parameters:** SessionHandle handle
+- **Parameters:** `SessionHandle handle`
 
 - **Return:** `void`
 
@@ -216,7 +216,7 @@
 
 
 
-- **Parameters:** SessionHandle handle
+- **Parameters:** `SessionHandle handle`
 
 - **Return:** `void`
 
@@ -226,7 +226,7 @@
 
 
 
-- **Parameters:** const UserInfo& info
+- **Parameters:** `const UserInfo& info`
 
 - **Return:** `void`
 
@@ -236,7 +236,7 @@
 
 
 
-- **Parameters:** UserStatus status
+- **Parameters:** `UserStatus status`
 
 - **Return:** `void`
 
@@ -246,7 +246,7 @@
 
 
 
-- **Parameters:** AssetHandle asset
+- **Parameters:** `AssetHandle asset`
 
 - **Return:** `void`
 
@@ -256,7 +256,7 @@
 
 
 
-- **Parameters:** AssetHandle asset
+- **Parameters:** `AssetHandle asset`
 
 - **Return:** `void`
 
@@ -266,7 +266,7 @@
 
 
 
-- **Parameters:** const ChangeDesc& desc
+- **Parameters:** `const ChangeDesc& desc`
 
 - **Return:** `ChangeHandle`
 
@@ -276,7 +276,7 @@
 
 
 
-- **Parameters:** ChangeHandle handle
+- **Parameters:** `ChangeHandle handle`
 
 - **Return:** `void`
 
@@ -286,7 +286,7 @@
 
 
 
-- **Parameters:** ChangeHandle handle
+- **Parameters:** `ChangeHandle handle`
 
 - **Return:** `void`
 
@@ -296,7 +296,7 @@
 
 
 
-- **Parameters:** ChangeHandle handle
+- **Parameters:** `ChangeHandle handle`
 
 - **Return:** `void`
 
@@ -306,7 +306,7 @@
 
 
 
-- **Parameters:** ConflictHandle handle, const ResolutionStrategy& strategy
+- **Parameters:** `ConflictHandle handle`, `const ResolutionStrategy& strategy`
 
 - **Return:** `void`
 
@@ -316,7 +316,7 @@
 
 
 
-- **Parameters:** const std::string& message
+- **Parameters:** `const std::string& message`
 
 - **Return:** `void`
 
@@ -326,7 +326,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -336,7 +336,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -346,7 +346,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -356,7 +356,7 @@
 
 
 
-- **Parameters:** float seconds
+- **Parameters:** `float seconds`
 
 - **Return:** `void`
 
@@ -366,7 +366,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -376,7 +376,7 @@
 
 
 
-- **Parameters:** const CollabMessage& message
+- **Parameters:** `const CollabMessage& message`
 
 - **Return:** `void`
 
@@ -386,7 +386,7 @@
 
 
 
-- **Parameters:** const NotificationDesc& desc
+- **Parameters:** `const NotificationDesc& desc`
 
 - **Return:** `void`
 
@@ -396,7 +396,7 @@
 
 
 
-- **Parameters:** const MessageCallback& callback
+- **Parameters:** `const MessageCallback& callback`
 
 - **Return:** `void`
 
@@ -406,7 +406,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -416,7 +416,7 @@
 
 
 
-- **Parameters:** SessionHandle handle, const std::string& path
+- **Parameters:** `SessionHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -426,7 +426,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

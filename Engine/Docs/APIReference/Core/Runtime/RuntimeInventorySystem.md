@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static RuntimeInventorySystem&`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** const RuntimeInventoryConfig& config = {}
+- **Parameters:** `const RuntimeInventoryConfig& config = {}`
 
 - **Return:** `void`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** const InventoryDesc& desc
+- **Parameters:** `const InventoryDesc& desc`
 
 - **Return:** `InventoryHandle`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** InventoryHandle handle
+- **Parameters:** `InventoryHandle handle`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** InventoryHandle handle, const ItemDesc& item, uint32_t count = 1
+- **Parameters:** `InventoryHandle handle`, `const ItemDesc& item`, `uint32_t count = 1`
 
 - **Return:** `bool`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** InventoryHandle handle, ItemId itemId, uint32_t count = 1
+- **Parameters:** `InventoryHandle handle`, `ItemId itemId`, `uint32_t count = 1`
 
 - **Return:** `bool`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** InventoryHandle from, InventoryHandle to, ItemId itemId, uint32_t count = 1
+- **Parameters:** `InventoryHandle from`, `InventoryHandle to`, `ItemId itemId`, `uint32_t count = 1`
 
 - **Return:** `bool`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** InventoryHandle handle, ItemId itemId, const std::string& slot
+- **Parameters:** `InventoryHandle handle`, `ItemId itemId`, `const std::string& slot`
 
 - **Return:** `bool`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** InventoryHandle handle, const std::string& slot
+- **Parameters:** `InventoryHandle handle`, `const std::string& slot`
 
 - **Return:** `bool`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** InventoryHandle handle, uint32_t slotA, uint32_t slotB
+- **Parameters:** `InventoryHandle handle`, `uint32_t slotA`, `uint32_t slotB`
 
 - **Return:** `bool`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** InventoryHandle handle, float capacity
+- **Parameters:** `InventoryHandle handle`, `float capacity`
 
 - **Return:** `void`
 
@@ -298,7 +298,7 @@
 
 
 
-- **Parameters:** InventoryHandle handle, uint32_t count
+- **Parameters:** `InventoryHandle handle`, `uint32_t count`
 
 - **Return:** `void`
 
@@ -308,7 +308,7 @@
 
 
 
-- **Parameters:** ItemId itemId, uint32_t maxStack
+- **Parameters:** `ItemId itemId`, `uint32_t maxStack`
 
 - **Return:** `void`
 
@@ -318,7 +318,7 @@
 
 
 
-- **Parameters:** const std::string& type, std::unique_ptr<IItemProcessor> processor
+- **Parameters:** `const std::string& type`, `std::unique_ptr<IItemProcessor> processor`
 
 - **Return:** `void`
 
@@ -328,7 +328,7 @@
 
 
 
-- **Parameters:** const std::string& type
+- **Parameters:** `const std::string& type`
 
 - **Return:** `void`
 
@@ -338,7 +338,7 @@
 
 
 
-- **Parameters:** InventoryEventType type, const InventoryCallback& callback
+- **Parameters:** `InventoryEventType type`, `const InventoryCallback& callback`
 
 - **Return:** `void`
 
@@ -348,7 +348,7 @@
 
 
 
-- **Parameters:** InventoryEventType type
+- **Parameters:** `InventoryEventType type`
 
 - **Return:** `void`
 

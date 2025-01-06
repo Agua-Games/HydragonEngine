@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AssetLoaderBindings&`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** const AssetLoaderBindingsConfig& config = {}
+- **Parameters:** `const AssetLoaderBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** const std::string& path, LoadPriority priority = LoadPriority::Normal
+- **Parameters:** `const std::string& path`, `LoadPriority priority = LoadPriority::Normal`
 
 - **Return:** `LoadHandle`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** LoadHandle handle
+- **Parameters:** `LoadHandle handle`
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `GroupHandle`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** GroupHandle handle
+- **Parameters:** `GroupHandle handle`
 
 - **Return:** `void`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** GroupHandle group, LoadHandle load
+- **Parameters:** `GroupHandle group`, `LoadHandle load`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** GroupHandle group, LoadHandle load
+- **Parameters:** `GroupHandle group`, `LoadHandle load`
 
 - **Return:** `void`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** const std::vector<std::string>& paths
+- **Parameters:** `const std::vector<std::string>& paths`
 
 - **Return:** `void`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** LoadHandle handle, const LoadCallback& callback
+- **Parameters:** `LoadHandle handle`, `const LoadCallback& callback`
 
 - **Return:** `void`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** GroupHandle handle, const GroupCallback& callback
+- **Parameters:** `GroupHandle handle`, `const GroupCallback& callback`
 
 - **Return:** `void`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** const GlobalLoadCallback& callback
+- **Parameters:** `const GlobalLoadCallback& callback`
 
 - **Return:** `void`
 
@@ -298,7 +298,7 @@
 
 
 
-- **Parameters:** LoadHandle handle, LoadPriority priority
+- **Parameters:** `LoadHandle handle`, `LoadPriority priority`
 
 - **Return:** `void`
 
@@ -308,7 +308,7 @@
 
 
 
-- **Parameters:** bool pause
+- **Parameters:** `bool pause`
 
 - **Return:** `void`
 
@@ -318,7 +318,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -328,7 +328,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -338,7 +338,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -348,7 +348,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -358,7 +358,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

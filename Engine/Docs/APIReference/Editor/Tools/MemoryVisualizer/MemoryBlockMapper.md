@@ -54,7 +54,7 @@
 
 
 
-- **Parameters:** const Memory::MemoryBlock& block
+- **Parameters:** `const Memory::MemoryBlock& block`
 
 - **Return:** `BlockPosition`
 
@@ -64,7 +64,7 @@
 
 
 
-- **Parameters:** const BlockGroup& group
+- **Parameters:** `const BlockGroup& group`
 
 - **Return:** `BlockPosition`
 
@@ -74,7 +74,7 @@
 
 
 
-- **Parameters:** size_t memorySize
+- **Parameters:** `size_t memorySize`
 
 - **Return:** `double`
 
@@ -84,7 +84,7 @@
 
 
 
-- **Parameters:** double size
+- **Parameters:** `double size`
 
 - **Return:** `QPointF`
 

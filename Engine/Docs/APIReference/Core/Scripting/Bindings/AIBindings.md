@@ -128,7 +128,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AIBindings&`
 
@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** const AIBindingsConfig& config = {}
+- **Parameters:** `const AIBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** const AgentDesc& desc
+- **Parameters:** `const AgentDesc& desc`
 
 - **Return:** `AgentHandle`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** AgentHandle handle
+- **Parameters:** `AgentHandle handle`
 
 - **Return:** `void`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** AgentHandle handle, const Vector3& position
+- **Parameters:** `AgentHandle handle`, `const Vector3& position`
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** AgentHandle handle, const Quaternion& rotation
+- **Parameters:** `AgentHandle handle`, `const Quaternion& rotation`
 
 - **Return:** `void`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** const std::string& name, const BehaviorTreeDesc& desc
+- **Parameters:** `const std::string& name`, `const BehaviorTreeDesc& desc`
 
 - **Return:** `BehaviorTreeHandle`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** BehaviorTreeHandle handle
+- **Parameters:** `BehaviorTreeHandle handle`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** AgentHandle agent, BehaviorTreeHandle tree
+- **Parameters:** `AgentHandle agent`, `BehaviorTreeHandle tree`
 
 - **Return:** `void`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** BehaviorTreeHandle handle, const std::string& name, const Variant& value
+- **Parameters:** `BehaviorTreeHandle handle`, `const std::string& name`, `const Variant& value`
 
 - **Return:** `void`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** const PathRequest& request
+- **Parameters:** `const PathRequest& request`
 
 - **Return:** `PathRequestHandle`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** PathRequestHandle handle
+- **Parameters:** `PathRequestHandle handle`
 
 - **Return:** `void`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** const Stimulus& stimulus
+- **Parameters:** `const Stimulus& stimulus`
 
 - **Return:** `void`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** StimulusHandle handle, const Vector3& location
+- **Parameters:** `StimulusHandle handle`, `const Vector3& location`
 
 - **Return:** `void`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** StimulusHandle handle
+- **Parameters:** `StimulusHandle handle`
 
 - **Return:** `void`
 
@@ -298,7 +298,7 @@
 
 
 
-- **Parameters:** AgentHandle handle, const DecisionMakerDesc& desc
+- **Parameters:** `AgentHandle handle`, `const DecisionMakerDesc& desc`
 
 - **Return:** `void`
 
@@ -308,7 +308,7 @@
 
 
 
-- **Parameters:** AgentHandle handle, const WorldState& state
+- **Parameters:** `AgentHandle handle`, `const WorldState& state`
 
 - **Return:** `void`
 
@@ -318,7 +318,7 @@
 
 
 
-- **Parameters:** AgentHandle handle, const Goal& goal
+- **Parameters:** `AgentHandle handle`, `const Goal& goal`
 
 - **Return:** `void`
 
@@ -328,7 +328,7 @@
 
 
 
-- **Parameters:** AgentHandle handle, GoalHandle goalHandle
+- **Parameters:** `AgentHandle handle`, `GoalHandle goalHandle`
 
 - **Return:** `void`
 
@@ -338,7 +338,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -348,7 +348,7 @@
 
 
 
-- **Parameters:** AIDebugMode mode
+- **Parameters:** `AIDebugMode mode`
 
 - **Return:** `void`
 
@@ -358,7 +358,7 @@
 
 
 
-- **Parameters:** AgentHandle handle, const std::string& path
+- **Parameters:** `AgentHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 

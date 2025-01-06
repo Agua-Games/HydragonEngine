@@ -110,7 +110,7 @@
 
 
 
-- **Parameters:** const ThreadPoolConfig& config = {}
+- **Parameters:** `const ThreadPoolConfig& config = {}`
 
 - **Return:** `explicit`
 
@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** F&& task, ThreadPriority priority = ThreadPriority::Normal
+- **Parameters:** `F&& task`, `ThreadPriority priority = ThreadPriority::Normal`
 
 - **Return:** `void`
 

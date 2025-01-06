@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static RuntimeProfileSystem&`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** const RuntimeProfileConfig& config = {}
+- **Parameters:** `const RuntimeProfileConfig& config = {}`
 
 - **Return:** `void`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `ProfileScope`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** ProfileScope scope
+- **Parameters:** `ProfileScope scope`
 
 - **Return:** `void`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -206,7 +206,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -216,7 +216,7 @@
 
 
 
-- **Parameters:** const std::string& name, const MarkerData& data = {}
+- **Parameters:** `const std::string& name`, `const MarkerData& data = {}`
 
 - **Return:** `void`
 
@@ -226,7 +226,7 @@
 
 
 
-- **Parameters:** const std::string& name, float value
+- **Parameters:** `const std::string& name`, `float value`
 
 - **Return:** `void`
 
@@ -236,7 +236,7 @@
 
 
 
-- **Parameters:** const std::string& path = ""
+- **Parameters:** `const std::string& path = ""`
 
 - **Return:** `void`
 
@@ -246,7 +246,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

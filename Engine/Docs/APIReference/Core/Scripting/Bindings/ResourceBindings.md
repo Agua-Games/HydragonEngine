@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static ResourceBindings&`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** const ResourceBindingsConfig& config = {}
+- **Parameters:** `const ResourceBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** const std::string& path, const LoadParams& params = {}
+- **Parameters:** `const std::string& path`, `const LoadParams& params = {}`
 
 - **Return:** `ResourceHandle`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** ResourceHandle handle
+- **Parameters:** `ResourceHandle handle`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** ResourceHandle handle, ResourcePriority priority
+- **Parameters:** `ResourceHandle handle`, `ResourcePriority priority`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** ResourceHandle handle
+- **Parameters:** `ResourceHandle handle`
 
 - **Return:** `void`
 
@@ -230,7 +230,7 @@
 
 
 
-- **Parameters:** const std::string& name, const std::vector<std::string>& resources
+- **Parameters:** `const std::string& name`, `const std::vector<std::string>& resources`
 
 - **Return:** `void`
 
@@ -240,7 +240,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -250,7 +250,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -260,7 +260,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -270,7 +270,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -280,7 +280,7 @@
 
 
 
-- **Parameters:** size_t sizeInBytes
+- **Parameters:** `size_t sizeInBytes`
 
 - **Return:** `void`
 
@@ -290,7 +290,7 @@
 
 
 
-- **Parameters:** const std::string& path, const LoadCallback& callback
+- **Parameters:** `const std::string& path`, `const LoadCallback& callback`
 
 - **Return:** `void`
 
@@ -300,7 +300,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -310,7 +310,7 @@
 
 
 
-- **Parameters:** const std::string& path, bool enable
+- **Parameters:** `const std::string& path`, `bool enable`
 
 - **Return:** `void`
 
@@ -320,7 +320,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 

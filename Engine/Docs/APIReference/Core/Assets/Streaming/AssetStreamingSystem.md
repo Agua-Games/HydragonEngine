@@ -110,7 +110,7 @@
 
 
 
-- **Parameters:** const StreamingConfig& config = {}
+- **Parameters:** `const StreamingConfig& config = {}`
 
 - **Return:** `void`
 
@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** AssetHandle handle, const LoadParams& params
+- **Parameters:** `AssetHandle handle`, `const LoadParams& params`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** AssetHandle handle
+- **Parameters:** `AssetHandle handle`
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

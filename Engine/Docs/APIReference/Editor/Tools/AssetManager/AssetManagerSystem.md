@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AssetManagerSystem&`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** const AssetManagerConfig& config = {}
+- **Parameters:** `const AssetManagerConfig& config = {}`
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** const std::string& oldPath, const std::string& newPath
+- **Parameters:** `const std::string& oldPath`, `const std::string& newPath`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** const std::string& sourcePath, const std::string& targetPath
+- **Parameters:** `const std::string& sourcePath`, `const std::string& targetPath`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** const std::string& sourcePath, const std::string& targetPath
+- **Parameters:** `const std::string& sourcePath`, `const std::string& targetPath`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -230,7 +230,7 @@
 
 
 
-- **Parameters:** const std::vector<std::string>& paths
+- **Parameters:** `const std::vector<std::string>& paths`
 
 - **Return:** `void`
 
@@ -240,7 +240,7 @@
 
 
 
-- **Parameters:** const std::vector<std::string>& paths, const std::string& targetDir
+- **Parameters:** `const std::vector<std::string>& paths`, `const std::string& targetDir`
 
 - **Return:** `void`
 
@@ -250,7 +250,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -260,7 +260,7 @@
 
 
 
-- **Parameters:** const AssetSearchQuery& query, AssetSearchResults& results
+- **Parameters:** `const AssetSearchQuery& query`, `AssetSearchResults& results`
 
 - **Return:** `void`
 
@@ -270,8 +270,7 @@
 
 
 
-- **Parameters:** const std::string& extension, 
-                              std::unique_ptr<IAssetProcessor> processor
+- **Parameters:** `const std::string& extension`, `std::unique_ptr<IAssetProcessor> processor`
 
 - **Return:** `void`
 

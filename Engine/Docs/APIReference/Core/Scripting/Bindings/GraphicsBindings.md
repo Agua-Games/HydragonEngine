@@ -128,7 +128,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static GraphicsBindings&`
 
@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** const GraphicsBindingsConfig& config = {}
+- **Parameters:** `const GraphicsBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** const MaterialDesc& desc
+- **Parameters:** `const MaterialDesc& desc`
 
 - **Return:** `MaterialHandle`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** MaterialHandle handle
+- **Parameters:** `MaterialHandle handle`
 
 - **Return:** `void`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** MaterialHandle handle, const MaterialProperties& props
+- **Parameters:** `MaterialHandle handle`, `const MaterialProperties& props`
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** const ShaderDesc& desc
+- **Parameters:** `const ShaderDesc& desc`
 
 - **Return:** `ShaderHandle`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** ShaderHandle handle
+- **Parameters:** `ShaderHandle handle`
 
 - **Return:** `void`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** ShaderHandle handle
+- **Parameters:** `ShaderHandle handle`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** const std::string& name, const RenderPassDesc& desc
+- **Parameters:** `const std::string& name`, `const RenderPassDesc& desc`
 
 - **Return:** `void`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** const std::string& name, bool enabled
+- **Parameters:** `const std::string& name`, `bool enabled`
 
 - **Return:** `void`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** const Vector3& start, const Vector3& end, const Color& color
+- **Parameters:** `const Vector3& start`, `const Vector3& end`, `const Color& color`
 
 - **Return:** `void`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** const Vector3& center, float radius, const Color& color
+- **Parameters:** `const Vector3& center`, `float radius`, `const Color& color`
 
 - **Return:** `void`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** const Vector3& position, const std::string& text, const Color& color
+- **Parameters:** `const Vector3& position`, `const std::string& text`, `const Color& color`
 
 - **Return:** `void`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** const std::string& name, const RenderCallback& callback
+- **Parameters:** `const std::string& name`, `const RenderCallback& callback`
 
 - **Return:** `void`
 
@@ -298,7 +298,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 

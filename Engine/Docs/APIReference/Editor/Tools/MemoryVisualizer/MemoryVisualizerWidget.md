@@ -58,7 +58,7 @@
 
 
 
-- **Parameters:** QWidget* parent = nullptr
+- **Parameters:** `QWidget* parent = nullptr`
 
 - **Return:** `explicit`
 
@@ -68,7 +68,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -78,7 +78,7 @@
 
 
 
-- **Parameters:** const QPointF& point
+- **Parameters:** `const QPointF& point`
 
 - **Return:** `void`
 
@@ -88,7 +88,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -98,7 +98,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -108,7 +108,7 @@
 
 
 
-- **Parameters:** const Memory::MemoryBlock& block
+- **Parameters:** `const Memory::MemoryBlock& block`
 
 - **Return:** `void`
 

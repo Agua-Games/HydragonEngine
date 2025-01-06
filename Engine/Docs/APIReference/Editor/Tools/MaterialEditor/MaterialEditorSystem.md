@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static MaterialEditorSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const MaterialEditorConfig& config = {}
+- **Parameters:** `const MaterialEditorConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** const NodeDesc& desc
+- **Parameters:** `const NodeDesc& desc`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** NodeHandle handle
+- **Parameters:** `NodeHandle handle`
 
 - **Return:** `void`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** NodeHandle output, NodeHandle input, uint32_t slot
+- **Parameters:** `NodeHandle output`, `NodeHandle input`, `uint32_t slot`
 
 - **Return:** `void`
 
@@ -222,7 +222,7 @@
 
 
 
-- **Parameters:** const std::string& name, const MaterialParameter& value
+- **Parameters:** `const std::string& name`, `const MaterialParameter& value`
 
 - **Return:** `void`
 
@@ -232,7 +232,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -242,7 +242,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -252,7 +252,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

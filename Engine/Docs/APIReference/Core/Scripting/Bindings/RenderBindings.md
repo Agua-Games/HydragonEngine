@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static RenderBindings&`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** const RenderBindingsConfig& config = {}
+- **Parameters:** `const RenderBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -174,7 +174,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -184,7 +184,7 @@
 
 
 
-- **Parameters:** const PipelineDesc& desc
+- **Parameters:** `const PipelineDesc& desc`
 
 - **Return:** `PipelineHandle`
 
@@ -194,7 +194,7 @@
 
 
 
-- **Parameters:** PipelineHandle handle
+- **Parameters:** `PipelineHandle handle`
 
 - **Return:** `void`
 
@@ -204,7 +204,7 @@
 
 
 
-- **Parameters:** PipelineHandle handle, const PipelineState& state
+- **Parameters:** `PipelineHandle handle`, `const PipelineState& state`
 
 - **Return:** `void`
 
@@ -214,7 +214,7 @@
 
 
 
-- **Parameters:** const RenderTargetDesc& desc
+- **Parameters:** `const RenderTargetDesc& desc`
 
 - **Return:** `RenderTargetHandle`
 
@@ -224,7 +224,7 @@
 
 
 
-- **Parameters:** RenderTargetHandle handle
+- **Parameters:** `RenderTargetHandle handle`
 
 - **Return:** `void`
 
@@ -234,7 +234,7 @@
 
 
 
-- **Parameters:** RenderTargetHandle handle, uint32_t width, uint32_t height
+- **Parameters:** `RenderTargetHandle handle`, `uint32_t width`, `uint32_t height`
 
 - **Return:** `void`
 
@@ -244,7 +244,7 @@
 
 
 
-- **Parameters:** const std::string& name, const PostEffectDesc& desc
+- **Parameters:** `const std::string& name`, `const PostEffectDesc& desc`
 
 - **Return:** `void`
 
@@ -254,7 +254,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -264,7 +264,7 @@
 
 
 
-- **Parameters:** const std::string& name, bool enabled
+- **Parameters:** `const std::string& name`, `bool enabled`
 
 - **Return:** `void`
 
@@ -274,7 +274,7 @@
 
 
 
-- **Parameters:** const Viewport& viewport
+- **Parameters:** `const Viewport& viewport`
 
 - **Return:** `void`
 
@@ -284,7 +284,7 @@
 
 
 
-- **Parameters:** const Scissor& scissor
+- **Parameters:** `const Scissor& scissor`
 
 - **Return:** `void`
 
@@ -294,7 +294,7 @@
 
 
 
-- **Parameters:** PipelineHandle handle
+- **Parameters:** `PipelineHandle handle`
 
 - **Return:** `void`
 
@@ -304,7 +304,7 @@
 
 
 
-- **Parameters:** RenderTargetHandle handle
+- **Parameters:** `RenderTargetHandle handle`
 
 - **Return:** `void`
 
@@ -314,7 +314,7 @@
 
 
 
-- **Parameters:** const std::vector<BufferHandle>& buffers
+- **Parameters:** `const std::vector<BufferHandle>& buffers`
 
 - **Return:** `void`
 
@@ -324,7 +324,7 @@
 
 
 
-- **Parameters:** BufferHandle buffer
+- **Parameters:** `BufferHandle buffer`
 
 - **Return:** `void`
 
@@ -334,7 +334,7 @@
 
 
 
-- **Parameters:** const std::vector<DescriptorSetHandle>& sets
+- **Parameters:** `const std::vector<DescriptorSetHandle>& sets`
 
 - **Return:** `void`
 
@@ -344,7 +344,7 @@
 
 
 
-- **Parameters:** uint32_t vertexCount, uint32_t instanceCount = 1
+- **Parameters:** `uint32_t vertexCount`, `uint32_t instanceCount = 1`
 
 - **Return:** `void`
 
@@ -354,7 +354,7 @@
 
 
 
-- **Parameters:** uint32_t indexCount, uint32_t instanceCount = 1
+- **Parameters:** `uint32_t indexCount`, `uint32_t instanceCount = 1`
 
 - **Return:** `void`
 
@@ -364,7 +364,7 @@
 
 
 
-- **Parameters:** BufferHandle buffer, uint32_t offset
+- **Parameters:** `BufferHandle buffer`, `uint32_t offset`
 
 - **Return:** `void`
 
@@ -374,7 +374,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -384,7 +384,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -394,7 +394,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 

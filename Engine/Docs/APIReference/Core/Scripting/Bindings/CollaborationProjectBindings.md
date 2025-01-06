@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static CollaborationProjectBindings&`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** const CollaborationProjectBindingsConfig& config = {}
+- **Parameters:** `const CollaborationProjectBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** const std::string& name, const ProjectDesc& desc = {}
+- **Parameters:** `const std::string& name`, `const ProjectDesc& desc = {}`
 
 - **Return:** `ProjectHandle`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** ProjectHandle handle
+- **Parameters:** `ProjectHandle handle`
 
 - **Return:** `void`
 
@@ -206,7 +206,7 @@
 
 
 
-- **Parameters:** ProjectHandle handle, const std::string& path
+- **Parameters:** `ProjectHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -216,7 +216,7 @@
 
 
 
-- **Parameters:** ProjectHandle project, const std::string& name
+- **Parameters:** `ProjectHandle project`, `const std::string& name`
 
 - **Return:** `TeamHandle`
 
@@ -226,7 +226,7 @@
 
 
 
-- **Parameters:** TeamHandle team, const UserInfo& member
+- **Parameters:** `TeamHandle team`, `const UserInfo& member`
 
 - **Return:** `void`
 
@@ -236,7 +236,7 @@
 
 
 
-- **Parameters:** TeamHandle team, const UserInfo& member
+- **Parameters:** `TeamHandle team`, `const UserInfo& member`
 
 - **Return:** `void`
 
@@ -246,7 +246,7 @@
 
 
 
-- **Parameters:** TeamHandle team, const TaskDesc& desc
+- **Parameters:** `TeamHandle team`, `const TaskDesc& desc`
 
 - **Return:** `TaskHandle`
 
@@ -256,7 +256,7 @@
 
 
 
-- **Parameters:** TaskHandle task, const UserInfo& assignee
+- **Parameters:** `TaskHandle task`, `const UserInfo& assignee`
 
 - **Return:** `void`
 
@@ -266,7 +266,7 @@
 
 
 
-- **Parameters:** TaskHandle task, TaskStatus status
+- **Parameters:** `TaskHandle task`, `TaskStatus status`
 
 - **Return:** `void`
 
@@ -276,7 +276,7 @@
 
 
 
-- **Parameters:** TaskHandle task, TaskPriority priority
+- **Parameters:** `TaskHandle task`, `TaskPriority priority`
 
 - **Return:** `void`
 
@@ -286,7 +286,7 @@
 
 
 
-- **Parameters:** TaskHandle task
+- **Parameters:** `TaskHandle task`
 
 - **Return:** `void`
 
@@ -296,7 +296,7 @@
 
 
 
-- **Parameters:** TaskHandle task
+- **Parameters:** `TaskHandle task`
 
 - **Return:** `void`
 
@@ -306,7 +306,7 @@
 
 
 
-- **Parameters:** TaskHandle task, const TimeEntry& entry
+- **Parameters:** `TaskHandle task`, `const TimeEntry& entry`
 
 - **Return:** `void`
 
@@ -316,7 +316,7 @@
 
 
 
-- **Parameters:** TaskHandle task, float progress
+- **Parameters:** `TaskHandle task`, `float progress`
 
 - **Return:** `void`
 
@@ -326,7 +326,7 @@
 
 
 
-- **Parameters:** TaskHandle task, const std::string& milestone
+- **Parameters:** `TaskHandle task`, `const std::string& milestone`
 
 - **Return:** `void`
 
@@ -336,7 +336,7 @@
 
 
 
-- **Parameters:** TaskHandle task, const TaskComment& comment
+- **Parameters:** `TaskHandle task`, `const TaskComment& comment`
 
 - **Return:** `void`
 
@@ -346,7 +346,7 @@
 
 
 
-- **Parameters:** ProjectHandle handle
+- **Parameters:** `ProjectHandle handle`
 
 - **Return:** `void`
 
@@ -356,7 +356,7 @@
 
 
 
-- **Parameters:** ProjectHandle handle
+- **Parameters:** `ProjectHandle handle`
 
 - **Return:** `void`
 
@@ -366,7 +366,7 @@
 
 
 
-- **Parameters:** ProjectHandle handle
+- **Parameters:** `ProjectHandle handle`
 
 - **Return:** `void`
 
@@ -376,7 +376,7 @@
 
 
 
-- **Parameters:** TaskHandle task, const NotificationDesc& desc
+- **Parameters:** `TaskHandle task`, `const NotificationDesc& desc`
 
 - **Return:** `void`
 
@@ -386,7 +386,7 @@
 
 
 
-- **Parameters:** const NotificationCallback& callback
+- **Parameters:** `const NotificationCallback& callback`
 
 - **Return:** `void`
 
@@ -396,7 +396,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -406,7 +406,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -416,7 +416,7 @@
 
 
 
-- **Parameters:** ProjectHandle handle, const std::string& path
+- **Parameters:** `ProjectHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -426,7 +426,7 @@
 
 
 
-- **Parameters:** ProjectHandle handle
+- **Parameters:** `ProjectHandle handle`
 
 - **Return:** `void`
 

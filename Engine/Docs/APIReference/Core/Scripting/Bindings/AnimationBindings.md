@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AnimationBindings&`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** const AnimationBindingsConfig& config = {}
+- **Parameters:** `const AnimationBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** const AnimatorDesc& desc
+- **Parameters:** `const AnimatorDesc& desc`
 
 - **Return:** `AnimatorHandle`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle
+- **Parameters:** `AnimatorHandle handle`
 
 - **Return:** `void`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const SkeletonDesc& desc
+- **Parameters:** `AnimatorHandle handle`, `const SkeletonDesc& desc`
 
 - **Return:** `void`
 
@@ -206,7 +206,7 @@
 
 
 
-- **Parameters:** const std::string& name, const ClipDesc& desc
+- **Parameters:** `const std::string& name`, `const ClipDesc& desc`
 
 - **Return:** `ClipHandle`
 
@@ -216,7 +216,7 @@
 
 
 
-- **Parameters:** ClipHandle handle
+- **Parameters:** `ClipHandle handle`
 
 - **Return:** `void`
 
@@ -226,7 +226,7 @@
 
 
 
-- **Parameters:** ClipHandle handle, float speed
+- **Parameters:** `ClipHandle handle`, `float speed`
 
 - **Return:** `void`
 
@@ -236,7 +236,7 @@
 
 
 
-- **Parameters:** ClipHandle handle, float weight
+- **Parameters:** `ClipHandle handle`, `float weight`
 
 - **Return:** `void`
 
@@ -246,7 +246,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, ClipHandle clip, const PlaybackParams& params = {}
+- **Parameters:** `AnimatorHandle handle`, `ClipHandle clip`, `const PlaybackParams& params = {}`
 
 - **Return:** `void`
 
@@ -256,7 +256,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, ClipHandle clip
+- **Parameters:** `AnimatorHandle handle`, `ClipHandle clip`
 
 - **Return:** `void`
 
@@ -266,7 +266,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, ClipHandle clip
+- **Parameters:** `AnimatorHandle handle`, `ClipHandle clip`
 
 - **Return:** `void`
 
@@ -276,7 +276,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, ClipHandle clip
+- **Parameters:** `AnimatorHandle handle`, `ClipHandle clip`
 
 - **Return:** `void`
 
@@ -286,7 +286,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, ClipHandle fromClip, ClipHandle toClip, float duration
+- **Parameters:** `AnimatorHandle handle`, `ClipHandle fromClip`, `ClipHandle toClip`, `float duration`
 
 - **Return:** `void`
 
@@ -296,7 +296,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const LayerDesc& desc
+- **Parameters:** `AnimatorHandle handle`, `const LayerDesc& desc`
 
 - **Return:** `void`
 
@@ -306,7 +306,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, uint32_t layerIndex
+- **Parameters:** `AnimatorHandle handle`, `uint32_t layerIndex`
 
 - **Return:** `void`
 
@@ -316,7 +316,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, uint32_t layerIndex, float weight
+- **Parameters:** `AnimatorHandle handle`, `uint32_t layerIndex`, `float weight`
 
 - **Return:** `void`
 
@@ -326,7 +326,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, uint32_t layerIndex, const BoneMask& mask
+- **Parameters:** `AnimatorHandle handle`, `uint32_t layerIndex`, `const BoneMask& mask`
 
 - **Return:** `void`
 
@@ -336,7 +336,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const std::string& chainName, const Vector3& target
+- **Parameters:** `AnimatorHandle handle`, `const std::string& chainName`, `const Vector3& target`
 
 - **Return:** `void`
 
@@ -346,7 +346,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const std::string& chainName, const Quaternion& rotation
+- **Parameters:** `AnimatorHandle handle`, `const std::string& chainName`, `const Quaternion& rotation`
 
 - **Return:** `void`
 
@@ -356,7 +356,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const std::string& chainName, bool enabled
+- **Parameters:** `AnimatorHandle handle`, `const std::string& chainName`, `bool enabled`
 
 - **Return:** `void`
 
@@ -366,7 +366,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const std::string& targetName, float weight
+- **Parameters:** `AnimatorHandle handle`, `const std::string& targetName`, `float weight`
 
 - **Return:** `void`
 
@@ -376,7 +376,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const std::vector<MorphBlend>& blends
+- **Parameters:** `AnimatorHandle handle`, `const std::vector<MorphBlend>& blends`
 
 - **Return:** `void`
 
@@ -386,7 +386,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, bool enable
+- **Parameters:** `AnimatorHandle handle`, `bool enable`
 
 - **Return:** `void`
 
@@ -396,7 +396,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, float blend
+- **Parameters:** `AnimatorHandle handle`, `float blend`
 
 - **Return:** `void`
 
@@ -406,7 +406,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const std::string& boneName, const Vector3& force
+- **Parameters:** `AnimatorHandle handle`, `const std::string& boneName`, `const Vector3& force`
 
 - **Return:** `void`
 
@@ -416,7 +416,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -426,7 +426,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const std::string& boneName
+- **Parameters:** `AnimatorHandle handle`, `const std::string& boneName`
 
 - **Return:** `void`
 
@@ -436,7 +436,7 @@
 
 
 
-- **Parameters:** AnimatorHandle handle, const std::string& path
+- **Parameters:** `AnimatorHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 

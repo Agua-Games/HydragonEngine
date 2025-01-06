@@ -34,7 +34,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size
+- **Parameters:** `void* ptr`, `size_t size`
 
 - **Return:** `bool`
 
@@ -44,7 +44,7 @@
 
 
 
-- **Parameters:** SecurityFeature feature
+- **Parameters:** `SecurityFeature feature`
 
 - **Return:** `bool`
 
@@ -54,7 +54,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size
+- **Parameters:** `void* ptr`, `size_t size`
 
 - **Return:** `void`
 
@@ -64,7 +64,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `void`
 

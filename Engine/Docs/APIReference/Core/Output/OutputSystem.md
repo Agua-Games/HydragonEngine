@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static OutputSystem&`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** const OutputConfig& config = {}
+- **Parameters:** `const OutputConfig& config = {}`
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** const LogMessage& message
+- **Parameters:** `const LogMessage& message`
 
 - **Return:** `void`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** LogLevel level, const char* format, ...
+- **Parameters:** `LogLevel level`, `const char* format`, `...`
 
 - **Return:** `void`
 
@@ -206,7 +206,7 @@
 
 
 
-- **Parameters:** const char* message, const char* file = nullptr, int line = 0
+- **Parameters:** `const char* message`, `const char* file = nullptr`, `int line = 0`
 
 - **Return:** `void`
 
@@ -216,7 +216,7 @@
 
 
 
-- **Parameters:** std::unique_ptr<IOutputChannel> channel
+- **Parameters:** `std::unique_ptr<IOutputChannel> channel`
 
 - **Return:** `void`
 
@@ -226,7 +226,7 @@
 
 
 
-- **Parameters:** OutputChannelId id
+- **Parameters:** `OutputChannelId id`
 
 - **Return:** `void`
 
@@ -236,7 +236,7 @@
 
 
 
-- **Parameters:** LogLevel level
+- **Parameters:** `LogLevel level`
 
 - **Return:** `void`
 
@@ -246,7 +246,7 @@
 
 
 
-- **Parameters:** const LogFilter& filter
+- **Parameters:** `const LogFilter& filter`
 
 - **Return:** `void`
 
@@ -256,7 +256,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

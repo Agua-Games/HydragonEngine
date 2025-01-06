@@ -128,7 +128,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static UIBindings&`
 
@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** const UIBindingsConfig& config = {}
+- **Parameters:** `const UIBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** const std::string& type, const WidgetDesc& desc
+- **Parameters:** `const std::string& type`, `const WidgetDesc& desc`
 
 - **Return:** `WidgetHandle`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle
+- **Parameters:** `WidgetHandle handle`
 
 - **Return:** `void`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** WidgetHandle child, WidgetHandle parent
+- **Parameters:** `WidgetHandle child`, `WidgetHandle parent`
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, const Vector2& position
+- **Parameters:** `WidgetHandle handle`, `const Vector2& position`
 
 - **Return:** `void`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, const Vector2& size
+- **Parameters:** `WidgetHandle handle`, `const Vector2& size`
 
 - **Return:** `void`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, const Vector2& scale
+- **Parameters:** `WidgetHandle handle`, `const Vector2& scale`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, float rotation
+- **Parameters:** `WidgetHandle handle`, `float rotation`
 
 - **Return:** `void`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, bool visible
+- **Parameters:** `WidgetHandle handle`, `bool visible`
 
 - **Return:** `void`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, float opacity
+- **Parameters:** `WidgetHandle handle`, `float opacity`
 
 - **Return:** `void`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, const std::string& style
+- **Parameters:** `WidgetHandle handle`, `const std::string& style`
 
 - **Return:** `void`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, const std::string& event, const EventHandler& handler
+- **Parameters:** `WidgetHandle handle`, `const std::string& event`, `const EventHandler& handler`
 
 - **Return:** `void`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, const std::string& event
+- **Parameters:** `WidgetHandle handle`, `const std::string& event`
 
 - **Return:** `void`
 
@@ -298,7 +298,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, const UIEvent& event
+- **Parameters:** `WidgetHandle handle`, `const UIEvent& event`
 
 - **Return:** `void`
 
@@ -308,7 +308,7 @@
 
 
 
-- **Parameters:** const AnimationDesc& desc
+- **Parameters:** `const AnimationDesc& desc`
 
 - **Return:** `AnimationHandle`
 
@@ -318,7 +318,7 @@
 
 
 
-- **Parameters:** AnimationHandle handle
+- **Parameters:** `AnimationHandle handle`
 
 - **Return:** `void`
 
@@ -328,7 +328,7 @@
 
 
 
-- **Parameters:** WidgetHandle widget, AnimationHandle animation
+- **Parameters:** `WidgetHandle widget`, `AnimationHandle animation`
 
 - **Return:** `void`
 
@@ -338,7 +338,7 @@
 
 
 
-- **Parameters:** WidgetHandle widget, AnimationHandle animation
+- **Parameters:** `WidgetHandle widget`, `AnimationHandle animation`
 
 - **Return:** `void`
 
@@ -348,7 +348,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle
+- **Parameters:** `WidgetHandle handle`
 
 - **Return:** `void`
 
@@ -358,7 +358,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -368,7 +368,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

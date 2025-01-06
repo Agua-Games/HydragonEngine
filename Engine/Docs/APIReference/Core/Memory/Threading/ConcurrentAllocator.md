@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** const Config& config = {}
+- **Parameters:** `const Config& config = {}`
 
 - **Return:** `explicit`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** size_t size
+- **Parameters:** `size_t size`
 
 - **Return:** `void*`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** size_t size
+- **Parameters:** `size_t size`
 
 - **Return:** `void*`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size
+- **Parameters:** `void* ptr`, `size_t size`
 
 - **Return:** `bool`
 

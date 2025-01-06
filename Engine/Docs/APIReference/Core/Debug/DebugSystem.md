@@ -114,7 +114,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static DebugSystem&`
 
@@ -124,7 +124,7 @@
 
 
 
-- **Parameters:** const DebugConfig& config = {}
+- **Parameters:** `const DebugConfig& config = {}`
 
 - **Return:** `void`
 
@@ -134,7 +134,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** const Vector3& start, const Vector3& end, const Color& color
+- **Parameters:** `const Vector3& start`, `const Vector3& end`, `const Color& color`
 
 - **Return:** `void`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** const Vector3& center, float radius, const Color& color
+- **Parameters:** `const Vector3& center`, `float radius`, `const Color& color`
 
 - **Return:** `void`
 
@@ -174,7 +174,7 @@
 
 
 
-- **Parameters:** const Vector3& min, const Vector3& max, const Color& color
+- **Parameters:** `const Vector3& min`, `const Vector3& max`, `const Color& color`
 
 - **Return:** `void`
 
@@ -184,7 +184,7 @@
 
 
 
-- **Parameters:** LogLevel level, const std::string& message
+- **Parameters:** `LogLevel level`, `const std::string& message`
 
 - **Return:** `void`
 
@@ -194,7 +194,7 @@
 
 
 
-- **Parameters:** const std::string& name, const WatchCallback& callback
+- **Parameters:** `const std::string& name`, `const WatchCallback& callback`
 
 - **Return:** `void`
 
@@ -204,7 +204,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `ProfilerScope`
 
@@ -214,7 +214,7 @@
 
 
 
-- **Parameters:** ProfilerScope scope
+- **Parameters:** `ProfilerScope scope`
 
 - **Return:** `void`
 

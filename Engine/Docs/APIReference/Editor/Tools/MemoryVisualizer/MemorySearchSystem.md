@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** const std::vector<SearchResult>& results
+- **Parameters:** `const std::vector<SearchResult>& results`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** const Memory::MemoryBlock* block
+- **Parameters:** `const Memory::MemoryBlock* block`
 
 - **Return:** `void`
 
@@ -158,9 +158,7 @@
 
 
 
-- **Parameters:** const Memory::MemoryBlock& block, 
-                           const QString& query,
-                           const SearchOptions& options
+- **Parameters:** `const Memory::MemoryBlock& block`, `const QString& query`, `const SearchOptions& options`
 
 - **Return:** `float`
 
@@ -170,9 +168,7 @@
 
 
 
-- **Parameters:** const QString& text, 
-                       const QString& pattern,
-                       const SearchOptions& options
+- **Parameters:** `const QString& text`, `const QString& pattern`, `const SearchOptions& options`
 
 - **Return:** `bool`
 
@@ -182,7 +178,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -192,7 +188,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

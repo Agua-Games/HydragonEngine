@@ -112,7 +112,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static PluginExtensionSystem&`
 
@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** const PluginExtensionConfig& config = {}
+- **Parameters:** `const PluginExtensionConfig& config = {}`
 
 - **Return:** `void`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** const std::string& point, const ExtensionPointDesc& desc
+- **Parameters:** `const std::string& point`, `const ExtensionPointDesc& desc`
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const std::string& point
+- **Parameters:** `const std::string& point`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** const std::string& point, const Extension& extension
+- **Parameters:** `const std::string& point`, `const Extension& extension`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** const std::string& point, const std::string& extensionId
+- **Parameters:** `const std::string& point`, `const std::string& extensionId`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** const std::string& point, const std::string& extensionId
+- **Parameters:** `const std::string& point`, `const std::string& extensionId`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** const std::string& point, const std::string& extensionId
+- **Parameters:** `const std::string& point`, `const std::string& extensionId`
 
 - **Return:** `void`
 

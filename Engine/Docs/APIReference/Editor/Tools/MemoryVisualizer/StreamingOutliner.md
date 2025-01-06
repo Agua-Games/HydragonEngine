@@ -76,7 +76,7 @@
 
 
 
-- **Parameters:** QWidget* parent = nullptr
+- **Parameters:** `QWidget* parent = nullptr`
 
 - **Return:** `explicit`
 
@@ -86,7 +86,7 @@
 
 
 
-- **Parameters:** const StreamerNode& streamer
+- **Parameters:** `const StreamerNode& streamer`
 
 - **Return:** `void`
 
@@ -96,7 +96,7 @@
 
 
 
-- **Parameters:** const QString& name, const StreamerStats& stats
+- **Parameters:** `const QString& name`, `const StreamerStats& stats`
 
 - **Return:** `void`
 
@@ -106,7 +106,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -116,8 +116,7 @@
 
 
 
-- **Parameters:** StreamerTreeItem* item, 
-                          const std::vector<StreamingResource>& resources
+- **Parameters:** `StreamerTreeItem* item`, `const std::vector<StreamingResource>& resources`
 
 - **Return:** `void`
 

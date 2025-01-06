@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static ScriptCompletionSystem&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** const ScriptCompletionConfig& config = {}
+- **Parameters:** `const ScriptCompletionConfig& config = {}`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const std::string& path, uint32_t line, uint32_t column
+- **Parameters:** `const std::string& path`, `uint32_t line`, `uint32_t column`
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** const std::string& trigger, const ScriptSnippet& snippet
+- **Parameters:** `const std::string& trigger`, `const ScriptSnippet& snippet`
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** const std::string& trigger
+- **Parameters:** `const std::string& trigger`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** const std::string& name, const SymbolInfo& info
+- **Parameters:** `const std::string& name`, `const SymbolInfo& info`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 

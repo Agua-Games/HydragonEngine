@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static MemoryTracker&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size, const char* file, int line
+- **Parameters:** `void* ptr`, `size_t size`, `const char* file`, `int line`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size
+- **Parameters:** `void* ptr`, `size_t size`
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `bool`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

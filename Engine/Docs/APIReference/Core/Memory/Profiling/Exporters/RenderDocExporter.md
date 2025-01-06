@@ -26,7 +26,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -36,7 +36,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -46,7 +46,7 @@
 
 
 
-- **Parameters:** const std::vector<MemoryEvent>& events
+- **Parameters:** `const std::vector<MemoryEvent>& events`
 
 - **Return:** `void`
 
@@ -56,7 +56,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size, const char* tag
+- **Parameters:** `void* ptr`, `size_t size`, `const char* tag`
 
 - **Return:** `void`
 

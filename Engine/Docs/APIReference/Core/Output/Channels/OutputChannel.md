@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** const FileConfig& config
+- **Parameters:** `const FileConfig& config`
 
 - **Return:** `explicit`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** const ConsoleConfig& config = {}
+- **Parameters:** `const ConsoleConfig& config = {}`
 
 - **Return:** `explicit`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** const NetworkConfig& config
+- **Parameters:** `const NetworkConfig& config`
 
 - **Return:** `explicit`
 

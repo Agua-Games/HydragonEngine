@@ -147,7 +147,7 @@
 
 
 
-- **Parameters:** params
+- **Parameters:** `params`
 
 - **Return:** `Rock type resistance`
 

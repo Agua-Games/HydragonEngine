@@ -40,7 +40,7 @@
 
 
 
-- **Parameters:** QWidget* parent = nullptr
+- **Parameters:** `QWidget* parent = nullptr`
 
 - **Return:** `explicit`
 
@@ -50,7 +50,7 @@
 
 
 
-- **Parameters:** InteractionMode mode
+- **Parameters:** `InteractionMode mode`
 
 - **Return:** `void`
 
@@ -60,7 +60,7 @@
 
 
 
-- **Parameters:** const Memory::MemoryBlock& block
+- **Parameters:** `const Memory::MemoryBlock& block`
 
 - **Return:** `void`
 
@@ -70,7 +70,7 @@
 
 
 
-- **Parameters:** const StreamingBlock& block
+- **Parameters:** `const StreamingBlock& block`
 
 - **Return:** `void`
 
@@ -80,7 +80,7 @@
 
 
 
-- **Parameters:** const QPointF& pos
+- **Parameters:** `const QPointF& pos`
 
 - **Return:** `void`
 
@@ -90,7 +90,7 @@
 
 
 
-- **Parameters:** const QPointF& pos
+- **Parameters:** `const QPointF& pos`
 
 - **Return:** `void`
 

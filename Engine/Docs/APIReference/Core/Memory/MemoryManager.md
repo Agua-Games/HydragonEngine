@@ -233,7 +233,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `void`
 
@@ -243,7 +243,7 @@
 
 
 
-- **Parameters:** const SecurityConfig& config
+- **Parameters:** `const SecurityConfig& config`
 
 - **Return:** `void`
 
@@ -253,7 +253,7 @@
 
 
 
-- **Parameters:** void* ptr, const MemoryWatchpoint& watchpoint
+- **Parameters:** `void* ptr`, `const MemoryWatchpoint& watchpoint`
 
 - **Return:** `void`
 
@@ -263,7 +263,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `void`
 
@@ -273,7 +273,7 @@
 
 
 
-- **Parameters:** const std::array<uint8_t, 32>& key
+- **Parameters:** `const std::array<uint8_t`, `32>& key`
 
 - **Return:** `void`
 
@@ -283,7 +283,7 @@
 
 
 
-- **Parameters:** size_t size, size_t alignment
+- **Parameters:** `size_t size`, `size_t alignment`
 
 - **Return:** `void*`
 
@@ -293,7 +293,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

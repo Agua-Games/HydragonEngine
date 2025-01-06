@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static RenderSystem&`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** const RenderConfig& config = {}
+- **Parameters:** `const RenderConfig& config = {}`
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** const RenderGraph& graph
+- **Parameters:** `const RenderGraph& graph`
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** const CommandBuffer& buffer
+- **Parameters:** `const CommandBuffer& buffer`
 
 - **Return:** `void`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** const ResourceDesc& desc
+- **Parameters:** `const ResourceDesc& desc`
 
 - **Return:** `ResourceHandle`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** ResourceHandle handle
+- **Parameters:** `ResourceHandle handle`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** const PipelineDesc& desc
+- **Parameters:** `const PipelineDesc& desc`
 
 - **Return:** `PipelineHandle`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** PipelineHandle handle
+- **Parameters:** `PipelineHandle handle`
 
 - **Return:** `void`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** BufferHandle handle, const void* data, size_t size
+- **Parameters:** `BufferHandle handle`, `const void* data`, `size_t size`
 
 - **Return:** `void`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** TextureHandle handle, const void* data, const TextureRegion& region
+- **Parameters:** `TextureHandle handle`, `const void* data`, `const TextureRegion& region`
 
 - **Return:** `void`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** const Viewport& viewport
+- **Parameters:** `const Viewport& viewport`
 
 - **Return:** `void`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** const Scissor& scissor
+- **Parameters:** `const Scissor& scissor`
 
 - **Return:** `void`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** const RenderPassDesc& desc
+- **Parameters:** `const RenderPassDesc& desc`
 
 - **Return:** `void`
 
@@ -298,7 +298,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

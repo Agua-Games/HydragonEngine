@@ -66,7 +66,7 @@
 
 
 
-- **Parameters:** QWidget* parent = nullptr
+- **Parameters:** `QWidget* parent = nullptr`
 
 - **Return:** `explicit`
 
@@ -76,7 +76,7 @@
 
 
 
-- **Parameters:** const Memory::MemoryBlock* a, const Memory::MemoryBlock* b
+- **Parameters:** `const Memory::MemoryBlock* a`, `const Memory::MemoryBlock* b`
 
 - **Return:** `void`
 
@@ -86,7 +86,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -96,7 +96,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -106,7 +106,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `ComparisonMetrics`
 
@@ -116,7 +116,7 @@
 
 
 
-- **Parameters:** const ComparisonMetrics& metrics
+- **Parameters:** `const ComparisonMetrics& metrics`
 
 - **Return:** `void`
 

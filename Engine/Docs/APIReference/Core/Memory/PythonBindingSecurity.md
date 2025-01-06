@@ -14,7 +14,7 @@
 
 
 
-- **Parameters:** PyObject* callback
+- **Parameters:** `PyObject* callback`
 
 - **Return:** `static bool`
 
@@ -24,7 +24,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size
+- **Parameters:** `void* ptr`, `size_t size`
 
 - **Return:** `static void*`
 
@@ -34,7 +34,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static void`
 

@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static CollaborationWorkspaceBindings&`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** const CollaborationWorkspaceBindingsConfig& config = {}
+- **Parameters:** `const CollaborationWorkspaceBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** const std::string& name, const WorkspaceDesc& desc = {}
+- **Parameters:** `const std::string& name`, `const WorkspaceDesc& desc = {}`
 
 - **Return:** `WorkspaceHandle`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle handle
+- **Parameters:** `WorkspaceHandle handle`
 
 - **Return:** `void`
 
@@ -206,7 +206,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle handle, const std::string& path
+- **Parameters:** `WorkspaceHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -216,7 +216,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle handle, const std::vector<UserInfo>& users
+- **Parameters:** `WorkspaceHandle handle`, `const std::vector<UserInfo>& users`
 
 - **Return:** `void`
 
@@ -226,7 +226,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle handle, const UserInfo& user
+- **Parameters:** `WorkspaceHandle handle`, `const UserInfo& user`
 
 - **Return:** `void`
 
@@ -236,7 +236,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle workspace, const std::string& name
+- **Parameters:** `WorkspaceHandle workspace`, `const std::string& name`
 
 - **Return:** `SnapshotHandle`
 
@@ -246,7 +246,7 @@
 
 
 
-- **Parameters:** SnapshotHandle handle
+- **Parameters:** `SnapshotHandle handle`
 
 - **Return:** `void`
 
@@ -256,7 +256,7 @@
 
 
 
-- **Parameters:** SnapshotHandle handle
+- **Parameters:** `SnapshotHandle handle`
 
 - **Return:** `void`
 
@@ -266,7 +266,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle workspace, const std::string& name
+- **Parameters:** `WorkspaceHandle workspace`, `const std::string& name`
 
 - **Return:** `BranchHandle`
 
@@ -276,7 +276,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle workspace, BranchHandle branch
+- **Parameters:** `WorkspaceHandle workspace`, `BranchHandle branch`
 
 - **Return:** `void`
 
@@ -286,7 +286,7 @@
 
 
 
-- **Parameters:** BranchHandle source, BranchHandle target
+- **Parameters:** `BranchHandle source`, `BranchHandle target`
 
 - **Return:** `void`
 
@@ -296,7 +296,7 @@
 
 
 
-- **Parameters:** BranchHandle handle
+- **Parameters:** `BranchHandle handle`
 
 - **Return:** `void`
 
@@ -306,7 +306,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle workspace, AssetHandle asset
+- **Parameters:** `WorkspaceHandle workspace`, `AssetHandle asset`
 
 - **Return:** `void`
 
@@ -316,7 +316,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle workspace, AssetHandle asset
+- **Parameters:** `WorkspaceHandle workspace`, `AssetHandle asset`
 
 - **Return:** `void`
 
@@ -326,7 +326,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle handle
+- **Parameters:** `WorkspaceHandle handle`
 
 - **Return:** `void`
 
@@ -336,7 +336,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle handle
+- **Parameters:** `WorkspaceHandle handle`
 
 - **Return:** `void`
 
@@ -346,7 +346,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle handle
+- **Parameters:** `WorkspaceHandle handle`
 
 - **Return:** `void`
 
@@ -356,7 +356,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -366,7 +366,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle handle, const std::string& path
+- **Parameters:** `WorkspaceHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -376,7 +376,7 @@
 
 
 
-- **Parameters:** WorkspaceHandle handle
+- **Parameters:** `WorkspaceHandle handle`
 
 - **Return:** `void`
 

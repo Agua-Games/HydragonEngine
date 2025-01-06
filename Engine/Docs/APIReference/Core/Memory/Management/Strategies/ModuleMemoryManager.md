@@ -52,7 +52,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -62,7 +62,7 @@
 
 
 
-- **Parameters:** size_t size
+- **Parameters:** `size_t size`
 
 - **Return:** `bool`
 

@@ -46,7 +46,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static MemoryManager&`
 
@@ -56,7 +56,7 @@
 
 
 
-- **Parameters:** size_t size, const AllocationInfo& info = {}
+- **Parameters:** `size_t size`, `const AllocationInfo& info = {}`
 
 - **Return:** `void*`
 
@@ -66,7 +66,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `void`
 
@@ -76,7 +76,7 @@
 
 
 
-- **Parameters:** IMemoryStrategy* strategy
+- **Parameters:** `IMemoryStrategy* strategy`
 
 - **Return:** `void`
 

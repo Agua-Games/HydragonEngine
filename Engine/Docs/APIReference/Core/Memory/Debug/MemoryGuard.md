@@ -42,7 +42,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size
+- **Parameters:** `void* ptr`, `size_t size`
 
 - **Return:** `static void*`
 
@@ -52,7 +52,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size
+- **Parameters:** `void* ptr`, `size_t size`
 
 - **Return:** `static bool`
 

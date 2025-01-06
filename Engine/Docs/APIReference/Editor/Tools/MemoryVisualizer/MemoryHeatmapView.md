@@ -116,7 +116,7 @@
 
 
 
-- **Parameters:** VisualizationMode mode
+- **Parameters:** `VisualizationMode mode`
 
 - **Return:** `void`
 
@@ -126,7 +126,7 @@
 
 
 
-- **Parameters:** const QString& layerName, bool visible
+- **Parameters:** `const QString& layerName`, `bool visible`
 
 - **Return:** `void`
 
@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** const ViewConfig& config
+- **Parameters:** `const ViewConfig& config`
 
 - **Return:** `void`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** const QRectF& region
+- **Parameters:** `const QRectF& region`
 
 - **Return:** `void`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** const std::vector<void*>& addresses
+- **Parameters:** `const std::vector<void*>& addresses`
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** const std::vector<MemoryState>& states
+- **Parameters:** `const std::vector<MemoryState>& states`
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** const MemoryState& state
+- **Parameters:** `const MemoryState& state`
 
 - **Return:** `void`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -206,8 +206,7 @@
 
 
 
-- **Parameters:** const std::vector<HeatmapLayer*>& activeLayers, 
-                               size_t x, size_t y
+- **Parameters:** `const std::vector<HeatmapLayer*>& activeLayers`, `size_t x`, `size_t y`
 
 - **Return:** `QColor`
 

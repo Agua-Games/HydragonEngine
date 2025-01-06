@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static InputSystem&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** const InputConfig& config = {}
+- **Parameters:** `const InputConfig& config = {}`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const DeviceDesc& desc
+- **Parameters:** `const DeviceDesc& desc`
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** DeviceHandle handle
+- **Parameters:** `DeviceHandle handle`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** const ActionDesc& desc
+- **Parameters:** `const ActionDesc& desc`
 
 - **Return:** `ActionHandle`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** ActionHandle handle
+- **Parameters:** `ActionHandle handle`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** ActionHandle action, const ActionBinding& binding
+- **Parameters:** `ActionHandle action`, `const ActionBinding& binding`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** ActionHandle action, const ActionBinding& binding
+- **Parameters:** `ActionHandle action`, `const ActionBinding& binding`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** ActionHandle action, const ActionCallback& callback
+- **Parameters:** `ActionHandle action`, `const ActionCallback& callback`
 
 - **Return:** `void`
 
@@ -230,7 +230,7 @@
 
 
 
-- **Parameters:** ActionHandle action, const ActionCallback& callback
+- **Parameters:** `ActionHandle action`, `const ActionCallback& callback`
 
 - **Return:** `void`
 
@@ -240,7 +240,7 @@
 
 
 
-- **Parameters:** DeviceHandle device, const HapticEffect& effect
+- **Parameters:** `DeviceHandle device`, `const HapticEffect& effect`
 
 - **Return:** `void`
 

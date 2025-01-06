@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static ConfigSchemaBindings&`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** const ConfigSchemaBindingsConfig& config = {}
+- **Parameters:** `const ConfigSchemaBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** const std::string& name, const SchemaDesc& desc = {}
+- **Parameters:** `const std::string& name`, `const SchemaDesc& desc = {}`
 
 - **Return:** `SchemaHandle`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle, const std::string& path
+- **Parameters:** `SchemaHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle
+- **Parameters:** `SchemaHandle handle`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle, const std::string& name, const FieldDesc& desc
+- **Parameters:** `SchemaHandle handle`, `const std::string& name`, `const FieldDesc& desc`
 
 - **Return:** `void`
 
@@ -230,7 +230,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle, const std::string& name
+- **Parameters:** `SchemaHandle handle`, `const std::string& name`
 
 - **Return:** `void`
 
@@ -240,7 +240,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle, const std::string& name, bool required
+- **Parameters:** `SchemaHandle handle`, `const std::string& name`, `bool required`
 
 - **Return:** `void`
 
@@ -250,7 +250,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle, const std::string& name, const Variant& value
+- **Parameters:** `SchemaHandle handle`, `const std::string& name`, `const Variant& value`
 
 - **Return:** `void`
 
@@ -260,7 +260,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle, const std::string& field, const ValidationRule& rule
+- **Parameters:** `SchemaHandle handle`, `const std::string& field`, `const ValidationRule& rule`
 
 - **Return:** `void`
 
@@ -270,7 +270,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle, const std::string& field, RuleHandle rule
+- **Parameters:** `SchemaHandle handle`, `const std::string& field`, `RuleHandle rule`
 
 - **Return:** `void`
 
@@ -280,7 +280,7 @@
 
 
 
-- **Parameters:** const std::string& name, std::unique_ptr<ICustomValidator> validator
+- **Parameters:** `const std::string& name`, `std::unique_ptr<ICustomValidator> validator`
 
 - **Return:** `void`
 
@@ -290,7 +290,7 @@
 
 
 
-- **Parameters:** SchemaHandle child, SchemaHandle parent
+- **Parameters:** `SchemaHandle child`, `SchemaHandle parent`
 
 - **Return:** `void`
 
@@ -300,7 +300,7 @@
 
 
 
-- **Parameters:** SchemaHandle child
+- **Parameters:** `SchemaHandle child`
 
 - **Return:** `void`
 
@@ -310,7 +310,7 @@
 
 
 
-- **Parameters:** ConfigHandle config, SchemaHandle schema
+- **Parameters:** `ConfigHandle config`, `SchemaHandle schema`
 
 - **Return:** `ValidationResult`
 
@@ -320,7 +320,7 @@
 
 
 
-- **Parameters:** const Variant& value, const FieldDesc& desc
+- **Parameters:** `const Variant& value`, `const FieldDesc& desc`
 
 - **Return:** `ValidationResult`
 
@@ -330,7 +330,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle
+- **Parameters:** `SchemaHandle handle`
 
 - **Return:** `void`
 
@@ -340,7 +340,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle
+- **Parameters:** `SchemaHandle handle`
 
 - **Return:** `void`
 
@@ -350,7 +350,7 @@
 
 
 
-- **Parameters:** SchemaHandle target, const std::vector<SchemaHandle>& sources
+- **Parameters:** `SchemaHandle target`, `const std::vector<SchemaHandle>& sources`
 
 - **Return:** `void`
 
@@ -360,7 +360,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -370,7 +370,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle, const std::string& path
+- **Parameters:** `SchemaHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -380,7 +380,7 @@
 
 
 
-- **Parameters:** SchemaHandle handle
+- **Parameters:** `SchemaHandle handle`
 
 - **Return:** `void`
 

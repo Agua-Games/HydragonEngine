@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static WindowManagerSystem&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** const WindowManagerConfig& config = {}
+- **Parameters:** `const WindowManagerConfig& config = {}`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const std::string& name, const DockSpaceDesc& desc
+- **Parameters:** `const std::string& name`, `const DockSpaceDesc& desc`
 
 - **Return:** `DockID`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** DockID id
+- **Parameters:** `DockID id`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** const std::string& window, DockID dock, DockSlot slot
+- **Parameters:** `const std::string& window`, `DockID dock`, `DockSlot slot`
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** const std::string& window
+- **Parameters:** `const std::string& window`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** const std::vector<std::string>& windows
+- **Parameters:** `const std::vector<std::string>& windows`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** const std::vector<std::string>& windows
+- **Parameters:** `const std::vector<std::string>& windows`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** const std::string& window, bool visible
+- **Parameters:** `const std::string& window`, `bool visible`
 
 - **Return:** `void`
 

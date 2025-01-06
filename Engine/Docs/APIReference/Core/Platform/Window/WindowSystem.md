@@ -112,7 +112,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static WindowSystem&`
 
@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** const WindowConfig& config = {}
+- **Parameters:** `const WindowConfig& config = {}`
 
 - **Return:** `void`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** const WindowDesc& desc
+- **Parameters:** `const WindowDesc& desc`
 
 - **Return:** `WindowHandle`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, int x, int y
+- **Parameters:** `WindowHandle handle`, `int x`, `int y`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+- **Parameters:** `WindowHandle handle`, `uint32_t width`, `uint32_t height`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, const std::string& title
+- **Parameters:** `WindowHandle handle`, `const std::string& title`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, const std::string& iconPath
+- **Parameters:** `WindowHandle handle`, `const std::string& iconPath`
 
 - **Return:** `void`
 
@@ -212,7 +212,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -222,7 +222,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -232,7 +232,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -242,7 +242,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 

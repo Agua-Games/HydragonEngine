@@ -62,7 +62,7 @@
 
 
 
-- **Parameters:** void* oldPtr, void* newPtr, size_t size
+- **Parameters:** `void* oldPtr`, `void* newPtr`, `size_t size`
 
 - **Return:** `void`
 

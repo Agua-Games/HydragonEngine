@@ -120,7 +120,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static SceneEditorSystem&`
 
@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** const SceneEditorConfig& config = {}
+- **Parameters:** `const SceneEditorConfig& config = {}`
 
 - **Return:** `void`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** const EntityDesc& desc
+- **Parameters:** `const EntityDesc& desc`
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** EntityHandle handle
+- **Parameters:** `EntityHandle handle`
 
 - **Return:** `void`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** EntityHandle handle
+- **Parameters:** `EntityHandle handle`
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** const std::vector<EntityHandle>& entities
+- **Parameters:** `const std::vector<EntityHandle>& entities`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** TransformMode mode
+- **Parameters:** `TransformMode mode`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** const Transform& delta
+- **Parameters:** `const Transform& delta`
 
 - **Return:** `void`
 
@@ -230,7 +230,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -240,7 +240,7 @@
 
 
 
-- **Parameters:** const std::string& name, EntityHandle root
+- **Parameters:** `const std::string& name`, `EntityHandle root`
 
 - **Return:** `void`
 
@@ -250,7 +250,7 @@
 
 
 
-- **Parameters:** const std::string& name, const Transform& transform
+- **Parameters:** `const std::string& name`, `const Transform& transform`
 
 - **Return:** `void`
 

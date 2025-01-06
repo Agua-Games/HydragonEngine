@@ -60,7 +60,7 @@
 
 
 
-- **Parameters:** const void* ptr, const Canary& expected
+- **Parameters:** `const void* ptr`, `const Canary& expected`
 
 - **Return:** `static bool`
 

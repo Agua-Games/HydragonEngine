@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static RuntimeResourceSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const RuntimeResourceConfig& config = {}
+- **Parameters:** `const RuntimeResourceConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const ResourceDesc& desc
+- **Parameters:** `const ResourceDesc& desc`
 
 - **Return:** `ResourceHandle`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** ResourceHandle handle
+- **Parameters:** `ResourceHandle handle`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** const std::string& name, size_t initialSize
+- **Parameters:** `const std::string& name`, `size_t initialSize`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** ResourceHandle handle, ResourcePriority priority
+- **Parameters:** `ResourceHandle handle`, `ResourcePriority priority`
 
 - **Return:** `void`
 

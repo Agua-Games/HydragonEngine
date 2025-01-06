@@ -134,7 +134,7 @@
 
 
 
-- **Parameters:** CommandBuffer* cmd, const StreamingStats& stats
+- **Parameters:** `CommandBuffer* cmd`, `const StreamingStats& stats`
 
 - **Return:** `void`
 
@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** CommandBuffer* cmd, const GPUMemoryManager& memoryManager
+- **Parameters:** `CommandBuffer* cmd`, `const GPUMemoryManager& memoryManager`
 
 - **Return:** `void`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** CommandBuffer* cmd, const std::vector<RegionStreamingInfo>& regions
+- **Parameters:** `CommandBuffer* cmd`, `const std::vector<RegionStreamingInfo>& regions`
 
 - **Return:** `void`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** CommandBuffer* cmd, const RegionStreamingInfo& region
+- **Parameters:** `CommandBuffer* cmd`, `const RegionStreamingInfo& region`
 
 - **Return:** `void`
 
@@ -174,7 +174,7 @@
 
 
 
-- **Parameters:** CommandBuffer* cmd, const StreamingStats& stats
+- **Parameters:** `CommandBuffer* cmd`, `const StreamingStats& stats`
 
 - **Return:** `void`
 
@@ -184,7 +184,7 @@
 
 
 
-- **Parameters:** CommandBuffer* cmd, const StreamingStats& stats
+- **Parameters:** `CommandBuffer* cmd`, `const StreamingStats& stats`
 
 - **Return:** `void`
 
@@ -194,7 +194,7 @@
 
 
 
-- **Parameters:** const std::vector<RegionStreamingInfo>& regions
+- **Parameters:** `const std::vector<RegionStreamingInfo>& regions`
 
 - **Return:** `void`
 

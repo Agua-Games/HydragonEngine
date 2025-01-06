@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static EditorPluginSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const EditorPluginConfig& config = {}
+- **Parameters:** `const EditorPluginConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** const std::string& pluginId
+- **Parameters:** `const std::string& pluginId`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** const std::string& pluginId
+- **Parameters:** `const std::string& pluginId`
 
 - **Return:** `void`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** const std::string& pluginId
+- **Parameters:** `const std::string& pluginId`
 
 - **Return:** `void`
 
@@ -202,7 +202,7 @@
 
 
 
-- **Parameters:** const std::string& pluginId
+- **Parameters:** `const std::string& pluginId`
 
 - **Return:** `void`
 
@@ -212,8 +212,7 @@
 
 
 
-- **Parameters:** const std::string& point, 
-                              const ExtensionPointDesc& desc
+- **Parameters:** `const std::string& point`, `const ExtensionPointDesc& desc`
 
 - **Return:** `void`
 
@@ -223,7 +222,7 @@
 
 
 
-- **Parameters:** const std::string& point
+- **Parameters:** `const std::string& point`
 
 - **Return:** `void`
 

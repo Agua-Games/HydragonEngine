@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static WidgetManagerSystem&`
 
@@ -132,7 +132,7 @@
 
 
 
-- **Parameters:** const WidgetManagerConfig& config = {}
+- **Parameters:** `const WidgetManagerConfig& config = {}`
 
 - **Return:** `void`
 
@@ -142,7 +142,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -152,7 +152,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -162,7 +162,7 @@
 
 
 
-- **Parameters:** const std::string& type, std::unique_ptr<IWidget> widget
+- **Parameters:** `const std::string& type`, `std::unique_ptr<IWidget> widget`
 
 - **Return:** `void`
 
@@ -172,7 +172,7 @@
 
 
 
-- **Parameters:** const std::string& type
+- **Parameters:** `const std::string& type`
 
 - **Return:** `void`
 
@@ -182,7 +182,7 @@
 
 
 
-- **Parameters:** const std::string& type, const WidgetDesc& desc
+- **Parameters:** `const std::string& type`, `const WidgetDesc& desc`
 
 - **Return:** `WidgetHandle`
 
@@ -192,7 +192,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle
+- **Parameters:** `WidgetHandle handle`
 
 - **Return:** `void`
 
@@ -202,8 +202,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, const std::string& name, 
-                          const PropertyValue& value
+- **Parameters:** `WidgetHandle handle`, `const std::string& name`, `const PropertyValue& value`
 
 - **Return:** `void`
 
@@ -213,7 +212,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle, const DragDropConfig& config
+- **Parameters:** `WidgetHandle handle`, `const DragDropConfig& config`
 
 - **Return:** `void`
 
@@ -223,7 +222,7 @@
 
 
 
-- **Parameters:** WidgetHandle handle
+- **Parameters:** `WidgetHandle handle`
 
 - **Return:** `void`
 

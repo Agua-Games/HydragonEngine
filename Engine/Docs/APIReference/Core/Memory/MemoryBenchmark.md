@@ -433,7 +433,7 @@
 
 
 
-- **Parameters:** const BenchmarkConfig& config
+- **Parameters:** `const BenchmarkConfig& config`
 
 - **Return:** `static BenchmarkResult`
 
@@ -443,7 +443,7 @@
 
 
 
-- **Parameters:** const BenchmarkConfig& config
+- **Parameters:** `const BenchmarkConfig& config`
 
 - **Return:** `static BenchmarkResult`
 
@@ -453,7 +453,7 @@
 
 
 
-- **Parameters:** const BenchmarkConfig& config
+- **Parameters:** `const BenchmarkConfig& config`
 
 - **Return:** `static BenchmarkResult`
 
@@ -463,7 +463,7 @@
 
 
 
-- **Parameters:** const BenchmarkConfig& config
+- **Parameters:** `const BenchmarkConfig& config`
 
 - **Return:** `static BenchmarkResult`
 
@@ -473,7 +473,7 @@
 
 
 
-- **Parameters:** Func&& func
+- **Parameters:** `Func&& func`
 
 - **Return:** `static double`
 

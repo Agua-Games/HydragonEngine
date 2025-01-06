@@ -96,7 +96,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static GraphAlgorithms&`
 
@@ -106,7 +106,7 @@
 
 
 
-- **Parameters:** const AlgorithmConfig& config = {}
+- **Parameters:** `const AlgorithmConfig& config = {}`
 
 - **Return:** `void`
 
@@ -116,7 +116,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -126,7 +126,7 @@
 
 
 
-- **Parameters:** GraphHandle graph
+- **Parameters:** `GraphHandle graph`
 
 - **Return:** `bool`
 
@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** GraphHandle graph
+- **Parameters:** `GraphHandle graph`
 
 - **Return:** `uint32_t`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** GraphHandle graph
+- **Parameters:** `GraphHandle graph`
 
 - **Return:** `float`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** GraphHandle graph, const LayoutParams& params
+- **Parameters:** `GraphHandle graph`, `const LayoutParams& params`
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** GraphHandle graph, float threshold
+- **Parameters:** `GraphHandle graph`, `float threshold`
 
 - **Return:** `void`
 

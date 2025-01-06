@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AssetPackageBindings&`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** const AssetPackageBindingsConfig& config = {}
+- **Parameters:** `const AssetPackageBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** const std::string& name, const PackageDesc& desc = {}
+- **Parameters:** `const std::string& name`, `const PackageDesc& desc = {}`
 
 - **Return:** `PackageHandle`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -206,7 +206,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 
@@ -216,7 +216,7 @@
 
 
 
-- **Parameters:** PackageHandle handle, const std::string& path
+- **Parameters:** `PackageHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -226,7 +226,7 @@
 
 
 
-- **Parameters:** PackageHandle package, AssetHandle asset
+- **Parameters:** `PackageHandle package`, `AssetHandle asset`
 
 - **Return:** `void`
 
@@ -236,7 +236,7 @@
 
 
 
-- **Parameters:** PackageHandle package, AssetHandle asset
+- **Parameters:** `PackageHandle package`, `AssetHandle asset`
 
 - **Return:** `void`
 
@@ -246,7 +246,7 @@
 
 
 
-- **Parameters:** const std::string& path, const StreamParams& params = {}
+- **Parameters:** `const std::string& path`, `const StreamParams& params = {}`
 
 - **Return:** `void`
 
@@ -256,7 +256,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 
@@ -266,7 +266,7 @@
 
 
 
-- **Parameters:** PackageHandle handle, CompressionLevel level
+- **Parameters:** `PackageHandle handle`, `CompressionLevel level`
 
 - **Return:** `void`
 
@@ -276,7 +276,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 
@@ -286,7 +286,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 
@@ -296,7 +296,7 @@
 
 
 
-- **Parameters:** PackageHandle handle, const std::string& key
+- **Parameters:** `PackageHandle handle`, `const std::string& key`
 
 - **Return:** `void`
 
@@ -306,7 +306,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 
@@ -316,7 +316,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 
@@ -326,7 +326,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 
@@ -336,7 +336,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 
@@ -346,7 +346,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 
@@ -356,7 +356,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -366,7 +366,7 @@
 
 
 
-- **Parameters:** PackageHandle handle, const std::string& path
+- **Parameters:** `PackageHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -376,7 +376,7 @@
 
 
 
-- **Parameters:** PackageHandle handle
+- **Parameters:** `PackageHandle handle`
 
 - **Return:** `void`
 

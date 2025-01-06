@@ -106,7 +106,7 @@
 
 
 
-- **Parameters:** const StreamingConfig& config = {}
+- **Parameters:** `const StreamingConfig& config = {}`
 
 - **Return:** `void`
 
@@ -116,7 +116,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -126,7 +126,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** SoundHandle handle, const StreamParams& params = {}
+- **Parameters:** `SoundHandle handle`, `const StreamParams& params = {}`
 
 - **Return:** `void`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** SoundHandle handle
+- **Parameters:** `SoundHandle handle`
 
 - **Return:** `void`
 

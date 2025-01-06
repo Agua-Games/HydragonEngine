@@ -128,7 +128,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static ConsoleSystem&`
 
@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** const ConsoleConfig& config = {}
+- **Parameters:** `const ConsoleConfig& config = {}`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,8 +168,7 @@
 
 
 
-- **Parameters:** const std::string& name, const CommandCallback& callback,
-                        const std::string& description = ""
+- **Parameters:** `const std::string& name`, `const CommandCallback& callback`, `const std::string& description = ""`
 
 - **Return:** `void`
 
@@ -179,7 +178,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -189,7 +188,7 @@
 
 
 
-- **Parameters:** const std::string& command
+- **Parameters:** `const std::string& command`
 
 - **Return:** `void`
 
@@ -199,7 +198,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -209,7 +208,7 @@
 
 
 
-- **Parameters:** const std::string& text, OutputLevel level = OutputLevel::Info
+- **Parameters:** `const std::string& text`, `OutputLevel level = OutputLevel::Info`
 
 - **Return:** `void`
 
@@ -219,7 +218,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

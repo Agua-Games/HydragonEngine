@@ -14,7 +14,7 @@
 
 
 
-- **Parameters:** size_t size, size_t alignment
+- **Parameters:** `size_t size`, `size_t alignment`
 
 - **Return:** `static void*`
 
@@ -24,7 +24,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `static void`
 
@@ -34,7 +34,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static size_t`
 
@@ -44,7 +44,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `static bool`
 
@@ -54,7 +54,7 @@
 
 
 
-- **Parameters:** size_t size
+- **Parameters:** `size_t size`
 
 - **Return:** `static void*`
 
@@ -64,7 +64,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `static void`
 
@@ -74,7 +74,7 @@
 
 
 
-- **Parameters:** size_t size
+- **Parameters:** `size_t size`
 
 - **Return:** `static void*`
 
@@ -84,7 +84,7 @@
 
 
 
-- **Parameters:** void* ptr, size_t size
+- **Parameters:** `void* ptr`, `size_t size`
 
 - **Return:** `static void`
 

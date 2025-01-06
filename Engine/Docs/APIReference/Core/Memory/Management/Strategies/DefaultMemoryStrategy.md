@@ -126,7 +126,7 @@
 
 
 
-- **Parameters:** const Config& config = {}
+- **Parameters:** `const Config& config = {}`
 
 - **Return:** `explicit`
 
@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** size_t size
+- **Parameters:** `size_t size`
 
 - **Return:** `HeapBlock*`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** HeapBlock* block, size_t size
+- **Parameters:** `HeapBlock* block`, `size_t size`
 
 - **Return:** `void`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

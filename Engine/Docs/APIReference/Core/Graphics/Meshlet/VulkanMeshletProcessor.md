@@ -25,7 +25,7 @@
 
 
 
-- **Parameters:** data
+- **Parameters:** `data`
 
 - **Return:** `return`
 

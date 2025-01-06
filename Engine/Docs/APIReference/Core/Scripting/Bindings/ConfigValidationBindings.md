@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static ConfigValidationBindings&`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** const ConfigValidationBindingsConfig& config = {}
+- **Parameters:** `const ConfigValidationBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** const std::string& name, const RuleDesc& desc = {}
+- **Parameters:** `const std::string& name`, `const RuleDesc& desc = {}`
 
 - **Return:** `RuleHandle`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** RuleHandle handle
+- **Parameters:** `RuleHandle handle`
 
 - **Return:** `void`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** RuleHandle handle, const RuleCondition& condition
+- **Parameters:** `RuleHandle handle`, `const RuleCondition& condition`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** RuleHandle handle, const RuleAction& action
+- **Parameters:** `RuleHandle handle`, `const RuleAction& action`
 
 - **Return:** `void`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** RuleHandle handle, RuleSeverity severity
+- **Parameters:** `RuleHandle handle`, `RuleSeverity severity`
 
 - **Return:** `void`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** RuleHandle handle, bool enabled
+- **Parameters:** `RuleHandle handle`, `bool enabled`
 
 - **Return:** `void`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** const std::string& name, std::unique_ptr<ICustomRule> rule
+- **Parameters:** `const std::string& name`, `std::unique_ptr<ICustomRule> rule`
 
 - **Return:** `void`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** ConfigHandle config
+- **Parameters:** `ConfigHandle config`
 
 - **Return:** `ValidationResult`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** ConfigHandle config, const std::string& section
+- **Parameters:** `ConfigHandle config`, `const std::string& section`
 
 - **Return:** `ValidationResult`
 
@@ -298,7 +298,7 @@
 
 
 
-- **Parameters:** const Variant& value, const ValidationContext& context
+- **Parameters:** `const Variant& value`, `const ValidationContext& context`
 
 - **Return:** `ValidationResult`
 
@@ -308,7 +308,7 @@
 
 
 
-- **Parameters:** ValidationHandle handle
+- **Parameters:** `ValidationHandle handle`
 
 - **Return:** `void`
 
@@ -318,7 +318,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -328,7 +328,7 @@
 
 
 
-- **Parameters:** const std::string& path
+- **Parameters:** `const std::string& path`
 
 - **Return:** `void`
 
@@ -338,7 +338,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

@@ -94,8 +94,7 @@
 
 
 
-- **Parameters:** VkMemoryRequirements reqs, 
-                                   VkMemoryPropertyFlags props
+- **Parameters:** `VkMemoryRequirements reqs`, `VkMemoryPropertyFlags props`
 
 - **Return:** `GPUAllocation`
 
@@ -105,7 +104,7 @@
 
 
 
-- **Parameters:** GPUAllocation& allocation
+- **Parameters:** `GPUAllocation& allocation`
 
 - **Return:** `void`
 

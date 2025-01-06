@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** const std::string& name, const SchemaDesc& desc = {}
+- **Parameters:** `const std::string& name`, `const SchemaDesc& desc = {}`
 
 - **Return:** `static SchemaHandle`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** const std::string& name, const FieldDesc& desc
+- **Parameters:** `const std::string& name`, `const FieldDesc& desc`
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** const std::string& name, bool required
+- **Parameters:** `const std::string& name`, `bool required`
 
 - **Return:** `void`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** const std::string& name, const Variant& value
+- **Parameters:** `const std::string& name`, `const Variant& value`
 
 - **Return:** `void`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** const std::string& field, const ValidationRule& rule
+- **Parameters:** `const std::string& field`, `const ValidationRule& rule`
 
 - **Return:** `void`
 
@@ -206,7 +206,7 @@
 
 
 
-- **Parameters:** const std::string& field, RuleHandle rule
+- **Parameters:** `const std::string& field`, `RuleHandle rule`
 
 - **Return:** `void`
 
@@ -216,7 +216,7 @@
 
 
 
-- **Parameters:** SchemaHandle parent
+- **Parameters:** `SchemaHandle parent`
 
 - **Return:** `void`
 
@@ -226,7 +226,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -236,7 +236,7 @@
 
 
 
-- **Parameters:** const std::string& version
+- **Parameters:** `const std::string& version`
 
 - **Return:** `void`
 

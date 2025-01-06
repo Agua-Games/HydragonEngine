@@ -24,7 +24,7 @@
 
 
 
-- **Parameters:** QWidget* parent = nullptr
+- **Parameters:** `QWidget* parent = nullptr`
 
 - **Return:** `explicit`
 
@@ -34,7 +34,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -44,7 +44,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -54,7 +54,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -64,7 +64,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

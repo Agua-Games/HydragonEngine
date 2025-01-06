@@ -74,7 +74,7 @@
 
 
 
-- **Parameters:** size, info
+- **Parameters:** `size`, `info`
 
 - **Return:** `return`
 

@@ -106,7 +106,7 @@
 
 
 
-- **Parameters:** IStreamingSystem* system
+- **Parameters:** `IStreamingSystem* system`
 
 - **Return:** `void`
 
@@ -116,7 +116,7 @@
 
 
 
-- **Parameters:** IMemoryStrategy* strategy
+- **Parameters:** `IMemoryStrategy* strategy`
 
 - **Return:** `void`
 
@@ -126,7 +126,7 @@
 
 
 
-- **Parameters:** const std::string& moduleName, size_t reservedMemory
+- **Parameters:** `const std::string& moduleName`, `size_t reservedMemory`
 
 - **Return:** `void`
 
@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** const std::string& moduleName, StreamingPriority priority
+- **Parameters:** `const std::string& moduleName`, `StreamingPriority priority`
 
 - **Return:** `void`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** size_t size, const StreamingAllocationInfo& info
+- **Parameters:** `size_t size`, `const StreamingAllocationInfo& info`
 
 - **Return:** `void*`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** void* ptr
+- **Parameters:** `void* ptr`
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

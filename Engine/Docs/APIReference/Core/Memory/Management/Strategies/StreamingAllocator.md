@@ -92,7 +92,7 @@
 
 
 
-- **Parameters:** const StreamConfig& config
+- **Parameters:** `const StreamConfig& config`
 
 - **Return:** `explicit`
 
@@ -102,7 +102,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -112,7 +112,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -122,7 +122,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 

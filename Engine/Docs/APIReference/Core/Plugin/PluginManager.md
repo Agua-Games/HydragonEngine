@@ -54,7 +54,7 @@
 
 
 
-- **Parameters:** const char* path, const PluginInfo& info
+- **Parameters:** `const char* path`, `const PluginInfo& info`
 
 - **Return:** `bool`
 

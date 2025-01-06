@@ -136,7 +136,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AudioBindings&`
 
@@ -146,7 +146,7 @@
 
 
 
-- **Parameters:** const AudioBindingsConfig& config = {}
+- **Parameters:** `const AudioBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -156,7 +156,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -166,7 +166,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -176,7 +176,7 @@
 
 
 
-- **Parameters:** const std::string& name, const SoundDesc& desc
+- **Parameters:** `const std::string& name`, `const SoundDesc& desc`
 
 - **Return:** `SoundHandle`
 
@@ -186,7 +186,7 @@
 
 
 
-- **Parameters:** SoundHandle handle
+- **Parameters:** `SoundHandle handle`
 
 - **Return:** `void`
 
@@ -196,7 +196,7 @@
 
 
 
-- **Parameters:** const std::string& name
+- **Parameters:** `const std::string& name`
 
 - **Return:** `void`
 
@@ -206,7 +206,7 @@
 
 
 
-- **Parameters:** const std::string& name, const PlayParams& params = {}
+- **Parameters:** `const std::string& name`, `const PlayParams& params = {}`
 
 - **Return:** `SourceHandle`
 
@@ -216,7 +216,7 @@
 
 
 
-- **Parameters:** SourceHandle handle
+- **Parameters:** `SourceHandle handle`
 
 - **Return:** `void`
 
@@ -226,7 +226,7 @@
 
 
 
-- **Parameters:** SourceHandle handle
+- **Parameters:** `SourceHandle handle`
 
 - **Return:** `void`
 
@@ -236,7 +236,7 @@
 
 
 
-- **Parameters:** SourceHandle handle
+- **Parameters:** `SourceHandle handle`
 
 - **Return:** `void`
 
@@ -246,7 +246,7 @@
 
 
 
-- **Parameters:** const std::string& name, float volume
+- **Parameters:** `const std::string& name`, `float volume`
 
 - **Return:** `void`
 
@@ -256,7 +256,7 @@
 
 
 
-- **Parameters:** const std::string& name, float pitch
+- **Parameters:** `const std::string& name`, `float pitch`
 
 - **Return:** `void`
 
@@ -266,7 +266,7 @@
 
 
 
-- **Parameters:** SourceHandle handle, const Vector3& position
+- **Parameters:** `SourceHandle handle`, `const Vector3& position`
 
 - **Return:** `void`
 
@@ -276,7 +276,7 @@
 
 
 
-- **Parameters:** const std::string& name, const EffectDesc& desc
+- **Parameters:** `const std::string& name`, `const EffectDesc& desc`
 
 - **Return:** `EffectHandle`
 
@@ -286,7 +286,7 @@
 
 
 
-- **Parameters:** EffectHandle handle
+- **Parameters:** `EffectHandle handle`
 
 - **Return:** `void`
 
@@ -296,7 +296,7 @@
 
 
 
-- **Parameters:** const std::string& soundName, const std::string& effectName
+- **Parameters:** `const std::string& soundName`, `const std::string& effectName`
 
 - **Return:** `void`
 
@@ -306,7 +306,7 @@
 
 
 
-- **Parameters:** const Vector3& position
+- **Parameters:** `const Vector3& position`
 
 - **Return:** `void`
 
@@ -316,7 +316,7 @@
 
 
 
-- **Parameters:** const Vector3& forward, const Vector3& up
+- **Parameters:** `const Vector3& forward`, `const Vector3& up`
 
 - **Return:** `void`
 
@@ -326,7 +326,7 @@
 
 
 
-- **Parameters:** bool enable
+- **Parameters:** `bool enable`
 
 - **Return:** `void`
 
@@ -336,7 +336,7 @@
 
 
 
-- **Parameters:** std::vector<float>& spectrum
+- **Parameters:** `std::vector<float>& spectrum`
 
 - **Return:** `void`
 
@@ -346,7 +346,7 @@
 
 
 
-- **Parameters:** std::vector<float>& waveform
+- **Parameters:** `std::vector<float>& waveform`
 
 - **Return:** `void`
 

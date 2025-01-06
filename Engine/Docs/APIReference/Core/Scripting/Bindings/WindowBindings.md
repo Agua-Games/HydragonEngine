@@ -128,7 +128,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static WindowBindings&`
 
@@ -138,7 +138,7 @@
 
 
 
-- **Parameters:** const WindowBindingsConfig& config = {}
+- **Parameters:** `const WindowBindingsConfig& config = {}`
 
 - **Return:** `void`
 
@@ -148,7 +148,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -158,7 +158,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -168,7 +168,7 @@
 
 
 
-- **Parameters:** const WindowDesc& desc
+- **Parameters:** `const WindowDesc& desc`
 
 - **Return:** `WindowHandle`
 
@@ -178,7 +178,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -188,7 +188,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -198,7 +198,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -208,7 +208,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, const std::string& title
+- **Parameters:** `WindowHandle handle`, `const std::string& title`
 
 - **Return:** `void`
 
@@ -218,7 +218,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+- **Parameters:** `WindowHandle handle`, `uint32_t width`, `uint32_t height`
 
 - **Return:** `void`
 
@@ -228,7 +228,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, int32_t x, int32_t y
+- **Parameters:** `WindowHandle handle`, `int32_t x`, `int32_t y`
 
 - **Return:** `void`
 
@@ -238,7 +238,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, bool fullscreen
+- **Parameters:** `WindowHandle handle`, `bool fullscreen`
 
 - **Return:** `void`
 
@@ -248,7 +248,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, bool borderless
+- **Parameters:** `WindowHandle handle`, `bool borderless`
 
 - **Return:** `void`
 
@@ -258,7 +258,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, bool resizable
+- **Parameters:** `WindowHandle handle`, `bool resizable`
 
 - **Return:** `void`
 
@@ -268,7 +268,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+- **Parameters:** `WindowHandle handle`, `uint32_t width`, `uint32_t height`
 
 - **Return:** `void`
 
@@ -278,7 +278,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+- **Parameters:** `WindowHandle handle`, `uint32_t width`, `uint32_t height`
 
 - **Return:** `void`
 
@@ -288,7 +288,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, const WindowCallback& callback
+- **Parameters:** `WindowHandle handle`, `const WindowCallback& callback`
 
 - **Return:** `void`
 
@@ -298,7 +298,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -308,7 +308,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, const DropCallback& callback
+- **Parameters:** `WindowHandle handle`, `const DropCallback& callback`
 
 - **Return:** `void`
 
@@ -318,7 +318,7 @@
 
 
 
-- **Parameters:** WindowHandle handle
+- **Parameters:** `WindowHandle handle`
 
 - **Return:** `void`
 
@@ -328,7 +328,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, bool show
+- **Parameters:** `WindowHandle handle`, `bool show`
 
 - **Return:** `void`
 
@@ -338,7 +338,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, int32_t x, int32_t y
+- **Parameters:** `WindowHandle handle`, `int32_t x`, `int32_t y`
 
 - **Return:** `void`
 
@@ -348,7 +348,7 @@
 
 
 
-- **Parameters:** WindowHandle handle, CursorMode mode
+- **Parameters:** `WindowHandle handle`, `CursorMode mode`
 
 - **Return:** `void`
 

@@ -130,7 +130,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static AssetSystem&`
 
@@ -140,7 +140,7 @@
 
 
 
-- **Parameters:** const AssetConfig& config = {}
+- **Parameters:** `const AssetConfig& config = {}`
 
 - **Return:** `void`
 
@@ -150,7 +150,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -160,7 +160,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -170,7 +170,7 @@
 
 
 
-- **Parameters:** const AssetImportDesc& desc
+- **Parameters:** `const AssetImportDesc& desc`
 
 - **Return:** `AssetHandle`
 
@@ -180,7 +180,7 @@
 
 
 
-- **Parameters:** AssetHandle handle
+- **Parameters:** `AssetHandle handle`
 
 - **Return:** `void`
 
@@ -190,7 +190,7 @@
 
 
 
-- **Parameters:** AssetHandle handle, const std::string& path
+- **Parameters:** `AssetHandle handle`, `const std::string& path`
 
 - **Return:** `void`
 
@@ -200,7 +200,7 @@
 
 
 
-- **Parameters:** AssetHandle dependent, AssetHandle dependency
+- **Parameters:** `AssetHandle dependent`, `AssetHandle dependency`
 
 - **Return:** `void`
 
@@ -210,7 +210,7 @@
 
 
 
-- **Parameters:** AssetHandle dependent, AssetHandle dependency
+- **Parameters:** `AssetHandle dependent`, `AssetHandle dependency`
 
 - **Return:** `void`
 
@@ -220,7 +220,7 @@
 
 
 
-- **Parameters:** AssetHandle handle, const AssetMetadata& metadata
+- **Parameters:** `AssetHandle handle`, `const AssetMetadata& metadata`
 
 - **Return:** `void`
 

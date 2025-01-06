@@ -441,7 +441,7 @@
 
 
 
-- **Parameters:** filename, std::ios::binary
+- **Parameters:** `filename`, `std::ios::binary`
 
 - **Return:** `ofstream`
 
@@ -451,7 +451,7 @@
 
 
 
-- **Parameters:** stream, desc.name
+- **Parameters:** `stream`, `desc.name`
 
 - **Return:** `Write attribute metadata`
 
@@ -461,7 +461,7 @@
 
 
 
-- **Parameters:** desc.type
+- **Parameters:** `desc.type`
 
 - **Return:** `size *`
 
@@ -471,7 +471,7 @@
 
 
 
-- **Parameters:** stream, desc.name
+- **Parameters:** `stream`, `desc.name`
 
 - **Return:** `Read metadata`
 
@@ -481,7 +481,7 @@
 
 
 
-- **Parameters:** desc.type
+- **Parameters:** `desc.type`
 
 - **Return:** `size *`
 

@@ -76,7 +76,7 @@
 
 
 
-- **Parameters:** const QRectF& bounds, int maxDepth = 8
+- **Parameters:** `const QRectF& bounds`, `int maxDepth = 8`
 
 - **Return:** `explicit`
 
@@ -86,7 +86,7 @@
 
 
 
-- **Parameters:** const QRectF& rect
+- **Parameters:** `const QRectF& rect`
 
 - **Return:** `Node*`
 
@@ -96,7 +96,7 @@
 
 
 
-- **Parameters:** const QRectF& rect
+- **Parameters:** `const QRectF& rect`
 
 - **Return:** `bool`
 
@@ -106,7 +106,7 @@
 
 
 
-- **Parameters:** double size
+- **Parameters:** `double size`
 
 - **Return:** `Node*`
 
@@ -116,7 +116,7 @@
 
 
 
-- **Parameters:** Node* node, double size, int depth
+- **Parameters:** `Node* node`, `double size`, `int depth`
 
 - **Return:** `Node*`
 
@@ -126,7 +126,7 @@
 
 
 
-- **Parameters:** Node* node
+- **Parameters:** `Node* node`
 
 - **Return:** `bool`
 

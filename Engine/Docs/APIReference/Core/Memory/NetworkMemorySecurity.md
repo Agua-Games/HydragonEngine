@@ -76,7 +76,7 @@
 
 
 
-- **Parameters:** const void* ptr, size_t size
+- **Parameters:** `const void* ptr`, `size_t size`
 
 - **Return:** `static bool`
 
@@ -86,7 +86,7 @@
 
 
 
-- **Parameters:** void* data, size_t size, const uint8_t* key
+- **Parameters:** `void* data`, `size_t size`, `const uint8_t* key`
 
 - **Return:** `static bool`
 
@@ -96,7 +96,7 @@
 
 
 
-- **Parameters:** void* data, size_t size, const uint8_t* key
+- **Parameters:** `void* data`, `size_t size`, `const uint8_t* key`
 
 - **Return:** `static bool`
 
@@ -106,7 +106,7 @@
 
 
 
-- **Parameters:** ValidationCallback callback
+- **Parameters:** `ValidationCallback callback`
 
 - **Return:** `static void`
 

@@ -104,7 +104,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `static DebugSystem&`
 
@@ -114,7 +114,7 @@
 
 
 
-- **Parameters:** const DebugConfig& config = {}
+- **Parameters:** `const DebugConfig& config = {}`
 
 - **Return:** `void`
 
@@ -124,7 +124,7 @@
 
 
 
-- **Parameters:** 
+- **Parameters:** ``
 
 - **Return:** `void`
 
@@ -134,7 +134,7 @@
 
 
 
-- **Parameters:** float deltaTime
+- **Parameters:** `float deltaTime`
 
 - **Return:** `void`
 
@@ -144,7 +144,7 @@
 
 
 
-- **Parameters:** const Vector3& start, const Vector3& end, const Color& color
+- **Parameters:** `const Vector3& start`, `const Vector3& end`, `const Color& color`
 
 - **Return:** `void`
 
@@ -154,7 +154,7 @@
 
 
 
-- **Parameters:** const Vector3& center, float radius, const Color& color
+- **Parameters:** `const Vector3& center`, `float radius`, `const Color& color`
 
 - **Return:** `void`
 
@@ -164,7 +164,7 @@
 
 
 
-- **Parameters:** const Vector3& center, const Vector3& extents, const Color& color
+- **Parameters:** `const Vector3& center`, `const Vector3& extents`, `const Color& color`
 
 - **Return:** `void`
 
@@ -174,7 +174,7 @@
 
 
 
-- **Parameters:** const Vector3& position, const std::string& text, const Color& color
+- **Parameters:** `const Vector3& position`, `const std::string& text`, `const Color& color`
 
 - **Return:** `void`
 
@@ -184,7 +184,7 @@
 
 
 
-- **Parameters:** const std::string& name, const std::string& value
+- **Parameters:** `const std::string& name`, `const std::string& value`
 
 - **Return:** `void`
 
@@ -194,7 +194,7 @@
 
 
 
-- **Parameters:** const std::string& name, const ConsoleCommandFunc& func
+- **Parameters:** `const std::string& name`, `const ConsoleCommandFunc& func`
 
 - **Return:** `void`
 

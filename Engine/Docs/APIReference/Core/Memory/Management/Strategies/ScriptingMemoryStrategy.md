@@ -86,7 +86,7 @@
 
 
 
-- **Parameters:** size, hint.nodeGraphId
+- **Parameters:** `size`, `hint.nodeGraphId`
 
 - **Return:** `return`
 

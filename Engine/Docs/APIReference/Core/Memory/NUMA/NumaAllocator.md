@@ -100,7 +100,7 @@
 
 
 
-- **Parameters:** const NumaConfig& config = {}
+- **Parameters:** `const NumaConfig& config = {}`
 
 - **Return:** `explicit`
 
