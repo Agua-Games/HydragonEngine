@@ -4,11 +4,10 @@ Licensed under the Agua Games License 1.0
 
 Python orphaned call resolver implementation.
 """
-
 from pathlib import Path
 from typing import Dict, List
-from .base_resolver import BaseOrphanedCallResolver
-from .python_function_collector import PythonFunctionCollector
+from Engine.Tools.CodeAnalysis.base_resolver import BaseOrphanedCallResolver
+from Engine.Tools.CodeAnalysis.python_function_collector import PythonFunctionCollector
 
 class PythonOrphanedCallResolver(BaseOrphanedCallResolver):
     """Resolves orphaned Python function calls"""
@@ -31,25 +30,38 @@ class PythonOrphanedCallResolver(BaseOrphanedCallResolver):
                 
         return "\n".join(report)
 
-    def resolve_orphaned_calls(self, strategy: str = 'create') -> None:
+    def resolve_orphaned_calls(self, strategy: str = 'create') -> Dict[str, str]:
         """
         Resolve orphaned calls using specified strategy
         
         Args:
             strategy: Resolution strategy - 'create', 'remove', or 'link'
+            
+        Returns:
+            Dictionary mapping function names to their resolution status
         """
+        resolution_results = {}
+        
         if not self.orphaned_calls:
-            return
+            return resolution_results
             
         for func_name, call_locations in self.orphaned_calls.items():
-            if strategy == 'create':
-                self._create_function_implementation(func_name, call_locations)
-            elif strategy == 'remove':
-                self._remove_orphaned_calls(func_name, call_locations)
-            elif strategy == 'link':
-                self._link_to_existing_function(func_name, call_locations)
-            else:
-                raise ValueError(f"Invalid strategy: {strategy}")
+            try:
+                if strategy == 'create':
+                    self._create_function_implementation(func_name, call_locations)
+                    resolution_results[func_name] = 'created'
+                elif strategy == 'remove':
+                    self._remove_orphaned_calls(func_name, call_locations)
+                    resolution_results[func_name] = 'removed'
+                elif strategy == 'link':
+                    self._link_to_existing_function(func_name, call_locations)
+                    resolution_results[func_name] = 'linked'
+                else:
+                    raise ValueError(f"Invalid strategy: {strategy}")
+            except Exception as e:
+                resolution_results[func_name] = f'error: {str(e)}'
+                
+        return resolution_results
 
     def _create_function_implementation(self, func_name: str, call_locations: List[Path]) -> None:
         """Create new function implementation for orphaned call"""
@@ -59,7 +71,10 @@ class PythonOrphanedCallResolver(BaseOrphanedCallResolver):
         target_file = self._determine_implementation_location(call_locations)
         
         if not target_file.exists():
-            return
+            try:
+                target_file.touch()
+            except Exception as e:
+                raise RuntimeError(f"Failed to create implementation file: {e}")
             
         function_code = f"""
 def {func_name}(*args, **kwargs):
@@ -83,8 +98,11 @@ def {func_name}(*args, **kwargs):
         "Actual functionality needs to be implemented."
     )
 """
-        if self._confirm_action(f"Add implementation to {target_file.name}?"):
-            self._add_function_to_file(target_file, function_code)
+        try:
+            with open(target_file, 'a', encoding='utf-8') as f:
+                f.write(function_code)
+        except Exception as e:
+            raise RuntimeError(f"Failed to write function implementation: {e}")
 
     def _remove_orphaned_calls(self, func_name: str, call_locations: List[Path]) -> None:
         """Remove orphaned function calls"""
@@ -103,7 +121,7 @@ def {func_name}(*args, **kwargs):
                         f.writelines(new_lines)
                         
             except Exception as e:
-                print(f"Error processing {call_file}: {e}")
+                raise RuntimeError(f"Error processing {call_file}: {e}")
 
     def _link_to_existing_function(self, func_name: str, call_locations: List[Path]) -> None:
         """Link orphaned calls to existing functions"""
@@ -151,7 +169,7 @@ def {func_name}(*args, **kwargs):
                         f.write(line)
                         
             except Exception as e:
-                print(f"Error updating {call_file}: {e}")
+                raise RuntimeError(f"Error updating {call_file}: {e}")
 
     def _determine_implementation_location(self, call_locations: List[Path]) -> Path:
         """Determine best location for new implementation"""
@@ -163,4 +181,4 @@ def {func_name}(*args, **kwargs):
             with open(file_path, 'a', encoding='utf-8') as f:
                 f.write(function_code)
         except Exception as e:
-            print(f"Error writing to {file_path}: {e}")
+            raise RuntimeError(f"Error writing to {file_path}: {e}")
