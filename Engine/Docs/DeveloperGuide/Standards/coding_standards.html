@@ -41,8 +41,48 @@ Website</a>
             <p>This document outlines the coding standards for all
             development in the Hydragon Engine.</p>
             <h2 id="general-standards">General Standards</h2>
+            <ul>
+            <li>Include copyright notice in file headers</li>
+            <li>Standardize comments, docs, and doc blocks</li>
+            <li>Implement error catching and logging</li>
+            <li>Follow language-specific formatting</li>
+            <li>Use unified namespace style</li>
+            <li>Avoid absolute paths and hardcoded values</li>
+            <li>Maintain consistency with existing codebase</li>
+            <li>Never call undeclared functions/variables</li>
+            <li>Acknowledge uncertainty, avoid speculation</li>
+            <li>Balance speed and accuracy in analysis</li>
+            <li>Maintain holistic codebase understanding</li>
+            <li>Implement comprehensive logging</li>
+            <li>Be explicit about uncertainties</li>
+            <li>Focus on core tasks, avoid peripheral issues</li>
+            <li>Consider full context before new implementations</li>
+            <li>State task understanding before implementation</li>
+            <li>Strive for concise, clear, maintainable code</li>
+            <li>Propose minimal necessary solutions</li>
+            <li>Confirm before expanding scope or major changes</li>
+            <li>Minimize third-party library usage</li>
+            <li>Follow CI/CD requirements:</li>
+            <li><blockquote>
+            <p>80% doc coverage</p>
+            </blockquote></li>
+            <li>Resolve style violations</li>
+            <li>Team review for breaking changes</li>
+            </ul>
             <h2 id="language-specific-standards">Language-Specific
             Standards</h2>
+            <h3 id="c-standards">C++ Standards</h3>
+            <ul>
+            <li>Follow C++ Core Guidelines</li>
+            <li>Use #pragma once for include guards</li>
+            <li>Verify includes for correct usage and order</li>
+            </ul>
+            <h3 id="python-standards">Python Standards</h3>
+            <ul>
+            <li>Follow PEP 8 guidelines</li>
+            <li>Use type hints where appropriate</li>
+            <li>Maintain clean imports organization</li>
+            </ul>
             <h2 id="implementation-notes">Implementation Notes</h2>
             <ul>
             <li>These standards are enforced through automated tooling
@@ -70,7 +110,13 @@ Website</a>
                 id="toc-general-standards">General Standards</a></li>
                 <li><a href="#language-specific-standards"
                 id="toc-language-specific-standards">Language-Specific
+                Standards</a>
+                <ul>
+                <li><a href="#c-standards" id="toc-c-standards">C++
                 Standards</a></li>
+                <li><a href="#python-standards"
+                id="toc-python-standards">Python Standards</a></li>
+                </ul></li>
                 <li><a href="#implementation-notes"
                 id="toc-implementation-notes">Implementation
                 Notes</a></li>

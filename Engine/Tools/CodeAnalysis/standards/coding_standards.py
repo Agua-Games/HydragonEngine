@@ -1,11 +1,15 @@
-# Hydragon Engine Coding Standards
+"""
+Copyright (c) 2024 Agua Games. All rights reserved.
+Licensed under the Agua Games License 1.0
 
-This document outlines the coding standards for all development in the Hydragon Engine.
+Hydragon Engine Coding Standards
+"""
 
-## General Standards
+"""
+FOR ANY CODE:
 
 - Include copyright notice in file headers
-- Standardize comments, docs, and doc blocks
+- Standardize comments, docs, and doc blocks  
 - Implement error catching and logging
 - Follow language-specific formatting
 - Use unified namespace style
@@ -25,30 +29,32 @@ This document outlines the coding standards for all development in the Hydragon 
 - Confirm before expanding scope or major changes
 - Minimize third-party library usage
 - Follow CI/CD requirements:
-- >80% doc coverage
-- Resolve style violations
-- Team review for breaking changes
+  - >80% doc coverage
+  - Resolve style violations
+  - Team review for breaking changes
+"""
 
-
-## Language-Specific Standards
-
-### C++ Standards
+"""
+C++ SPECIFIC:
 
 - Follow C++ Core Guidelines
 - Use #pragma once for include guards
 - Verify includes for correct usage and order
+"""
 
-
-### Python Standards
+"""
+PYTHON SPECIFIC:
 
 - Follow PEP 8 guidelines
 - Use type hints where appropriate
 - Maintain clean imports organization
+"""
 
+"""
+IMPLEMENTATION NOTES:
 
-## Implementation Notes
-
-- These standards are enforced through automated tooling in the CI/CD pipeline
-- Documentation coverage is automatically checked and must maintain >80% coverage
-- Style violations will trigger build warnings
-- Breaking changes to these standards require team review
+- Standards enforced through CI/CD tooling
+- Documentation coverage checked automatically
+- Style violations trigger build warnings
+- Breaking changes require team review
+"""

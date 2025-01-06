@@ -23,7 +23,7 @@ from Common.config_manager import EngineConfig
 # Setup paths relative to this script
 SCRIPT_DIR = Path(__file__).parent
 ENGINE_ROOT = SCRIPT_DIR.parent.parent
-STANDARDS_FILE = ENGINE_ROOT / "Docs" / "DeveloperGuide" / "RoadmapChat" / "CodingStandards.h"
+STANDARDS_FILE = SCRIPT_DIR / "standards" / "coding_standards.py"
 STANDARDS_DIR = ENGINE_ROOT / "Docs" / "DeveloperGuide" / "Standards"
 BUILD_OUTPUT = ENGINE_ROOT / "BuildOutput" / "DocumentationTool"
 LOGS_DIR = ENGINE_ROOT / "Shared" / "Logs" / "DocumentationTool"
@@ -57,16 +57,35 @@ def parse_standards(file_path: Path) -> dict:
     try:
         content = file_path.read_text()
         
-        # Extract sections using regex
-        general_pattern = r"FOR ANY CODE:\s*\n(.*?)(?=\n\w+\s*SPECIFIC:|\*/)"
-        cpp_pattern = r"C\+\+ SPECIFIC:\s*\n(.*?)(?=\n\w+\s*SPECIFIC:|\*/)"
-        python_pattern = r"PYTHON SPECIFIC:\s*\n(.*?)(?=\n\w+\s*SPECIFIC:|\*/)"
+        # Create standards directory if it doesn't exist
+        (SCRIPT_DIR / "standards").mkdir(exist_ok=True)
+        
+        # Extract sections using Python docstring patterns
+        general_pattern = r'"""\s*FOR ANY CODE:\s*\n([\s\S]*?)(?=\n\s*"""|\n\s*C\+\+ SPECIFIC:)'
+        cpp_pattern = r'"""\s*C\+\+ SPECIFIC:\s*\n([\s\S]*?)(?=\n\s*"""|\n\s*PYTHON SPECIFIC:)'
+        python_pattern = r'"""\s*PYTHON SPECIFIC:\s*\n([\s\S]*?)(?=\n\s*"""|\n\s*IMPLEMENTATION NOTES:)'
         
         def extract_standards(pattern, text):
             match = re.search(pattern, text, re.DOTALL)
             if match:
-                return [line.strip('- ').strip() for line in match.group(1).strip().split('\n') if line.strip()]
+                # Extract content between docstring markers
+                content = match.group(1).strip()
+                # Split into lines and clean up
+                lines = []
+                for line in content.split('\n'):
+                    line = line.strip()
+                    if line:
+                        # Remove leading dashes and extra spaces
+                        line = re.sub(r'^\s*-\s*', '', line)
+                        lines.append(line)
+                return lines
             return []
+        
+        # Create duplicate in CodeAnalysis/standards/
+        code_analysis_standards = ENGINE_ROOT / "Tools" / "CodeAnalysis" / "standards"
+        code_analysis_standards.mkdir(parents=True, exist_ok=True)
+        with open(file_path, 'r') as src, open(code_analysis_standards / "coding_standards.py", 'w') as dst:
+            dst.write(src.read())
         
         return {
             'general_standards': extract_standards(general_pattern, content),
@@ -125,29 +144,26 @@ def generate_markdown(standards: dict) -> str:
         
         # Add general standards
         markdown.append("## General Standards\n")
-        if 'general' in standards:
-            for item in standards['general'].split('\n'):
-                if item.strip():
-                    markdown.append(f"- {item.strip()}")
+        if 'general_standards' in standards:
+            for item in standards['general_standards']:
+                markdown.append(f"- {item}")
             markdown.append("\n")
             
         # Add language-specific standards
         markdown.append("## Language-Specific Standards\n")
         
         # C++ Standards
-        if 'cpp' in standards:
+        if 'cpp_standards' in standards:
             markdown.append("### C++ Standards\n")
-            for item in standards['cpp'].split('\n'):
-                if item.strip():
-                    markdown.append(f"- {item.strip()}")
+            for item in standards['cpp_standards']:
+                markdown.append(f"- {item}")
             markdown.append("\n")
             
         # Python Standards
-        if 'python' in standards:
+        if 'python_standards' in standards:
             markdown.append("### Python Standards\n")
-            for item in standards['python'].split('\n'):
-                if item.strip():
-                    markdown.append(f"- {item.strip()}")
+            for item in standards['python_standards']:
+                markdown.append(f"- {item}")
             markdown.append("\n")
             
         # Add implementation notes
@@ -239,4 +255,4 @@ def generate_standards_doc():
         raise
 
 if __name__ == "__main__":
-    generate_standards_doc() 
+    generate_standards_doc()

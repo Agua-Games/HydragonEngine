@@ -126,6 +126,11 @@ def collect_orphaned_function_calls(root_dir: Path) -> Dict[str, List[Path]]:
     Returns:
         Dictionary mapping orphaned function names to lists of files where they're called
     """
+    logger.info(f"Will scan for orphaned calls in: {root_dir}")
+    if not input("Proceed with orphaned call collection? [y/N] ").strip().lower() == 'y':
+        logger.info("Operation cancelled by user")
+        return {}
+        
     try:
         # Get all declarations and calls
         declarations = collect_function_declarations(root_dir)
