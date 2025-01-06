@@ -9,8 +9,6 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional
-import ast
-import astor
 import requests
 from function_collector import collect_orphaned_function_calls
 
@@ -51,12 +49,20 @@ class OrphanedCallResolver:
 
     def _confirm_action(self, message: str) -> bool:
         """Get user confirmation for potentially risky actions"""
+        # In auto mode, always confirm actions
+        if hasattr(self, '_mode') and self._mode == 'auto':
+            return True
+            
         print(f"ACTION REQUIRED: {message} [y/N]")
         try:
             response = input().strip().lower()
             return response == 'y'
         except Exception:
             return False
+            
+    def set_mode(self, mode: str) -> None:
+        """Set the confirmation mode"""
+        self._mode = mode
         
     def _update_call_sites(self, func_name: str, call_locations: List[Path], target_function: Dict) -> None:
         """Update call sites to reference correct function with import verification"""
@@ -268,6 +274,9 @@ def {func_name}(*args, **kwargs):
             
         return valid_functions
 
+# Default confirmation mode
+DEFAULT_CONFIRM_MODE = 'atomic-actions'  # Options: atomic-actions, batched-actions, auto
+
 if __name__ == "__main__":
     import argparse
     
@@ -277,6 +286,9 @@ if __name__ == "__main__":
     parser.add_argument('--strategy', type=str, default='create',
                        choices=['create', 'remove', 'link'],
                        help='Resolution strategy (create/remove/link)')
+    parser.add_argument('--mode', type=str, default=DEFAULT_CONFIRM_MODE,
+                       choices=['atomic-actions', 'batched-actions', 'auto'],
+                       help='Confirmation mode (atomic-actions, batched-actions, auto)')
                        
     args = parser.parse_args()
     
@@ -284,6 +296,15 @@ if __name__ == "__main__":
     print(resolver.generate_report())
     
     try:
-        resolver.resolve_orphaned_calls(strategy=args.strategy)
-    except Exception:
-        pass
+        if args.mode == 'auto':
+            # Auto mode - no confirmations needed
+            resolver.resolve_orphaned_calls(strategy=args.strategy)
+        elif args.mode == 'batched-actions':
+            # Batched mode - single confirmation per strategy
+            if input(f"Apply {args.strategy} strategy to all orphaned calls? [y/N] ").strip().lower() == 'y':
+                resolver.resolve_orphaned_calls(strategy=args.strategy)
+        else:
+            # Atomic mode - default behavior with individual confirmations
+            resolver.resolve_orphaned_calls(strategy=args.strategy)
+    except Exception as e:
+        print(f"Error during resolution: {e}")
