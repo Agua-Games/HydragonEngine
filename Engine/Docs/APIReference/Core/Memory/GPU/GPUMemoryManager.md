@@ -15,8 +15,12 @@
 **Parameters:** VkMemoryRequirements reqs, 
                                    VkMemoryPropertyFlags props
 
+---
+
 ### DeallocateGPUMemory
 
 
 
 **Parameters:** GPUAllocation& allocation
+
+---

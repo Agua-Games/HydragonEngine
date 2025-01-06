@@ -14,8 +14,12 @@
 
 **Parameters:** const BoundingVolume& bounds
 
+---
+
 ### UpdateWorldBounds
 
 
 
 **Parameters:** const Transform& worldTransform
+
+---

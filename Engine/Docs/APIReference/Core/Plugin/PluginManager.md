@@ -13,3 +13,5 @@
 
 
 **Parameters:** const char* path, const PluginInfo& info
+
+---

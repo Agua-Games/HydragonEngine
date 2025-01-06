@@ -76,25 +76,10 @@ class APIParser:
                 classes.append({
                     'name': class_name,
                     'docstring': class_doc,
-                    'constructors': [],
                     'methods': [],
                     'variables': [],
                     'structs': []
                 })
-
-                # Extract constructors
-                constructor_matches = re.finditer(
-                    r'(?:/\*\*([^*]|(\*(?!/)))*?\*/|//.*?\n|/\*.*?\*/)?\s*'  # Optional comments
-                    r'(\w[\w\s\*&]+)\s*\(([^)]*)\)\s*;', 
-                    content
-                )
-                for c_match in constructor_matches:
-                    params = c_match.group(3).strip()
-                    constructor_doc = c_match.group(1).strip() if c_match.group(1) else ""
-                    classes[-1]['constructors'].append({
-                        'params': params,
-                        'docstring': constructor_doc
-                    })
             
             # Extract functions
             functions = []
@@ -246,6 +231,7 @@ class DocGenerator:
                     if 'docstring' in func:
                         markdown.append(f"{func['docstring']}\n")
                     markdown.append(f"**Parameters:** {func['params']}\n")
+                    markdown.append("---\n")
             
             # Add enums
             if doc_data.get('enums'):

@@ -20,6 +20,8 @@
                    const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                    const std::vector<AttributeDesc>& descriptions
 
+---
+
 ### LoadFromFile
 
 
@@ -28,11 +30,15 @@
                      std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                      std::vector<AttributeDesc>& descriptions
 
+---
+
 ### ValidateFormat
 
 
 
 **Parameters:** const std::string& filename
+
+---
 
 ### GetFormatVersion
 
@@ -40,11 +46,15 @@
 
 **Parameters:** const std::string& filename
 
+---
+
 ### GetStats
 
 
 
 **Parameters:** const std::string& filename
+
+---
 
 ### SaveBinary
 
@@ -54,6 +64,8 @@
                    const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                    const std::vector<AttributeDesc>& descriptions
 
+---
+
 ### LoadBinary
 
 
@@ -61,6 +73,8 @@
 **Parameters:** std::istream& stream,
                    std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                    std::vector<AttributeDesc>& descriptions
+
+---
 
 ### SaveJSON
 
@@ -70,6 +84,8 @@
                  const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                  const std::vector<AttributeDesc>& descriptions
 
+---
+
 ### LoadJSON
 
 
@@ -78,14 +94,20 @@
                  std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                  std::vector<AttributeDesc>& descriptions
 
+---
+
 ### SerializeValue
 
 
 
 **Parameters:** std::ostream& stream, const T& value
 
+---
+
 ### DeserializeValue
 
 
 
 **Parameters:** std::istream& stream, T& value
+
+---

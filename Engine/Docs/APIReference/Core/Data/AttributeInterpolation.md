@@ -22,6 +22,8 @@
                           size_t endIndex,
                           float t
 
+---
+
 ### SmoothInterpolate
 
 
@@ -31,6 +33,8 @@
                           size_t startIndex,
                           size_t endIndex,
                           float t
+
+---
 
 ### CubicInterpolate
 
@@ -42,6 +46,8 @@
                          size_t endIndex,
                          float t
 
+---
+
 ### NearestInterpolate
 
 
@@ -52,6 +58,8 @@
                            size_t endIndex,
                            float t
 
+---
+
 ### CustomInterpolate
 
 
@@ -61,3 +69,5 @@
                           size_t startIndex,
                           size_t endIndex,
                           float t
+
+---

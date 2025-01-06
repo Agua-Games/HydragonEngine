@@ -7,11 +7,15 @@
 
 **Parameters:** const std::vector<SearchResult>& results
 
+---
+
 ### resultSelected
 
 
 
 **Parameters:** const Memory::MemoryBlock* block
+
+---
 
 ### calculateRelevance
 
@@ -21,6 +25,8 @@
                            const QString& query,
                            const SearchOptions& options
 
+---
+
 ### matchesPattern
 
 
@@ -29,14 +35,20 @@
                        const QString& pattern,
                        const SearchOptions& options
 
+---
+
 ### updateSearchIndex
 
 
 
 **Parameters:** 
 
+---
+
 ### pruneCache
 
 
 
 **Parameters:** 
+
+---

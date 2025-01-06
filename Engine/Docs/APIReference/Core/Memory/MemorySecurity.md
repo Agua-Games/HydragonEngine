@@ -13,3 +13,5 @@
 
 
 **Parameters:** const void* ptr, const Canary& expected
+
+---
