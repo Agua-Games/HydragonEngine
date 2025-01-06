@@ -1,6 +1,7 @@
+# Classes
+---
 
-## Classes
-
-### IMemoryStrategy
+## IMemoryStrategy
+---
 
 

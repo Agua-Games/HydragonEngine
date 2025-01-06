@@ -1,81 +1,207 @@
+# Classes
+---
 
-## Classes
-
-### ScriptDiagnosticsSystem
-
-
-
-
-## Functions
-
-### Get
+## ScriptDiagnosticsSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableLinting`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableTypeChecking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStyleChecking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMetricsCollection`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxDiagnosticsPerFile`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `updateInterval`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `500`
+
+
+
+### `rulesetPath`
+
+- **Type:** `string`
+
+
+
+### `config`
+
+- **Type:** `const ScriptDiagnosticsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ScriptDiagnosticsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ScriptDiagnosticsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ScriptDiagnosticsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `rulesetPath`: `string` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ScriptDiagnosticsSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ScriptDiagnosticsConfig& config = {}
+- **Parameters:** const ScriptDiagnosticsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### AnalyzeScript
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### ClearDiagnostics
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### AddRule
-
-
-
-**Parameters:** const std::string& name, const DiagnosticRule& rule
+- **Return:** `void`
 
 ---
 
-### RemoveRule
+## AnalyzeScript
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
 
 ---
 
-### SetSeverity
+## ClearDiagnostics
 
 
 
-**Parameters:** const std::string& ruleName, DiagnosticSeverity severity
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## AddRule
+
+
+
+- **Parameters:** const std::string& name, const DiagnosticRule& rule
+
+- **Return:** `void`
+
+---
+
+## RemoveRule
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## SetSeverity
+
+
+
+- **Parameters:** const std::string& ruleName, DiagnosticSeverity severity
+
+- **Return:** `void`
 
 ---

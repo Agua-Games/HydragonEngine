@@ -1,113 +1,247 @@
+# Classes
+---
 
-## Classes
-
-### ScriptDebuggerSystem
-
-
-
-
-## Functions
-
-### Get
+## ScriptDebuggerSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableVariableInspection`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCallStack`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableWatches`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableHotReload`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxWatchCount`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxCallStackDepth`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `128`
+
+
+
+### `updateInterval`
+
+- **Type:** `float`
+
+- **Default Value:** `0.1f`
+
+
+
+### `config`
+
+- **Type:** `const ScriptDebuggerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ScriptDebuggerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ScriptDebuggerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ScriptDebuggerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ScriptDebuggerSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ScriptDebuggerConfig& config = {}
+- **Parameters:** const ScriptDebuggerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### AttachToScript
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### DetachFromScript
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### Continue
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### StepOver
+## AttachToScript
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& path
 
----
-
-### StepInto
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### StepOut
+## DetachFromScript
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& path
 
----
-
-### AddWatch
-
-
-
-**Parameters:** const std::string& expression
+- **Return:** `void`
 
 ---
 
-### RemoveWatch
+## Continue
 
 
 
-**Parameters:** const std::string& expression
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### EvaluateExpression
+## StepOver
 
 
 
-**Parameters:** const std::string& expression
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## StepInto
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## StepOut
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## AddWatch
+
+
+
+- **Parameters:** const std::string& expression
+
+- **Return:** `void`
+
+---
+
+## RemoveWatch
+
+
+
+- **Parameters:** const std::string& expression
+
+- **Return:** `void`
+
+---
+
+## EvaluateExpression
+
+
+
+- **Parameters:** const std::string& expression
+
+- **Return:** `void`
 
 ---

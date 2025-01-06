@@ -100,36 +100,60 @@ class APIParser:
                     'docstring': func_doc
                 })
             
-            # Extract variables
+            # Extract variables with default values
             variables = []
             var_matches = re.finditer(
                 r'(?:/\*\*([^*]|(\*(?!/)))*?\*/|//.*?\n|/\*.*?\*/)?\s*'  # Optional comments
-                r'(\w[\w\s\*&]+)\s+(\w+)\s*;', 
+                r'(\w[\w\s\*&]+)\s+(\w+)\s*(?:=\s*([^;]+))?\s*;', 
                 content
             )
             for match in var_matches:
                 var_type = match.group(3).strip()
                 var_name = match.group(4)
+                default_value = match.group(5).strip() if match.group(5) else None
                 var_doc = match.group(1).strip() if match.group(1) else ""
-                variables.append({
+                var_data = {
                     'name': var_name,
                     'type': var_type,
                     'docstring': var_doc
-                })
+                }
+                if default_value:
+                    var_data['default_value'] = default_value
+                variables.append(var_data)
             
-            # Extract structs
+            # Extract structs with members
             structs = []
             struct_matches = re.finditer(
                 r'(?:/\*\*([^*]|(\*(?!/)))*?\*/|//.*?\n|/\*.*?\*/)?\s*'  # Optional comments
-                r'struct\s+(\w+)\s*{', 
-                content
+                r'struct\s+(\w+)\s*{([^}]*)}', 
+                content, re.DOTALL
             )
             for match in struct_matches:
                 struct_name = match.group(3)
                 struct_doc = match.group(1).strip() if match.group(1) else ""
+                struct_body = match.group(4)
+                
+                # Extract struct members
+                members = []
+                member_matches = re.finditer(
+                    r'(?:/\*\*([^*]|(\*(?!/)))*?\*/|//.*?\n|/\*.*?\*/)?\s*'  # Optional comments
+                    r'(\w[\w\s\*&]+)\s+(\w+)\s*;', 
+                    struct_body
+                )
+                for member_match in member_matches:
+                    member_type = member_match.group(3).strip()
+                    member_name = member_match.group(4)
+                    member_doc = member_match.group(1).strip() if member_match.group(1) else ""
+                    members.append({
+                        'name': member_name,
+                        'type': member_type,
+                        'description': member_doc
+                    })
+                
                 structs.append({
                     'name': struct_name,
-                    'docstring': struct_doc
+                    'docstring': struct_doc,
+                    'members': members
                 })
             
             return {
@@ -211,33 +235,48 @@ class DocGenerator:
         try:
             markdown = []
             
-            # Add module/header documentation
-            if 'module_doc' in doc_data:
-                markdown.append(f"# Module Documentation\n\n{doc_data['module_doc']}\n")
-            
-            # Add classes
+            # Add classes section
             if doc_data.get('classes'):
-                markdown.append("\n## Classes\n")
+                markdown.append("# Classes\n---\n")
                 for cls in doc_data['classes']:
-                    markdown.append(f"### {cls['name']}\n")
+                    markdown.append(f"## {cls['name']}\n---\n")
                     if 'docstring' in cls:
                         markdown.append(f"{cls['docstring']}\n")
             
-            # Add functions
+            # Add variables section
+            if doc_data.get('variables'):
+                markdown.append("\n# Variables\n---\n")
+                for var in doc_data['variables']:
+                    markdown.append(f"### `{var['name']}`\n")
+                    markdown.append(f"- **Type:** `{var['type']}`\n")
+                    if 'default_value' in var:
+                        markdown.append(f"- **Default Value:** `{var['default_value']}`\n")
+                    markdown.append("\n")
+            
+            # Add structs section
+            if doc_data.get('structs'):
+                markdown.append("\n# Structs\n---\n")
+                for struct in doc_data['structs']:
+                    markdown.append(f"### `{struct['name']}`\n")
+                    if 'docstring' in struct:
+                        markdown.append(f"- **Description:** {struct['docstring']}\n")
+                    if 'members' in struct:
+                        markdown.append("- **Members:**\n")
+                        for member in struct['members']:
+                            markdown.append(f"  - `{member['name']}`: `{member['type']}` - {member['description']}\n")
+                    markdown.append("\n")
+            
+            # Add functions section
             if doc_data.get('functions'):
-                markdown.append("\n## Functions\n")
+                markdown.append("\n# Functions\n---\n")
                 for func in doc_data['functions']:
-                    markdown.append(f"### {func['name']}\n")
+                    markdown.append(f"## {func['name']}\n")
                     if 'docstring' in func:
                         markdown.append(f"{func['docstring']}\n")
-                    markdown.append(f"**Parameters:** {func['params']}\n")
+                    markdown.append(f"- **Parameters:** {func['params']}\n")
+                    if 'return_type' in func:
+                        markdown.append(f"- **Return:** `{func['return_type']}`\n")
                     markdown.append("---\n")
-            
-            # Add enums
-            if doc_data.get('enums'):
-                markdown.append("\n## Enums\n")
-                for enum in doc_data['enums']:
-                    markdown.append(f"### {enum['name']}\n")
             
             # Create output directory if it doesn't exist
             output_path.mkdir(parents=True, exist_ok=True)

@@ -1,73 +1,91 @@
+# Classes
+---
 
-## Classes
-
-### Memory
-
-
-
-
-## Functions
-
-### AlignedAlloc
+## Memory
+---
 
 
 
-**Parameters:** size_t size, size_t alignment
+
+# Functions
+---
+
+## AlignedAlloc
+
+
+
+- **Parameters:** size_t size, size_t alignment
+
+- **Return:** `static void*`
 
 ---
 
-### AlignedFree
+## AlignedFree
 
 
 
-**Parameters:** void* ptr
+- **Parameters:** void* ptr
 
----
-
-### GetPageSize
-
-
-
-**Parameters:** 
+- **Return:** `static void`
 
 ---
 
-### IsPageAligned
+## GetPageSize
 
 
 
-**Parameters:** void* ptr
+- **Parameters:** 
 
----
-
-### VirtualAlloc
-
-
-
-**Parameters:** size_t size
+- **Return:** `static size_t`
 
 ---
 
-### VirtualFree
+## IsPageAligned
 
 
 
-**Parameters:** void* ptr
+- **Parameters:** void* ptr
 
----
-
-### MMap
-
-
-
-**Parameters:** size_t size
+- **Return:** `static bool`
 
 ---
 
-### MUnmap
+## VirtualAlloc
 
 
 
-**Parameters:** void* ptr, size_t size
+- **Parameters:** size_t size
+
+- **Return:** `static void*`
+
+---
+
+## VirtualFree
+
+
+
+- **Parameters:** void* ptr
+
+- **Return:** `static void`
+
+---
+
+## MMap
+
+
+
+- **Parameters:** size_t size
+
+- **Return:** `static void*`
+
+---
+
+## MUnmap
+
+
+
+- **Parameters:** void* ptr, size_t size
+
+- **Return:** `static void`
 
 ---

@@ -1,43 +1,124 @@
 
-## Functions
+# Variables
+---
 
-### StreamingOutliner
+### `parent`
+
+- **Type:** `QWidget*`
+
+- **Default Value:** `nullptr)`
 
 
 
-**Parameters:** QWidget* parent = nullptr
+### `name`
+
+- **Type:** `QString`
+
+
+
+### `type`
+
+- **Type:** `StreamerType`
+
+
+
+### `activeStreams`
+
+- **Type:** `size_t`
+
+
+
+### `pendingRequests`
+
+- **Type:** `size_t`
+
+
+
+### `memoryUsed`
+
+- **Type:** `float`
+
+
+
+### `streamerName`
+
+- **Type:** `QString`
+
+
+
+
+# Structs
+---
+
+### `StreamerNode`
+
+- **Description:** 
+
+- **Members:**
+
+  - `name`: `QString` - 
+
+  - `type`: `StreamerType` - 
+
+  - `activeStreams`: `size_t` - 
+
+  - `pendingRequests`: `size_t` - 
+
+  - `memoryUsed`: `float` - 
+
+
+
+
+# Functions
+---
+
+## StreamingOutliner
+
+
+
+- **Parameters:** QWidget* parent = nullptr
+
+- **Return:** `explicit`
 
 ---
 
-### addStreamer
+## addStreamer
 
 
 
-**Parameters:** const StreamerNode& streamer
+- **Parameters:** const StreamerNode& streamer
 
----
-
-### updateStreamerStats
-
-
-
-**Parameters:** const QString& name, const StreamerStats& stats
+- **Return:** `void`
 
 ---
 
-### setupTreeStructure
+## updateStreamerStats
 
 
 
-**Parameters:** 
+- **Parameters:** const QString& name, const StreamerStats& stats
+
+- **Return:** `void`
 
 ---
 
-### updateResourceList
+## setupTreeStructure
 
 
 
-**Parameters:** StreamerTreeItem* item, 
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## updateResourceList
+
+
+
+- **Parameters:** StreamerTreeItem* item, 
                           const std::vector<StreamingResource>& resources
+
+- **Return:** `void`
 
 ---

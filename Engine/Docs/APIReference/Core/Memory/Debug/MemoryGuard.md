@@ -1,25 +1,59 @@
+# Classes
+---
 
-## Classes
-
-### MemoryGuard
-
-
-
-
-## Functions
-
-### addGuards
+## MemoryGuard
+---
 
 
 
-**Parameters:** void* ptr, size_t size
+
+# Variables
+---
+
+### `HEAD_PATTERN`
+
+- **Type:** `static constexpr uint64_t`
+
+- **Default Value:** `0xDEADBEEFDEADBEEF`
+
+
+
+### `TAIL_PATTERN`
+
+- **Type:** `static constexpr uint64_t`
+
+- **Default Value:** `0xFEEDFACEFEEDFACE`
+
+
+
+### `GUARD_SIZE`
+
+- **Type:** `static constexpr size_t`
+
+- **Default Value:** `sizeof(uint64_t)`
+
+
+
+
+# Functions
+---
+
+## addGuards
+
+
+
+- **Parameters:** void* ptr, size_t size
+
+- **Return:** `static void*`
 
 ---
 
-### validateGuards
+## validateGuards
 
 
 
-**Parameters:** void* ptr, size_t size
+- **Parameters:** void* ptr, size_t size
+
+- **Return:** `static bool`
 
 ---

@@ -1,81 +1,199 @@
+# Classes
+---
 
-## Classes
-
-### ReplicationSystem
-
-
-
-
-## Functions
-
-### Get
+## ReplicationSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `maxEntities`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10000`
+
+
+
+### `maxPropertiesPerEntity`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `enableDeltaCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableInterpolation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableExtrapolation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `updateFrequency`
+
+- **Type:** `float`
+
+- **Default Value:** `20.0f`
+
+
+
+### `config`
+
+- **Type:** `const ReplicationConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ReplicationConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ReplicationStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ReplicationConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ReplicationSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ReplicationConfig& config = {}
+- **Parameters:** const ReplicationConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### RegisterEntity
-
-
-
-**Parameters:** EntityHandle entity, const EntityDesc& desc
+- **Return:** `void`
 
 ---
 
-### UnregisterEntity
+## Update
 
 
 
-**Parameters:** EntityHandle entity
+- **Parameters:** 
 
----
-
-### SetReplicationState
-
-
-
-**Parameters:** EntityHandle entity, const EntityState& state
+- **Return:** `void`
 
 ---
 
-### SetInterpolationConfig
+## RegisterEntity
 
 
 
-**Parameters:** EntityHandle entity, const InterpolationConfig& config
+- **Parameters:** EntityHandle entity, const EntityDesc& desc
+
+- **Return:** `void`
 
 ---
 
-### EnablePrediction
+## UnregisterEntity
 
 
 
-**Parameters:** EntityHandle entity, bool enable
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
+
+---
+
+## SetReplicationState
+
+
+
+- **Parameters:** EntityHandle entity, const EntityState& state
+
+- **Return:** `void`
+
+---
+
+## SetInterpolationConfig
+
+
+
+- **Parameters:** EntityHandle entity, const InterpolationConfig& config
+
+- **Return:** `void`
+
+---
+
+## EnablePrediction
+
+
+
+- **Parameters:** EntityHandle entity, bool enable
+
+- **Return:** `void`
 
 ---

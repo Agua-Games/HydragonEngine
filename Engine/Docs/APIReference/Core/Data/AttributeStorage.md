@@ -1,41 +1,74 @@
+# Classes
+---
 
-## Classes
-
-### IAttributeStorage
-
-
-
-
-## Functions
-
-### SetValue
+## IAttributeStorage
+---
 
 
 
-**Parameters:** size_t index, const T& value
+
+# Variables
+---
+
+### `initialSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `0)
+        : m_Owner(owner)
+        , m_Data(initialSize) {}
+    
+    void Resize(size_t size) override {
+        m_Data.resize(size)`
+
+
+
+### `m_Owner`
+
+- **Type:** `AttributeOwner`
+
+
+
+
+# Functions
+---
+
+## SetValue
+
+
+
+- **Parameters:** size_t index, const T& value
+
+- **Return:** `void`
 
 ---
 
-### GetValueTypeForType
+## GetValueTypeForType
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### ArrayAttributeStorage
-
-
-
-**Parameters:** AttributeOwner owner, ValueType elementType
+- **Return:** `static ValueType`
 
 ---
 
-### DictionaryAttributeStorage
+## ArrayAttributeStorage
 
 
 
-**Parameters:** AttributeOwner owner, ValueType keyType, ValueType valueType
+- **Parameters:** AttributeOwner owner, ValueType elementType
+
+- **Return:** `explicit`
+
+---
+
+## DictionaryAttributeStorage
+
+
+
+- **Parameters:** AttributeOwner owner, ValueType keyType, ValueType valueType
+
+- **Return:** `explicit`
 
 ---

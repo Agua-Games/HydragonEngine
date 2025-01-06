@@ -1,193 +1,371 @@
+# Classes
+---
 
-## Classes
-
-### AssetBindings
-
-
-
-
-## Functions
-
-### Get
+## AssetBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableAsyncImport`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableVersioning`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDependencyTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMetadata`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxPendingImports`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxAssetRefs`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10000`
+
+
+
+### `maxDependencies`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `5000`
+
+
+
+### `assetRegistryPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Data/AssetRegistry"`
+
+
+
+### `config`
+
+- **Type:** `const AssetBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const ImportParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const ExportParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AssetBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AssetBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AssetBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AssetBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AssetBindingsConfig& config = {}
+- **Parameters:** const AssetBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### ImportAsset
-
-
-
-**Parameters:** const std::string& path, const ImportParams& params = {}
+- **Return:** `void`
 
 ---
 
-### ExportAsset
+## Update
 
 
 
-**Parameters:** AssetHandle handle, const std::string& path, const ExportParams& params = {}
+- **Parameters:** 
 
----
-
-### DeleteAsset
-
-
-
-**Parameters:** AssetHandle handle
+- **Return:** `void`
 
 ---
 
-### RenameAsset
+## ImportAsset
 
 
 
-**Parameters:** AssetHandle handle, const std::string& newName
+- **Parameters:** const std::string& path, const ImportParams& params = {}
 
----
-
-### CreateAssetRef
-
-
-
-**Parameters:** AssetHandle handle
+- **Return:** `AssetHandle`
 
 ---
 
-### ReleaseAssetRef
+## ExportAsset
 
 
 
-**Parameters:** AssetRef ref
+- **Parameters:** AssetHandle handle, const std::string& path, const ExportParams& params = {}
 
----
-
-### SetMetadata
-
-
-
-**Parameters:** AssetHandle handle, const std::string& key, const Variant& value
+- **Return:** `void`
 
 ---
 
-### RemoveMetadata
+## DeleteAsset
 
 
 
-**Parameters:** AssetHandle handle, const std::string& key
+- **Parameters:** AssetHandle handle
 
----
-
-### AddDependency
-
-
-
-**Parameters:** AssetHandle dependent, AssetHandle dependency
+- **Return:** `void`
 
 ---
 
-### RemoveDependency
+## RenameAsset
 
 
 
-**Parameters:** AssetHandle dependent, AssetHandle dependency
+- **Parameters:** AssetHandle handle, const std::string& newName
 
----
-
-### CreateVersion
-
-
-
-**Parameters:** AssetHandle handle, const std::string& version
+- **Return:** `void`
 
 ---
 
-### SwitchVersion
+## CreateAssetRef
 
 
 
-**Parameters:** AssetHandle handle, const std::string& version
+- **Parameters:** AssetHandle handle
 
----
-
-### RegisterImporter
-
-
-
-**Parameters:** const std::string& extension, std::unique_ptr<IAssetImporter> importer
+- **Return:** `AssetRef`
 
 ---
 
-### RegisterExporter
+## ReleaseAssetRef
 
 
 
-**Parameters:** const std::string& extension, std::unique_ptr<IAssetExporter> exporter
+- **Parameters:** AssetRef ref
 
----
-
-### SetImportCallback
-
-
-
-**Parameters:** const ImportCallback& callback
+- **Return:** `void`
 
 ---
 
-### SetExportCallback
+## SetMetadata
 
 
 
-**Parameters:** const ExportCallback& callback
+- **Parameters:** AssetHandle handle, const std::string& key, const Variant& value
 
----
-
-### EnableAssetTracking
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### DumpAssetState
+## RemoveMetadata
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** AssetHandle handle, const std::string& key
+
+- **Return:** `void`
 
 ---
 
-### ValidateAssetReferences
+## AddDependency
 
 
 
-**Parameters:** 
+- **Parameters:** AssetHandle dependent, AssetHandle dependency
+
+- **Return:** `void`
+
+---
+
+## RemoveDependency
+
+
+
+- **Parameters:** AssetHandle dependent, AssetHandle dependency
+
+- **Return:** `void`
+
+---
+
+## CreateVersion
+
+
+
+- **Parameters:** AssetHandle handle, const std::string& version
+
+- **Return:** `void`
+
+---
+
+## SwitchVersion
+
+
+
+- **Parameters:** AssetHandle handle, const std::string& version
+
+- **Return:** `void`
+
+---
+
+## RegisterImporter
+
+
+
+- **Parameters:** const std::string& extension, std::unique_ptr<IAssetImporter> importer
+
+- **Return:** `void`
+
+---
+
+## RegisterExporter
+
+
+
+- **Parameters:** const std::string& extension, std::unique_ptr<IAssetExporter> exporter
+
+- **Return:** `void`
+
+---
+
+## SetImportCallback
+
+
+
+- **Parameters:** const ImportCallback& callback
+
+- **Return:** `void`
+
+---
+
+## SetExportCallback
+
+
+
+- **Parameters:** const ExportCallback& callback
+
+- **Return:** `void`
+
+---
+
+## EnableAssetTracking
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpAssetState
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ValidateAssetReferences
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

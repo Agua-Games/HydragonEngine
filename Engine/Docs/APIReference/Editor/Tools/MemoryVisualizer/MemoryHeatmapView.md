@@ -1,90 +1,214 @@
+# Classes
+---
 
-## Classes
-
-### VisualizationMode
-
-
-
-
-## Functions
-
-### setMode
+## VisualizationMode
+---
 
 
 
-**Parameters:** VisualizationMode mode
+
+# Variables
+---
+
+### `baseColor`
+
+- **Type:** `QColor`
+
+
+
+### `opacity`
+
+- **Type:** `float`
+
+
+
+### `visible`
+
+- **Type:** `bool`
+
+
+
+### `mode`
+
+- **Type:** `VisualizationMode`
+
+- **Default Value:** `VisualizationMode::AllocationFrequency`
+
+
+
+### `showMultiLayers`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `updateInterval`
+
+- **Type:** `float`
+
+- **Default Value:** `0.5f`
+
+
+
+### `decayRate`
+
+- **Type:** `float`
+
+- **Default Value:** `0.95f`
+
+
+
+### `gridResolution`
+
+- **Type:** `size_t`
+
+- **Default Value:** `64`
+
+
+
+### `adaptiveColoring`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `m_Config`
+
+- **Type:** `ViewConfig`
+
+
+
+
+# Structs
+---
+
+### `HeatmapLayer`
+
+- **Description:** 
+
+- **Members:**
+
+  - `baseColor`: `QColor` - 
+
+  - `opacity`: `float` - 
+
+  - `visible`: `bool` - 
+
+
+
+### `ViewConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## setMode
+
+
+
+- **Parameters:** VisualizationMode mode
+
+- **Return:** `void`
 
 ---
 
-### toggleLayer
+## toggleLayer
 
 
 
-**Parameters:** const QString& layerName, bool visible
+- **Parameters:** const QString& layerName, bool visible
 
----
-
-### setViewConfig
-
-
-
-**Parameters:** const ViewConfig& config
+- **Return:** `void`
 
 ---
 
-### zoomToRegion
+## setViewConfig
 
 
 
-**Parameters:** const QRectF& region
+- **Parameters:** const ViewConfig& config
 
----
-
-### highlightPattern
-
-
-
-**Parameters:** const std::vector<void*>& addresses
+- **Return:** `void`
 
 ---
 
-### showTimelineAnimation
+## zoomToRegion
 
 
 
-**Parameters:** const std::vector<MemoryState>& states
+- **Parameters:** const QRectF& region
 
----
-
-### updateLayerIntensities
-
-
-
-**Parameters:** const MemoryState& state
+- **Return:** `void`
 
 ---
 
-### calculateFragmentationPattern
+## highlightPattern
 
 
 
-**Parameters:** 
+- **Parameters:** const std::vector<void*>& addresses
 
----
-
-### updatePressureVisualization
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### calculateBlendedColor
+## showTimelineAnimation
 
 
 
-**Parameters:** const std::vector<HeatmapLayer*>& activeLayers, 
+- **Parameters:** const std::vector<MemoryState>& states
+
+- **Return:** `void`
+
+---
+
+## updateLayerIntensities
+
+
+
+- **Parameters:** const MemoryState& state
+
+- **Return:** `void`
+
+---
+
+## calculateFragmentationPattern
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## updatePressureVisualization
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## calculateBlendedColor
+
+
+
+- **Parameters:** const std::vector<HeatmapLayer*>& activeLayers, 
                                size_t x, size_t y
+
+- **Return:** `QColor`
 
 ---

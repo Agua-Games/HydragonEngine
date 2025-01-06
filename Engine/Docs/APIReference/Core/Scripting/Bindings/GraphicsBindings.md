@@ -1,153 +1,305 @@
+# Classes
+---
 
-## Classes
-
-### GraphicsBindings
-
-
-
-
-## Functions
-
-### Get
+## GraphicsBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableMaterialScripting`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableShaderHotReload`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableRenderPassScripting`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDebugVisualization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxCustomMaterials`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxCustomShaders`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `50`
+
+
+
+### `maxRenderCallbacks`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `20`
+
+
+
+### `shaderCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Shaders"`
+
+
+
+### `config`
+
+- **Type:** `const GraphicsBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `GraphicsBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `GraphicsBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `GraphicsBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static GraphicsBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const GraphicsBindingsConfig& config = {}
+- **Parameters:** const GraphicsBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateMaterial
-
-
-
-**Parameters:** const MaterialDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyMaterial
+## Update
 
 
 
-**Parameters:** MaterialHandle handle
+- **Parameters:** 
 
----
-
-### UpdateMaterial
-
-
-
-**Parameters:** MaterialHandle handle, const MaterialProperties& props
+- **Return:** `void`
 
 ---
 
-### CreateShader
+## CreateMaterial
 
 
 
-**Parameters:** const ShaderDesc& desc
+- **Parameters:** const MaterialDesc& desc
 
----
-
-### DestroyShader
-
-
-
-**Parameters:** ShaderHandle handle
+- **Return:** `MaterialHandle`
 
 ---
 
-### ReloadShader
+## DestroyMaterial
 
 
 
-**Parameters:** ShaderHandle handle
+- **Parameters:** MaterialHandle handle
 
----
-
-### RegisterRenderPass
-
-
-
-**Parameters:** const std::string& name, const RenderPassDesc& desc
+- **Return:** `void`
 
 ---
 
-### UnregisterRenderPass
+## UpdateMaterial
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** MaterialHandle handle, const MaterialProperties& props
 
----
-
-### SetRenderPassEnabled
-
-
-
-**Parameters:** const std::string& name, bool enabled
+- **Return:** `void`
 
 ---
 
-### DrawDebugLine
+## CreateShader
 
 
 
-**Parameters:** const Vector3& start, const Vector3& end, const Color& color
+- **Parameters:** const ShaderDesc& desc
 
----
-
-### DrawDebugSphere
-
-
-
-**Parameters:** const Vector3& center, float radius, const Color& color
+- **Return:** `ShaderHandle`
 
 ---
 
-### DrawDebugText
+## DestroyShader
 
 
 
-**Parameters:** const Vector3& position, const std::string& text, const Color& color
+- **Parameters:** ShaderHandle handle
 
----
-
-### RegisterRenderCallback
-
-
-
-**Parameters:** const std::string& name, const RenderCallback& callback
+- **Return:** `void`
 
 ---
 
-### UnregisterRenderCallback
+## ReloadShader
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** ShaderHandle handle
+
+- **Return:** `void`
+
+---
+
+## RegisterRenderPass
+
+
+
+- **Parameters:** const std::string& name, const RenderPassDesc& desc
+
+- **Return:** `void`
+
+---
+
+## UnregisterRenderPass
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## SetRenderPassEnabled
+
+
+
+- **Parameters:** const std::string& name, bool enabled
+
+- **Return:** `void`
+
+---
+
+## DrawDebugLine
+
+
+
+- **Parameters:** const Vector3& start, const Vector3& end, const Color& color
+
+- **Return:** `void`
+
+---
+
+## DrawDebugSphere
+
+
+
+- **Parameters:** const Vector3& center, float radius, const Color& color
+
+- **Return:** `void`
+
+---
+
+## DrawDebugText
+
+
+
+- **Parameters:** const Vector3& position, const std::string& text, const Color& color
+
+- **Return:** `void`
+
+---
+
+## RegisterRenderCallback
+
+
+
+- **Parameters:** const std::string& name, const RenderCallback& callback
+
+- **Return:** `void`
+
+---
+
+## UnregisterRenderCallback
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---

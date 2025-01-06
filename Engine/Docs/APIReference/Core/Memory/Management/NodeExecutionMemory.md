@@ -1,6 +1,67 @@
+# Classes
+---
 
-## Classes
+## NodeExecutionMemory
+---
 
-### NodeExecutionMemory
+
+
+
+# Variables
+---
+
+### `ptr`
+
+- **Type:** `void*`
+
+- **Default Value:** `m_Strategy.allocateForScript(size, hint)`
+
+
+
+### `ptr`
+
+- **Type:** `return`
+
+
+
+### `oldAllocations`
+
+- **Type:** `auto`
+
+- **Default Value:** `m_HotReloadTracker.getAllocationsForScript(scriptId)`
+
+
+
+### `m_Strategy`
+
+- **Type:** `ScriptingMemoryStrategy`
+
+
+
+### `ptr`
+
+- **Type:** `void*`
+
+
+
+### `isPersistentState`
+
+- **Type:** `bool`
+
+
+
+
+# Structs
+---
+
+### `HotReloadTracker`
+
+- **Description:** 
+
+- **Members:**
+
+  - `ptr`: `void*` - 
+
+  - `isPersistentState`: `bool` - 
 
 

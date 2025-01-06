@@ -1,34 +1,91 @@
 
-## Functions
+# Variables
+---
 
-### mapToPosition
+### `size`
+
+- **Type:** `double`
 
 
 
-**Parameters:** const Memory::MemoryBlock& block
+### `label`
+
+- **Type:** `QString`
+
+
+
+### `m_MinBlockSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `1024`
+
+
+
+### `m_MaxBlockSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `1024*1024`
+
+
+
+
+# Structs
+---
+
+### `BlockPosition`
+
+- **Description:** 
+
+- **Members:**
+
+  - `size`: `double` - 
+
+  - `label`: `QString` - 
+
+
+
+
+# Functions
+---
+
+## mapToPosition
+
+
+
+- **Parameters:** const Memory::MemoryBlock& block
+
+- **Return:** `BlockPosition`
 
 ---
 
-### mapGroupToPosition
+## mapGroupToPosition
 
 
 
-**Parameters:** const BlockGroup& group
+- **Parameters:** const BlockGroup& group
 
----
-
-### calculateVisualSize
-
-
-
-**Parameters:** size_t memorySize
+- **Return:** `BlockPosition`
 
 ---
 
-### findFreePosition
+## calculateVisualSize
 
 
 
-**Parameters:** double size
+- **Parameters:** size_t memorySize
+
+- **Return:** `double`
+
+---
+
+## findFreePosition
+
+
+
+- **Parameters:** double size
+
+- **Return:** `QPointF`
 
 ---

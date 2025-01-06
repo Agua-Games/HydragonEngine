@@ -1,10 +1,156 @@
+# Classes
+---
 
-## Classes
-
-### ResourceType
-
+## ResourceType
+---
 
 
-### ResourceState
+
+## ResourceState
+---
+
+
+
+
+# Variables
+---
+
+### `ResourceHandle`
+
+- **Type:** `using`
+
+- **Default Value:** `uint32_t`
+
+
+
+### `path`
+
+- **Type:** `string`
+
+
+
+### `type`
+
+- **Type:** `ResourceType`
+
+
+
+### `async`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `keepInMemory`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `priority`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `0`
+
+
+
+### `fallbackPath`
+
+- **Type:** `string`
+
+
+
+### `ResourceCallback`
+
+- **Type:** `using`
+
+- **Default Value:** `std::function<void(ResourceHandle, ResourceState)>`
+
+
+
+### `totalResources`
+
+- **Type:** `uint32_t`
+
+
+
+### `loadedResources`
+
+- **Type:** `uint32_t`
+
+
+
+### `pendingLoads`
+
+- **Type:** `uint32_t`
+
+
+
+### `failedLoads`
+
+- **Type:** `uint32_t`
+
+
+
+### `averageLoadTimeMs`
+
+- **Type:** `float`
+
+
+
+### `memoryUsed`
+
+- **Type:** `size_t`
+
+
+
+### `peakMemoryUsed`
+
+- **Type:** `size_t`
+
+
+
+
+# Structs
+---
+
+### `ResourceDesc`
+
+- **Description:** 
+
+- **Members:**
+
+  - `path`: `string` - 
+
+  - `type`: `ResourceType` - 
+
+  - `fallbackPath`: `string` - 
+
+
+
+### `ResourceStats`
+
+- **Description:** 
+
+- **Members:**
+
+  - `totalResources`: `uint32_t` - 
+
+  - `loadedResources`: `uint32_t` - 
+
+  - `pendingLoads`: `uint32_t` - 
+
+  - `failedLoads`: `uint32_t` - 
+
+  - `averageLoadTimeMs`: `float` - 
+
+  - `memoryUsed`: `size_t` - 
+
+  - `peakMemoryUsed`: `size_t` - 
 
 

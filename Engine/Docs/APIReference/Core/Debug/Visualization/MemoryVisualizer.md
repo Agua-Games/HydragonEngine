@@ -1,6 +1,47 @@
+# Classes
+---
 
-## Classes
+## MemoryVisualizer
+---
 
-### MemoryVisualizer
+
+
+
+# Variables
+---
+
+### `name`
+
+- **Type:** `const char*`
+
+
+
+### `size`
+
+- **Type:** `size_t`
+
+
+
+### `fragmentation`
+
+- **Type:** `float`
+
+
+
+
+# Structs
+---
+
+### `VisualizationData`
+
+- **Description:** 
+
+- **Members:**
+
+  - `name`: `const char*` - 
+
+  - `size`: `size_t` - 
+
+  - `fragmentation`: `float` - 
 
 

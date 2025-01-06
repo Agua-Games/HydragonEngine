@@ -1,193 +1,355 @@
+# Classes
+---
 
-## Classes
-
-### WindowBindings
-
-
-
-
-## Functions
-
-### Get
+## WindowBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableMultiWindow`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableFullscreen`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableResizing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDragAndDrop`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxWindows`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `16`
+
+
+
+### `maxMonitors`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `maxDropFiles`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `windowConfigPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Config/Window"`
+
+
+
+### `config`
+
+- **Type:** `const WindowBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `WindowBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `WindowBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `WindowBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static WindowBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const WindowBindingsConfig& config = {}
+- **Parameters:** const WindowBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateWindow
-
-
-
-**Parameters:** const WindowDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyWindow
+## Update
 
 
 
-**Parameters:** WindowHandle handle
+- **Parameters:** 
 
----
-
-### ShowWindow
-
-
-
-**Parameters:** WindowHandle handle
+- **Return:** `void`
 
 ---
 
-### HideWindow
+## CreateWindow
 
 
 
-**Parameters:** WindowHandle handle
+- **Parameters:** const WindowDesc& desc
 
----
-
-### SetTitle
-
-
-
-**Parameters:** WindowHandle handle, const std::string& title
+- **Return:** `WindowHandle`
 
 ---
 
-### SetSize
+## DestroyWindow
 
 
 
-**Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+- **Parameters:** WindowHandle handle
 
----
-
-### SetPosition
-
-
-
-**Parameters:** WindowHandle handle, int32_t x, int32_t y
+- **Return:** `void`
 
 ---
 
-### SetFullscreen
+## ShowWindow
 
 
 
-**Parameters:** WindowHandle handle, bool fullscreen
+- **Parameters:** WindowHandle handle
 
----
-
-### SetBorderless
-
-
-
-**Parameters:** WindowHandle handle, bool borderless
+- **Return:** `void`
 
 ---
 
-### SetResizable
+## HideWindow
 
 
 
-**Parameters:** WindowHandle handle, bool resizable
+- **Parameters:** WindowHandle handle
 
----
-
-### SetMinSize
-
-
-
-**Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+- **Return:** `void`
 
 ---
 
-### SetMaxSize
+## SetTitle
 
 
 
-**Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+- **Parameters:** WindowHandle handle, const std::string& title
 
----
-
-### RegisterWindowCallback
-
-
-
-**Parameters:** WindowHandle handle, const WindowCallback& callback
+- **Return:** `void`
 
 ---
 
-### UnregisterWindowCallback
+## SetSize
 
 
 
-**Parameters:** WindowHandle handle
+- **Parameters:** WindowHandle handle, uint32_t width, uint32_t height
 
----
-
-### RegisterDropCallback
-
-
-
-**Parameters:** WindowHandle handle, const DropCallback& callback
+- **Return:** `void`
 
 ---
 
-### UnregisterDropCallback
+## SetPosition
 
 
 
-**Parameters:** WindowHandle handle
+- **Parameters:** WindowHandle handle, int32_t x, int32_t y
 
----
-
-### ShowCursor
-
-
-
-**Parameters:** WindowHandle handle, bool show
+- **Return:** `void`
 
 ---
 
-### SetCursorPosition
+## SetFullscreen
 
 
 
-**Parameters:** WindowHandle handle, int32_t x, int32_t y
+- **Parameters:** WindowHandle handle, bool fullscreen
+
+- **Return:** `void`
 
 ---
 
-### SetCursorMode
+## SetBorderless
 
 
 
-**Parameters:** WindowHandle handle, CursorMode mode
+- **Parameters:** WindowHandle handle, bool borderless
+
+- **Return:** `void`
+
+---
+
+## SetResizable
+
+
+
+- **Parameters:** WindowHandle handle, bool resizable
+
+- **Return:** `void`
+
+---
+
+## SetMinSize
+
+
+
+- **Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+
+- **Return:** `void`
+
+---
+
+## SetMaxSize
+
+
+
+- **Parameters:** WindowHandle handle, uint32_t width, uint32_t height
+
+- **Return:** `void`
+
+---
+
+## RegisterWindowCallback
+
+
+
+- **Parameters:** WindowHandle handle, const WindowCallback& callback
+
+- **Return:** `void`
+
+---
+
+## UnregisterWindowCallback
+
+
+
+- **Parameters:** WindowHandle handle
+
+- **Return:** `void`
+
+---
+
+## RegisterDropCallback
+
+
+
+- **Parameters:** WindowHandle handle, const DropCallback& callback
+
+- **Return:** `void`
+
+---
+
+## UnregisterDropCallback
+
+
+
+- **Parameters:** WindowHandle handle
+
+- **Return:** `void`
+
+---
+
+## ShowCursor
+
+
+
+- **Parameters:** WindowHandle handle, bool show
+
+- **Return:** `void`
+
+---
+
+## SetCursorPosition
+
+
+
+- **Parameters:** WindowHandle handle, int32_t x, int32_t y
+
+- **Return:** `void`
+
+---
+
+## SetCursorMode
+
+
+
+- **Parameters:** WindowHandle handle, CursorMode mode
+
+- **Return:** `void`
 
 ---

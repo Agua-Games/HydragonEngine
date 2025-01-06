@@ -1,6 +1,41 @@
+# Classes
+---
 
-## Classes
+## IGraphUpdateSystem
+---
 
-### IGraphUpdateSystem
+
+
+
+# Variables
+---
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `m_Stats`
+
+- **Type:** `UpdateStats`
+
+
+
+
+# Structs
+---
+
+### `DirtyState`
+
+- **Description:** 
+
+- **Members:**
 
 

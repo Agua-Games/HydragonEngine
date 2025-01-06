@@ -1,57 +1,97 @@
+# Classes
+---
 
-## Classes
-
-### InteractionMode
-
-
-
-
-## Functions
-
-### InteractiveMemoryView
+## InteractionMode
+---
 
 
 
-**Parameters:** QWidget* parent = nullptr
+
+# Variables
+---
+
+### `parent`
+
+- **Type:** `QWidget*`
+
+- **Default Value:** `nullptr)`
+
+
+
+### `m_Mode`
+
+- **Type:** `InteractionMode`
+
+- **Default Value:** `InteractionMode::Select`
+
+
+
+### `m_Scene`
+
+- **Type:** `QGraphicsScene*`
+
+
+
+
+# Functions
+---
+
+## InteractiveMemoryView
+
+
+
+- **Parameters:** QWidget* parent = nullptr
+
+- **Return:** `explicit`
 
 ---
 
-### setInteractionMode
+## setInteractionMode
 
 
 
-**Parameters:** InteractionMode mode
+- **Parameters:** InteractionMode mode
 
----
-
-### blockSelected
-
-
-
-**Parameters:** const Memory::MemoryBlock& block
+- **Return:** `void`
 
 ---
 
-### streamingBlockInspected
+## blockSelected
 
 
 
-**Parameters:** const StreamingBlock& block
+- **Parameters:** const Memory::MemoryBlock& block
 
----
-
-### updateTooltip
-
-
-
-**Parameters:** const QPointF& pos
+- **Return:** `void`
 
 ---
 
-### handleBlockSelection
+## streamingBlockInspected
 
 
 
-**Parameters:** const QPointF& pos
+- **Parameters:** const StreamingBlock& block
+
+- **Return:** `void`
+
+---
+
+## updateTooltip
+
+
+
+- **Parameters:** const QPointF& pos
+
+- **Return:** `void`
+
+---
+
+## handleBlockSelection
+
+
+
+- **Parameters:** const QPointF& pos
+
+- **Return:** `void`
 
 ---

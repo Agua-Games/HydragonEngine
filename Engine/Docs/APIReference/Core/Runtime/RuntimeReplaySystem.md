@@ -1,169 +1,333 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeReplaySystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeReplaySystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDeltaEncoding`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableKeyframeGeneration`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableTimelineMarkers`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `keyframeInterval`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `300`
+
+
+
+### `bufferSizeMB`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `64`
+
+
+
+### `recordingFidelity`
+
+- **Type:** `float`
+
+- **Default Value:** `1.0f`
+
+
+
+### `replayDirectory`
+
+- **Type:** `string`
+
+- **Default Value:** `"Replays"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeReplayConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `data`
+
+- **Type:** `const MarkerData&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeReplayConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeReplayStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeReplayConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeReplaySystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeReplayConfig& config = {}
+- **Parameters:** const RuntimeReplayConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### StartRecording
-
-
-
-**Parameters:** const ReplayDesc& desc
+- **Return:** `void`
 
 ---
 
-### PauseRecording
+## Update
 
 
 
-**Parameters:** ReplayHandle handle
+- **Parameters:** 
 
----
-
-### ResumeRecording
-
-
-
-**Parameters:** ReplayHandle handle
+- **Return:** `void`
 
 ---
 
-### StopRecording
+## StartRecording
 
 
 
-**Parameters:** ReplayHandle handle
+- **Parameters:** const ReplayDesc& desc
 
----
-
-### StartPlayback
-
-
-
-**Parameters:** const std::string& replayFile
+- **Return:** `ReplayHandle`
 
 ---
 
-### PausePlayback
+## PauseRecording
 
 
 
-**Parameters:** 
+- **Parameters:** ReplayHandle handle
 
----
-
-### ResumePlayback
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### StopPlayback
+## ResumeRecording
 
 
 
-**Parameters:** 
+- **Parameters:** ReplayHandle handle
 
----
-
-### SetPlaybackSpeed
-
-
-
-**Parameters:** float speed
+- **Return:** `void`
 
 ---
 
-### SeekToTime
+## StopRecording
 
 
 
-**Parameters:** float timeSeconds
+- **Parameters:** ReplayHandle handle
 
----
-
-### SeekToMarker
-
-
-
-**Parameters:** const std::string& markerName
+- **Return:** `void`
 
 ---
 
-### AddReplayMarker
+## StartPlayback
 
 
 
-**Parameters:** const std::string& name, const MarkerData& data = {}
+- **Parameters:** const std::string& replayFile
 
----
-
-### RegisterReplayHandler
-
-
-
-**Parameters:** ReplayEventType type, const ReplayEventHandler& handler
+- **Return:** `void`
 
 ---
 
-### UnregisterReplayHandler
+## PausePlayback
 
 
 
-**Parameters:** ReplayEventType type
+- **Parameters:** 
 
----
-
-### ExportReplay
-
-
-
-**Parameters:** ReplayHandle handle, const std::string& path
+- **Return:** `void`
 
 ---
 
-### ImportReplay
+## ResumePlayback
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## StopPlayback
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SetPlaybackSpeed
+
+
+
+- **Parameters:** float speed
+
+- **Return:** `void`
+
+---
+
+## SeekToTime
+
+
+
+- **Parameters:** float timeSeconds
+
+- **Return:** `void`
+
+---
+
+## SeekToMarker
+
+
+
+- **Parameters:** const std::string& markerName
+
+- **Return:** `void`
+
+---
+
+## AddReplayMarker
+
+
+
+- **Parameters:** const std::string& name, const MarkerData& data = {}
+
+- **Return:** `void`
+
+---
+
+## RegisterReplayHandler
+
+
+
+- **Parameters:** ReplayEventType type, const ReplayEventHandler& handler
+
+- **Return:** `void`
+
+---
+
+## UnregisterReplayHandler
+
+
+
+- **Parameters:** ReplayEventType type
+
+- **Return:** `void`
+
+---
+
+## ExportReplay
+
+
+
+- **Parameters:** ReplayHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ImportReplay
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `ReplayHandle`
 
 ---

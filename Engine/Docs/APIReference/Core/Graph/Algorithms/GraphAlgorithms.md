@@ -1,73 +1,173 @@
+# Classes
+---
 
-## Classes
-
-### GraphAlgorithms
-
-
-
-
-## Functions
-
-### Get
+## GraphAlgorithms
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableParallel`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCaching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxIterations`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `convergenceThreshold`
+
+- **Type:** `float`
+
+- **Default Value:** `0.001f`
+
+
+
+### `config`
+
+- **Type:** `const AlgorithmConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AlgorithmConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AlgorithmStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AlgorithmConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static GraphAlgorithms&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AlgorithmConfig& config = {}
+- **Parameters:** const AlgorithmConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### HasCycle
+## Shutdown
 
 
 
-**Parameters:** GraphHandle graph
+- **Parameters:** 
 
----
-
-### GetConnectedComponents
-
-
-
-**Parameters:** GraphHandle graph
+- **Return:** `void`
 
 ---
 
-### ComputeGraphDensity
+## HasCycle
 
 
 
-**Parameters:** GraphHandle graph
+- **Parameters:** GraphHandle graph
 
----
-
-### OptimizeLayout
-
-
-
-**Parameters:** GraphHandle graph, const LayoutParams& params
+- **Return:** `bool`
 
 ---
 
-### ReduceEdges
+## GetConnectedComponents
 
 
 
-**Parameters:** GraphHandle graph, float threshold
+- **Parameters:** GraphHandle graph
+
+- **Return:** `uint32_t`
+
+---
+
+## ComputeGraphDensity
+
+
+
+- **Parameters:** GraphHandle graph
+
+- **Return:** `float`
+
+---
+
+## OptimizeLayout
+
+
+
+- **Parameters:** GraphHandle graph, const LayoutParams& params
+
+- **Return:** `void`
+
+---
+
+## ReduceEdges
+
+
+
+- **Parameters:** GraphHandle graph, float threshold
+
+- **Return:** `void`
 
 ---

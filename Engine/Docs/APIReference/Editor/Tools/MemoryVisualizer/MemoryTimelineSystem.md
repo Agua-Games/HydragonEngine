@@ -1,42 +1,105 @@
 
-## Functions
+# Variables
+---
 
-### stopRecording
+### `maxSnapshots`
+
+- **Type:** `size_t`
+
+- **Default Value:** `1000`
 
 
 
-**Parameters:** 
+### `autoCapture`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `config`
+
+- **Type:** `const TimelineConfig&`
+
+- **Default Value:** `TimelineConfig())`
+
+
+
+### `m_Config`
+
+- **Type:** `TimelineConfig`
+
+
+
+### `m_CaptureTimer`
+
+- **Type:** `QTimer*`
+
+
+
+
+# Structs
+---
+
+### `TimelineConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## stopRecording
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### snapshotAdded
+## snapshotAdded
 
 
 
-**Parameters:** const MemorySnapshot& snapshot
+- **Parameters:** const MemorySnapshot& snapshot
 
----
-
-### timelineUpdated
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### captureSnapshot
+## timelineUpdated
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### pruneOldSnapshots
+## captureSnapshot
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## pruneOldSnapshots
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

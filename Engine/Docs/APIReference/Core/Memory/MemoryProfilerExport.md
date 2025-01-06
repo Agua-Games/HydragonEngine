@@ -1,29 +1,132 @@
+# Classes
+---
 
-## Classes
-
-### MemoryProfilerExport
-
-
-
-### Format
+## MemoryProfilerExport
+---
 
 
 
-
-## Functions
-
-### FormatRenderDocMarkers
+## Format
+---
 
 
 
-**Parameters:** const BenchmarkResult& result
+
+# Variables
+---
+
+### `includeTextureAllocs`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `includeShaderAllocs`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `trackResourceLifetime`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `captureMarker`
+
+- **Type:** `string`
+
+- **Default Value:** `"HydragonMemoryCapture"`
+
+
+
+### `config`
+
+- **Type:** `const RenderDocExportConfig&`
+
+- **Default Value:** `RenderDocExportConfig())`
+
+
+
+### `outputFormat`
+
+- **Type:** `Format`
+
+- **Default Value:** `Format::NSight`
+
+
+
+### `includeMemoryLayout`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `trackUniformAccess`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `config`
+
+- **Type:** `const ShaderProfilerConfig&`
+
+- **Default Value:** `ShaderProfilerConfig())`
+
+
+
+
+# Structs
+---
+
+### `RenderDocExportConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+### `ShaderProfilerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## FormatRenderDocMarkers
+
+
+
+- **Parameters:** const BenchmarkResult& result
+
+- **Return:** `static void`
 
 ---
 
-### GenerateShaderMemoryLayout
+## GenerateShaderMemoryLayout
 
 
 
-**Parameters:** const BenchmarkResult& result
+- **Parameters:** const BenchmarkResult& result
+
+- **Return:** `static void`
 
 ---

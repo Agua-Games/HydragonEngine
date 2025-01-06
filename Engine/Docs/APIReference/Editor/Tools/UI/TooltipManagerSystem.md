@@ -1,97 +1,235 @@
+# Classes
+---
 
-## Classes
-
-### TooltipManagerSystem
-
-
-
-
-## Functions
-
-### Get
+## TooltipManagerSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableRichTooltips`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDelayedShow`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAnimation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableKeyboardTips`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `showDelay`
+
+- **Type:** `float`
+
+- **Default Value:** `0.5f`
+
+
+
+### `hideDelay`
+
+- **Type:** `float`
+
+- **Default Value:** `0.1f`
+
+
+
+### `offset`
+
+- **Type:** `Vector2`
+
+- **Default Value:** `{10.0f, 10.0f}`
+
+
+
+### `styleSheet`
+
+- **Type:** `string`
+
+- **Default Value:** `"Editor/Styles/Tooltips.css"`
+
+
+
+### `config`
+
+- **Type:** `const TooltipManagerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `TooltipManagerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `TooltipManagerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `TooltipManagerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static TooltipManagerSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const TooltipManagerConfig& config = {}
+- **Parameters:** const TooltipManagerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### RegisterTooltip
-
-
-
-**Parameters:** const std::string& id, const TooltipDesc& desc
+- **Return:** `void`
 
 ---
 
-### UnregisterTooltip
+## Update
 
 
 
-**Parameters:** const std::string& id
+- **Parameters:** 
 
----
-
-### ShowTooltip
-
-
-
-**Parameters:** const std::string& id, const Vector2& position
+- **Return:** `void`
 
 ---
 
-### HideTooltip
+## RegisterTooltip
 
 
 
-**Parameters:** const std::string& id
+- **Parameters:** const std::string& id, const TooltipDesc& desc
 
----
-
-### HideAllTooltips
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### SetTooltipContent
+## UnregisterTooltip
 
 
 
-**Parameters:** const std::string& id, const std::string& content
+- **Parameters:** const std::string& id
+
+- **Return:** `void`
 
 ---
 
-### SetTooltipStyle
+## ShowTooltip
 
 
 
-**Parameters:** const std::string& id, const TooltipStyle& style
+- **Parameters:** const std::string& id, const Vector2& position
+
+- **Return:** `void`
+
+---
+
+## HideTooltip
+
+
+
+- **Parameters:** const std::string& id
+
+- **Return:** `void`
+
+---
+
+## HideAllTooltips
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SetTooltipContent
+
+
+
+- **Parameters:** const std::string& id, const std::string& content
+
+- **Return:** `void`
+
+---
+
+## SetTooltipStyle
+
+
+
+- **Parameters:** const std::string& id, const TooltipStyle& style
+
+- **Return:** `void`
 
 ---

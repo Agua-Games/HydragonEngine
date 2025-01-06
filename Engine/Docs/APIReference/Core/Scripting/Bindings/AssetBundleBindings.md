@@ -1,169 +1,337 @@
+# Classes
+---
 
-## Classes
-
-### AssetBundleBindings
-
-
-
-
-## Functions
-
-### Get
+## AssetBundleBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableDeltaBundles`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableBundlePatching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableBundleValidation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableManifestCaching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConcurrentBundles`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `maxPatchSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `256 * 1024 * 1024`
+
+
+
+### `manifestCacheSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `16 * 1024 * 1024`
+
+
+
+### `bundleCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Bundles"`
+
+
+
+### `config`
+
+- **Type:** `const AssetBundleBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const BundleDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AssetBundleBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AssetBundleBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AssetBundleBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `256 * 1024 *` - 
+
+  - `1024`: `16 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AssetBundleBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AssetBundleBindingsConfig& config = {}
+- **Parameters:** const AssetBundleBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateBundle
-
-
-
-**Parameters:** const std::string& name, const BundleDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### LoadBundle
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### UnloadBundle
-
-
-
-**Parameters:** BundleHandle handle
+- **Return:** `void`
 
 ---
 
-### SaveBundle
+## CreateBundle
 
 
 
-**Parameters:** BundleHandle handle, const std::string& path
+- **Parameters:** const std::string& name, const BundleDesc& desc = {}
 
----
-
-### AddToBundle
-
-
-
-**Parameters:** BundleHandle bundle, AssetHandle asset
+- **Return:** `BundleHandle`
 
 ---
 
-### RemoveFromBundle
+## LoadBundle
 
 
 
-**Parameters:** BundleHandle bundle, AssetHandle asset
+- **Parameters:** const std::string& path
 
----
-
-### CreatePatch
-
-
-
-**Parameters:** BundleHandle source, BundleHandle target, const std::string& path
+- **Return:** `void`
 
 ---
 
-### ApplyPatch
+## UnloadBundle
 
 
 
-**Parameters:** BundleHandle handle, const std::string& patchPath
+- **Parameters:** BundleHandle handle
 
----
-
-### GenerateManifest
-
-
-
-**Parameters:** BundleHandle handle, const std::string& path
+- **Return:** `void`
 
 ---
 
-### LoadManifest
+## SaveBundle
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** BundleHandle handle, const std::string& path
 
----
-
-### OptimizeBundle
-
-
-
-**Parameters:** BundleHandle handle
+- **Return:** `void`
 
 ---
 
-### ValidateBundle
+## AddToBundle
 
 
 
-**Parameters:** BundleHandle handle
+- **Parameters:** BundleHandle bundle, AssetHandle asset
 
----
-
-### RepairBundle
-
-
-
-**Parameters:** BundleHandle handle
+- **Return:** `void`
 
 ---
 
-### EnableBundleTracking
+## RemoveFromBundle
 
 
 
-**Parameters:** bool enable
+- **Parameters:** BundleHandle bundle, AssetHandle asset
 
----
-
-### DumpBundleContents
-
-
-
-**Parameters:** BundleHandle handle, const std::string& path
+- **Return:** `void`
 
 ---
 
-### AnalyzeBundleUsage
+## CreatePatch
 
 
 
-**Parameters:** BundleHandle handle
+- **Parameters:** BundleHandle source, BundleHandle target, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ApplyPatch
+
+
+
+- **Parameters:** BundleHandle handle, const std::string& patchPath
+
+- **Return:** `void`
+
+---
+
+## GenerateManifest
+
+
+
+- **Parameters:** BundleHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## LoadManifest
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## OptimizeBundle
+
+
+
+- **Parameters:** BundleHandle handle
+
+- **Return:** `void`
+
+---
+
+## ValidateBundle
+
+
+
+- **Parameters:** BundleHandle handle
+
+- **Return:** `void`
+
+---
+
+## RepairBundle
+
+
+
+- **Parameters:** BundleHandle handle
+
+- **Return:** `void`
+
+---
+
+## EnableBundleTracking
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpBundleContents
+
+
+
+- **Parameters:** BundleHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## AnalyzeBundleUsage
+
+
+
+- **Parameters:** BundleHandle handle
+
+- **Return:** `void`
 
 ---

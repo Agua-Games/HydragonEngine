@@ -1,6 +1,71 @@
+# Classes
+---
 
-## Classes
+## IVersionController
+---
 
-### IVersionController
+
+
+
+# Variables
+---
+
+### `identifier`
+
+- **Type:** `string`
+
+
+
+### `timestamp`
+
+- **Type:** `Timestamp`
+
+
+
+### `author`
+
+- **Type:** `UserId`
+
+
+
+### `description`
+
+- **Type:** `string`
+
+
+
+### `changeCount`
+
+- **Type:** `uint32_t`
+
+
+
+### `isSnapshot`
+
+- **Type:** `bool`
+
+
+
+
+# Structs
+---
+
+### `VersionInfo`
+
+- **Description:** 
+
+- **Members:**
+
+  - `identifier`: `string` - 
+
+  - `timestamp`: `Timestamp` - 
+
+  - `author`: `UserId` - 
+
+  - `description`: `string` - 
+
+  - `changeCount`: `uint32_t` - 
+
+  - `isSnapshot`: `bool` - 
 
 

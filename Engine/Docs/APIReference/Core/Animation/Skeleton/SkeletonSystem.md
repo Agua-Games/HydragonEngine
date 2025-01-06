@@ -1,81 +1,193 @@
+# Classes
+---
 
-## Classes
-
-### SkeletonSystem
-
-
-
-
-## Functions
-
-### Get
+## SkeletonSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `maxSkeletons`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `500`
+
+
+
+### `maxBonesPerSkeleton`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `256`
+
+
+
+### `enableGPUSkinning`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableBoneVisualization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `gpuBufferSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `64 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const SkeletonConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `SkeletonConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `SkeletonStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `SkeletonConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `64 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static SkeletonSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const SkeletonConfig& config = {}
+- **Parameters:** const SkeletonConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### UpdateSkeleton
-
-
-
-**Parameters:** SkeletonHandle handle
+- **Return:** `void`
 
 ---
 
-### UpdateSkinning
+## Update
 
 
 
-**Parameters:** SkeletonHandle handle
+- **Parameters:** 
 
----
-
-### SetBoneTransform
-
-
-
-**Parameters:** SkeletonHandle skeleton, BoneHandle bone, const Transform& transform
+- **Return:** `void`
 
 ---
 
-### EnableGPUSkinning
+## UpdateSkeleton
 
 
 
-**Parameters:** SkeletonHandle handle, bool enable
+- **Parameters:** SkeletonHandle handle
+
+- **Return:** `void`
 
 ---
 
-### UpdateGPUBuffers
+## UpdateSkinning
 
 
 
-**Parameters:** SkeletonHandle handle
+- **Parameters:** SkeletonHandle handle
+
+- **Return:** `void`
+
+---
+
+## SetBoneTransform
+
+
+
+- **Parameters:** SkeletonHandle skeleton, BoneHandle bone, const Transform& transform
+
+- **Return:** `void`
+
+---
+
+## EnableGPUSkinning
+
+
+
+- **Parameters:** SkeletonHandle handle, bool enable
+
+- **Return:** `void`
+
+---
+
+## UpdateGPUBuffers
+
+
+
+- **Parameters:** SkeletonHandle handle
+
+- **Return:** `void`
 
 ---

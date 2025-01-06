@@ -1,33 +1,245 @@
+# Classes
+---
 
-## Classes
-
-### IOutputChannel
-
-
-
-
-## Functions
-
-### FileOutputChannel
+## IOutputChannel
+---
 
 
 
-**Parameters:** const FileConfig& config
+
+# Variables
+---
+
+### `filename`
+
+- **Type:** `string`
+
+
+
+### `maxSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `100 * 1024 * 1024`
+
+
+
+### `appendMode`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `autoFlush`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `enableRotation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxRotatedFiles`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `5`
+
+
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `m_Config`
+
+- **Type:** `FileConfig`
+
+
+
+### `m_File`
+
+- **Type:** `ofstream`
+
+
+
+### `m_CurrentSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `0`
+
+
+
+### `enableColors`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableFormatting`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `redirectStderr`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `config`
+
+- **Type:** `const ConsoleConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `m_Config`
+
+- **Type:** `ConsoleConfig`
+
+
+
+### `host`
+
+- **Type:** `string`
+
+
+
+### `port`
+
+- **Type:** `uint16_t`
+
+
+
+### `useTLS`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `retryInterval`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `5000`
+
+
+
+### `bufferSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8192`
+
+
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `m_Config`
+
+- **Type:** `NetworkConfig`
+
+
+
+
+# Structs
+---
+
+### `FileConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `filename`: `string` - 
+
+  - `1024`: `100 * 1024 *` - 
+
+
+
+### `ConsoleConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+### `NetworkConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `host`: `string` - 
+
+  - `port`: `uint16_t` - 
+
+
+
+
+# Functions
+---
+
+## FileOutputChannel
+
+
+
+- **Parameters:** const FileConfig& config
+
+- **Return:** `explicit`
 
 ---
 
-### ConsoleOutputChannel
+## ConsoleOutputChannel
 
 
 
-**Parameters:** const ConsoleConfig& config = {}
+- **Parameters:** const ConsoleConfig& config = {}
+
+- **Return:** `explicit`
 
 ---
 
-### NetworkOutputChannel
+## NetworkOutputChannel
 
 
 
-**Parameters:** const NetworkConfig& config
+- **Parameters:** const NetworkConfig& config
+
+- **Return:** `explicit`
 
 ---

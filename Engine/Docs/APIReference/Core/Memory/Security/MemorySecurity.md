@@ -1,41 +1,71 @@
+# Classes
+---
 
-## Classes
-
-### MemorySecurity
-
-
-
-
-## Functions
-
-### validateMemory
+## MemorySecurity
+---
 
 
 
-**Parameters:** void* ptr, size_t size
+
+# Variables
+---
+
+### `CANARY_SIZE`
+
+- **Type:** `static constexpr size_t`
+
+- **Default Value:** `8`
+
+
+
+### `Canary`
+
+- **Type:** `using`
+
+- **Default Value:** `std::array<uint8_t, CANARY_SIZE>`
+
+
+
+
+# Functions
+---
+
+## validateMemory
+
+
+
+- **Parameters:** void* ptr, size_t size
+
+- **Return:** `bool`
 
 ---
 
-### enableFeature
+## enableFeature
 
 
 
-**Parameters:** SecurityFeature feature
+- **Parameters:** SecurityFeature feature
 
----
-
-### onAllocation
-
-
-
-**Parameters:** void* ptr, size_t size
+- **Return:** `bool`
 
 ---
 
-### onDeallocation
+## onAllocation
 
 
 
-**Parameters:** void* ptr
+- **Parameters:** void* ptr, size_t size
+
+- **Return:** `void`
+
+---
+
+## onDeallocation
+
+
+
+- **Parameters:** void* ptr
+
+- **Return:** `void`
 
 ---

@@ -1,25 +1,73 @@
+# Classes
+---
 
-## Classes
-
-### BoundsComponent
-
-
-
-
-## Functions
-
-### SetLocalBounds
+## BoundsComponent
+---
 
 
 
-**Parameters:** const BoundingVolume& bounds
+
+# Variables
+---
+
+### `m_LocalBounds`
+
+- **Type:** `return`
+
+
+
+### `m_WorldBounds`
+
+- **Type:** `return`
+
+
+
+### `m_Dirty`
+
+- **Type:** `return`
+
+
+
+### `m_LocalBounds`
+
+- **Type:** `BoundingVolume`
+
+
+
+### `m_WorldBounds`
+
+- **Type:** `BoundingVolume`
+
+
+
+### `m_Dirty`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+
+# Functions
+---
+
+## SetLocalBounds
+
+
+
+- **Parameters:** const BoundingVolume& bounds
+
+- **Return:** `void`
 
 ---
 
-### UpdateWorldBounds
+## UpdateWorldBounds
 
 
 
-**Parameters:** const Transform& worldTransform
+- **Parameters:** const Transform& worldTransform
+
+- **Return:** `void`
 
 ---

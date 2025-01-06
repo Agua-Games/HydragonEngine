@@ -1,257 +1,453 @@
+# Classes
+---
 
-## Classes
-
-### ConfigBindings
-
-
-
-
-## Functions
-
-### Get
+## ConfigBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableAutoSave`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableVersioning`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEncryption`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSchemaValidation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConfigSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `16 * 1024 * 1024`
+
+
+
+### `maxHistoryEntries`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `autoSaveInterval`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `300`
+
+
+
+### `configRootPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Config"`
+
+
+
+### `config`
+
+- **Type:** `const ConfigBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const ConfigDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `path`
+
+- **Type:** `string&`
+
+- **Default Value:** `"")`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ConfigBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ConfigBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ConfigBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `16 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ConfigBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ConfigBindingsConfig& config = {}
+- **Parameters:** const ConfigBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateConfig
-
-
-
-**Parameters:** const std::string& name, const ConfigDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### LoadConfig
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### SaveConfig
-
-
-
-**Parameters:** ConfigHandle handle, const std::string& path = ""
+- **Return:** `void`
 
 ---
 
-### CloseConfig
+## CreateConfig
 
 
 
-**Parameters:** ConfigHandle handle
+- **Parameters:** const std::string& name, const ConfigDesc& desc = {}
 
----
-
-### SetValue
-
-
-
-**Parameters:** ConfigHandle handle, const std::string& key, const Variant& value
+- **Return:** `ConfigHandle`
 
 ---
 
-### RemoveValue
+## LoadConfig
 
 
 
-**Parameters:** ConfigHandle handle, const std::string& key
+- **Parameters:** const std::string& path
 
----
-
-### CreateSection
-
-
-
-**Parameters:** ConfigHandle handle, const std::string& section
+- **Return:** `void`
 
 ---
 
-### RemoveSection
+## SaveConfig
 
 
 
-**Parameters:** ConfigHandle handle, const std::string& section
+- **Parameters:** ConfigHandle handle, const std::string& path = ""
 
----
-
-### SetSchema
-
-
-
-**Parameters:** ConfigHandle handle, const ConfigSchema& schema
+- **Return:** `void`
 
 ---
 
-### CreateSnapshot
+## CloseConfig
 
 
 
-**Parameters:** ConfigHandle handle, const std::string& description
+- **Parameters:** ConfigHandle handle
 
----
-
-### RestoreSnapshot
-
-
-
-**Parameters:** ConfigHandle handle, uint32_t version
+- **Return:** `void`
 
 ---
 
-### SetEncryptionKey
+## SetValue
 
 
 
-**Parameters:** ConfigHandle handle, const std::string& key
+- **Parameters:** ConfigHandle handle, const std::string& key, const Variant& value
 
----
-
-### EncryptConfig
-
-
-
-**Parameters:** ConfigHandle handle
+- **Return:** `void`
 
 ---
 
-### DecryptConfig
+## RemoveValue
 
 
 
-**Parameters:** ConfigHandle handle
+- **Parameters:** ConfigHandle handle, const std::string& key
 
----
-
-### ImportJSON
-
-
-
-**Parameters:** ConfigHandle handle, const std::string& path
+- **Return:** `void`
 
 ---
 
-### ExportJSON
+## CreateSection
 
 
 
-**Parameters:** ConfigHandle handle, const std::string& path
+- **Parameters:** ConfigHandle handle, const std::string& section
 
----
-
-### ImportYAML
-
-
-
-**Parameters:** ConfigHandle handle, const std::string& path
+- **Return:** `void`
 
 ---
 
-### ExportYAML
+## RemoveSection
 
 
 
-**Parameters:** ConfigHandle handle, const std::string& path
+- **Parameters:** ConfigHandle handle, const std::string& section
 
----
-
-### ValidateConfig
-
-
-
-**Parameters:** ConfigHandle handle
+- **Return:** `void`
 
 ---
 
-### OptimizeConfig
+## SetSchema
 
 
 
-**Parameters:** ConfigHandle handle
+- **Parameters:** ConfigHandle handle, const ConfigSchema& schema
 
----
-
-### CompactConfig
-
-
-
-**Parameters:** ConfigHandle handle
+- **Return:** `void`
 
 ---
 
-### EnableAutoSave
+## CreateSnapshot
 
 
 
-**Parameters:** bool enable
+- **Parameters:** ConfigHandle handle, const std::string& description
 
----
-
-### SetAutoSaveInterval
-
-
-
-**Parameters:** uint32_t seconds
+- **Return:** `void`
 
 ---
 
-### ForceAutoSave
+## RestoreSnapshot
 
 
 
-**Parameters:** 
+- **Parameters:** ConfigHandle handle, uint32_t version
 
----
-
-### EnableConfigTracking
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### DumpConfigState
+## SetEncryptionKey
 
 
 
-**Parameters:** ConfigHandle handle, const std::string& path
+- **Parameters:** ConfigHandle handle, const std::string& key
+
+- **Return:** `void`
 
 ---
 
-### AnalyzeConfigUsage
+## EncryptConfig
 
 
 
-**Parameters:** ConfigHandle handle
+- **Parameters:** ConfigHandle handle
+
+- **Return:** `void`
+
+---
+
+## DecryptConfig
+
+
+
+- **Parameters:** ConfigHandle handle
+
+- **Return:** `void`
+
+---
+
+## ImportJSON
+
+
+
+- **Parameters:** ConfigHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ExportJSON
+
+
+
+- **Parameters:** ConfigHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ImportYAML
+
+
+
+- **Parameters:** ConfigHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ExportYAML
+
+
+
+- **Parameters:** ConfigHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ValidateConfig
+
+
+
+- **Parameters:** ConfigHandle handle
+
+- **Return:** `void`
+
+---
+
+## OptimizeConfig
+
+
+
+- **Parameters:** ConfigHandle handle
+
+- **Return:** `void`
+
+---
+
+## CompactConfig
+
+
+
+- **Parameters:** ConfigHandle handle
+
+- **Return:** `void`
+
+---
+
+## EnableAutoSave
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## SetAutoSaveInterval
+
+
+
+- **Parameters:** uint32_t seconds
+
+- **Return:** `void`
+
+---
+
+## ForceAutoSave
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## EnableConfigTracking
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpConfigState
+
+
+
+- **Parameters:** ConfigHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## AnalyzeConfigUsage
+
+
+
+- **Parameters:** ConfigHandle handle
+
+- **Return:** `void`
 
 ---

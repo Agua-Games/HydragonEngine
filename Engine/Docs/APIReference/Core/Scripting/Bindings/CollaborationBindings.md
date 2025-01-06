@@ -1,241 +1,433 @@
+# Classes
+---
 
-## Classes
-
-### CollaborationBindings
-
-
-
-
-## Functions
-
-### Get
+## CollaborationBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableRealTimeSync`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableVersionControl`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableConflictResolution`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableChangeTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConcurrentUsers`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `32`
+
+
+
+### `maxPendingChanges`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `syncBufferSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1024 * 1024`
+
+
+
+### `collaborationCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Collaboration"`
+
+
+
+### `config`
+
+- **Type:** `const CollaborationBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const SessionDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const JoinParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `CollaborationBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `CollaborationBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `CollaborationBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static CollaborationBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const CollaborationBindingsConfig& config = {}
+- **Parameters:** const CollaborationBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateSession
-
-
-
-**Parameters:** const std::string& name, const SessionDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### JoinSession
+## Update
 
 
 
-**Parameters:** const std::string& sessionId, const JoinParams& params = {}
+- **Parameters:** 
 
----
-
-### LeaveSession
-
-
-
-**Parameters:** SessionHandle handle
+- **Return:** `void`
 
 ---
 
-### CloseSession
+## CreateSession
 
 
 
-**Parameters:** SessionHandle handle
+- **Parameters:** const std::string& name, const SessionDesc& desc = {}
 
----
-
-### SetUserInfo
-
-
-
-**Parameters:** const UserInfo& info
+- **Return:** `SessionHandle`
 
 ---
 
-### UpdateUserStatus
+## JoinSession
 
 
 
-**Parameters:** UserStatus status
+- **Parameters:** const std::string& sessionId, const JoinParams& params = {}
 
----
-
-### LockAsset
-
-
-
-**Parameters:** AssetHandle asset
+- **Return:** `void`
 
 ---
 
-### UnlockAsset
+## LeaveSession
 
 
 
-**Parameters:** AssetHandle asset
+- **Parameters:** SessionHandle handle
 
----
-
-### SubmitChange
-
-
-
-**Parameters:** const ChangeDesc& desc
+- **Return:** `void`
 
 ---
 
-### RevertChange
+## CloseSession
 
 
 
-**Parameters:** ChangeHandle handle
+- **Parameters:** SessionHandle handle
 
----
-
-### AcceptChange
-
-
-
-**Parameters:** ChangeHandle handle
+- **Return:** `void`
 
 ---
 
-### RejectChange
+## SetUserInfo
 
 
 
-**Parameters:** ChangeHandle handle
+- **Parameters:** const UserInfo& info
 
----
-
-### ResolveConflict
-
-
-
-**Parameters:** ConflictHandle handle, const ResolutionStrategy& strategy
+- **Return:** `void`
 
 ---
 
-### CommitChanges
+## UpdateUserStatus
 
 
 
-**Parameters:** const std::string& message
+- **Parameters:** UserStatus status
 
----
-
-### PullChanges
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### PushChanges
+## LockAsset
 
 
 
-**Parameters:** 
+- **Parameters:** AssetHandle asset
 
----
-
-### ForceSyncNow
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### SetSyncInterval
+## UnlockAsset
 
 
 
-**Parameters:** float seconds
+- **Parameters:** AssetHandle asset
 
----
-
-### EnableAutoSync
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### SendMessage
+## SubmitChange
 
 
 
-**Parameters:** const CollabMessage& message
+- **Parameters:** const ChangeDesc& desc
 
----
-
-### BroadcastNotification
-
-
-
-**Parameters:** const NotificationDesc& desc
+- **Return:** `ChangeHandle`
 
 ---
 
-### SetMessageCallback
+## RevertChange
 
 
 
-**Parameters:** const MessageCallback& callback
+- **Parameters:** ChangeHandle handle
 
----
-
-### EnableCollabLogging
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### DumpSessionState
+## AcceptChange
 
 
 
-**Parameters:** SessionHandle handle, const std::string& path
+- **Parameters:** ChangeHandle handle
+
+- **Return:** `void`
 
 ---
 
-### ValidateCollabState
+## RejectChange
 
 
 
-**Parameters:** 
+- **Parameters:** ChangeHandle handle
+
+- **Return:** `void`
+
+---
+
+## ResolveConflict
+
+
+
+- **Parameters:** ConflictHandle handle, const ResolutionStrategy& strategy
+
+- **Return:** `void`
+
+---
+
+## CommitChanges
+
+
+
+- **Parameters:** const std::string& message
+
+- **Return:** `void`
+
+---
+
+## PullChanges
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## PushChanges
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## ForceSyncNow
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SetSyncInterval
+
+
+
+- **Parameters:** float seconds
+
+- **Return:** `void`
+
+---
+
+## EnableAutoSync
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## SendMessage
+
+
+
+- **Parameters:** const CollabMessage& message
+
+- **Return:** `void`
+
+---
+
+## BroadcastNotification
+
+
+
+- **Parameters:** const NotificationDesc& desc
+
+- **Return:** `void`
+
+---
+
+## SetMessageCallback
+
+
+
+- **Parameters:** const MessageCallback& callback
+
+- **Return:** `void`
+
+---
+
+## EnableCollabLogging
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpSessionState
+
+
+
+- **Parameters:** SessionHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ValidateCollabState
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

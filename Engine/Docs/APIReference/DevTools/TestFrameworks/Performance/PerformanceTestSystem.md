@@ -1,97 +1,227 @@
+# Classes
+---
 
-## Classes
-
-### PerformanceTestSystem
-
-
-
-
-## Functions
-
-### Get
+## PerformanceTestSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableDetailedProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableBaselineComparison`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableThresholdChecks`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStressTests`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `iterationCount`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `warmupIterations`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `thresholdTolerance`
+
+- **Type:** `float`
+
+- **Default Value:** `0.1f`
+
+
+
+### `config`
+
+- **Type:** `const PerformanceTestConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `PerformanceTestConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `PerformanceStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `PerformanceTestConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static PerformanceTestSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const PerformanceTestConfig& config = {}
+- **Parameters:** const PerformanceTestConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### RegisterBenchmark
+## Shutdown
 
 
 
-**Parameters:** const std::string& name, const BenchmarkCallback& callback
+- **Parameters:** 
 
----
-
-### RegisterBaseline
-
-
-
-**Parameters:** const std::string& name, const BaselineMetrics& baseline
+- **Return:** `void`
 
 ---
 
-### RunAllBenchmarks
+## RegisterBenchmark
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& name, const BenchmarkCallback& callback
 
----
-
-### RunBenchmark
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### SetThreshold
+## RegisterBaseline
 
 
 
-**Parameters:** const std::string& metric, float threshold
+- **Parameters:** const std::string& name, const BaselineMetrics& baseline
 
----
-
-### ClearThresholds
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### GenerateReport
+## RunAllBenchmarks
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### ExportMetrics
+## RunBenchmark
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## SetThreshold
+
+
+
+- **Parameters:** const std::string& metric, float threshold
+
+- **Return:** `void`
+
+---
+
+## ClearThresholds
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## GenerateReport
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ExportMetrics
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
 
 ---

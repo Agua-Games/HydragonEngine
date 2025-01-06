@@ -1,41 +1,87 @@
+# Classes
+---
 
-## Classes
-
-### MemorySnapshot
-
-
-
-
-## Functions
-
-### capture
+## MemorySnapshot
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `currentThroughput`
+
+- **Type:** `double`
+
+
+
+### `m_CaptureTime`
+
+- **Type:** `time_point`
+
+
+
+### `m_StreamingState`
+
+- **Type:** `StreamingState`
+
+
+
+
+# Structs
+---
+
+### `StreamingState`
+
+- **Description:** 
+
+- **Members:**
+
+  - `currentThroughput`: `double` - 
+
+
+
+
+# Functions
+---
+
+## capture
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### save
+## save
 
 
 
-**Parameters:** const std::string& filename
+- **Parameters:** const std::string& filename
 
----
-
-### load
-
-
-
-**Parameters:** const std::string& filename
+- **Return:** `void`
 
 ---
 
-### deserializeFromJson
+## load
 
 
 
-**Parameters:** const QJsonObject& json
+- **Parameters:** const std::string& filename
+
+- **Return:** `bool`
+
+---
+
+## deserializeFromJson
+
+
+
+- **Parameters:** const QJsonObject& json
+
+- **Return:** `void`
 
 ---

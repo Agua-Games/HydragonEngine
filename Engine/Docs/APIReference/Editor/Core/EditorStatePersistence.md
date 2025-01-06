@@ -1,6 +1,31 @@
+# Classes
+---
 
-## Classes
+## EditorStatePersistence
+---
 
-### EditorStatePersistence
+
+
+
+# Variables
+---
+
+### `recentFiles`
+
+- **Type:** `RecentFilesList`
+
+
+
+
+# Structs
+---
+
+### `EditorState`
+
+- **Description:** 
+
+- **Members:**
+
+  - `recentFiles`: `RecentFilesList` - 
 
 

@@ -1,137 +1,292 @@
+# Classes
+---
 
-## Classes
-
-### AttributeSystem
-
-
-
-
-## Functions
-
-### Get
+## AttributeSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `config`
+
+- **Type:** `const AttributeSystemConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const AttributeDesc&`
+
+- **Default Value:** `{}) {
+        auto storage = m_Storage.AllocateStorage<T>(desc.owner)`
+
+
+
+### `attr`
+
+- **Type:** `auto&`
+
+- **Default Value:** `GetAttribute(name)`
+
+
+
+### `attr`
+
+- **Type:** `const auto&`
+
+- **Default Value:** `GetAttribute(name)`
+
+
+
+### `desc`
+
+- **Type:** `const GroupDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `pattern`
+
+- **Type:** `string&`
+
+- **Default Value:** `"*")`
+
+
+
+### `owner`
+
+- **Type:** `AttributeOwner`
+
+- **Default Value:** `AttributeOwner::Point) const`
+
+
+
+### `owner`
+
+- **Type:** `AttributeOwner`
+
+- **Default Value:** `AttributeOwner::Point) const`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `desc`
+
+- **Type:** `AttributeDesc`
+
+
+
+### `m_Config`
+
+- **Type:** `AttributeSystemConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AttributeStats`
+
+
+
+### `m_Storage`
+
+- **Type:** `DataMemoryStrategy`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AttributeInstance`
+
+- **Description:** 
+
+- **Members:**
+
+  - `desc`: `AttributeDesc` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AttributeSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AttributeSystemConfig& config = {}
+- **Parameters:** const AttributeSystemConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateGroup
-
-
-
-**Parameters:** const std::string& name, const GroupDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### DeleteGroup
+## Update
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** 
 
----
-
-### AddToGroup
-
-
-
-**Parameters:** const std::string& name, size_t index
+- **Return:** `void`
 
 ---
 
-### RemoveFromGroup
+## CreateGroup
 
 
 
-**Parameters:** const std::string& name, size_t index
+- **Parameters:** const std::string& name, const GroupDesc& desc = {}
 
----
-
-### InterpolateAttributes
-
-
-
-**Parameters:** const std::string& sourceName, const std::string& targetName
+- **Return:** `GroupHandle`
 
 ---
 
-### TransferAttributes
+## DeleteGroup
 
 
 
-**Parameters:** AttributeOwner sourceOwner, AttributeOwner targetOwner
+- **Parameters:** const std::string& name
 
----
-
-### CompactAttributes
-
-
-
-**Parameters:** const std::string& pattern = "*"
+- **Return:** `void`
 
 ---
 
-### RegisterAttributeHandler
+## AddToGroup
 
 
 
-**Parameters:** std::unique_ptr<IAttributeHandler> handler
+- **Parameters:** const std::string& name, size_t index
 
----
-
-### RegisterGroupHandler
-
-
-
-**Parameters:** std::unique_ptr<IGroupHandler> handler
+- **Return:** `void`
 
 ---
 
-### ValidateAttributeIntegrity
+## RemoveFromGroup
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& name, size_t index
 
----
-
-### NotifyAttributeCreated
-
-
-
-**Parameters:** const std::string& name, const AttributeDesc& desc
+- **Return:** `void`
 
 ---
 
-### NotifyAttributeModified
+## InterpolateAttributes
 
 
 
-**Parameters:** const std::string& name, size_t index
+- **Parameters:** const std::string& sourceName, const std::string& targetName
+
+- **Return:** `void`
+
+---
+
+## TransferAttributes
+
+
+
+- **Parameters:** AttributeOwner sourceOwner, AttributeOwner targetOwner
+
+- **Return:** `void`
+
+---
+
+## CompactAttributes
+
+
+
+- **Parameters:** const std::string& pattern = "*"
+
+- **Return:** `void`
+
+---
+
+## RegisterAttributeHandler
+
+
+
+- **Parameters:** std::unique_ptr<IAttributeHandler> handler
+
+- **Return:** `void`
+
+---
+
+## RegisterGroupHandler
+
+
+
+- **Parameters:** std::unique_ptr<IGroupHandler> handler
+
+- **Return:** `void`
+
+---
+
+## ValidateAttributeIntegrity
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## NotifyAttributeCreated
+
+
+
+- **Parameters:** const std::string& name, const AttributeDesc& desc
+
+- **Return:** `void`
+
+---
+
+## NotifyAttributeModified
+
+
+
+- **Parameters:** const std::string& name, size_t index
+
+- **Return:** `void`
 
 ---

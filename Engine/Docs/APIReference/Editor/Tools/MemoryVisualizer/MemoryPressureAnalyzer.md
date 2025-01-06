@@ -1,37 +1,110 @@
+# Classes
+---
 
-## Classes
-
-### MemoryPressureAnalyzer
-
-
-
-### PressureLevel
+## MemoryPressureAnalyzer
+---
 
 
 
-
-## Functions
-
-### analyzePressure
+## PressureLevel
+---
 
 
 
-**Parameters:** const Memory::MemoryState& state
+
+# Variables
+---
+
+### `fragmentationRatio`
+
+- **Type:** `float`
+
+
+
+### `pageUtilization`
+
+- **Type:** `float`
+
+
+
+### `allocationRate`
+
+- **Type:** `float`
+
+
+
+### `failureRate`
+
+- **Type:** `float`
+
+
+
+### `largestContiguousBlock`
+
+- **Type:** `size_t`
+
+
+
+### `hasPageThrashing`
+
+- **Type:** `bool`
+
+
+
+
+# Structs
+---
+
+### `PressureMetrics`
+
+- **Description:** 
+
+- **Members:**
+
+  - `fragmentationRatio`: `float` - 
+
+  - `pageUtilization`: `float` - 
+
+  - `allocationRate`: `float` - 
+
+  - `failureRate`: `float` - 
+
+  - `largestContiguousBlock`: `size_t` - 
+
+  - `hasPageThrashing`: `bool` - 
+
+
+
+
+# Functions
+---
+
+## analyzePressure
+
+
+
+- **Parameters:** const Memory::MemoryState& state
+
+- **Return:** `PressureLevel`
 
 ---
 
-### calculateMetrics
+## calculateMetrics
 
 
 
-**Parameters:** const Memory::MemoryState& state
+- **Parameters:** const Memory::MemoryState& state
+
+- **Return:** `PressureMetrics`
 
 ---
 
-### setPressureThresholds
+## setPressureThresholds
 
 
 
-**Parameters:** float medium, float high, float critical
+- **Parameters:** float medium, float high, float critical
+
+- **Return:** `void`
 
 ---

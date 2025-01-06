@@ -1,113 +1,342 @@
+# Classes
+---
 
-## Classes
-
-### SerializationFormat
-
-
-
-### AttributeSerializer
+## SerializationFormat
+---
 
 
 
-
-## Functions
-
-### SaveToFile
+## AttributeSerializer
+---
 
 
 
-**Parameters:** const std::string& filename, 
+
+# Variables
+---
+
+### `format`
+
+- **Type:** `SerializationFormat`
+
+- **Default Value:** `SerializationFormat::Binary`
+
+
+
+### `compression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `includeMetadata`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `version`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1`
+
+
+
+### `customFormat`
+
+- **Type:** `string`
+
+
+
+### `config`
+
+- **Type:** `const SerializationConfig&`
+
+- **Default Value:** `{})
+        : m_Config(config) {}
+
+    // Main serialization interface
+    bool SaveToFile(const std::string& filename, 
+                   const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
+                   const std::vector<AttributeDesc>& descriptions)`
+
+
+
+### `m_Config`
+
+- **Type:** `SerializationConfig`
+
+
+
+### `magic`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `0x48594441`
+
+
+
+### `version`
+
+- **Type:** `uint32_t`
+
+
+
+### `format`
+
+- **Type:** `SerializationFormat`
+
+
+
+### `compressed`
+
+- **Type:** `bool`
+
+
+
+### `attributeCount`
+
+- **Type:** `uint32_t`
+
+
+
+### `dataSize`
+
+- **Type:** `uint64_t`
+
+
+
+### `checksum`
+
+- **Type:** `uint32_t`
+
+
+
+### `totalAttributes`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `0`
+
+
+
+### `totalBytes`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `0`
+
+
+
+### `compressionRatio`
+
+- **Type:** `float`
+
+- **Default Value:** `1.0f`
+
+
+
+### `serializationTime`
+
+- **Type:** `float`
+
+- **Default Value:** `0.0f`
+
+
+
+### `deserializationTime`
+
+- **Type:** `float`
+
+- **Default Value:** `0.0f`
+
+
+
+### `hasMetadata`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `formatVersion`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `0`
+
+
+
+
+# Structs
+---
+
+### `SerializationConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `customFormat`: `string` - 
+
+
+
+### `SerializationHeader`
+
+- **Description:** 
+
+- **Members:**
+
+  - `version`: `uint32_t` - 
+
+  - `format`: `SerializationFormat` - 
+
+  - `compressed`: `bool` - 
+
+  - `attributeCount`: `uint32_t` - 
+
+  - `dataSize`: `uint64_t` - 
+
+  - `checksum`: `uint32_t` - 
+
+
+
+### `SerializationStats`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## SaveToFile
+
+
+
+- **Parameters:** const std::string& filename, 
                    const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                    const std::vector<AttributeDesc>& descriptions
 
+- **Return:** `bool`
+
 ---
 
-### LoadFromFile
+## LoadFromFile
 
 
 
-**Parameters:** const std::string& filename,
+- **Parameters:** const std::string& filename,
                      std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                      std::vector<AttributeDesc>& descriptions
 
----
-
-### ValidateFormat
-
-
-
-**Parameters:** const std::string& filename
+- **Return:** `bool`
 
 ---
 
-### GetFormatVersion
+## ValidateFormat
 
 
 
-**Parameters:** const std::string& filename
+- **Parameters:** const std::string& filename
 
----
-
-### GetStats
-
-
-
-**Parameters:** const std::string& filename
+- **Return:** `static bool`
 
 ---
 
-### SaveBinary
+## GetFormatVersion
 
 
 
-**Parameters:** std::ostream& stream,
+- **Parameters:** const std::string& filename
+
+- **Return:** `static uint32_t`
+
+---
+
+## GetStats
+
+
+
+- **Parameters:** const std::string& filename
+
+- **Return:** `static SerializationStats`
+
+---
+
+## SaveBinary
+
+
+
+- **Parameters:** std::ostream& stream,
                    const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                    const std::vector<AttributeDesc>& descriptions
 
+- **Return:** `bool`
+
 ---
 
-### LoadBinary
+## LoadBinary
 
 
 
-**Parameters:** std::istream& stream,
+- **Parameters:** std::istream& stream,
                    std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                    std::vector<AttributeDesc>& descriptions
 
+- **Return:** `bool`
+
 ---
 
-### SaveJSON
+## SaveJSON
 
 
 
-**Parameters:** std::ostream& stream,
+- **Parameters:** std::ostream& stream,
                  const std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                  const std::vector<AttributeDesc>& descriptions
 
+- **Return:** `bool`
+
 ---
 
-### LoadJSON
+## LoadJSON
 
 
 
-**Parameters:** std::istream& stream,
+- **Parameters:** std::istream& stream,
                  std::vector<std::shared_ptr<IAttributeStorage>>& attributes,
                  std::vector<AttributeDesc>& descriptions
 
----
-
-### SerializeValue
-
-
-
-**Parameters:** std::ostream& stream, const T& value
+- **Return:** `bool`
 
 ---
 
-### DeserializeValue
+## SerializeValue
 
 
 
-**Parameters:** std::istream& stream, T& value
+- **Parameters:** std::ostream& stream, const T& value
+
+- **Return:** `bool`
+
+---
+
+## DeserializeValue
+
+
+
+- **Parameters:** std::istream& stream, T& value
+
+- **Return:** `bool`
 
 ---

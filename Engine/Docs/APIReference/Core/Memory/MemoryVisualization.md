@@ -1,66 +1,82 @@
+# Classes
+---
 
-## Classes
-
-### MemoryVisualization
-
-
-
-
-## Functions
-
-### GenerateHTMLReport
+## MemoryVisualization
+---
 
 
 
-**Parameters:** const std::vector<MemoryBenchmark::BenchmarkResult>& results
+
+# Functions
+---
+
+## GenerateHTMLReport
+
+
+
+- **Parameters:** const std::vector<MemoryBenchmark::BenchmarkResult>& results
+
+- **Return:** `string`
 
 ---
 
-### GenerateConsoleReport
+## GenerateConsoleReport
 
 
 
-**Parameters:** const MemoryBenchmark::BenchmarkResult& result
+- **Parameters:** const MemoryBenchmark::BenchmarkResult& result
 
----
-
-### GenerateMemoryMap
-
-
-
-**Parameters:** const MemoryBenchmark::BenchmarkResult& result
+- **Return:** `string`
 
 ---
 
-### ExportToJSON
+## GenerateMemoryMap
 
 
 
-**Parameters:** const std::vector<MemoryBenchmark::BenchmarkResult>& results, 
+- **Parameters:** const MemoryBenchmark::BenchmarkResult& result
+
+- **Return:** `string`
+
+---
+
+## ExportToJSON
+
+
+
+- **Parameters:** const std::vector<MemoryBenchmark::BenchmarkResult>& results, 
                            const std::string& filepath
 
----
-
-### GenerateAccessPatternChart
-
-
-
-**Parameters:** const BenchmarkResult::AccessPatternMetrics& metrics
+- **Return:** `static bool`
 
 ---
 
-### GenerateFragmentationVisual
+## GenerateAccessPatternChart
 
 
 
-**Parameters:** const BenchmarkResult::FragmentationMetrics& metrics
+- **Parameters:** const BenchmarkResult::AccessPatternMetrics& metrics
+
+- **Return:** `string`
 
 ---
 
-### GenerateHotspotHeatmap
+## GenerateFragmentationVisual
 
 
 
-**Parameters:** const std::vector<BenchmarkResult::AccessPatternMetrics::HotSpot>& hotspots
+- **Parameters:** const BenchmarkResult::FragmentationMetrics& metrics
+
+- **Return:** `string`
+
+---
+
+## GenerateHotspotHeatmap
+
+
+
+- **Parameters:** const std::vector<BenchmarkResult::AccessPatternMetrics::HotSpot>& hotspots
+
+- **Return:** `string`
 
 ---

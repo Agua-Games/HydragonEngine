@@ -1,145 +1,313 @@
+# Classes
+---
 
-## Classes
-
-### AudioSystem
-
-
-
-
-## Functions
-
-### Get
+## AudioSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `maxSources`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxBuffers`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `5000`
+
+
+
+### `maxEffects`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `enableSpatialization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEffects`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStreamingAudio`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `streamingBufferSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `32 * 1024 * 1024`
+
+
+
+### `sampleRate`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `48000`
+
+
+
+### `channels`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `2`
+
+
+
+### `config`
+
+- **Type:** `const AudioConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const PlayParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AudioConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AudioStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AudioConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `32 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AudioSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AudioConfig& config = {}
+- **Parameters:** const AudioConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateSound
-
-
-
-**Parameters:** const SoundDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroySound
+## Update
 
 
 
-**Parameters:** SoundHandle handle
+- **Parameters:** 
 
----
-
-### PlaySound
-
-
-
-**Parameters:** SoundHandle sound, const PlayParams& params = {}
+- **Return:** `void`
 
 ---
 
-### StopSound
+## CreateSound
 
 
 
-**Parameters:** SourceHandle source
+- **Parameters:** const SoundDesc& desc
 
----
-
-### PauseSound
-
-
-
-**Parameters:** SourceHandle source
+- **Return:** `SoundHandle`
 
 ---
 
-### ResumeSound
+## DestroySound
 
 
 
-**Parameters:** SourceHandle source
+- **Parameters:** SoundHandle handle
 
----
-
-### SetListenerTransform
-
-
-
-**Parameters:** const Transform& transform
+- **Return:** `void`
 
 ---
 
-### SetSourceTransform
+## PlaySound
 
 
 
-**Parameters:** SourceHandle source, const Transform& transform
+- **Parameters:** SoundHandle sound, const PlayParams& params = {}
 
----
-
-### SetVolume
-
-
-
-**Parameters:** SourceHandle source, float volume
+- **Return:** `SourceHandle`
 
 ---
 
-### SetPitch
+## StopSound
 
 
 
-**Parameters:** SourceHandle source, float pitch
+- **Parameters:** SourceHandle source
 
----
-
-### CreateEffect
-
-
-
-**Parameters:** const EffectDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyEffect
+## PauseSound
 
 
 
-**Parameters:** EffectHandle handle
+- **Parameters:** SourceHandle source
+
+- **Return:** `void`
 
 ---
 
-### ApplyEffect
+## ResumeSound
 
 
 
-**Parameters:** SourceHandle source, EffectHandle effect
+- **Parameters:** SourceHandle source
+
+- **Return:** `void`
+
+---
+
+## SetListenerTransform
+
+
+
+- **Parameters:** const Transform& transform
+
+- **Return:** `void`
+
+---
+
+## SetSourceTransform
+
+
+
+- **Parameters:** SourceHandle source, const Transform& transform
+
+- **Return:** `void`
+
+---
+
+## SetVolume
+
+
+
+- **Parameters:** SourceHandle source, float volume
+
+- **Return:** `void`
+
+---
+
+## SetPitch
+
+
+
+- **Parameters:** SourceHandle source, float pitch
+
+- **Return:** `void`
+
+---
+
+## CreateEffect
+
+
+
+- **Parameters:** const EffectDesc& desc
+
+- **Return:** `EffectHandle`
+
+---
+
+## DestroyEffect
+
+
+
+- **Parameters:** EffectHandle handle
+
+- **Return:** `void`
+
+---
+
+## ApplyEffect
+
+
+
+- **Parameters:** SourceHandle source, EffectHandle effect
+
+- **Return:** `void`
 
 ---

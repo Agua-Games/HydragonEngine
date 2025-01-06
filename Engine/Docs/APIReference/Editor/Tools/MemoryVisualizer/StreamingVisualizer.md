@@ -1,37 +1,110 @@
+# Classes
+---
 
-## Classes
-
-### StreamingVisualizer
-
-
-
-### VisualizationMode
+## StreamingVisualizer
+---
 
 
 
-
-## Functions
-
-### animateResourceFlow
+## VisualizationMode
+---
 
 
 
-**Parameters:** const StreamingBlock& block
+
+# Variables
+---
+
+### `resourceName`
+
+- **Type:** `QString`
+
+
+
+### `state`
+
+- **Type:** `ResourceState`
+
+
+
+### `progress`
+
+- **Type:** `float`
+
+
+
+### `stateColor`
+
+- **Type:** `QColor`
+
+
+
+### `flowAnimation`
+
+- **Type:** `QPropertyAnimation*`
+
+
+
+### `stateTransition`
+
+- **Type:** `QParallelAnimationGroup*`
+
+
+
+
+# Structs
+---
+
+### `StreamingBlock`
+
+- **Description:** 
+
+- **Members:**
+
+  - `resourceName`: `QString` - 
+
+  - `state`: `ResourceState` - 
+
+  - `progress`: `float` - 
+
+  - `stateColor`: `QColor` - 
+
+  - `flowAnimation`: `QPropertyAnimation*` - 
+
+  - `stateTransition`: `QParallelAnimationGroup*` - 
+
+
+
+
+# Functions
+---
+
+## animateResourceFlow
+
+
+
+- **Parameters:** const StreamingBlock& block
+
+- **Return:** `void`
 
 ---
 
-### updateStreamingState
+## updateStreamingState
 
 
 
-**Parameters:** const StreamingBlock& block
+- **Parameters:** const StreamingBlock& block
+
+- **Return:** `void`
 
 ---
 
-### highlightActiveStreams
+## highlightActiveStreams
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

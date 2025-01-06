@@ -1,17 +1,67 @@
+# Classes
+---
 
-## Classes
-
-### MemorySecurity
-
-
-
-
-## Functions
-
-### ValidateCanary
+## MemorySecurity
+---
 
 
 
-**Parameters:** const void* ptr, const Canary& expected
+
+# Variables
+---
+
+### `CANARY_SIZE`
+
+- **Type:** `static constexpr size_t`
+
+- **Default Value:** `8`
+
+
+
+### `Canary`
+
+- **Type:** `using`
+
+- **Default Value:** `std::array<uint8_t, CANARY_SIZE>`
+
+
+
+### `canary`
+
+- **Type:** `Canary`
+
+
+
+### `rd`
+
+- **Type:** `random_device`
+
+
+
+### `i`
+
+- **Type:** `size_t`
+
+- **Default Value:** `0`
+
+
+
+### `canary`
+
+- **Type:** `return`
+
+
+
+
+# Functions
+---
+
+## ValidateCanary
+
+
+
+- **Parameters:** const void* ptr, const Canary& expected
+
+- **Return:** `static bool`
 
 ---

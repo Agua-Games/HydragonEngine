@@ -1,41 +1,83 @@
+# Classes
+---
 
-## Classes
-
-### MemoryManager
-
-
-
-
-## Functions
-
-### Get
+## MemoryManager
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `info`
+
+- **Type:** `const AllocationInfo&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Strategy`
+
+- **Type:** `return`
+
+
+
+### `m_Strategy`
+
+- **Type:** `IMemoryStrategy*`
+
+- **Default Value:** `nullptr`
+
+
+
+### `m_Stats`
+
+- **Type:** `MemoryStats`
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static MemoryManager&`
 
 ---
 
-### allocate
+## allocate
 
 
 
-**Parameters:** size_t size, const AllocationInfo& info = {}
+- **Parameters:** size_t size, const AllocationInfo& info = {}
 
----
-
-### deallocate
-
-
-
-**Parameters:** void* ptr
+- **Return:** `void*`
 
 ---
 
-### setStrategy
+## deallocate
 
 
 
-**Parameters:** IMemoryStrategy* strategy
+- **Parameters:** void* ptr
+
+- **Return:** `void`
+
+---
+
+## setStrategy
+
+
+
+- **Parameters:** IMemoryStrategy* strategy
+
+- **Return:** `void`
 
 ---

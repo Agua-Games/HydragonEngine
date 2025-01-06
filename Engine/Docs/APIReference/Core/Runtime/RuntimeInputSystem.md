@@ -1,113 +1,255 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeInputSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeInputSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableInputBuffering`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDeviceHotplug`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableInputRecording`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableHapticFeedback`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxInputDevices`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `inputBufferSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `64`
+
+
+
+### `deadZoneThreshold`
+
+- **Type:** `float`
+
+- **Default Value:** `0.15f`
+
+
+
+### `inputMappingFile`
+
+- **Type:** `string`
+
+- **Default Value:** `"Config/InputMapping.json"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeInputConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeInputConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeInputStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeInputConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeInputSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeInputConfig& config = {}
+- **Parameters:** const RuntimeInputConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### RegisterInputMap
-
-
-
-**Parameters:** const std::string& name, const InputMapDesc& desc
+- **Return:** `void`
 
 ---
 
-### UnregisterInputMap
+## Update
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** 
 
----
-
-### SetActiveInputMap
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### EnableInputContext
+## RegisterInputMap
 
 
 
-**Parameters:** const std::string& context
+- **Parameters:** const std::string& name, const InputMapDesc& desc
 
----
-
-### DisableInputContext
-
-
-
-**Parameters:** const std::string& context
+- **Return:** `void`
 
 ---
 
-### ProcessInputEvent
+## UnregisterInputMap
 
 
 
-**Parameters:** const InputEvent& event
+- **Parameters:** const std::string& name
 
----
-
-### StartInputRecording
-
-
-
-**Parameters:** const std::string& filename
+- **Return:** `void`
 
 ---
 
-### StopInputRecording
+## SetActiveInputMap
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---
 
-### PlaybackRecording
+## EnableInputContext
 
 
 
-**Parameters:** const std::string& filename
+- **Parameters:** const std::string& context
+
+- **Return:** `void`
+
+---
+
+## DisableInputContext
+
+
+
+- **Parameters:** const std::string& context
+
+- **Return:** `void`
+
+---
+
+## ProcessInputEvent
+
+
+
+- **Parameters:** const InputEvent& event
+
+- **Return:** `void`
+
+---
+
+## StartInputRecording
+
+
+
+- **Parameters:** const std::string& filename
+
+- **Return:** `void`
+
+---
+
+## StopInputRecording
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## PlaybackRecording
+
+
+
+- **Parameters:** const std::string& filename
+
+- **Return:** `void`
 
 ---

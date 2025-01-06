@@ -1,97 +1,221 @@
+# Classes
+---
 
-## Classes
-
-### DebugSystem
-
-
-
-
-## Functions
-
-### Get
+## DebugSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableLogging`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableVisualization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMemoryTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxLogEntries`
+
+- **Type:** `size_t`
+
+- **Default Value:** `10000`
+
+
+
+### `memoryBudget`
+
+- **Type:** `size_t`
+
+- **Default Value:** `16 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const DebugConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `DebugConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `DebugStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `DebugConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `16 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static DebugSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const DebugConfig& config = {}
+- **Parameters:** const DebugConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### DrawLine
-
-
-
-**Parameters:** const Vector3& start, const Vector3& end, const Color& color
+- **Return:** `void`
 
 ---
 
-### DrawSphere
+## Update
 
 
 
-**Parameters:** const Vector3& center, float radius, const Color& color
+- **Parameters:** 
 
----
-
-### DrawBox
-
-
-
-**Parameters:** const Vector3& min, const Vector3& max, const Color& color
+- **Return:** `void`
 
 ---
 
-### Log
+## DrawLine
 
 
 
-**Parameters:** LogLevel level, const std::string& message
+- **Parameters:** const Vector3& start, const Vector3& end, const Color& color
 
----
-
-### AddWatch
-
-
-
-**Parameters:** const std::string& name, const WatchCallback& callback
+- **Return:** `void`
 
 ---
 
-### BeginScope
+## DrawSphere
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const Vector3& center, float radius, const Color& color
+
+- **Return:** `void`
 
 ---
 
-### EndScope
+## DrawBox
 
 
 
-**Parameters:** ProfilerScope scope
+- **Parameters:** const Vector3& min, const Vector3& max, const Color& color
+
+- **Return:** `void`
+
+---
+
+## Log
+
+
+
+- **Parameters:** LogLevel level, const std::string& message
+
+- **Return:** `void`
+
+---
+
+## AddWatch
+
+
+
+- **Parameters:** const std::string& name, const WatchCallback& callback
+
+- **Return:** `void`
+
+---
+
+## BeginScope
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `ProfilerScope`
+
+---
+
+## EndScope
+
+
+
+- **Parameters:** ProfilerScope scope
+
+- **Return:** `void`
 
 ---

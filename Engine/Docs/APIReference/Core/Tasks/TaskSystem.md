@@ -1,89 +1,211 @@
+# Classes
+---
 
-## Classes
-
-### TaskSystem
-
-
-
-
-## Functions
-
-### Get
+## TaskSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `maxTasks`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10000`
+
+
+
+### `maxDependencies`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `enablePrioritization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableWorkStealing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `memoryBudget`
+
+- **Type:** `size_t`
+
+- **Default Value:** `32 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const TaskConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `TaskConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `TaskStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `TaskConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `32 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static TaskSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const TaskConfig& config = {}
+- **Parameters:** const TaskConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateTask
-
-
-
-**Parameters:** const TaskDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyTask
+## Update
 
 
 
-**Parameters:** TaskHandle handle
+- **Parameters:** 
 
----
-
-### SubmitTask
-
-
-
-**Parameters:** TaskHandle handle
+- **Return:** `void`
 
 ---
 
-### WaitForTask
+## CreateTask
 
 
 
-**Parameters:** TaskHandle handle
+- **Parameters:** const TaskDesc& desc
 
----
-
-### AddDependency
-
-
-
-**Parameters:** TaskHandle dependent, TaskHandle dependency
+- **Return:** `TaskHandle`
 
 ---
 
-### RemoveDependency
+## DestroyTask
 
 
 
-**Parameters:** TaskHandle dependent, TaskHandle dependency
+- **Parameters:** TaskHandle handle
+
+- **Return:** `void`
+
+---
+
+## SubmitTask
+
+
+
+- **Parameters:** TaskHandle handle
+
+- **Return:** `void`
+
+---
+
+## WaitForTask
+
+
+
+- **Parameters:** TaskHandle handle
+
+- **Return:** `void`
+
+---
+
+## AddDependency
+
+
+
+- **Parameters:** TaskHandle dependent, TaskHandle dependency
+
+- **Return:** `void`
+
+---
+
+## RemoveDependency
+
+
+
+- **Parameters:** TaskHandle dependent, TaskHandle dependency
+
+- **Return:** `void`
 
 ---

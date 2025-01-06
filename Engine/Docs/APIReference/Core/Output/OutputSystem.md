@@ -1,105 +1,263 @@
+# Classes
+---
 
-## Classes
-
-### OutputSystem
-
-
-
-
-## Functions
-
-### Get
+## OutputSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableFileOutput`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableConsoleOutput`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableRemoteOutput`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `enableTimestamps`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSourceLocation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableThreadId`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxQueueSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10000`
+
+
+
+### `maxFileSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `100 * 1024 * 1024`
+
+
+
+### `outputDirectory`
+
+- **Type:** `string`
+
+
+
+### `config`
+
+- **Type:** `const OutputConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `file`
+
+- **Type:** `const char*`
+
+- **Default Value:** `nullptr, int line = 0)`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `OutputConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `OutputStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `OutputConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `100 * 1024 *` - 
+
+  - `outputDirectory`: `string` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static OutputSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const OutputConfig& config = {}
+- **Parameters:** const OutputConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### Log
-
-
-
-**Parameters:** const LogMessage& message
+- **Return:** `void`
 
 ---
 
-### LogFormat
+## Update
 
 
 
-**Parameters:** LogLevel level, const char* format, ...
+- **Parameters:** 
 
----
-
-### LogError
-
-
-
-**Parameters:** const char* message, const char* file = nullptr, int line = 0
+- **Return:** `void`
 
 ---
 
-### AddOutputChannel
+## Log
 
 
 
-**Parameters:** std::unique_ptr<IOutputChannel> channel
+- **Parameters:** const LogMessage& message
 
----
-
-### RemoveOutputChannel
-
-
-
-**Parameters:** OutputChannelId id
+- **Return:** `void`
 
 ---
 
-### SetLogLevel
+## LogFormat
 
 
 
-**Parameters:** LogLevel level
+- **Parameters:** LogLevel level, const char* format, ...
 
----
-
-### SetLogFilter
-
-
-
-**Parameters:** const LogFilter& filter
+- **Return:** `void`
 
 ---
 
-### Flush
+## LogError
 
 
 
-**Parameters:** 
+- **Parameters:** const char* message, const char* file = nullptr, int line = 0
+
+- **Return:** `void`
+
+---
+
+## AddOutputChannel
+
+
+
+- **Parameters:** std::unique_ptr<IOutputChannel> channel
+
+- **Return:** `void`
+
+---
+
+## RemoveOutputChannel
+
+
+
+- **Parameters:** OutputChannelId id
+
+- **Return:** `void`
+
+---
+
+## SetLogLevel
+
+
+
+- **Parameters:** LogLevel level
+
+- **Return:** `void`
+
+---
+
+## SetLogFilter
+
+
+
+- **Parameters:** const LogFilter& filter
+
+- **Return:** `void`
+
+---
+
+## Flush
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

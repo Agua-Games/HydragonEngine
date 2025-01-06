@@ -1,113 +1,263 @@
+# Classes
+---
 
-## Classes
-
-### PhysicsSystem
-
-
-
-
-## Functions
-
-### Get
+## PhysicsSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `fixedTimeStep`
+
+- **Type:** `float`
+
+- **Default Value:** `1.0f/60.0f`
+
+
+
+### `maxSubSteps`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `maxBodies`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10000`
+
+
+
+### `maxConstraints`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `enableCCD`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMultithreading`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDebugDraw`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `gravity`
+
+- **Type:** `Vector3`
+
+- **Default Value:** `{0.0f, -9.81f, 0.0f}`
+
+
+
+### `memoryBudget`
+
+- **Type:** `size_t`
+
+- **Default Value:** `256 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const PhysicsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `PhysicsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `PhysicsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `PhysicsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static PhysicsSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const PhysicsConfig& config = {}
+- **Parameters:** const PhysicsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** float deltaTime
+- **Parameters:** 
 
----
-
-### StepSimulation
-
-
-
-**Parameters:** float timeStep
+- **Return:** `void`
 
 ---
 
-### CreateRigidBody
+## Update
 
 
 
-**Parameters:** const RigidBodyDesc& desc
+- **Parameters:** float deltaTime
 
----
-
-### DestroyRigidBody
-
-
-
-**Parameters:** RigidBodyHandle handle
+- **Return:** `void`
 
 ---
 
-### CreateCollider
+## StepSimulation
 
 
 
-**Parameters:** const ColliderDesc& desc
+- **Parameters:** float timeStep
 
----
-
-### DestroyCollider
-
-
-
-**Parameters:** ColliderHandle handle
+- **Return:** `void`
 
 ---
 
-### CreateConstraint
+## CreateRigidBody
 
 
 
-**Parameters:** const ConstraintDesc& desc
+- **Parameters:** const RigidBodyDesc& desc
 
----
-
-### DestroyConstraint
-
-
-
-**Parameters:** ConstraintHandle handle
+- **Return:** `RigidBodyHandle`
 
 ---
 
-### SetGravity
+## DestroyRigidBody
 
 
 
-**Parameters:** const Vector3& gravity
+- **Parameters:** RigidBodyHandle handle
+
+- **Return:** `void`
 
 ---
 
-### RayCast
+## CreateCollider
 
 
 
-**Parameters:** const Ray& ray, RayCastCallback callback
+- **Parameters:** const ColliderDesc& desc
+
+- **Return:** `ColliderHandle`
+
+---
+
+## DestroyCollider
+
+
+
+- **Parameters:** ColliderHandle handle
+
+- **Return:** `void`
+
+---
+
+## CreateConstraint
+
+
+
+- **Parameters:** const ConstraintDesc& desc
+
+- **Return:** `ConstraintHandle`
+
+---
+
+## DestroyConstraint
+
+
+
+- **Parameters:** ConstraintHandle handle
+
+- **Return:** `void`
+
+---
+
+## SetGravity
+
+
+
+- **Parameters:** const Vector3& gravity
+
+- **Return:** `void`
+
+---
+
+## RayCast
+
+
+
+- **Parameters:** const Ray& ray, RayCastCallback callback
+
+- **Return:** `void`
 
 ---

@@ -1,105 +1,253 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeSceneSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeSceneSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableAsyncLoading`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStreamingLevels`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSceneTransitions`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePersistentObjects`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxActiveScenes`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `4`
+
+
+
+### `streamingBudgetMB`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `512`
+
+
+
+### `unloadDelay`
+
+- **Type:** `float`
+
+- **Default Value:** `5.0f`
+
+
+
+### `defaultScene`
+
+- **Type:** `string`
+
+- **Default Value:** `"MainMenu"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeSceneConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const SceneLoadParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeSceneConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeSceneStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeSceneConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeSceneSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeSceneConfig& config = {}
+- **Parameters:** const RuntimeSceneConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### LoadScene
-
-
-
-**Parameters:** const std::string& name, const SceneLoadParams& params = {}
+- **Return:** `void`
 
 ---
 
-### UnloadScene
+## Update
 
 
 
-**Parameters:** SceneHandle handle
+- **Parameters:** 
 
----
-
-### StreamLevel
-
-
-
-**Parameters:** const std::string& name, const Vector3& origin
+- **Return:** `void`
 
 ---
 
-### UnstreamLevel
+## LoadScene
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const std::string& name, const SceneLoadParams& params = {}
 
----
-
-### SetActiveScene
-
-
-
-**Parameters:** SceneHandle handle
+- **Return:** `SceneHandle`
 
 ---
 
-### MergeScenes
+## UnloadScene
 
 
 
-**Parameters:** SceneHandle target, SceneHandle source
+- **Parameters:** SceneHandle handle
 
----
-
-### RegisterPersistentObject
-
-
-
-**Parameters:** EntityHandle entity
+- **Return:** `void`
 
 ---
 
-### UnregisterPersistentObject
+## StreamLevel
 
 
 
-**Parameters:** EntityHandle entity
+- **Parameters:** const std::string& name, const Vector3& origin
+
+- **Return:** `void`
+
+---
+
+## UnstreamLevel
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## SetActiveScene
+
+
+
+- **Parameters:** SceneHandle handle
+
+- **Return:** `void`
+
+---
+
+## MergeScenes
+
+
+
+- **Parameters:** SceneHandle target, SceneHandle source
+
+- **Return:** `void`
+
+---
+
+## RegisterPersistentObject
+
+
+
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
+
+---
+
+## UnregisterPersistentObject
+
+
+
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
 
 ---

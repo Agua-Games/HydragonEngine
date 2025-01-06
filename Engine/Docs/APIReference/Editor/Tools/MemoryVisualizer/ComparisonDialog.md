@@ -1,50 +1,123 @@
 
-## Functions
+# Variables
+---
 
-### ComparisonDialog
+### `parent`
+
+- **Type:** `QWidget*`
+
+- **Default Value:** `nullptr)`
 
 
 
-**Parameters:** QWidget* parent = nullptr
+### `sizeDiff`
+
+- **Type:** `size_t`
+
+
+
+### `fragmentationDiff`
+
+- **Type:** `float`
+
+
+
+### `utilizationDiff`
+
+- **Type:** `float`
+
+
+
+### `m_ComparisonTable`
+
+- **Type:** `QTableWidget*`
+
+
+
+### `m_MetricsChart`
+
+- **Type:** `QChartView*`
+
+
+
+
+# Structs
+---
+
+### `ComparisonMetrics`
+
+- **Description:** 
+
+- **Members:**
+
+  - `sizeDiff`: `size_t` - 
+
+  - `fragmentationDiff`: `float` - 
+
+  - `utilizationDiff`: `float` - 
+
+
+
+
+# Functions
+---
+
+## ComparisonDialog
+
+
+
+- **Parameters:** QWidget* parent = nullptr
+
+- **Return:** `explicit`
 
 ---
 
-### setBlocks
+## setBlocks
 
 
 
-**Parameters:** const Memory::MemoryBlock* a, const Memory::MemoryBlock* b
+- **Parameters:** const Memory::MemoryBlock* a, const Memory::MemoryBlock* b
 
----
-
-### setupUI
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### updateComparison
+## setupUI
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### calculateMetrics
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### createComparisonChart
+## updateComparison
 
 
 
-**Parameters:** const ComparisonMetrics& metrics
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## calculateMetrics
+
+
+
+- **Parameters:** 
+
+- **Return:** `ComparisonMetrics`
+
+---
+
+## createComparisonChart
+
+
+
+- **Parameters:** const ComparisonMetrics& metrics
+
+- **Return:** `void`
 
 ---

@@ -1,97 +1,229 @@
+# Classes
+---
 
-## Classes
-
-### ResourceSystem
-
-
-
-
-## Functions
-
-### Get
+## ResourceSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `memoryBudget`
+
+- **Type:** `size_t`
+
+- **Default Value:** `2 * 1024 * 1024 * 1024`
+
+
+
+### `maxResources`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100000`
+
+
+
+### `enableAsyncLoading`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCaching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableHotReload`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `resourceRootPath`
+
+- **Type:** `string`
+
+
+
+### `config`
+
+- **Type:** `const ResourceConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ResourceConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ResourceStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ResourceConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `2 * 1024 * 1024 *` - 
+
+  - `resourceRootPath`: `string` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ResourceSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ResourceConfig& config = {}
+- **Parameters:** const ResourceConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### LoadResource
-
-
-
-**Parameters:** const ResourceDesc& desc
+- **Return:** `void`
 
 ---
 
-### UnloadResource
+## Update
 
 
 
-**Parameters:** ResourceHandle handle
+- **Parameters:** 
 
----
-
-### PreloadResource
-
-
-
-**Parameters:** const ResourceDesc& desc
+- **Return:** `void`
 
 ---
 
-### SetResourcePriority
+## LoadResource
 
 
 
-**Parameters:** ResourceHandle handle, float priority
+- **Parameters:** const ResourceDesc& desc
 
----
-
-### GetResourceData
-
-
-
-**Parameters:** ResourceHandle handle
+- **Return:** `ResourceHandle`
 
 ---
 
-### AddResourceCallback
+## UnloadResource
 
 
 
-**Parameters:** ResourceHandle handle, const ResourceCallback& callback
+- **Parameters:** ResourceHandle handle
+
+- **Return:** `void`
 
 ---
 
-### RemoveResourceCallback
+## PreloadResource
 
 
 
-**Parameters:** ResourceHandle handle
+- **Parameters:** const ResourceDesc& desc
+
+- **Return:** `void`
+
+---
+
+## SetResourcePriority
+
+
+
+- **Parameters:** ResourceHandle handle, float priority
+
+- **Return:** `void`
+
+---
+
+## GetResourceData
+
+
+
+- **Parameters:** ResourceHandle handle
+
+- **Return:** `void*`
+
+---
+
+## AddResourceCallback
+
+
+
+- **Parameters:** ResourceHandle handle, const ResourceCallback& callback
+
+- **Return:** `void`
+
+---
+
+## RemoveResourceCallback
+
+
+
+- **Parameters:** ResourceHandle handle
+
+- **Return:** `void`
 
 ---

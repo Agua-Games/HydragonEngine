@@ -1,6 +1,35 @@
+# Classes
+---
 
-## Classes
+## IRenderDevice
+---
 
-### IRenderDevice
+
+
+
+# Variables
+---
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `m_Device`
+
+- **Type:** `VkDevice`
+
+
+
+### `m_PhysicalDevice`
+
+- **Type:** `VkPhysicalDevice`
+
+
+
+### `m_Stats`
+
+- **Type:** `DeviceStats`
 
 

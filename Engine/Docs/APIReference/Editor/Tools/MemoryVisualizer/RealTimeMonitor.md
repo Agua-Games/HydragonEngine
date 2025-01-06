@@ -1,58 +1,135 @@
 
-## Functions
+# Variables
+---
 
-### stopMonitoring
+### `trackStreaming`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
 
 
 
-**Parameters:** 
+### `trackFragmentation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `updateIntervalMs`
+
+- **Type:** `int`
+
+- **Default Value:** `1000`
+
+
+
+### `maxEventsStored`
+
+- **Type:** `size_t`
+
+- **Default Value:** `1000`
+
+
+
+### `config`
+
+- **Type:** `const MonitoringConfig&`
+
+- **Default Value:** `MonitoringConfig())`
+
+
+
+### `m_Config`
+
+- **Type:** `MonitoringConfig`
+
+
+
+
+# Structs
+---
+
+### `MonitoringConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## stopMonitoring
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### memoryStateUpdated
+## memoryStateUpdated
 
 
 
-**Parameters:** const MemoryState& state
+- **Parameters:** const MemoryState& state
 
----
-
-### streamingStateUpdated
-
-
-
-**Parameters:** const StreamingState& state
+- **Return:** `void`
 
 ---
 
-### fragmentationUpdated
+## streamingStateUpdated
 
 
 
-**Parameters:** const FragmentationInfo& info
+- **Parameters:** const StreamingState& state
 
----
-
-### anomalyDetected
-
-
-
-**Parameters:** const MemoryAnomaly& anomaly
+- **Return:** `void`
 
 ---
 
-### updateMemoryState
+## fragmentationUpdated
 
 
 
-**Parameters:** 
+- **Parameters:** const FragmentationInfo& info
+
+- **Return:** `void`
 
 ---
 
-### checkForAnomalies
+## anomalyDetected
 
 
 
-**Parameters:** 
+- **Parameters:** const MemoryAnomaly& anomaly
+
+- **Return:** `void`
+
+---
+
+## updateMemoryState
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## checkForAnomalies
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

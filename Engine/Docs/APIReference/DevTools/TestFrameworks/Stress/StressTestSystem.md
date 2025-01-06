@@ -1,97 +1,227 @@
+# Classes
+---
 
-## Classes
-
-### StressTestSystem
-
-
-
-
-## Functions
-
-### Get
+## StressTestSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableLoadGeneration`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableResourceMonitoring`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCrashRecovery`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMetricsCollection`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConcurrentUsers`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `testDuration`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `3600`
+
+
+
+### `rampUpTime`
+
+- **Type:** `float`
+
+- **Default Value:** `300.0f`
+
+
+
+### `config`
+
+- **Type:** `const StressTestConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `StressTestConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `StressTestStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `StressTestConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static StressTestSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const StressTestConfig& config = {}
+- **Parameters:** const StressTestConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### RegisterScenario
+## Shutdown
 
 
 
-**Parameters:** const std::string& name, const LoadScenario& scenario
+- **Parameters:** 
 
----
-
-### RegisterMetric
-
-
-
-**Parameters:** const std::string& name, const MetricCallback& callback
+- **Return:** `void`
 
 ---
 
-### RunLoadTest
+## RegisterScenario
 
 
 
-**Parameters:** const std::string& scenario
+- **Parameters:** const std::string& name, const LoadScenario& scenario
 
----
-
-### StopLoadTest
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### SetLoadProfile
+## RegisterMetric
 
 
 
-**Parameters:** const LoadProfile& profile
+- **Parameters:** const std::string& name, const MetricCallback& callback
 
----
-
-### SetResourceLimits
-
-
-
-**Parameters:** const ResourceLimits& limits
+- **Return:** `void`
 
 ---
 
-### GenerateReport
+## RunLoadTest
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** const std::string& scenario
+
+- **Return:** `void`
 
 ---
 
-### ExportMetrics
+## StopLoadTest
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SetLoadProfile
+
+
+
+- **Parameters:** const LoadProfile& profile
+
+- **Return:** `void`
+
+---
+
+## SetResourceLimits
+
+
+
+- **Parameters:** const ResourceLimits& limits
+
+- **Return:** `void`
+
+---
+
+## GenerateReport
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ExportMetrics
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
 
 ---

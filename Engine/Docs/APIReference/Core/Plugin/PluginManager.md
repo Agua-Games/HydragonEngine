@@ -1,17 +1,61 @@
+# Classes
+---
 
-## Classes
-
-### PluginManager
-
-
-
-
-## Functions
-
-### loadPlugin
+## PluginManager
+---
 
 
 
-**Parameters:** const char* path, const PluginInfo& info
+
+# Variables
+---
+
+### `isNative`
+
+- **Type:** `bool`
+
+
+
+### `hasEditorExtensions`
+
+- **Type:** `bool`
+
+
+
+### `requiresRestart`
+
+- **Type:** `bool`
+
+
+
+
+# Structs
+---
+
+### `PluginInfo`
+
+- **Description:** 
+
+- **Members:**
+
+  - `isNative`: `bool` - 
+
+  - `hasEditorExtensions`: `bool` - 
+
+  - `requiresRestart`: `bool` - 
+
+
+
+
+# Functions
+---
+
+## loadPlugin
+
+
+
+- **Parameters:** const char* path, const PluginInfo& info
+
+- **Return:** `bool`
 
 ---

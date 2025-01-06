@@ -1,121 +1,249 @@
+# Classes
+---
 
-## Classes
-
-### ScriptDebugger
-
-
-
-
-## Functions
-
-### Get
+## ScriptDebugger
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableLiveDebugging`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableHotReload`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePerformanceAnalysis`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMemoryTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxBreakpoints`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxWatchVariables`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `config`
+
+- **Type:** `const ScriptDebuggerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ScriptDebuggerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ScriptDebuggerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ScriptDebuggerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ScriptDebugger&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ScriptDebuggerConfig& config = {}
+- **Parameters:** const ScriptDebuggerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### AttachToScript
-
-
-
-**Parameters:** ScriptHandle handle
+- **Return:** `void`
 
 ---
 
-### DetachFromScript
+## Update
 
 
 
-**Parameters:** ScriptHandle handle
+- **Parameters:** 
 
----
-
-### AddBreakpoint
-
-
-
-**Parameters:** const ScriptLocation& location
+- **Return:** `void`
 
 ---
 
-### RemoveBreakpoint
+## AttachToScript
 
 
 
-**Parameters:** const ScriptLocation& location
+- **Parameters:** ScriptHandle handle
 
----
-
-### AddWatch
-
-
-
-**Parameters:** const std::string& expression
+- **Return:** `void`
 
 ---
 
-### RemoveWatch
+## DetachFromScript
 
 
 
-**Parameters:** const std::string& expression
+- **Parameters:** ScriptHandle handle
 
----
-
-### StepInto
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### StepOver
+## AddBreakpoint
 
 
 
-**Parameters:** 
+- **Parameters:** const ScriptLocation& location
 
----
-
-### StepOut
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Continue
+## RemoveBreakpoint
 
 
 
-**Parameters:** 
+- **Parameters:** const ScriptLocation& location
+
+- **Return:** `void`
+
+---
+
+## AddWatch
+
+
+
+- **Parameters:** const std::string& expression
+
+- **Return:** `void`
+
+---
+
+## RemoveWatch
+
+
+
+- **Parameters:** const std::string& expression
+
+- **Return:** `void`
+
+---
+
+## StepInto
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## StepOver
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## StepOut
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## Continue
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

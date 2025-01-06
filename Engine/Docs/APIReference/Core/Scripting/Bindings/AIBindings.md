@@ -1,201 +1,365 @@
+# Classes
+---
 
-## Classes
-
-### AIBindings
-
-
-
-
-## Functions
-
-### Get
+## AIBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableBehaviorTrees`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePathfinding`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePerception`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDecisionMaking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxAgents`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxBehaviorTrees`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxPathRequests`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `50`
+
+
+
+### `aiDataPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Data/AI"`
+
+
+
+### `config`
+
+- **Type:** `const AIBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AIBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AIBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AIBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AIBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AIBindingsConfig& config = {}
+- **Parameters:** const AIBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateAgent
-
-
-
-**Parameters:** const AgentDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyAgent
+## Update
 
 
 
-**Parameters:** AgentHandle handle
+- **Parameters:** 
 
----
-
-### SetAgentPosition
-
-
-
-**Parameters:** AgentHandle handle, const Vector3& position
+- **Return:** `void`
 
 ---
 
-### SetAgentRotation
+## CreateAgent
 
 
 
-**Parameters:** AgentHandle handle, const Quaternion& rotation
+- **Parameters:** const AgentDesc& desc
 
----
-
-### CreateBehaviorTree
-
-
-
-**Parameters:** const std::string& name, const BehaviorTreeDesc& desc
+- **Return:** `AgentHandle`
 
 ---
 
-### DestroyBehaviorTree
+## DestroyAgent
 
 
 
-**Parameters:** BehaviorTreeHandle handle
+- **Parameters:** AgentHandle handle
 
----
-
-### AssignBehaviorTree
-
-
-
-**Parameters:** AgentHandle agent, BehaviorTreeHandle tree
+- **Return:** `void`
 
 ---
 
-### SetBehaviorTreeVariable
+## SetAgentPosition
 
 
 
-**Parameters:** BehaviorTreeHandle handle, const std::string& name, const Variant& value
+- **Parameters:** AgentHandle handle, const Vector3& position
 
----
-
-### RequestPath
-
-
-
-**Parameters:** const PathRequest& request
+- **Return:** `void`
 
 ---
 
-### CancelPathRequest
+## SetAgentRotation
 
 
 
-**Parameters:** PathRequestHandle handle
+- **Parameters:** AgentHandle handle, const Quaternion& rotation
 
----
-
-### RegisterStimulus
-
-
-
-**Parameters:** const Stimulus& stimulus
+- **Return:** `void`
 
 ---
 
-### UpdateStimulusLocation
+## CreateBehaviorTree
 
 
 
-**Parameters:** StimulusHandle handle, const Vector3& location
+- **Parameters:** const std::string& name, const BehaviorTreeDesc& desc
 
----
-
-### RemoveStimulus
-
-
-
-**Parameters:** StimulusHandle handle
+- **Return:** `BehaviorTreeHandle`
 
 ---
 
-### SetDecisionMaker
+## DestroyBehaviorTree
 
 
 
-**Parameters:** AgentHandle handle, const DecisionMakerDesc& desc
+- **Parameters:** BehaviorTreeHandle handle
 
----
-
-### UpdateWorldState
-
-
-
-**Parameters:** AgentHandle handle, const WorldState& state
+- **Return:** `void`
 
 ---
 
-### AddGoal
+## AssignBehaviorTree
 
 
 
-**Parameters:** AgentHandle handle, const Goal& goal
+- **Parameters:** AgentHandle agent, BehaviorTreeHandle tree
 
----
-
-### RemoveGoal
-
-
-
-**Parameters:** AgentHandle handle, GoalHandle goalHandle
+- **Return:** `void`
 
 ---
 
-### EnableDebugVisualization
+## SetBehaviorTreeVariable
 
 
 
-**Parameters:** bool enable
+- **Parameters:** BehaviorTreeHandle handle, const std::string& name, const Variant& value
 
----
-
-### SetDebugMode
-
-
-
-**Parameters:** AIDebugMode mode
+- **Return:** `void`
 
 ---
 
-### DumpAgentState
+## RequestPath
 
 
 
-**Parameters:** AgentHandle handle, const std::string& path
+- **Parameters:** const PathRequest& request
+
+- **Return:** `PathRequestHandle`
+
+---
+
+## CancelPathRequest
+
+
+
+- **Parameters:** PathRequestHandle handle
+
+- **Return:** `void`
+
+---
+
+## RegisterStimulus
+
+
+
+- **Parameters:** const Stimulus& stimulus
+
+- **Return:** `void`
+
+---
+
+## UpdateStimulusLocation
+
+
+
+- **Parameters:** StimulusHandle handle, const Vector3& location
+
+- **Return:** `void`
+
+---
+
+## RemoveStimulus
+
+
+
+- **Parameters:** StimulusHandle handle
+
+- **Return:** `void`
+
+---
+
+## SetDecisionMaker
+
+
+
+- **Parameters:** AgentHandle handle, const DecisionMakerDesc& desc
+
+- **Return:** `void`
+
+---
+
+## UpdateWorldState
+
+
+
+- **Parameters:** AgentHandle handle, const WorldState& state
+
+- **Return:** `void`
+
+---
+
+## AddGoal
+
+
+
+- **Parameters:** AgentHandle handle, const Goal& goal
+
+- **Return:** `void`
+
+---
+
+## RemoveGoal
+
+
+
+- **Parameters:** AgentHandle handle, GoalHandle goalHandle
+
+- **Return:** `void`
+
+---
+
+## EnableDebugVisualization
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## SetDebugMode
+
+
+
+- **Parameters:** AIDebugMode mode
+
+- **Return:** `void`
+
+---
+
+## DumpAgentState
+
+
+
+- **Parameters:** AgentHandle handle, const std::string& path
+
+- **Return:** `void`
 
 ---

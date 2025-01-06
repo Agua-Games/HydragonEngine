@@ -1,177 +1,345 @@
+# Classes
+---
 
-## Classes
-
-### ConfigValidationBindings
-
-
-
-
-## Functions
-
-### Get
+## ConfigValidationBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableCustomRules`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableRuleInheritance`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableValidationCache`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableErrorReporting`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxRulesPerConfig`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxCustomRules`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `validationCacheSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `4 * 1024 * 1024`
+
+
+
+### `validationRulesPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Config/Rules"`
+
+
+
+### `config`
+
+- **Type:** `const ConfigValidationBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const RuleDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ConfigValidationBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ConfigValidationBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ConfigValidationBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `4 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ConfigValidationBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ConfigValidationBindingsConfig& config = {}
+- **Parameters:** const ConfigValidationBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateRule
-
-
-
-**Parameters:** const std::string& name, const RuleDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### LoadRules
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### SaveRules
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### DeleteRule
+## CreateRule
 
 
 
-**Parameters:** RuleHandle handle
+- **Parameters:** const std::string& name, const RuleDesc& desc = {}
 
----
-
-### SetRuleCondition
-
-
-
-**Parameters:** RuleHandle handle, const RuleCondition& condition
+- **Return:** `RuleHandle`
 
 ---
 
-### SetRuleAction
+## LoadRules
 
 
 
-**Parameters:** RuleHandle handle, const RuleAction& action
+- **Parameters:** const std::string& path
 
----
-
-### SetRuleSeverity
-
-
-
-**Parameters:** RuleHandle handle, RuleSeverity severity
+- **Return:** `void`
 
 ---
 
-### SetRuleEnabled
+## SaveRules
 
 
 
-**Parameters:** RuleHandle handle, bool enabled
+- **Parameters:** const std::string& path
 
----
-
-### RegisterCustomRule
-
-
-
-**Parameters:** const std::string& name, std::unique_ptr<ICustomRule> rule
+- **Return:** `void`
 
 ---
 
-### UnregisterCustomRule
+## DeleteRule
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** RuleHandle handle
 
----
-
-### ValidateConfig
-
-
-
-**Parameters:** ConfigHandle config
+- **Return:** `void`
 
 ---
 
-### ValidateSection
+## SetRuleCondition
 
 
 
-**Parameters:** ConfigHandle config, const std::string& section
+- **Parameters:** RuleHandle handle, const RuleCondition& condition
 
----
-
-### ValidateValue
-
-
-
-**Parameters:** const Variant& value, const ValidationContext& context
+- **Return:** `void`
 
 ---
 
-### ClearValidationErrors
+## SetRuleAction
 
 
 
-**Parameters:** ValidationHandle handle
+- **Parameters:** RuleHandle handle, const RuleAction& action
 
----
-
-### EnableValidationTracking
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### DumpValidationState
+## SetRuleSeverity
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** RuleHandle handle, RuleSeverity severity
+
+- **Return:** `void`
 
 ---
 
-### AnalyzeRulePerformance
+## SetRuleEnabled
 
 
 
-**Parameters:** 
+- **Parameters:** RuleHandle handle, bool enabled
+
+- **Return:** `void`
+
+---
+
+## RegisterCustomRule
+
+
+
+- **Parameters:** const std::string& name, std::unique_ptr<ICustomRule> rule
+
+- **Return:** `void`
+
+---
+
+## UnregisterCustomRule
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## ValidateConfig
+
+
+
+- **Parameters:** ConfigHandle config
+
+- **Return:** `ValidationResult`
+
+---
+
+## ValidateSection
+
+
+
+- **Parameters:** ConfigHandle config, const std::string& section
+
+- **Return:** `ValidationResult`
+
+---
+
+## ValidateValue
+
+
+
+- **Parameters:** const Variant& value, const ValidationContext& context
+
+- **Return:** `ValidationResult`
+
+---
+
+## ClearValidationErrors
+
+
+
+- **Parameters:** ValidationHandle handle
+
+- **Return:** `void`
+
+---
+
+## EnableValidationTracking
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpValidationState
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## AnalyzeRulePerformance
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

@@ -1,145 +1,297 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeSerializationSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeSerializationSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEncryption`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableVersioning`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDeltaEncoding`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `compressionLevel`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `6`
+
+
+
+### `bufferSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `64 * 1024`
+
+
+
+### `saveDirectory`
+
+- **Type:** `string`
+
+- **Default Value:** `"Saves"`
+
+
+
+### `tempDirectory`
+
+- **Type:** `string`
+
+- **Default Value:** `"Temp"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeSerializationConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeSerializationConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeSerializationStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeSerializationConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `64 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeSerializationSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeSerializationConfig& config = {}
+- **Parameters:** const RuntimeSerializationConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### BeginSerialize
-
-
-
-**Parameters:** const std::string& identifier
+- **Return:** `void`
 
 ---
 
-### EndSerialize
+## Update
 
 
 
-**Parameters:** SerializeHandle handle
+- **Parameters:** 
 
----
-
-### BeginDeserialize
-
-
-
-**Parameters:** const std::string& identifier
+- **Return:** `void`
 
 ---
 
-### EndDeserialize
+## BeginSerialize
 
 
 
-**Parameters:** DeserializeHandle handle
+- **Parameters:** const std::string& identifier
 
----
-
-### RegisterSerializer
-
-
-
-**Parameters:** const std::string& type, std::unique_ptr<ITypeSerializer> serializer
+- **Return:** `SerializeHandle`
 
 ---
 
-### UnregisterSerializer
+## EndSerialize
 
 
 
-**Parameters:** const std::string& type
+- **Parameters:** SerializeHandle handle
 
----
-
-### SaveState
-
-
-
-**Parameters:** const std::string& name, const SerializationData& data
+- **Return:** `void`
 
 ---
 
-### LoadState
+## BeginDeserialize
 
 
 
-**Parameters:** const std::string& name, SerializationData& data
+- **Parameters:** const std::string& identifier
 
----
-
-### ExportData
-
-
-
-**Parameters:** const std::string& path, const SerializationData& data
+- **Return:** `DeserializeHandle`
 
 ---
 
-### ImportData
+## EndDeserialize
 
 
 
-**Parameters:** const std::string& path, SerializationData& data
+- **Parameters:** DeserializeHandle handle
 
----
-
-### CreateSnapshot
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### RestoreSnapshot
+## RegisterSerializer
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const std::string& type, std::unique_ptr<ITypeSerializer> serializer
+
+- **Return:** `void`
 
 ---
 
-### DeleteSnapshot
+## UnregisterSerializer
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const std::string& type
+
+- **Return:** `void`
+
+---
+
+## SaveState
+
+
+
+- **Parameters:** const std::string& name, const SerializationData& data
+
+- **Return:** `void`
+
+---
+
+## LoadState
+
+
+
+- **Parameters:** const std::string& name, SerializationData& data
+
+- **Return:** `bool`
+
+---
+
+## ExportData
+
+
+
+- **Parameters:** const std::string& path, const SerializationData& data
+
+- **Return:** `void`
+
+---
+
+## ImportData
+
+
+
+- **Parameters:** const std::string& path, SerializationData& data
+
+- **Return:** `bool`
+
+---
+
+## CreateSnapshot
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## RestoreSnapshot
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## DeleteSnapshot
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---

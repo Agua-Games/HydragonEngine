@@ -1,10 +1,48 @@
+# Classes
+---
 
-## Classes
-
-### IPluginInterface
-
+## IPluginInterface
+---
 
 
-### InterfaceManager
+
+## InterfaceManager
+---
+
+
+
+
+# Variables
+---
+
+### `InterfaceName`
+
+- **Type:** `static const char*`
+
+
+
+### `InterfaceVersion`
+
+- **Type:** `static const Version`
+
+
+
+### `InterfaceName`
+
+- **Type:** `return`
+
+
+
+### `InterfaceVersion`
+
+- **Type:** `return`
+
+
+
+### `interface`
+
+- **Type:** `auto*`
+
+- **Default Value:** `GetInterfaceImpl(T::InterfaceName)`
 
 

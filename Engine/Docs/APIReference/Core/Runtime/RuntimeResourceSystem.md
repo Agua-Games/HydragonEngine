@@ -1,81 +1,209 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeResourceSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeResourceSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableAsyncLoading`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableResourcePools`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableHotReload`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDefragmentation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConcurrentLoads`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `poolGrowthFactor`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `2`
+
+
+
+### `defaultPoolSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `64 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeResourceConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeResourceConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeResourceStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeResourceConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `64 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeResourceSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeResourceConfig& config = {}
+- **Parameters:** const RuntimeResourceConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### LoadResource
-
-
-
-**Parameters:** const ResourceDesc& desc
+- **Return:** `void`
 
 ---
 
-### UnloadResource
+## Update
 
 
 
-**Parameters:** ResourceHandle handle
+- **Parameters:** 
 
----
-
-### CreateResourcePool
-
-
-
-**Parameters:** const std::string& name, size_t initialSize
+- **Return:** `void`
 
 ---
 
-### DestroyResourcePool
+## LoadResource
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const ResourceDesc& desc
+
+- **Return:** `ResourceHandle`
 
 ---
 
-### SetResourcePriority
+## UnloadResource
 
 
 
-**Parameters:** ResourceHandle handle, ResourcePriority priority
+- **Parameters:** ResourceHandle handle
+
+- **Return:** `void`
+
+---
+
+## CreateResourcePool
+
+
+
+- **Parameters:** const std::string& name, size_t initialSize
+
+- **Return:** `void`
+
+---
+
+## DestroyResourcePool
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## SetResourcePriority
+
+
+
+- **Parameters:** ResourceHandle handle, ResourcePriority priority
+
+- **Return:** `void`
 
 ---

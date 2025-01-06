@@ -1,113 +1,275 @@
+# Classes
+---
 
-## Classes
-
-### NetworkSystem
-
-
-
-
-## Functions
-
-### Get
+## NetworkSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `maxConnections`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `32`
+
+
+
+### `maxChannels`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `enableCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEncryption`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableReliableUDP`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `sendBufferSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `1024 * 1024`
+
+
+
+### `receiveBufferSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `1024 * 1024`
+
+
+
+### `timeoutSeconds`
+
+- **Type:** `float`
+
+- **Default Value:** `30.0f`
+
+
+
+### `config`
+
+- **Type:** `const NetworkConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `config`
+
+- **Type:** `const SendConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `config`
+
+- **Type:** `const SendConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `NetworkConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `NetworkStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `NetworkConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `1024 *` - 
+
+  - `1024`: `1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static NetworkSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const NetworkConfig& config = {}
+- **Parameters:** const NetworkConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### Connect
-
-
-
-**Parameters:** const ConnectionDesc& desc
+- **Return:** `void`
 
 ---
 
-### Disconnect
+## Update
 
 
 
-**Parameters:** ConnectionHandle handle
+- **Parameters:** 
 
----
-
-### Send
-
-
-
-**Parameters:** ConnectionHandle conn, const NetworkMessage& msg, const SendConfig& config = {}
+- **Return:** `void`
 
 ---
 
-### Broadcast
+## Connect
 
 
 
-**Parameters:** const NetworkMessage& msg, const SendConfig& config = {}
+- **Parameters:** const ConnectionDesc& desc
 
----
-
-### AddMessageHandler
-
-
-
-**Parameters:** MessageType type, const MessageHandler& handler
+- **Return:** `ConnectionHandle`
 
 ---
 
-### RemoveMessageHandler
+## Disconnect
 
 
 
-**Parameters:** MessageType type
+- **Parameters:** ConnectionHandle handle
 
----
-
-### EnableReplication
-
-
-
-**Parameters:** EntityHandle entity
+- **Return:** `void`
 
 ---
 
-### DisableReplication
+## Send
 
 
 
-**Parameters:** EntityHandle entity
+- **Parameters:** ConnectionHandle conn, const NetworkMessage& msg, const SendConfig& config = {}
+
+- **Return:** `void`
 
 ---
 
-### SetReplicationFilter
+## Broadcast
 
 
 
-**Parameters:** EntityHandle entity, const ReplicationFilter& filter
+- **Parameters:** const NetworkMessage& msg, const SendConfig& config = {}
+
+- **Return:** `void`
+
+---
+
+## AddMessageHandler
+
+
+
+- **Parameters:** MessageType type, const MessageHandler& handler
+
+- **Return:** `void`
+
+---
+
+## RemoveMessageHandler
+
+
+
+- **Parameters:** MessageType type
+
+- **Return:** `void`
+
+---
+
+## EnableReplication
+
+
+
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
+
+---
+
+## DisableReplication
+
+
+
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
+
+---
+
+## SetReplicationFilter
+
+
+
+- **Parameters:** EntityHandle entity, const ReplicationFilter& filter
+
+- **Return:** `void`
 
 ---

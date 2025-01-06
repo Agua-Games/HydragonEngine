@@ -1,26 +1,63 @@
 
-## Functions
+# Variables
+---
 
-### setFilter
+### `showFragmented`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
 
 
 
-**Parameters:** const FilterCriteria& filter
+### `m_CurrentFilter`
+
+- **Type:** `FilterCriteria`
+
+
+
+
+# Structs
+---
+
+### `FilterCriteria`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## setFilter
+
+
+
+- **Parameters:** const FilterCriteria& filter
+
+- **Return:** `void`
 
 ---
 
-### filterChanged
+## filterChanged
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### filterApplied
+## filterApplied
 
 
 
-**Parameters:** size_t matchingBlocks
+- **Parameters:** size_t matchingBlocks
+
+- **Return:** `void`
 
 ---

@@ -1,18 +1,69 @@
 
-## Functions
+# Variables
+---
 
-### checkMemoryPressure
+### `override`
+
+- **Type:** `const`
 
 
 
-**Parameters:** 
+### `override`
+
+- **Type:** `const`
+
+
+
+### `m_ModuleName`
+
+- **Type:** `string`
+
+
+
+### `m_Strategy`
+
+- **Type:** `IMemoryStrategy*`
+
+
+
+### `m_MemoryLimit`
+
+- **Type:** `size_t`
+
+
+
+### `m_CurrentUsage`
+
+- **Type:** `size_t`
+
+
+
+### `m_Priority`
+
+- **Type:** `ModulePriority`
+
+
+
+
+# Functions
+---
+
+## checkMemoryPressure
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### handleAllocationFailure
+## handleAllocationFailure
 
 
 
-**Parameters:** size_t size
+- **Parameters:** size_t size
+
+- **Return:** `bool`
 
 ---

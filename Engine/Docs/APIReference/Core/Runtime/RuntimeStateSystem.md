@@ -1,81 +1,215 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeStateSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeStateSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableStateHistory`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableTransitionBlending`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStateValidation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStateRecovery`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxHistoryEntries`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `blendDuration`
+
+- **Type:** `float`
+
+- **Default Value:** `0.3f`
+
+
+
+### `defaultState`
+
+- **Type:** `string`
+
+- **Default Value:** `"Idle"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeStateConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const TransitionDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeStateConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeStateStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeStateConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeStateSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeStateConfig& config = {}
+- **Parameters:** const RuntimeStateConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### RegisterState
-
-
-
-**Parameters:** const std::string& name, std::unique_ptr<IState> state
+- **Return:** `void`
 
 ---
 
-### UnregisterState
+## Update
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** 
 
----
-
-### TransitionTo
-
-
-
-**Parameters:** const std::string& state, const TransitionDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### PushState
+## RegisterState
 
 
 
-**Parameters:** const std::string& state
+- **Parameters:** const std::string& name, std::unique_ptr<IState> state
+
+- **Return:** `void`
 
 ---
 
-### PopState
+## UnregisterState
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## TransitionTo
+
+
+
+- **Parameters:** const std::string& state, const TransitionDesc& desc = {}
+
+- **Return:** `void`
+
+---
+
+## PushState
+
+
+
+- **Parameters:** const std::string& state
+
+- **Return:** `void`
+
+---
+
+## PopState
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

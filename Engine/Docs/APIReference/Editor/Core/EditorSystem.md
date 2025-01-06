@@ -1,121 +1,265 @@
+# Classes
+---
 
-## Classes
-
-### EditorSystem
-
-
-
-
-## Functions
-
-### Get
+## EditorSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableUndoRedo`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAutoSave`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSnapToGrid`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableLivePreview`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxUndoSteps`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `autoSaveInterval`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `300`
+
+
+
+### `projectPath`
+
+- **Type:** `string`
+
+
+
+### `tempDirectory`
+
+- **Type:** `string`
+
+- **Default Value:** `"EditorTemp"`
+
+
+
+### `config`
+
+- **Type:** `const EditorConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `EditorConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `EditorStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `EditorConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `projectPath`: `string` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static EditorSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const EditorConfig& config = {}
+- **Parameters:** const EditorConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### OpenProject
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### SaveProject
+## Update
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CloseProject
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Undo
+## OpenProject
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& path
 
----
-
-### Redo
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### BeginEditOperation
+## SaveProject
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** 
 
----
-
-### EndEditOperation
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### RegisterTool
+## CloseProject
 
 
 
-**Parameters:** const EditorTool& tool
+- **Parameters:** 
 
----
-
-### UnregisterTool
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### SetActiveTool
+## Undo
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## Redo
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## BeginEditOperation
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## EndEditOperation
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## RegisterTool
+
+
+
+- **Parameters:** const EditorTool& tool
+
+- **Return:** `void`
+
+---
+
+## UnregisterTool
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## SetActiveTool
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---

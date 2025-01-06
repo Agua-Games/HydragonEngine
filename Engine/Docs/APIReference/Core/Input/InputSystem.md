@@ -1,113 +1,247 @@
+# Classes
+---
 
-## Classes
-
-### InputSystem
-
-
-
-
-## Functions
-
-### Get
+## InputSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `maxDevices`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `maxBindings`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxActions`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `500`
+
+
+
+### `enableRawInput`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableHaptics`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableHotPlugging`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `deadZone`
+
+- **Type:** `float`
+
+- **Default Value:** `0.15f`
+
+
+
+### `config`
+
+- **Type:** `const InputConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `InputConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `InputStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `InputConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static InputSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const InputConfig& config = {}
+- **Parameters:** const InputConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### RegisterDevice
-
-
-
-**Parameters:** const DeviceDesc& desc
+- **Return:** `void`
 
 ---
 
-### UnregisterDevice
+## Update
 
 
 
-**Parameters:** DeviceHandle handle
+- **Parameters:** 
 
----
-
-### CreateAction
-
-
-
-**Parameters:** const ActionDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyAction
+## RegisterDevice
 
 
 
-**Parameters:** ActionHandle handle
+- **Parameters:** const DeviceDesc& desc
 
----
-
-### BindAction
-
-
-
-**Parameters:** ActionHandle action, const ActionBinding& binding
+- **Return:** `void`
 
 ---
 
-### UnbindAction
+## UnregisterDevice
 
 
 
-**Parameters:** ActionHandle action, const ActionBinding& binding
+- **Parameters:** DeviceHandle handle
 
----
-
-### AddActionCallback
-
-
-
-**Parameters:** ActionHandle action, const ActionCallback& callback
+- **Return:** `void`
 
 ---
 
-### RemoveActionCallback
+## CreateAction
 
 
 
-**Parameters:** ActionHandle action, const ActionCallback& callback
+- **Parameters:** const ActionDesc& desc
+
+- **Return:** `ActionHandle`
 
 ---
 
-### SetHapticFeedback
+## DestroyAction
 
 
 
-**Parameters:** DeviceHandle device, const HapticEffect& effect
+- **Parameters:** ActionHandle handle
+
+- **Return:** `void`
+
+---
+
+## BindAction
+
+
+
+- **Parameters:** ActionHandle action, const ActionBinding& binding
+
+- **Return:** `void`
+
+---
+
+## UnbindAction
+
+
+
+- **Parameters:** ActionHandle action, const ActionBinding& binding
+
+- **Return:** `void`
+
+---
+
+## AddActionCallback
+
+
+
+- **Parameters:** ActionHandle action, const ActionCallback& callback
+
+- **Return:** `void`
+
+---
+
+## RemoveActionCallback
+
+
+
+- **Parameters:** ActionHandle action, const ActionCallback& callback
+
+- **Return:** `void`
+
+---
+
+## SetHapticFeedback
+
+
+
+- **Parameters:** DeviceHandle device, const HapticEffect& effect
+
+- **Return:** `void`
 
 ---

@@ -1,65 +1,173 @@
+# Classes
+---
 
-## Classes
-
-### StreamingMemoryManager
-
-
-
-
-## Functions
-
-### registerStreamingSystem
+## StreamingMemoryManager
+---
 
 
 
-**Parameters:** IStreamingSystem* system
+
+# Variables
+---
+
+### `reservedStreamingMemory`
+
+- **Type:** `size_t`
+
+
+
+### `maxStreamingBlocks`
+
+- **Type:** `size_t`
+
+
+
+### `enablePrioritization`
+
+- **Type:** `bool`
+
+
+
+### `evictionThreshold`
+
+- **Type:** `float`
+
+
+
+### `reservedMemory`
+
+- **Type:** `size_t`
+
+
+
+### `currentUsage`
+
+- **Type:** `size_t`
+
+
+
+### `priority`
+
+- **Type:** `StreamingPriority`
+
+
+
+### `m_StreamingSystem`
+
+- **Type:** `IStreamingSystem*`
+
+
+
+### `m_Strategy`
+
+- **Type:** `IMemoryStrategy*`
+
+
+
+
+# Structs
+---
+
+### `StreamingConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `reservedStreamingMemory`: `size_t` - 
+
+  - `maxStreamingBlocks`: `size_t` - 
+
+  - `enablePrioritization`: `bool` - 
+
+  - `evictionThreshold`: `float` - 
+
+
+
+### `ModuleInfo`
+
+- **Description:** 
+
+- **Members:**
+
+  - `reservedMemory`: `size_t` - 
+
+  - `currentUsage`: `size_t` - 
+
+  - `priority`: `StreamingPriority` - 
+
+
+
+
+# Functions
+---
+
+## registerStreamingSystem
+
+
+
+- **Parameters:** IStreamingSystem* system
+
+- **Return:** `void`
 
 ---
 
-### setMemoryStrategy
+## setMemoryStrategy
 
 
 
-**Parameters:** IMemoryStrategy* strategy
+- **Parameters:** IMemoryStrategy* strategy
 
----
-
-### registerModule
-
-
-
-**Parameters:** const std::string& moduleName, size_t reservedMemory
+- **Return:** `void`
 
 ---
 
-### setModulePriority
+## registerModule
 
 
 
-**Parameters:** const std::string& moduleName, StreamingPriority priority
+- **Parameters:** const std::string& moduleName, size_t reservedMemory
 
----
-
-### allocateStreamingMemory
-
-
-
-**Parameters:** size_t size, const StreamingAllocationInfo& info
+- **Return:** `void`
 
 ---
 
-### deallocateStreamingMemory
+## setModulePriority
 
 
 
-**Parameters:** void* ptr
+- **Parameters:** const std::string& moduleName, StreamingPriority priority
+
+- **Return:** `void`
 
 ---
 
-### updateStreamingState
+## allocateStreamingMemory
 
 
 
-**Parameters:** 
+- **Parameters:** size_t size, const StreamingAllocationInfo& info
+
+- **Return:** `void*`
+
+---
+
+## deallocateStreamingMemory
+
+
+
+- **Parameters:** void* ptr
+
+- **Return:** `void`
+
+---
+
+## updateStreamingState
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

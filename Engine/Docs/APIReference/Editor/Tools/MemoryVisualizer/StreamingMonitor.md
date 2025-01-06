@@ -1,50 +1,115 @@
 
-## Functions
+# Variables
+---
 
-### startMonitoring
+### `pendingRequests`
+
+- **Type:** `size_t`
 
 
 
-**Parameters:** 
+### `activeStreams`
+
+- **Type:** `size_t`
+
+
+
+### `throughputMBps`
+
+- **Type:** `double`
+
+
+
+### `m_CurrentStats`
+
+- **Type:** `StreamingStats`
+
+
+
+### `m_UpdateTimer`
+
+- **Type:** `QTimer*`
+
+
+
+
+# Structs
+---
+
+### `StreamingStats`
+
+- **Description:** 
+
+- **Members:**
+
+  - `pendingRequests`: `size_t` - 
+
+  - `activeStreams`: `size_t` - 
+
+  - `throughputMBps`: `double` - 
+
+
+
+
+# Functions
+---
+
+## startMonitoring
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### pauseMonitoring
+## pauseMonitoring
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### streamingEventReceived
-
-
-
-**Parameters:** const StreamingEvent& event
+- **Return:** `void`
 
 ---
 
-### streamingStatsUpdated
+## streamingEventReceived
 
 
 
-**Parameters:** const StreamingStats& stats
+- **Parameters:** const StreamingEvent& event
 
----
-
-### onStreamingEvent
-
-
-
-**Parameters:** const StreamingEvent& event
+- **Return:** `void`
 
 ---
 
-### updateStreamingStats
+## streamingStatsUpdated
 
 
 
-**Parameters:** 
+- **Parameters:** const StreamingStats& stats
+
+- **Return:** `void`
+
+---
+
+## onStreamingEvent
+
+
+
+- **Parameters:** const StreamingEvent& event
+
+- **Return:** `void`
+
+---
+
+## updateStreamingStats
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

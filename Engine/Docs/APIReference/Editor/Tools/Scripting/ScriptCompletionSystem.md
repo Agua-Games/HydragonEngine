@@ -1,89 +1,217 @@
+# Classes
+---
 
-## Classes
-
-### ScriptCompletionSystem
-
-
-
-
-## Functions
-
-### Get
+## ScriptCompletionSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableIntelliSense`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSnippets`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDocumentation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableFuzzyMatching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxSuggestions`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `50`
+
+
+
+### `cacheSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `suggestionDelay`
+
+- **Type:** `float`
+
+- **Default Value:** `0.2f`
+
+
+
+### `config`
+
+- **Type:** `const ScriptCompletionConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ScriptCompletionConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ScriptCompletionStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ScriptCompletionConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ScriptCompletionSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ScriptCompletionConfig& config = {}
+- **Parameters:** const ScriptCompletionConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### RequestCompletion
-
-
-
-**Parameters:** const std::string& path, uint32_t line, uint32_t column
+- **Return:** `void`
 
 ---
 
-### CancelCompletion
+## Update
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### AddSnippet
-
-
-
-**Parameters:** const std::string& trigger, const ScriptSnippet& snippet
+- **Return:** `void`
 
 ---
 
-### RemoveSnippet
+## RequestCompletion
 
 
 
-**Parameters:** const std::string& trigger
+- **Parameters:** const std::string& path, uint32_t line, uint32_t column
 
----
-
-### RegisterSymbol
-
-
-
-**Parameters:** const std::string& name, const SymbolInfo& info
+- **Return:** `void`
 
 ---
 
-### UnregisterSymbol
+## CancelCompletion
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## AddSnippet
+
+
+
+- **Parameters:** const std::string& trigger, const ScriptSnippet& snippet
+
+- **Return:** `void`
+
+---
+
+## RemoveSnippet
+
+
+
+- **Parameters:** const std::string& trigger
+
+- **Return:** `void`
+
+---
+
+## RegisterSymbol
+
+
+
+- **Parameters:** const std::string& name, const SymbolInfo& info
+
+- **Return:** `void`
+
+---
+
+## UnregisterSymbol
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---

@@ -1,98 +1,222 @@
+# Classes
+---
 
-## Classes
-
-### NodeSystem
-
-
-
-
-## Functions
-
-### Get
+## NodeSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `maxGraphs`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxNodesPerGraph`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `enableHotReload`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableParallelExecution`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `memoryBudget`
+
+- **Type:** `size_t`
+
+- **Default Value:** `32 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const NodeConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `NodeConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `NodeStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `NodeConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `32 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static NodeSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const NodeConfig& config = {}
+- **Parameters:** const NodeConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateGraph
-
-
-
-**Parameters:** const GraphDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyGraph
+## Update
 
 
 
-**Parameters:** GraphHandle handle
+- **Parameters:** 
 
----
-
-### AddNode
-
-
-
-**Parameters:** GraphHandle graph, const NodeDesc& desc
+- **Return:** `void`
 
 ---
 
-### RemoveNode
+## CreateGraph
 
 
 
-**Parameters:** GraphHandle graph, NodeHandle node
+- **Parameters:** const GraphDesc& desc
+
+- **Return:** `GraphHandle`
 
 ---
 
-### Connect
+## DestroyGraph
 
 
 
-**Parameters:** GraphHandle graph, NodeHandle output, NodeHandle input, 
+- **Parameters:** GraphHandle handle
+
+- **Return:** `void`
+
+---
+
+## AddNode
+
+
+
+- **Parameters:** GraphHandle graph, const NodeDesc& desc
+
+- **Return:** `NodeHandle`
+
+---
+
+## RemoveNode
+
+
+
+- **Parameters:** GraphHandle graph, NodeHandle node
+
+- **Return:** `void`
+
+---
+
+## Connect
+
+
+
+- **Parameters:** GraphHandle graph, NodeHandle output, NodeHandle input, 
                 const std::string& pinName
 
----
-
-### Disconnect
-
-
-
-**Parameters:** GraphHandle graph, NodeHandle output, NodeHandle input
+- **Return:** `void`
 
 ---
 
-### Execute
+## Disconnect
 
 
 
-**Parameters:** GraphHandle graph
+- **Parameters:** GraphHandle graph, NodeHandle output, NodeHandle input
+
+- **Return:** `void`
+
+---
+
+## Execute
+
+
+
+- **Parameters:** GraphHandle graph
+
+- **Return:** `void`
 
 ---

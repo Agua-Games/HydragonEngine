@@ -1,97 +1,227 @@
+# Classes
+---
 
-## Classes
-
-### WindowManagerSystem
-
-
-
-
-## Functions
-
-### Get
+## WindowManagerSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableDocking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableTabbing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSnapping`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAutoHide`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxDockedWindows`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `50`
+
+
+
+### `maxTabbedGroups`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `20`
+
+
+
+### `dockingThreshold`
+
+- **Type:** `float`
+
+- **Default Value:** `20.0f`
+
+
+
+### `config`
+
+- **Type:** `const WindowManagerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `WindowManagerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `WindowManagerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `WindowManagerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static WindowManagerSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const WindowManagerConfig& config = {}
+- **Parameters:** const WindowManagerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateDockSpace
-
-
-
-**Parameters:** const std::string& name, const DockSpaceDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyDockSpace
+## Update
 
 
 
-**Parameters:** DockID id
+- **Parameters:** 
 
----
-
-### DockWindow
-
-
-
-**Parameters:** const std::string& window, DockID dock, DockSlot slot
+- **Return:** `void`
 
 ---
 
-### UndockWindow
+## CreateDockSpace
 
 
 
-**Parameters:** const std::string& window
+- **Parameters:** const std::string& name, const DockSpaceDesc& desc
 
----
-
-### GroupWindows
-
-
-
-**Parameters:** const std::vector<std::string>& windows
+- **Return:** `DockID`
 
 ---
 
-### UngroupWindows
+## DestroyDockSpace
 
 
 
-**Parameters:** const std::vector<std::string>& windows
+- **Parameters:** DockID id
+
+- **Return:** `void`
 
 ---
 
-### SetWindowVisibility
+## DockWindow
 
 
 
-**Parameters:** const std::string& window, bool visible
+- **Parameters:** const std::string& window, DockID dock, DockSlot slot
+
+- **Return:** `void`
+
+---
+
+## UndockWindow
+
+
+
+- **Parameters:** const std::string& window
+
+- **Return:** `void`
+
+---
+
+## GroupWindows
+
+
+
+- **Parameters:** const std::vector<std::string>& windows
+
+- **Return:** `void`
+
+---
+
+## UngroupWindows
+
+
+
+- **Parameters:** const std::vector<std::string>& windows
+
+- **Return:** `void`
+
+---
+
+## SetWindowVisibility
+
+
+
+- **Parameters:** const std::string& window, bool visible
+
+- **Return:** `void`
 
 ---

@@ -1,257 +1,443 @@
+# Classes
+---
 
-## Classes
-
-### AnimationBindings
-
-
-
-
-## Functions
-
-### Get
+## AnimationBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableBlending`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableIK`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMorphTargets`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableRagdoll`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxAnimators`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxClips`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `500`
+
+
+
+### `maxLayers`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `animationDataPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Data/Animation"`
+
+
+
+### `config`
+
+- **Type:** `const AnimationBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const PlaybackParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AnimationBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AnimationBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AnimationBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AnimationBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AnimationBindingsConfig& config = {}
+- **Parameters:** const AnimationBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateAnimator
-
-
-
-**Parameters:** const AnimatorDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyAnimator
+## Update
 
 
 
-**Parameters:** AnimatorHandle handle
+- **Parameters:** 
 
----
-
-### SetSkeleton
-
-
-
-**Parameters:** AnimatorHandle handle, const SkeletonDesc& desc
+- **Return:** `void`
 
 ---
 
-### CreateClip
+## CreateAnimator
 
 
 
-**Parameters:** const std::string& name, const ClipDesc& desc
+- **Parameters:** const AnimatorDesc& desc
 
----
-
-### DestroyClip
-
-
-
-**Parameters:** ClipHandle handle
+- **Return:** `AnimatorHandle`
 
 ---
 
-### SetClipSpeed
+## DestroyAnimator
 
 
 
-**Parameters:** ClipHandle handle, float speed
+- **Parameters:** AnimatorHandle handle
 
----
-
-### SetClipWeight
-
-
-
-**Parameters:** ClipHandle handle, float weight
+- **Return:** `void`
 
 ---
 
-### Play
+## SetSkeleton
 
 
 
-**Parameters:** AnimatorHandle handle, ClipHandle clip, const PlaybackParams& params = {}
+- **Parameters:** AnimatorHandle handle, const SkeletonDesc& desc
 
----
-
-### Stop
-
-
-
-**Parameters:** AnimatorHandle handle, ClipHandle clip
+- **Return:** `void`
 
 ---
 
-### Pause
+## CreateClip
 
 
 
-**Parameters:** AnimatorHandle handle, ClipHandle clip
+- **Parameters:** const std::string& name, const ClipDesc& desc
 
----
-
-### Resume
-
-
-
-**Parameters:** AnimatorHandle handle, ClipHandle clip
+- **Return:** `ClipHandle`
 
 ---
 
-### CrossFade
+## DestroyClip
 
 
 
-**Parameters:** AnimatorHandle handle, ClipHandle fromClip, ClipHandle toClip, float duration
+- **Parameters:** ClipHandle handle
 
----
-
-### AddLayer
-
-
-
-**Parameters:** AnimatorHandle handle, const LayerDesc& desc
+- **Return:** `void`
 
 ---
 
-### RemoveLayer
+## SetClipSpeed
 
 
 
-**Parameters:** AnimatorHandle handle, uint32_t layerIndex
+- **Parameters:** ClipHandle handle, float speed
 
----
-
-### SetLayerWeight
-
-
-
-**Parameters:** AnimatorHandle handle, uint32_t layerIndex, float weight
+- **Return:** `void`
 
 ---
 
-### SetLayerMask
+## SetClipWeight
 
 
 
-**Parameters:** AnimatorHandle handle, uint32_t layerIndex, const BoneMask& mask
+- **Parameters:** ClipHandle handle, float weight
 
----
-
-### SetIKTarget
-
-
-
-**Parameters:** AnimatorHandle handle, const std::string& chainName, const Vector3& target
+- **Return:** `void`
 
 ---
 
-### SetIKRotation
+## Play
 
 
 
-**Parameters:** AnimatorHandle handle, const std::string& chainName, const Quaternion& rotation
+- **Parameters:** AnimatorHandle handle, ClipHandle clip, const PlaybackParams& params = {}
 
----
-
-### SetIKEnabled
-
-
-
-**Parameters:** AnimatorHandle handle, const std::string& chainName, bool enabled
+- **Return:** `void`
 
 ---
 
-### SetMorphWeight
+## Stop
 
 
 
-**Parameters:** AnimatorHandle handle, const std::string& targetName, float weight
+- **Parameters:** AnimatorHandle handle, ClipHandle clip
 
----
-
-### BlendMorphTargets
-
-
-
-**Parameters:** AnimatorHandle handle, const std::vector<MorphBlend>& blends
+- **Return:** `void`
 
 ---
 
-### EnableRagdoll
+## Pause
 
 
 
-**Parameters:** AnimatorHandle handle, bool enable
+- **Parameters:** AnimatorHandle handle, ClipHandle clip
 
----
-
-### SetRagdollBlend
-
-
-
-**Parameters:** AnimatorHandle handle, float blend
+- **Return:** `void`
 
 ---
 
-### ApplyRagdollForce
+## Resume
 
 
 
-**Parameters:** AnimatorHandle handle, const std::string& boneName, const Vector3& force
+- **Parameters:** AnimatorHandle handle, ClipHandle clip
 
----
-
-### EnableDebugVisualization
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### SetDebugBone
+## CrossFade
 
 
 
-**Parameters:** AnimatorHandle handle, const std::string& boneName
+- **Parameters:** AnimatorHandle handle, ClipHandle fromClip, ClipHandle toClip, float duration
+
+- **Return:** `void`
 
 ---
 
-### DumpAnimatorState
+## AddLayer
 
 
 
-**Parameters:** AnimatorHandle handle, const std::string& path
+- **Parameters:** AnimatorHandle handle, const LayerDesc& desc
+
+- **Return:** `void`
+
+---
+
+## RemoveLayer
+
+
+
+- **Parameters:** AnimatorHandle handle, uint32_t layerIndex
+
+- **Return:** `void`
+
+---
+
+## SetLayerWeight
+
+
+
+- **Parameters:** AnimatorHandle handle, uint32_t layerIndex, float weight
+
+- **Return:** `void`
+
+---
+
+## SetLayerMask
+
+
+
+- **Parameters:** AnimatorHandle handle, uint32_t layerIndex, const BoneMask& mask
+
+- **Return:** `void`
+
+---
+
+## SetIKTarget
+
+
+
+- **Parameters:** AnimatorHandle handle, const std::string& chainName, const Vector3& target
+
+- **Return:** `void`
+
+---
+
+## SetIKRotation
+
+
+
+- **Parameters:** AnimatorHandle handle, const std::string& chainName, const Quaternion& rotation
+
+- **Return:** `void`
+
+---
+
+## SetIKEnabled
+
+
+
+- **Parameters:** AnimatorHandle handle, const std::string& chainName, bool enabled
+
+- **Return:** `void`
+
+---
+
+## SetMorphWeight
+
+
+
+- **Parameters:** AnimatorHandle handle, const std::string& targetName, float weight
+
+- **Return:** `void`
+
+---
+
+## BlendMorphTargets
+
+
+
+- **Parameters:** AnimatorHandle handle, const std::vector<MorphBlend>& blends
+
+- **Return:** `void`
+
+---
+
+## EnableRagdoll
+
+
+
+- **Parameters:** AnimatorHandle handle, bool enable
+
+- **Return:** `void`
+
+---
+
+## SetRagdollBlend
+
+
+
+- **Parameters:** AnimatorHandle handle, float blend
+
+- **Return:** `void`
+
+---
+
+## ApplyRagdollForce
+
+
+
+- **Parameters:** AnimatorHandle handle, const std::string& boneName, const Vector3& force
+
+- **Return:** `void`
+
+---
+
+## EnableDebugVisualization
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## SetDebugBone
+
+
+
+- **Parameters:** AnimatorHandle handle, const std::string& boneName
+
+- **Return:** `void`
+
+---
+
+## DumpAnimatorState
+
+
+
+- **Parameters:** AnimatorHandle handle, const std::string& path
+
+- **Return:** `void`
 
 ---

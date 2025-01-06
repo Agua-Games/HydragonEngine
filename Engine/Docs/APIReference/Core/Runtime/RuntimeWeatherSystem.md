@@ -1,161 +1,331 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeWeatherSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeWeatherSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableVolumetricClouds`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDynamicWind`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePrecipitation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableTimeOfDay`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxWeatherZones`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `16`
+
+
+
+### `particleSystemsPerZone`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `weatherTransitionTime`
+
+- **Type:** `float`
+
+- **Default Value:** `3.0f`
+
+
+
+### `windUpdateInterval`
+
+- **Type:** `float`
+
+- **Default Value:** `0.5f`
+
+
+
+### `weatherPresetPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Config/Weather"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeWeatherConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `transitionTime`
+
+- **Type:** `float`
+
+- **Default Value:** `-1.0f)`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeWeatherConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeWeatherStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeWeatherConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeWeatherSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeWeatherConfig& config = {}
+- **Parameters:** const RuntimeWeatherConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateZone
-
-
-
-**Parameters:** const WeatherZoneDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyZone
+## Update
 
 
 
-**Parameters:** WeatherZoneHandle handle
+- **Parameters:** 
 
----
-
-### SetWeatherState
-
-
-
-**Parameters:** WeatherZoneHandle handle, const WeatherState& state, float transitionTime = -1.0f
+- **Return:** `void`
 
 ---
 
-### BlendWeatherStates
+## CreateZone
 
 
 
-**Parameters:** WeatherZoneHandle handle, const WeatherState& from, const WeatherState& to, float duration
+- **Parameters:** const WeatherZoneDesc& desc
 
----
-
-### SetPrecipitationType
-
-
-
-**Parameters:** WeatherZoneHandle handle, PrecipitationType type
+- **Return:** `WeatherZoneHandle`
 
 ---
 
-### SetPrecipitationIntensity
+## DestroyZone
 
 
 
-**Parameters:** WeatherZoneHandle handle, float intensity
+- **Parameters:** WeatherZoneHandle handle
 
----
-
-### SetWindDirection
-
-
-
-**Parameters:** WeatherZoneHandle handle, const Vector3& direction
+- **Return:** `void`
 
 ---
 
-### SetWindSpeed
+## SetWeatherState
 
 
 
-**Parameters:** WeatherZoneHandle handle, float speed
+- **Parameters:** WeatherZoneHandle handle, const WeatherState& state, float transitionTime = -1.0f
 
----
-
-### AddWindGust
-
-
-
-**Parameters:** WeatherZoneHandle handle, const WindGustDesc& desc
+- **Return:** `void`
 
 ---
 
-### SetCloudCoverage
+## BlendWeatherStates
 
 
 
-**Parameters:** WeatherZoneHandle handle, float coverage
+- **Parameters:** WeatherZoneHandle handle, const WeatherState& from, const WeatherState& to, float duration
 
----
-
-### SetCloudHeight
-
-
-
-**Parameters:** WeatherZoneHandle handle, float baseHeight, float topHeight
+- **Return:** `void`
 
 ---
 
-### LoadWeatherPreset
+## SetPrecipitationType
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** WeatherZoneHandle handle, PrecipitationType type
 
----
-
-### SaveWeatherPreset
-
-
-
-**Parameters:** const std::string& name, const WeatherPresetData& data
+- **Return:** `void`
 
 ---
 
-### RegisterWeatherEffect
+## SetPrecipitationIntensity
 
 
 
-**Parameters:** const std::string& name, std::unique_ptr<IWeatherEffect> effect
+- **Parameters:** WeatherZoneHandle handle, float intensity
+
+- **Return:** `void`
 
 ---
 
-### UnregisterWeatherEffect
+## SetWindDirection
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** WeatherZoneHandle handle, const Vector3& direction
+
+- **Return:** `void`
+
+---
+
+## SetWindSpeed
+
+
+
+- **Parameters:** WeatherZoneHandle handle, float speed
+
+- **Return:** `void`
+
+---
+
+## AddWindGust
+
+
+
+- **Parameters:** WeatherZoneHandle handle, const WindGustDesc& desc
+
+- **Return:** `void`
+
+---
+
+## SetCloudCoverage
+
+
+
+- **Parameters:** WeatherZoneHandle handle, float coverage
+
+- **Return:** `void`
+
+---
+
+## SetCloudHeight
+
+
+
+- **Parameters:** WeatherZoneHandle handle, float baseHeight, float topHeight
+
+- **Return:** `void`
+
+---
+
+## LoadWeatherPreset
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## SaveWeatherPreset
+
+
+
+- **Parameters:** const std::string& name, const WeatherPresetData& data
+
+- **Return:** `void`
+
+---
+
+## RegisterWeatherEffect
+
+
+
+- **Parameters:** const std::string& name, std::unique_ptr<IWeatherEffect> effect
+
+- **Return:** `void`
+
+---
+
+## UnregisterWeatherEffect
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---

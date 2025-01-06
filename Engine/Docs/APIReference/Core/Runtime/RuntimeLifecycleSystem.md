@@ -1,89 +1,225 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeLifecycleSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeLifecycleSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableGracefulShutdown`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStateRecovery`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCrashHandling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSessionTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `shutdownTimeoutMs`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `5000`
+
+
+
+### `recoveryAttempts`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `3`
+
+
+
+### `crashDumpPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Logs/Crashes"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeLifecycleConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `reason`
+
+- **Type:** `ShutdownReason`
+
+- **Default Value:** `ShutdownReason::User)`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeLifecycleConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeLifecycleStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeLifecycleConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeLifecycleSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeLifecycleConfig& config = {}
+- **Parameters:** const RuntimeLifecycleConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### RegisterLifecycleHandler
-
-
-
-**Parameters:** const std::string& phase, const LifecycleCallback& callback
+- **Return:** `void`
 
 ---
 
-### UnregisterLifecycleHandler
+## Update
 
 
 
-**Parameters:** const std::string& phase
+- **Parameters:** 
 
----
-
-### RequestShutdown
-
-
-
-**Parameters:** ShutdownReason reason = ShutdownReason::User
+- **Return:** `void`
 
 ---
 
-### CancelShutdown
+## RegisterLifecycleHandler
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& phase, const LifecycleCallback& callback
 
----
-
-### SaveApplicationState
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### RestoreApplicationState
+## UnregisterLifecycleHandler
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& phase
+
+- **Return:** `void`
+
+---
+
+## RequestShutdown
+
+
+
+- **Parameters:** ShutdownReason reason = ShutdownReason::User
+
+- **Return:** `void`
+
+---
+
+## CancelShutdown
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SaveApplicationState
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## RestoreApplicationState
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

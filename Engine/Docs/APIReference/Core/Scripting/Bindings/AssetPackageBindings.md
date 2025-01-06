@@ -1,201 +1,383 @@
+# Classes
+---
 
-## Classes
-
-### AssetPackageBindings
-
-
-
-
-## Functions
-
-### Get
+## AssetPackageBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEncryption`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStreaming`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCaching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxOpenPackages`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `16`
+
+
+
+### `maxStreamBuffers`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `packageCacheSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `64 * 1024 * 1024`
+
+
+
+### `packageCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Packages"`
+
+
+
+### `config`
+
+- **Type:** `const AssetPackageBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const PackageDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const StreamParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AssetPackageBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AssetPackageBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AssetPackageBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `64 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AssetPackageBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AssetPackageBindingsConfig& config = {}
+- **Parameters:** const AssetPackageBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreatePackage
-
-
-
-**Parameters:** const std::string& name, const PackageDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### OpenPackage
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### ClosePackage
-
-
-
-**Parameters:** PackageHandle handle
+- **Return:** `void`
 
 ---
 
-### SavePackage
+## CreatePackage
 
 
 
-**Parameters:** PackageHandle handle, const std::string& path
+- **Parameters:** const std::string& name, const PackageDesc& desc = {}
 
----
-
-### AddAsset
-
-
-
-**Parameters:** PackageHandle package, AssetHandle asset
+- **Return:** `PackageHandle`
 
 ---
 
-### RemoveAsset
+## OpenPackage
 
 
 
-**Parameters:** PackageHandle package, AssetHandle asset
+- **Parameters:** const std::string& path
 
----
-
-### StreamPackage
-
-
-
-**Parameters:** const std::string& path, const StreamParams& params = {}
+- **Return:** `void`
 
 ---
 
-### UnstreamPackage
+## ClosePackage
 
 
 
-**Parameters:** PackageHandle handle
+- **Parameters:** PackageHandle handle
 
----
-
-### SetCompressionLevel
-
-
-
-**Parameters:** PackageHandle handle, CompressionLevel level
+- **Return:** `void`
 
 ---
 
-### CompressPackage
+## SavePackage
 
 
 
-**Parameters:** PackageHandle handle
+- **Parameters:** PackageHandle handle, const std::string& path
 
----
-
-### DecompressPackage
-
-
-
-**Parameters:** PackageHandle handle
+- **Return:** `void`
 
 ---
 
-### SetEncryptionKey
+## AddAsset
 
 
 
-**Parameters:** PackageHandle handle, const std::string& key
+- **Parameters:** PackageHandle package, AssetHandle asset
 
----
-
-### EncryptPackage
-
-
-
-**Parameters:** PackageHandle handle
+- **Return:** `void`
 
 ---
 
-### DecryptPackage
+## RemoveAsset
 
 
 
-**Parameters:** PackageHandle handle
+- **Parameters:** PackageHandle package, AssetHandle asset
 
----
-
-### DefragmentPackage
-
-
-
-**Parameters:** PackageHandle handle
+- **Return:** `void`
 
 ---
 
-### ValidatePackage
+## StreamPackage
 
 
 
-**Parameters:** PackageHandle handle
+- **Parameters:** const std::string& path, const StreamParams& params = {}
 
----
-
-### OptimizePackage
-
-
-
-**Parameters:** PackageHandle handle
+- **Return:** `void`
 
 ---
 
-### EnablePackageTracking
+## UnstreamPackage
 
 
 
-**Parameters:** bool enable
+- **Parameters:** PackageHandle handle
 
----
-
-### DumpPackageContents
-
-
-
-**Parameters:** PackageHandle handle, const std::string& path
+- **Return:** `void`
 
 ---
 
-### AnalyzePackageUsage
+## SetCompressionLevel
 
 
 
-**Parameters:** PackageHandle handle
+- **Parameters:** PackageHandle handle, CompressionLevel level
+
+- **Return:** `void`
+
+---
+
+## CompressPackage
+
+
+
+- **Parameters:** PackageHandle handle
+
+- **Return:** `void`
+
+---
+
+## DecompressPackage
+
+
+
+- **Parameters:** PackageHandle handle
+
+- **Return:** `void`
+
+---
+
+## SetEncryptionKey
+
+
+
+- **Parameters:** PackageHandle handle, const std::string& key
+
+- **Return:** `void`
+
+---
+
+## EncryptPackage
+
+
+
+- **Parameters:** PackageHandle handle
+
+- **Return:** `void`
+
+---
+
+## DecryptPackage
+
+
+
+- **Parameters:** PackageHandle handle
+
+- **Return:** `void`
+
+---
+
+## DefragmentPackage
+
+
+
+- **Parameters:** PackageHandle handle
+
+- **Return:** `void`
+
+---
+
+## ValidatePackage
+
+
+
+- **Parameters:** PackageHandle handle
+
+- **Return:** `void`
+
+---
+
+## OptimizePackage
+
+
+
+- **Parameters:** PackageHandle handle
+
+- **Return:** `void`
+
+---
+
+## EnablePackageTracking
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpPackageContents
+
+
+
+- **Parameters:** PackageHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## AnalyzePackageUsage
+
+
+
+- **Parameters:** PackageHandle handle
+
+- **Return:** `void`
 
 ---

@@ -1,6 +1,51 @@
+# Classes
+---
 
-## Classes
+## VirtualMemoryManager
+---
 
-### VirtualMemoryManager
+
+
+
+# Variables
+---
+
+### `enableLazyLoading`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `pageSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `64 * 1024`
+
+
+
+### `maxVirtualMemory`
+
+- **Type:** `size_t`
+
+- **Default Value:** `1024ull * 1024 * 1024 * 1024`
+
+
+
+
+# Structs
+---
+
+### `VirtualizationConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `64 *` - 
+
+  - `1024`: `1024ull * 1024 * 1024 *` - 
 
 

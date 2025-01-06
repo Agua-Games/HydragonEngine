@@ -1,145 +1,295 @@
+# Classes
+---
 
-## Classes
-
-### NetworkBindings
-
-
-
-
-## Functions
-
-### Get
+## NetworkBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableReplication`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEncryption`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDebugStats`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConnections`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxPacketSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1024`
+
+
+
+### `sendBufferSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `32768`
+
+
+
+### `networkConfigPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Config/Network"`
+
+
+
+### `config`
+
+- **Type:** `const NetworkBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `NetworkBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `NetworkBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `NetworkBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static NetworkBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const NetworkBindingsConfig& config = {}
+- **Parameters:** const NetworkBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### Connect
-
-
-
-**Parameters:** const std::string& address, uint16_t port
+- **Return:** `void`
 
 ---
 
-### Disconnect
+## Update
 
 
 
-**Parameters:** ConnectionHandle handle
+- **Parameters:** 
 
----
-
-### SendMessage
-
-
-
-**Parameters:** ConnectionHandle handle, const NetworkMessage& message
+- **Return:** `void`
 
 ---
 
-### BroadcastMessage
+## Connect
 
 
 
-**Parameters:** const NetworkMessage& message
+- **Parameters:** const std::string& address, uint16_t port
 
----
-
-### RegisterMessageHandler
-
-
-
-**Parameters:** MessageType type, const MessageHandler& handler
+- **Return:** `ConnectionHandle`
 
 ---
 
-### UnregisterMessageHandler
+## Disconnect
 
 
 
-**Parameters:** MessageType type
+- **Parameters:** ConnectionHandle handle
 
----
-
-### RegisterReplicatedObject
-
-
-
-**Parameters:** const std::string& name, const ReplicatedObject& object
+- **Return:** `void`
 
 ---
 
-### UnregisterReplicatedObject
+## SendMessage
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** ConnectionHandle handle, const NetworkMessage& message
 
----
-
-### UpdateReplicatedObject
-
-
-
-**Parameters:** const std::string& name, const ReplicatedState& state
+- **Return:** `void`
 
 ---
 
-### EnablePacketLogging
+## BroadcastMessage
 
 
 
-**Parameters:** bool enable
+- **Parameters:** const NetworkMessage& message
 
----
-
-### DumpNetworkStats
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### SimulateLatency
+## RegisterMessageHandler
 
 
 
-**Parameters:** uint32_t milliseconds
+- **Parameters:** MessageType type, const MessageHandler& handler
+
+- **Return:** `void`
 
 ---
 
-### SimulatePacketLoss
+## UnregisterMessageHandler
 
 
 
-**Parameters:** float percentage
+- **Parameters:** MessageType type
+
+- **Return:** `void`
+
+---
+
+## RegisterReplicatedObject
+
+
+
+- **Parameters:** const std::string& name, const ReplicatedObject& object
+
+- **Return:** `void`
+
+---
+
+## UnregisterReplicatedObject
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## UpdateReplicatedObject
+
+
+
+- **Parameters:** const std::string& name, const ReplicatedState& state
+
+- **Return:** `void`
+
+---
+
+## EnablePacketLogging
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpNetworkStats
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## SimulateLatency
+
+
+
+- **Parameters:** uint32_t milliseconds
+
+- **Return:** `void`
+
+---
+
+## SimulatePacketLoss
+
+
+
+- **Parameters:** float percentage
+
+- **Return:** `void`
 
 ---

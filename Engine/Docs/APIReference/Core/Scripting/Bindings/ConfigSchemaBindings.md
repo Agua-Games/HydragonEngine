@@ -1,209 +1,387 @@
+# Classes
+---
 
-## Classes
-
-### ConfigSchemaBindings
-
-
-
-
-## Functions
-
-### Get
+## ConfigSchemaBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableSchemaInheritance`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCustomValidators`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSchemaVersioning`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSchemaCaching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxSchemaSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1024 * 1024`
+
+
+
+### `maxCustomValidators`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `50`
+
+
+
+### `schemaCacheSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8 * 1024 * 1024`
+
+
+
+### `schemaRootPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Config/Schemas"`
+
+
+
+### `config`
+
+- **Type:** `const ConfigSchemaBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const SchemaDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ConfigSchemaBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ConfigSchemaBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ConfigSchemaBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `1024 *` - 
+
+  - `1024`: `8 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ConfigSchemaBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ConfigSchemaBindingsConfig& config = {}
+- **Parameters:** const ConfigSchemaBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateSchema
-
-
-
-**Parameters:** const std::string& name, const SchemaDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### LoadSchema
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### SaveSchema
-
-
-
-**Parameters:** SchemaHandle handle, const std::string& path
+- **Return:** `void`
 
 ---
 
-### CloseSchema
+## CreateSchema
 
 
 
-**Parameters:** SchemaHandle handle
+- **Parameters:** const std::string& name, const SchemaDesc& desc = {}
 
----
-
-### AddField
-
-
-
-**Parameters:** SchemaHandle handle, const std::string& name, const FieldDesc& desc
+- **Return:** `SchemaHandle`
 
 ---
 
-### RemoveField
+## LoadSchema
 
 
 
-**Parameters:** SchemaHandle handle, const std::string& name
+- **Parameters:** const std::string& path
 
----
-
-### SetFieldRequired
-
-
-
-**Parameters:** SchemaHandle handle, const std::string& name, bool required
+- **Return:** `void`
 
 ---
 
-### SetFieldDefault
+## SaveSchema
 
 
 
-**Parameters:** SchemaHandle handle, const std::string& name, const Variant& value
+- **Parameters:** SchemaHandle handle, const std::string& path
 
----
-
-### AddValidationRule
-
-
-
-**Parameters:** SchemaHandle handle, const std::string& field, const ValidationRule& rule
+- **Return:** `void`
 
 ---
 
-### RemoveValidationRule
+## CloseSchema
 
 
 
-**Parameters:** SchemaHandle handle, const std::string& field, RuleHandle rule
+- **Parameters:** SchemaHandle handle
 
----
-
-### AddCustomValidator
-
-
-
-**Parameters:** const std::string& name, std::unique_ptr<ICustomValidator> validator
+- **Return:** `void`
 
 ---
 
-### InheritSchema
+## AddField
 
 
 
-**Parameters:** SchemaHandle child, SchemaHandle parent
+- **Parameters:** SchemaHandle handle, const std::string& name, const FieldDesc& desc
 
----
-
-### RemoveInheritance
-
-
-
-**Parameters:** SchemaHandle child
+- **Return:** `void`
 
 ---
 
-### ValidateConfig
+## RemoveField
 
 
 
-**Parameters:** ConfigHandle config, SchemaHandle schema
+- **Parameters:** SchemaHandle handle, const std::string& name
 
----
-
-### ValidateValue
-
-
-
-**Parameters:** const Variant& value, const FieldDesc& desc
+- **Return:** `void`
 
 ---
 
-### ValidateSchema
+## SetFieldRequired
 
 
 
-**Parameters:** SchemaHandle handle
+- **Parameters:** SchemaHandle handle, const std::string& name, bool required
 
----
-
-### OptimizeSchema
-
-
-
-**Parameters:** SchemaHandle handle
+- **Return:** `void`
 
 ---
 
-### MergeSchemas
+## SetFieldDefault
 
 
 
-**Parameters:** SchemaHandle target, const std::vector<SchemaHandle>& sources
+- **Parameters:** SchemaHandle handle, const std::string& name, const Variant& value
 
----
-
-### EnableSchemaTracking
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### DumpSchemaState
+## AddValidationRule
 
 
 
-**Parameters:** SchemaHandle handle, const std::string& path
+- **Parameters:** SchemaHandle handle, const std::string& field, const ValidationRule& rule
+
+- **Return:** `void`
 
 ---
 
-### AnalyzeSchemaUsage
+## RemoveValidationRule
 
 
 
-**Parameters:** SchemaHandle handle
+- **Parameters:** SchemaHandle handle, const std::string& field, RuleHandle rule
+
+- **Return:** `void`
+
+---
+
+## AddCustomValidator
+
+
+
+- **Parameters:** const std::string& name, std::unique_ptr<ICustomValidator> validator
+
+- **Return:** `void`
+
+---
+
+## InheritSchema
+
+
+
+- **Parameters:** SchemaHandle child, SchemaHandle parent
+
+- **Return:** `void`
+
+---
+
+## RemoveInheritance
+
+
+
+- **Parameters:** SchemaHandle child
+
+- **Return:** `void`
+
+---
+
+## ValidateConfig
+
+
+
+- **Parameters:** ConfigHandle config, SchemaHandle schema
+
+- **Return:** `ValidationResult`
+
+---
+
+## ValidateValue
+
+
+
+- **Parameters:** const Variant& value, const FieldDesc& desc
+
+- **Return:** `ValidationResult`
+
+---
+
+## ValidateSchema
+
+
+
+- **Parameters:** SchemaHandle handle
+
+- **Return:** `void`
+
+---
+
+## OptimizeSchema
+
+
+
+- **Parameters:** SchemaHandle handle
+
+- **Return:** `void`
+
+---
+
+## MergeSchemas
+
+
+
+- **Parameters:** SchemaHandle target, const std::vector<SchemaHandle>& sources
+
+- **Return:** `void`
+
+---
+
+## EnableSchemaTracking
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpSchemaState
+
+
+
+- **Parameters:** SchemaHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## AnalyzeSchemaUsage
+
+
+
+- **Parameters:** SchemaHandle handle
+
+- **Return:** `void`
 
 ---

@@ -1,161 +1,331 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeParticleSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeParticleSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableGPUSimulation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableInstancing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableLOD`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCollision`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxActiveSystems`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxParticlesPerSystem`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10000`
+
+
+
+### `updateBatchSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1024`
+
+
+
+### `cullingDistance`
+
+- **Type:** `float`
+
+- **Default Value:** `100.0f`
+
+
+
+### `effectCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Particles"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeParticleConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `count`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1)`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeParticleConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeParticleStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeParticleConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeParticleSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeParticleConfig& config = {}
+- **Parameters:** const RuntimeParticleConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateSystem
-
-
-
-**Parameters:** const ParticleSystemDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroySystem
+## Update
 
 
 
-**Parameters:** ParticleSystemHandle handle
+- **Parameters:** 
 
----
-
-### EmitParticles
-
-
-
-**Parameters:** ParticleSystemHandle handle, uint32_t count = 1
+- **Return:** `void`
 
 ---
 
-### StopEmission
+## CreateSystem
 
 
 
-**Parameters:** ParticleSystemHandle handle
+- **Parameters:** const ParticleSystemDesc& desc
 
----
-
-### KillParticles
-
-
-
-**Parameters:** ParticleSystemHandle handle
+- **Return:** `ParticleSystemHandle`
 
 ---
 
-### SetEmissionRate
+## DestroySystem
 
 
 
-**Parameters:** ParticleSystemHandle handle, float particlesPerSecond
+- **Parameters:** ParticleSystemHandle handle
 
----
-
-### SetLifetime
-
-
-
-**Parameters:** ParticleSystemHandle handle, float minLife, float maxLife
+- **Return:** `void`
 
 ---
 
-### SetVelocity
+## EmitParticles
 
 
 
-**Parameters:** ParticleSystemHandle handle, const Vector3& velocity
+- **Parameters:** ParticleSystemHandle handle, uint32_t count = 1
 
----
-
-### AddForceField
-
-
-
-**Parameters:** const std::string& name, const ForceFieldDesc& desc
+- **Return:** `void`
 
 ---
 
-### RemoveForceField
+## StopEmission
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** ParticleSystemHandle handle
 
----
-
-### UpdateForceField
-
-
-
-**Parameters:** const std::string& name, const ForceFieldParams& params
+- **Return:** `void`
 
 ---
 
-### SetSystemTransform
+## KillParticles
 
 
 
-**Parameters:** ParticleSystemHandle handle, const Transform& transform
+- **Parameters:** ParticleSystemHandle handle
 
----
-
-### SetSimulationSpace
-
-
-
-**Parameters:** ParticleSystemHandle handle, SimulationSpace space
+- **Return:** `void`
 
 ---
 
-### RegisterCollisionHandler
+## SetEmissionRate
 
 
 
-**Parameters:** ParticleSystemHandle handle, const CollisionHandler& handler
+- **Parameters:** ParticleSystemHandle handle, float particlesPerSecond
+
+- **Return:** `void`
 
 ---
 
-### UnregisterCollisionHandler
+## SetLifetime
 
 
 
-**Parameters:** ParticleSystemHandle handle
+- **Parameters:** ParticleSystemHandle handle, float minLife, float maxLife
+
+- **Return:** `void`
+
+---
+
+## SetVelocity
+
+
+
+- **Parameters:** ParticleSystemHandle handle, const Vector3& velocity
+
+- **Return:** `void`
+
+---
+
+## AddForceField
+
+
+
+- **Parameters:** const std::string& name, const ForceFieldDesc& desc
+
+- **Return:** `void`
+
+---
+
+## RemoveForceField
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## UpdateForceField
+
+
+
+- **Parameters:** const std::string& name, const ForceFieldParams& params
+
+- **Return:** `void`
+
+---
+
+## SetSystemTransform
+
+
+
+- **Parameters:** ParticleSystemHandle handle, const Transform& transform
+
+- **Return:** `void`
+
+---
+
+## SetSimulationSpace
+
+
+
+- **Parameters:** ParticleSystemHandle handle, SimulationSpace space
+
+- **Return:** `void`
+
+---
+
+## RegisterCollisionHandler
+
+
+
+- **Parameters:** ParticleSystemHandle handle, const CollisionHandler& handler
+
+- **Return:** `void`
+
+---
+
+## UnregisterCollisionHandler
+
+
+
+- **Parameters:** ParticleSystemHandle handle
+
+- **Return:** `void`
 
 ---

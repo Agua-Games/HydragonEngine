@@ -1,161 +1,355 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeNetworkSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeNetworkSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableReliableUDP`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEncryption`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableReplication`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConnections`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `64`
+
+
+
+### `maxPacketSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1400`
+
+
+
+### `replicationRate`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `20`
+
+
+
+### `connectionTimeout`
+
+- **Type:** `float`
+
+- **Default Value:** `5.0f`
+
+
+
+### `networkProtocol`
+
+- **Type:** `string`
+
+- **Default Value:** `"UDP"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeNetworkConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const JoinParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `priority`
+
+- **Type:** `SendPriority`
+
+- **Default Value:** `SendPriority::Normal)`
+
+
+
+### `priority`
+
+- **Type:** `SendPriority`
+
+- **Default Value:** `SendPriority::Normal)`
+
+
+
+### `config`
+
+- **Type:** `const ReplicationConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeNetworkConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeNetworkStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeNetworkConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeNetworkSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeNetworkConfig& config = {}
+- **Parameters:** const RuntimeNetworkConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateSession
-
-
-
-**Parameters:** const SessionDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroySession
+## Update
 
 
 
-**Parameters:** NetworkSessionHandle handle
+- **Parameters:** 
 
----
-
-### JoinSession
-
-
-
-**Parameters:** const std::string& address, const JoinParams& params = {}
+- **Return:** `void`
 
 ---
 
-### LeaveSession
+## CreateSession
 
 
 
-**Parameters:** 
+- **Parameters:** const SessionDesc& desc
 
----
-
-### ConnectPeer
-
-
-
-**Parameters:** const PeerDesc& desc
+- **Return:** `NetworkSessionHandle`
 
 ---
 
-### DisconnectPeer
+## DestroySession
 
 
 
-**Parameters:** ConnectionHandle handle
+- **Parameters:** NetworkSessionHandle handle
 
----
-
-### SendData
-
-
-
-**Parameters:** ConnectionHandle handle, const NetworkPacket& packet, SendPriority priority = SendPriority::Normal
+- **Return:** `void`
 
 ---
 
-### BroadcastData
+## JoinSession
 
 
 
-**Parameters:** const NetworkPacket& packet, SendPriority priority = SendPriority::Normal
+- **Parameters:** const std::string& address, const JoinParams& params = {}
 
----
-
-### EnableReplication
-
-
-
-**Parameters:** EntityHandle entity, const ReplicationConfig& config = {}
+- **Return:** `void`
 
 ---
 
-### DisableReplication
+## LeaveSession
 
 
 
-**Parameters:** EntityHandle entity
+- **Parameters:** 
 
----
-
-### SetReplicationAuthority
-
-
-
-**Parameters:** EntityHandle entity, ConnectionHandle authority
+- **Return:** `void`
 
 ---
 
-### RegisterPacketHandler
+## ConnectPeer
 
 
 
-**Parameters:** PacketType type, const PacketHandler& handler
+- **Parameters:** const PeerDesc& desc
 
----
-
-### UnregisterPacketHandler
-
-
-
-**Parameters:** PacketType type
+- **Return:** `ConnectionHandle`
 
 ---
 
-### RegisterReplicationFilter
+## DisconnectPeer
 
 
 
-**Parameters:** const std::string& name, std::unique_ptr<IReplicationFilter> filter
+- **Parameters:** ConnectionHandle handle
+
+- **Return:** `void`
 
 ---
 
-### UnregisterReplicationFilter
+## SendData
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** ConnectionHandle handle, const NetworkPacket& packet, SendPriority priority = SendPriority::Normal
+
+- **Return:** `void`
+
+---
+
+## BroadcastData
+
+
+
+- **Parameters:** const NetworkPacket& packet, SendPriority priority = SendPriority::Normal
+
+- **Return:** `void`
+
+---
+
+## EnableReplication
+
+
+
+- **Parameters:** EntityHandle entity, const ReplicationConfig& config = {}
+
+- **Return:** `void`
+
+---
+
+## DisableReplication
+
+
+
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
+
+---
+
+## SetReplicationAuthority
+
+
+
+- **Parameters:** EntityHandle entity, ConnectionHandle authority
+
+- **Return:** `void`
+
+---
+
+## RegisterPacketHandler
+
+
+
+- **Parameters:** PacketType type, const PacketHandler& handler
+
+- **Return:** `void`
+
+---
+
+## UnregisterPacketHandler
+
+
+
+- **Parameters:** PacketType type
+
+- **Return:** `void`
+
+---
+
+## RegisterReplicationFilter
+
+
+
+- **Parameters:** const std::string& name, std::unique_ptr<IReplicationFilter> filter
+
+- **Return:** `void`
+
+---
+
+## UnregisterReplicationFilter
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---

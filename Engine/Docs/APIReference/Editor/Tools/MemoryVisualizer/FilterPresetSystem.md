@@ -1,81 +1,179 @@
+# Classes
+---
 
-## Classes
-
-### FilterPresetSystem
-
-
-
-
-## Functions
-
-### savePreset
+## FilterPresetSystem
+---
 
 
 
-**Parameters:** const QString& name, const FilterCriteria& criteria
+
+# Variables
+---
+
+### `name`
+
+- **Type:** `QString`
+
+
+
+### `description`
+
+- **Type:** `QString`
+
+
+
+### `criteria`
+
+- **Type:** `FilterCriteria`
+
+
+
+### `isBuiltIn`
+
+- **Type:** `bool`
+
+
+
+### `created`
+
+- **Type:** `QDateTime`
+
+
+
+### `lastUsed`
+
+- **Type:** `QDateTime`
+
+
+
+### `useCount`
+
+- **Type:** `int`
+
+
+
+### `m_Settings`
+
+- **Type:** `QSettings`
+
+
+
+
+# Structs
+---
+
+### `FilterPreset`
+
+- **Description:** 
+
+- **Members:**
+
+  - `name`: `QString` - 
+
+  - `description`: `QString` - 
+
+  - `criteria`: `FilterCriteria` - 
+
+  - `isBuiltIn`: `bool` - 
+
+  - `created`: `QDateTime` - 
+
+  - `lastUsed`: `QDateTime` - 
+
+  - `useCount`: `int` - 
+
+
+
+
+# Functions
+---
+
+## savePreset
+
+
+
+- **Parameters:** const QString& name, const FilterCriteria& criteria
+
+- **Return:** `void`
 
 ---
 
-### loadPreset
+## loadPreset
 
 
 
-**Parameters:** const QString& name
+- **Parameters:** const QString& name
 
----
-
-### deletePreset
-
-
-
-**Parameters:** const QString& name
+- **Return:** `void`
 
 ---
 
-### initializeDefaultPresets
+## deletePreset
 
 
 
-**Parameters:** 
+- **Parameters:** const QString& name
 
----
-
-### setAutoSaveEnabled
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### setMaxPresets
+## initializeDefaultPresets
 
 
 
-**Parameters:** size_t count
+- **Parameters:** 
 
----
-
-### addMemoryPressurePresets
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### addPerformancePresets
+## setAutoSaveEnabled
 
 
 
-**Parameters:** 
+- **Parameters:** bool enable
+
+- **Return:** `void`
 
 ---
 
-### addDebugPresets
+## setMaxPresets
 
 
 
-**Parameters:** 
+- **Parameters:** size_t count
+
+- **Return:** `void`
+
+---
+
+## addMemoryPressurePresets
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## addPerformancePresets
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## addDebugPresets
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

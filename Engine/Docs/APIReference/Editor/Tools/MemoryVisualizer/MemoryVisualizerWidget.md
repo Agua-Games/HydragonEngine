@@ -1,50 +1,115 @@
 
-## Functions
+# Variables
+---
 
-### MemoryVisualizerWidget
+### `parent`
+
+- **Type:** `QWidget*`
+
+- **Default Value:** `nullptr)`
 
 
 
-**Parameters:** QWidget* parent = nullptr
+### `m_MemoryUsageChart`
+
+- **Type:** `QChartView*`
+
+
+
+### `m_AllocationDistributionChart`
+
+- **Type:** `QChartView*`
+
+
+
+### `totalUsed`
+
+- **Type:** `size_t`
+
+
+
+### `peakUsage`
+
+- **Type:** `size_t`
+
+
+
+
+# Structs
+---
+
+### `MemorySnapshot`
+
+- **Description:** 
+
+- **Members:**
+
+  - `totalUsed`: `size_t` - 
+
+  - `peakUsage`: `size_t` - 
+
+
+
+
+# Functions
+---
+
+## MemoryVisualizerWidget
+
+
+
+- **Parameters:** QWidget* parent = nullptr
+
+- **Return:** `explicit`
 
 ---
 
-### updateMemoryView
+## updateMemoryView
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### onAllocationSelected
-
-
-
-**Parameters:** const QPointF& point
+- **Return:** `void`
 
 ---
 
-### setupCharts
+## onAllocationSelected
 
 
 
-**Parameters:** 
+- **Parameters:** const QPointF& point
 
----
-
-### createMemoryMap
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### updateAllocationDetails
+## setupCharts
 
 
 
-**Parameters:** const Memory::MemoryBlock& block
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## createMemoryMap
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## updateAllocationDetails
+
+
+
+- **Parameters:** const Memory::MemoryBlock& block
+
+- **Return:** `void`
 
 ---

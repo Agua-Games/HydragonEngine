@@ -1,10 +1,89 @@
 
-## Functions
+# Variables
+---
 
-### MemoryPoolAllocator
+### `blockSize`
+
+- **Type:** `size_t`
 
 
 
-**Parameters:** const PoolConfig& config
+### `initialBlockCount`
+
+- **Type:** `size_t`
+
+
+
+### `maxBlockCount`
+
+- **Type:** `size_t`
+
+
+
+### `allowGrowth`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `m_Config`
+
+- **Type:** `PoolConfig`
+
+
+
+### `BlockHeader`
+
+- **Type:** `struct`
+
+
+
+### `m_FreeList`
+
+- **Type:** `BlockHeader*`
+
+- **Default Value:** `nullptr`
+
+
+
+### `m_AllocatedBlocks`
+
+- **Type:** `size_t`
+
+- **Default Value:** `0`
+
+
+
+
+# Structs
+---
+
+### `PoolConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `blockSize`: `size_t` - 
+
+  - `initialBlockCount`: `size_t` - 
+
+  - `maxBlockCount`: `size_t` - 
+
+
+
+
+# Functions
+---
+
+## MemoryPoolAllocator
+
+
+
+- **Parameters:** const PoolConfig& config
+
+- **Return:** `explicit`
 
 ---

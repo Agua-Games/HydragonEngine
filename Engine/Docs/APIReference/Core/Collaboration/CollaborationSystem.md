@@ -1,145 +1,327 @@
+# Classes
+---
 
-## Classes
-
-### CollaborationSystem
-
-
-
-
-## Functions
-
-### Get
+## CollaborationSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `vcs`
+
+- **Type:** `VersionControlHandle`
+
+
+
+### `strategy`
+
+- **Type:** `ConflictResolutionStrategy`
+
+
+
+### `syncPolicy`
+
+- **Type:** `SyncPolicy`
+
+
+
+### `enableRealTimeSync`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableVersionControl`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableConflictResolution`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableChangeTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `syncInterval`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxParticipants`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `32`
+
+
+
+### `serverAddress`
+
+- **Type:** `string`
+
+- **Default Value:** `"localhost"`
+
+
+
+### `serverPort`
+
+- **Type:** `uint16_t`
+
+- **Default Value:** `8080`
+
+
+
+### `config`
+
+- **Type:** `const CollaborationConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `CollaborationConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `CollaborationStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `CollaborationContext`
+
+- **Description:** 
+
+- **Members:**
+
+  - `vcs`: `VersionControlHandle` - 
+
+  - `strategy`: `ConflictResolutionStrategy` - 
+
+  - `syncPolicy`: `SyncPolicy` - 
+
+
+
+### `CollaborationConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static CollaborationSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const CollaborationConfig& config = {}
+- **Parameters:** const CollaborationConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateSession
-
-
-
-**Parameters:** const std::string& identifier
+- **Return:** `void`
 
 ---
 
-### JoinSession
+## Update
 
 
 
-**Parameters:** SessionHandle handle, const UserInfo& user
+- **Parameters:** 
 
----
-
-### LeaveSession
-
-
-
-**Parameters:** SessionHandle handle
+- **Return:** `void`
 
 ---
 
-### CloseSession
+## CreateSession
 
 
 
-**Parameters:** SessionHandle handle
+- **Parameters:** const std::string& identifier
 
----
-
-### SubmitChange
-
-
-
-**Parameters:** SessionHandle handle, const ChangeSet& changes
+- **Return:** `SessionHandle`
 
 ---
 
-### RevertChange
+## JoinSession
 
 
 
-**Parameters:** SessionHandle handle, const ChangeId& changeId
+- **Parameters:** SessionHandle handle, const UserInfo& user
 
----
-
-### AcceptChange
-
-
-
-**Parameters:** SessionHandle handle, const ChangeId& changeId
+- **Return:** `void`
 
 ---
 
-### RejectChange
+## LeaveSession
 
 
 
-**Parameters:** SessionHandle handle, const ChangeId& changeId
+- **Parameters:** SessionHandle handle
 
----
-
-### Synchronize
-
-
-
-**Parameters:** SessionHandle handle
+- **Return:** `void`
 
 ---
 
-### RequestLock
+## CloseSession
 
 
 
-**Parameters:** SessionHandle handle, const ResourceId& resourceId
+- **Parameters:** SessionHandle handle
 
----
-
-### ReleaseLock
-
-
-
-**Parameters:** SessionHandle handle, const ResourceId& resourceId
+- **Return:** `void`
 
 ---
 
-### RegisterEventHandler
+## SubmitChange
 
 
 
-**Parameters:** std::unique_ptr<ICollaborationEventHandler> handler
+- **Parameters:** SessionHandle handle, const ChangeSet& changes
+
+- **Return:** `void`
 
 ---
 
-### UnregisterEventHandler
+## RevertChange
 
 
 
-**Parameters:** const std::string& handlerId
+- **Parameters:** SessionHandle handle, const ChangeId& changeId
+
+- **Return:** `void`
+
+---
+
+## AcceptChange
+
+
+
+- **Parameters:** SessionHandle handle, const ChangeId& changeId
+
+- **Return:** `void`
+
+---
+
+## RejectChange
+
+
+
+- **Parameters:** SessionHandle handle, const ChangeId& changeId
+
+- **Return:** `void`
+
+---
+
+## Synchronize
+
+
+
+- **Parameters:** SessionHandle handle
+
+- **Return:** `void`
+
+---
+
+## RequestLock
+
+
+
+- **Parameters:** SessionHandle handle, const ResourceId& resourceId
+
+- **Return:** `void`
+
+---
+
+## ReleaseLock
+
+
+
+- **Parameters:** SessionHandle handle, const ResourceId& resourceId
+
+- **Return:** `void`
+
+---
+
+## RegisterEventHandler
+
+
+
+- **Parameters:** std::unique_ptr<ICollaborationEventHandler> handler
+
+- **Return:** `void`
+
+---
+
+## UnregisterEventHandler
+
+
+
+- **Parameters:** const std::string& handlerId
+
+- **Return:** `void`
 
 ---

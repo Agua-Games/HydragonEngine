@@ -1,34 +1,129 @@
 
-## Functions
+# Variables
+---
 
-### StreamingAllocator
+### `streamBufferSize`
+
+- **Type:** `size_t`
 
 
 
-**Parameters:** const StreamConfig& config
+### `minStreamBlockSize`
+
+- **Type:** `size_t`
+
+
+
+### `enableDefrag`
+
+- **Type:** `bool`
+
+
+
+### `ptr`
+
+- **Type:** `void*`
+
+
+
+### `size`
+
+- **Type:** `size_t`
+
+
+
+### `frameId`
+
+- **Type:** `uint64_t`
+
+
+
+### `m_CurrentFrame`
+
+- **Type:** `uint64_t`
+
+- **Default Value:** `0`
+
+
+
+### `m_Config`
+
+- **Type:** `StreamConfig`
+
+
+
+
+# Structs
+---
+
+### `StreamConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `streamBufferSize`: `size_t` - 
+
+  - `minStreamBlockSize`: `size_t` - 
+
+  - `enableDefrag`: `bool` - 
+
+
+
+### `StreamBlock`
+
+- **Description:** 
+
+- **Members:**
+
+  - `ptr`: `void*` - 
+
+  - `size`: `size_t` - 
+
+  - `frameId`: `uint64_t` - 
+
+
+
+
+# Functions
+---
+
+## StreamingAllocator
+
+
+
+- **Parameters:** const StreamConfig& config
+
+- **Return:** `explicit`
 
 ---
 
-### BeginFrame
+## BeginFrame
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### EndFrame
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### FlushStream
+## EndFrame
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## FlushStream
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

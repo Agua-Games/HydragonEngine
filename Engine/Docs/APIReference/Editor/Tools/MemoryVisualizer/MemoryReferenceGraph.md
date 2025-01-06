@@ -1,73 +1,137 @@
+# Classes
+---
 
-## Classes
-
-### LayoutMode
-
-
-
-
-## Functions
-
-### setLayoutMode
+## LayoutMode
+---
 
 
 
-**Parameters:** LayoutMode mode
+
+# Variables
+---
+
+### `block`
+
+- **Type:** `MemoryBlock*`
+
+
+
+### `visual`
+
+- **Type:** `QGraphicsItem*`
+
+
+
+### `referenceStrength`
+
+- **Type:** `float`
+
+
+
+### `m_CurrentLayout`
+
+- **Type:** `LayoutMode`
+
+
+
+
+# Structs
+---
+
+### `ReferenceNode`
+
+- **Description:** 
+
+- **Members:**
+
+  - `block`: `MemoryBlock*` - 
+
+  - `visual`: `QGraphicsItem*` - 
+
+  - `referenceStrength`: `float` - 
+
+
+
+
+# Functions
+---
+
+## setLayoutMode
+
+
+
+- **Parameters:** LayoutMode mode
+
+- **Return:** `void`
 
 ---
 
-### updateReferences
+## updateReferences
 
 
 
-**Parameters:** const std::vector<Memory::MemoryBlock>& blocks
+- **Parameters:** const std::vector<Memory::MemoryBlock>& blocks
 
----
-
-### findStrongReferences
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### detectCycles
+## findStrongReferences
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### highlightGroup
-
-
-
-**Parameters:** const ReferenceNode* node
+- **Return:** `void`
 
 ---
 
-### calculateLayout
+## detectCycles
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### drawConnections
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### updateNodeVisuals
+## highlightGroup
 
 
 
-**Parameters:** 
+- **Parameters:** const ReferenceNode* node
+
+- **Return:** `void`
+
+---
+
+## calculateLayout
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## drawConnections
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## updateNodeVisuals
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

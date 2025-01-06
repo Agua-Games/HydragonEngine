@@ -1,97 +1,227 @@
+# Classes
+---
 
-## Classes
-
-### ProfilerTools
-
-
-
-
-## Functions
-
-### Get
+## ProfilerTools
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableTimeline`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableFlameGraph`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStatistics`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableExport`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxTimelineEvents`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10000`
+
+
+
+### `maxStackDepth`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `64`
+
+
+
+### `config`
+
+- **Type:** `const ProfilerToolsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `details`
+
+- **Type:** `string&`
+
+- **Default Value:** `"")`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ProfilerToolsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ProfilerToolsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ProfilerToolsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ProfilerTools&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ProfilerToolsConfig& config = {}
+- **Parameters:** const ProfilerToolsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### BeginCapture
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### EndCapture
+## Update
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### AddEvent
-
-
-
-**Parameters:** const std::string& name, ProfilerEventType type
+- **Return:** `void`
 
 ---
 
-### AddMarker
+## BeginCapture
 
 
 
-**Parameters:** const std::string& name, const std::string& details = ""
+- **Parameters:** const std::string& name
 
----
-
-### GenerateReport
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### ExportTimeline
+## EndCapture
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### ExportFlameGraph
+## AddEvent
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** const std::string& name, ProfilerEventType type
+
+- **Return:** `void`
+
+---
+
+## AddMarker
+
+
+
+- **Parameters:** const std::string& name, const std::string& details = ""
+
+- **Return:** `void`
+
+---
+
+## GenerateReport
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ExportTimeline
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ExportFlameGraph
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
 
 ---

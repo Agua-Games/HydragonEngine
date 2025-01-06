@@ -1,81 +1,149 @@
+# Classes
+---
 
-## Classes
-
-### RenderGraph
-
-
-
-
-## Functions
-
-### CreateResource
+## RenderGraph
+---
 
 
 
-**Parameters:** const ResourceDesc& desc
+
+# Variables
+---
+
+### `name`
+
+- **Type:** `string`
+
+
+
+### `desc`
+
+- **Type:** `PassDesc`
+
+
+
+### `m_Compiled`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `PassDesc`
+
+- **Description:** 
+
+- **Members:**
+
+  - `name`: `string` - 
+
+
+
+### `Pass`
+
+- **Description:** 
+
+- **Members:**
+
+  - `desc`: `PassDesc` - 
+
+
+
+
+# Functions
+---
+
+## CreateResource
+
+
+
+- **Parameters:** const ResourceDesc& desc
+
+- **Return:** `ResourceHandle`
 
 ---
 
-### AddPass
+## AddPass
 
 
 
-**Parameters:** const PassDesc& desc
+- **Parameters:** const PassDesc& desc
 
----
-
-### SetInput
-
-
-
-**Parameters:** PassHandle pass, const std::string& name, ResourceHandle resource
+- **Return:** `PassHandle`
 
 ---
 
-### SetOutput
+## SetInput
 
 
 
-**Parameters:** PassHandle pass, const std::string& name, ResourceHandle resource
+- **Parameters:** PassHandle pass, const std::string& name, ResourceHandle resource
 
----
-
-### AddDependency
-
-
-
-**Parameters:** PassHandle dependent, PassHandle dependency
+- **Return:** `void`
 
 ---
 
-### RemoveDependency
+## SetOutput
 
 
 
-**Parameters:** PassHandle dependent, PassHandle dependency
+- **Parameters:** PassHandle pass, const std::string& name, ResourceHandle resource
 
----
-
-### Compile
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Execute
+## AddDependency
 
 
 
-**Parameters:** CommandBuffer& cmd
+- **Parameters:** PassHandle dependent, PassHandle dependency
+
+- **Return:** `void`
 
 ---
 
-### Clear
+## RemoveDependency
 
 
 
-**Parameters:** 
+- **Parameters:** PassHandle dependent, PassHandle dependency
+
+- **Return:** `void`
+
+---
+
+## Compile
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## Execute
+
+
+
+- **Parameters:** CommandBuffer& cmd
+
+- **Return:** `void`
+
+---
+
+## Clear
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

@@ -1,41 +1,147 @@
+# Classes
+---
 
-## Classes
-
-### ThreadPool
-
-
-
-
-## Functions
-
-### ThreadPool
+## ThreadPool
+---
 
 
 
-**Parameters:** const ThreadPoolConfig& config = {}
+
+# Variables
+---
+
+### `threadCount`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `0`
+
+
+
+### `stackSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `1024*1024`
+
+
+
+### `pinThreads`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `useAffinity`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `config`
+
+- **Type:** `const ThreadPoolConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `priority`
+
+- **Type:** `ThreadPriority`
+
+- **Default Value:** `ThreadPriority::Normal)`
+
+
+
+### `m_Initialized`
+
+- **Type:** `return`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ThreadPoolConfig`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `m_Stats`
+
+- **Type:** `ThreadStats`
+
+
+
+
+# Structs
+---
+
+### `ThreadPoolConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## ThreadPool
+
+
+
+- **Parameters:** const ThreadPoolConfig& config = {}
+
+- **Return:** `explicit`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### EnqueueTask
+## Shutdown
 
 
 
-**Parameters:** F&& task, ThreadPriority priority = ThreadPriority::Normal
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## EnqueueTask
+
+
+
+- **Parameters:** F&& task, ThreadPriority priority = ThreadPriority::Normal
+
+- **Return:** `void`
 
 ---

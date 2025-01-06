@@ -1,34 +1,163 @@
 
-## Functions
+# Variables
+---
 
-### DefaultMemoryStrategy
+### `initialHeapSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `1024 * 1024 * 64`
 
 
 
-**Parameters:** const Config& config = {}
+### `enableDefrag`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `trackAllocations`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `config`
+
+- **Type:** `const Config&`
+
+- **Default Value:** `{})`
+
+
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `memory`
+
+- **Type:** `void*`
+
+
+
+### `size`
+
+- **Type:** `size_t`
+
+
+
+### `used`
+
+- **Type:** `bool`
+
+
+
+### `info`
+
+- **Type:** `AllocationInfo`
+
+
+
+### `m_HeapStart`
+
+- **Type:** `void*`
+
+
+
+### `m_HeapSize`
+
+- **Type:** `size_t`
+
+
+
+### `m_Stats`
+
+- **Type:** `MemoryStats`
+
+
+
+
+# Structs
+---
+
+### `Config`
+
+- **Description:** 
+
+- **Members:**
+
+  - `64`: `1024 * 1024 *` - 
+
+
+
+### `HeapBlock`
+
+- **Description:** 
+
+- **Members:**
+
+  - `memory`: `void*` - 
+
+  - `size`: `size_t` - 
+
+  - `used`: `bool` - 
+
+  - `info`: `AllocationInfo` - 
+
+
+
+
+# Functions
+---
+
+## DefaultMemoryStrategy
+
+
+
+- **Parameters:** const Config& config = {}
+
+- **Return:** `explicit`
 
 ---
 
-### findFreeBlock
+## findFreeBlock
 
 
 
-**Parameters:** size_t size
+- **Parameters:** size_t size
 
----
-
-### splitBlock
-
-
-
-**Parameters:** HeapBlock* block, size_t size
+- **Return:** `HeapBlock*`
 
 ---
 
-### mergeAdjacentBlocks
+## splitBlock
 
 
 
-**Parameters:** 
+- **Parameters:** HeapBlock* block, size_t size
+
+- **Return:** `void`
+
+---
+
+## mergeAdjacentBlocks
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

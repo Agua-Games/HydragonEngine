@@ -1,10 +1,92 @@
+# Classes
+---
 
-## Classes
-
-### EditorActionMemory
-
+## EditorActionMemory
+---
 
 
-### ActionType
+
+## ActionType
+---
+
+
+
+
+# Variables
+---
+
+### `type`
+
+- **Type:** `ActionType`
+
+
+
+### `identifier`
+
+- **Type:** `const char*`
+
+
+
+### `preserveState`
+
+- **Type:** `bool`
+
+
+
+### `userData`
+
+- **Type:** `void*`
+
+
+
+### `ptr`
+
+- **Type:** `void*`
+
+- **Default Value:** `m_Strategy.allocateForScript(size, hint)`
+
+
+
+### `ptr`
+
+- **Type:** `return`
+
+
+
+### `true`
+
+- **Type:** `return`
+
+
+
+### `false`
+
+- **Type:** `return`
+
+
+
+### `m_Strategy`
+
+- **Type:** `ScriptingMemoryStrategy`
+
+
+
+
+# Structs
+---
+
+### `ActionContext`
+
+- **Description:** 
+
+- **Members:**
+
+  - `type`: `ActionType` - 
+
+  - `identifier`: `const char*` - 
+
+  - `preserveState`: `bool` - 
+
+  - `userData`: `void*` - 
 
 

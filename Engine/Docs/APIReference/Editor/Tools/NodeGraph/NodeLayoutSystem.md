@@ -1,97 +1,227 @@
+# Classes
+---
 
-## Classes
-
-### NodeLayoutSystem
-
-
-
-
-## Functions
-
-### Get
+## NodeLayoutSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableAutoArrange`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMinimization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAlignment`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSpacing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `minNodeDistance`
+
+- **Type:** `float`
+
+- **Default Value:** `50.0f`
+
+
+
+### `verticalSpacing`
+
+- **Type:** `float`
+
+- **Default Value:** `100.0f`
+
+
+
+### `horizontalSpacing`
+
+- **Type:** `float`
+
+- **Default Value:** `150.0f`
+
+
+
+### `config`
+
+- **Type:** `const NodeLayoutConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `NodeLayoutConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `NodeLayoutStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `NodeLayoutConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static NodeLayoutSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const NodeLayoutConfig& config = {}
+- **Parameters:** const NodeLayoutConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### ArrangeNodes
-
-
-
-**Parameters:** const std::vector<NodeHandle>& nodes
+- **Return:** `void`
 
 ---
 
-### AlignNodes
+## Update
 
 
 
-**Parameters:** const std::vector<NodeHandle>& nodes, AlignmentMode mode
+- **Parameters:** 
 
----
-
-### DistributeNodes
-
-
-
-**Parameters:** const std::vector<NodeHandle>& nodes, DistributionMode mode
+- **Return:** `void`
 
 ---
 
-### MinimizeGroup
+## ArrangeNodes
 
 
 
-**Parameters:** GroupHandle handle
+- **Parameters:** const std::vector<NodeHandle>& nodes
 
----
-
-### ExpandGroup
-
-
-
-**Parameters:** GroupHandle handle
+- **Return:** `void`
 
 ---
 
-### SetLayoutStrategy
+## AlignNodes
 
 
 
-**Parameters:** std::unique_ptr<ILayoutStrategy> strategy
+- **Parameters:** const std::vector<NodeHandle>& nodes, AlignmentMode mode
+
+- **Return:** `void`
 
 ---
 
-### ApplyLayout
+## DistributeNodes
 
 
 
-**Parameters:** const std::string& layoutName
+- **Parameters:** const std::vector<NodeHandle>& nodes, DistributionMode mode
+
+- **Return:** `void`
+
+---
+
+## MinimizeGroup
+
+
+
+- **Parameters:** GroupHandle handle
+
+- **Return:** `void`
+
+---
+
+## ExpandGroup
+
+
+
+- **Parameters:** GroupHandle handle
+
+- **Return:** `void`
+
+---
+
+## SetLayoutStrategy
+
+
+
+- **Parameters:** std::unique_ptr<ILayoutStrategy> strategy
+
+- **Return:** `void`
+
+---
+
+## ApplyLayout
+
+
+
+- **Parameters:** const std::string& layoutName
+
+- **Return:** `void`
 
 ---

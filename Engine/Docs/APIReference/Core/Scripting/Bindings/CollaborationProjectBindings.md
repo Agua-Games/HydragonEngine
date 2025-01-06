@@ -1,249 +1,433 @@
+# Classes
+---
 
-## Classes
-
-### CollaborationProjectBindings
-
-
-
-
-## Functions
-
-### Get
+## CollaborationProjectBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableTeamManagement`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableTaskTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableTimeTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableNotifications`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxTeams`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `16`
+
+
+
+### `maxTasksPerTeam`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxMembersPerTeam`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `50`
+
+
+
+### `projectCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Projects"`
+
+
+
+### `config`
+
+- **Type:** `const CollaborationProjectBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const ProjectDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `CollaborationProjectBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `CollaborationProjectBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `CollaborationProjectBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static CollaborationProjectBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const CollaborationProjectBindingsConfig& config = {}
+- **Parameters:** const CollaborationProjectBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateProject
-
-
-
-**Parameters:** const std::string& name, const ProjectDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### OpenProject
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### CloseProject
-
-
-
-**Parameters:** ProjectHandle handle
+- **Return:** `void`
 
 ---
 
-### SaveProject
+## CreateProject
 
 
 
-**Parameters:** ProjectHandle handle, const std::string& path
+- **Parameters:** const std::string& name, const ProjectDesc& desc = {}
 
----
-
-### CreateTeam
-
-
-
-**Parameters:** ProjectHandle project, const std::string& name
+- **Return:** `ProjectHandle`
 
 ---
 
-### AddTeamMember
+## OpenProject
 
 
 
-**Parameters:** TeamHandle team, const UserInfo& member
+- **Parameters:** const std::string& path
 
----
-
-### RemoveTeamMember
-
-
-
-**Parameters:** TeamHandle team, const UserInfo& member
+- **Return:** `void`
 
 ---
 
-### CreateTask
+## CloseProject
 
 
 
-**Parameters:** TeamHandle team, const TaskDesc& desc
+- **Parameters:** ProjectHandle handle
 
----
-
-### AssignTask
-
-
-
-**Parameters:** TaskHandle task, const UserInfo& assignee
+- **Return:** `void`
 
 ---
 
-### UpdateTaskStatus
+## SaveProject
 
 
 
-**Parameters:** TaskHandle task, TaskStatus status
+- **Parameters:** ProjectHandle handle, const std::string& path
 
----
-
-### SetTaskPriority
-
-
-
-**Parameters:** TaskHandle task, TaskPriority priority
+- **Return:** `void`
 
 ---
 
-### StartTimeTracking
+## CreateTeam
 
 
 
-**Parameters:** TaskHandle task
+- **Parameters:** ProjectHandle project, const std::string& name
 
----
-
-### StopTimeTracking
-
-
-
-**Parameters:** TaskHandle task
+- **Return:** `TeamHandle`
 
 ---
 
-### AddTimeEntry
+## AddTeamMember
 
 
 
-**Parameters:** TaskHandle task, const TimeEntry& entry
+- **Parameters:** TeamHandle team, const UserInfo& member
 
----
-
-### UpdateTaskProgress
-
-
-
-**Parameters:** TaskHandle task, float progress
+- **Return:** `void`
 
 ---
 
-### SetTaskMilestone
+## RemoveTeamMember
 
 
 
-**Parameters:** TaskHandle task, const std::string& milestone
+- **Parameters:** TeamHandle team, const UserInfo& member
 
----
-
-### AddTaskComment
-
-
-
-**Parameters:** TaskHandle task, const TaskComment& comment
+- **Return:** `void`
 
 ---
 
-### ValidateProject
+## CreateTask
 
 
 
-**Parameters:** ProjectHandle handle
+- **Parameters:** TeamHandle team, const TaskDesc& desc
 
----
-
-### OptimizeProject
-
-
-
-**Parameters:** ProjectHandle handle
+- **Return:** `TaskHandle`
 
 ---
 
-### ArchiveCompletedTasks
+## AssignTask
 
 
 
-**Parameters:** ProjectHandle handle
+- **Parameters:** TaskHandle task, const UserInfo& assignee
 
----
-
-### SendTaskNotification
-
-
-
-**Parameters:** TaskHandle task, const NotificationDesc& desc
+- **Return:** `void`
 
 ---
 
-### SetNotificationCallback
+## UpdateTaskStatus
 
 
 
-**Parameters:** const NotificationCallback& callback
+- **Parameters:** TaskHandle task, TaskStatus status
 
----
-
-### EnableNotifications
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### EnableProjectTracking
+## SetTaskPriority
 
 
 
-**Parameters:** bool enable
+- **Parameters:** TaskHandle task, TaskPriority priority
 
----
-
-### DumpProjectState
-
-
-
-**Parameters:** ProjectHandle handle, const std::string& path
+- **Return:** `void`
 
 ---
 
-### AnalyzeProjectMetrics
+## StartTimeTracking
 
 
 
-**Parameters:** ProjectHandle handle
+- **Parameters:** TaskHandle task
+
+- **Return:** `void`
+
+---
+
+## StopTimeTracking
+
+
+
+- **Parameters:** TaskHandle task
+
+- **Return:** `void`
+
+---
+
+## AddTimeEntry
+
+
+
+- **Parameters:** TaskHandle task, const TimeEntry& entry
+
+- **Return:** `void`
+
+---
+
+## UpdateTaskProgress
+
+
+
+- **Parameters:** TaskHandle task, float progress
+
+- **Return:** `void`
+
+---
+
+## SetTaskMilestone
+
+
+
+- **Parameters:** TaskHandle task, const std::string& milestone
+
+- **Return:** `void`
+
+---
+
+## AddTaskComment
+
+
+
+- **Parameters:** TaskHandle task, const TaskComment& comment
+
+- **Return:** `void`
+
+---
+
+## ValidateProject
+
+
+
+- **Parameters:** ProjectHandle handle
+
+- **Return:** `void`
+
+---
+
+## OptimizeProject
+
+
+
+- **Parameters:** ProjectHandle handle
+
+- **Return:** `void`
+
+---
+
+## ArchiveCompletedTasks
+
+
+
+- **Parameters:** ProjectHandle handle
+
+- **Return:** `void`
+
+---
+
+## SendTaskNotification
+
+
+
+- **Parameters:** TaskHandle task, const NotificationDesc& desc
+
+- **Return:** `void`
+
+---
+
+## SetNotificationCallback
+
+
+
+- **Parameters:** const NotificationCallback& callback
+
+- **Return:** `void`
+
+---
+
+## EnableNotifications
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## EnableProjectTracking
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpProjectState
+
+
+
+- **Parameters:** ProjectHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## AnalyzeProjectMetrics
+
+
+
+- **Parameters:** ProjectHandle handle
+
+- **Return:** `void`
 
 ---

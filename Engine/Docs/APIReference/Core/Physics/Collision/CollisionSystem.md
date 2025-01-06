@@ -1,89 +1,211 @@
+# Classes
+---
 
-## Classes
-
-### CollisionSystem
-
-
-
-
-## Functions
-
-### Get
+## CollisionSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `maxCollisionPairs`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10000`
+
+
+
+### `maxContactPoints`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100000`
+
+
+
+### `enableBroadphase`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableContinuous`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `contactThreshold`
+
+- **Type:** `float`
+
+- **Default Value:** `0.01f`
+
+
+
+### `memoryBudget`
+
+- **Type:** `size_t`
+
+- **Default Value:** `64 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const CollisionConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `CollisionConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `CollisionStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `CollisionConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `64 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static CollisionSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const CollisionConfig& config = {}
+- **Parameters:** const CollisionConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### AddCollider
-
-
-
-**Parameters:** ColliderHandle handle, const ColliderDesc& desc
+- **Return:** `void`
 
 ---
 
-### RemoveCollider
+## Update
 
 
 
-**Parameters:** ColliderHandle handle
+- **Parameters:** 
 
----
-
-### UpdateCollider
-
-
-
-**Parameters:** ColliderHandle handle, const Transform& transform
+- **Return:** `void`
 
 ---
 
-### SetCollisionFilter
+## AddCollider
 
 
 
-**Parameters:** ColliderHandle handle, uint32_t group, uint32_t mask
+- **Parameters:** ColliderHandle handle, const ColliderDesc& desc
 
----
-
-### QueryAABB
-
-
-
-**Parameters:** const AABB& aabb, QueryCallback callback
+- **Return:** `void`
 
 ---
 
-### QuerySphere
+## RemoveCollider
 
 
 
-**Parameters:** const Sphere& sphere, QueryCallback callback
+- **Parameters:** ColliderHandle handle
+
+- **Return:** `void`
+
+---
+
+## UpdateCollider
+
+
+
+- **Parameters:** ColliderHandle handle, const Transform& transform
+
+- **Return:** `void`
+
+---
+
+## SetCollisionFilter
+
+
+
+- **Parameters:** ColliderHandle handle, uint32_t group, uint32_t mask
+
+- **Return:** `void`
+
+---
+
+## QueryAABB
+
+
+
+- **Parameters:** const AABB& aabb, QueryCallback callback
+
+- **Return:** `void`
+
+---
+
+## QuerySphere
+
+
+
+- **Parameters:** const Sphere& sphere, QueryCallback callback
+
+- **Return:** `void`
 
 ---

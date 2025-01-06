@@ -1,33 +1,41 @@
+# Classes
+---
 
-## Classes
-
-### PythonBindingSecurity
-
-
-
-
-## Functions
-
-### ValidateCallback
+## PythonBindingSecurity
+---
 
 
 
-**Parameters:** PyObject* callback
+
+# Functions
+---
+
+## ValidateCallback
+
+
+
+- **Parameters:** PyObject* callback
+
+- **Return:** `static bool`
 
 ---
 
-### SecureAccessFromPython
+## SecureAccessFromPython
 
 
 
-**Parameters:** void* ptr, size_t size
+- **Parameters:** void* ptr, size_t size
+
+- **Return:** `static void*`
 
 ---
 
-### ObfuscateMemoryLayout
+## ObfuscateMemoryLayout
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `static void`
 
 ---

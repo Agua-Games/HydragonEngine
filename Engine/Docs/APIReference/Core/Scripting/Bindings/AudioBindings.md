@@ -1,185 +1,353 @@
+# Classes
+---
 
-## Classes
-
-### AudioBindings
-
-
-
-
-## Functions
-
-### Get
+## AudioBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableSpatialization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEffects`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStreamedAudio`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableVisualization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxSoundInstances`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxEffectInstances`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `50`
+
+
+
+### `streamingBufferSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `32768`
+
+
+
+### `audioDataPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Data/Audio"`
+
+
+
+### `config`
+
+- **Type:** `const AudioBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const PlayParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AudioBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AudioBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AudioBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AudioBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AudioBindingsConfig& config = {}
+- **Parameters:** const AudioBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateSound
-
-
-
-**Parameters:** const std::string& name, const SoundDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroySound
+## Update
 
 
 
-**Parameters:** SoundHandle handle
+- **Parameters:** 
 
----
-
-### PreloadSound
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### PlaySound
+## CreateSound
 
 
 
-**Parameters:** const std::string& name, const PlayParams& params = {}
+- **Parameters:** const std::string& name, const SoundDesc& desc
 
----
-
-### StopSound
-
-
-
-**Parameters:** SourceHandle handle
+- **Return:** `SoundHandle`
 
 ---
 
-### PauseSound
+## DestroySound
 
 
 
-**Parameters:** SourceHandle handle
+- **Parameters:** SoundHandle handle
 
----
-
-### ResumeSound
-
-
-
-**Parameters:** SourceHandle handle
+- **Return:** `void`
 
 ---
 
-### SetVolume
+## PreloadSound
 
 
 
-**Parameters:** const std::string& name, float volume
+- **Parameters:** const std::string& name
 
----
-
-### SetPitch
-
-
-
-**Parameters:** const std::string& name, float pitch
+- **Return:** `void`
 
 ---
 
-### SetPosition
+## PlaySound
 
 
 
-**Parameters:** SourceHandle handle, const Vector3& position
+- **Parameters:** const std::string& name, const PlayParams& params = {}
 
----
-
-### CreateEffect
-
-
-
-**Parameters:** const std::string& name, const EffectDesc& desc
+- **Return:** `SourceHandle`
 
 ---
 
-### DestroyEffect
+## StopSound
 
 
 
-**Parameters:** EffectHandle handle
+- **Parameters:** SourceHandle handle
 
----
-
-### ApplyEffect
-
-
-
-**Parameters:** const std::string& soundName, const std::string& effectName
+- **Return:** `void`
 
 ---
 
-### SetListenerPosition
+## PauseSound
 
 
 
-**Parameters:** const Vector3& position
+- **Parameters:** SourceHandle handle
 
----
-
-### SetListenerOrientation
-
-
-
-**Parameters:** const Vector3& forward, const Vector3& up
+- **Return:** `void`
 
 ---
 
-### EnableVisualization
+## ResumeSound
 
 
 
-**Parameters:** bool enable
+- **Parameters:** SourceHandle handle
 
----
-
-### GetSpectrum
-
-
-
-**Parameters:** std::vector<float>& spectrum
+- **Return:** `void`
 
 ---
 
-### GetWaveform
+## SetVolume
 
 
 
-**Parameters:** std::vector<float>& waveform
+- **Parameters:** const std::string& name, float volume
+
+- **Return:** `void`
+
+---
+
+## SetPitch
+
+
+
+- **Parameters:** const std::string& name, float pitch
+
+- **Return:** `void`
+
+---
+
+## SetPosition
+
+
+
+- **Parameters:** SourceHandle handle, const Vector3& position
+
+- **Return:** `void`
+
+---
+
+## CreateEffect
+
+
+
+- **Parameters:** const std::string& name, const EffectDesc& desc
+
+- **Return:** `EffectHandle`
+
+---
+
+## DestroyEffect
+
+
+
+- **Parameters:** EffectHandle handle
+
+- **Return:** `void`
+
+---
+
+## ApplyEffect
+
+
+
+- **Parameters:** const std::string& soundName, const std::string& effectName
+
+- **Return:** `void`
+
+---
+
+## SetListenerPosition
+
+
+
+- **Parameters:** const Vector3& position
+
+- **Return:** `void`
+
+---
+
+## SetListenerOrientation
+
+
+
+- **Parameters:** const Vector3& forward, const Vector3& up
+
+- **Return:** `void`
+
+---
+
+## EnableVisualization
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## GetSpectrum
+
+
+
+- **Parameters:** std::vector<float>& spectrum
+
+- **Return:** `void`
+
+---
+
+## GetWaveform
+
+
+
+- **Parameters:** std::vector<float>& waveform
+
+- **Return:** `void`
 
 ---

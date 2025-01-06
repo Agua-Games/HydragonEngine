@@ -1,101 +1,232 @@
+# Classes
+---
 
-## Classes
-
-### LogLevel
-
-
-
-### LogSystem
+## LogLevel
+---
 
 
 
-
-## Functions
-
-### Get
+## LogSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableConsole`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableFile`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableTimestamps`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSourceLocation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `logFilePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"game.log"`
+
+
+
+### `minLevel`
+
+- **Type:** `LogLevel`
+
+- **Default Value:** `LogLevel::Info`
+
+
+
+### `config`
+
+- **Type:** `const LogConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `location`
+
+- **Type:** `source_location&`
+
+- **Default Value:** `std::source_location::current())`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `LogConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `LogStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `LogConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static LogSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const LogConfig& config = {}
+- **Parameters:** const LogConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Trace
+## Shutdown
 
 
 
-**Parameters:** const std::string& message
+- **Parameters:** 
 
----
-
-### Debug
-
-
-
-**Parameters:** const std::string& message
+- **Return:** `void`
 
 ---
 
-### Info
+## Trace
 
 
 
-**Parameters:** const std::string& message
+- **Parameters:** const std::string& message
 
----
-
-### Warning
-
-
-
-**Parameters:** const std::string& message
+- **Return:** `void`
 
 ---
 
-### Error
+## Debug
 
 
 
-**Parameters:** const std::string& message
+- **Parameters:** const std::string& message
 
----
-
-### Fatal
-
-
-
-**Parameters:** const std::string& message
+- **Return:** `void`
 
 ---
 
-### SetLogLevel
+## Info
 
 
 
-**Parameters:** LogLevel level
+- **Parameters:** const std::string& message
+
+- **Return:** `void`
 
 ---
 
-### AddLogHandler
+## Warning
 
 
 
-**Parameters:** std::unique_ptr<ILogHandler> handler
+- **Parameters:** const std::string& message
+
+- **Return:** `void`
+
+---
+
+## Error
+
+
+
+- **Parameters:** const std::string& message
+
+- **Return:** `void`
+
+---
+
+## Fatal
+
+
+
+- **Parameters:** const std::string& message
+
+- **Return:** `void`
+
+---
+
+## SetLogLevel
+
+
+
+- **Parameters:** LogLevel level
+
+- **Return:** `void`
+
+---
+
+## AddLogHandler
+
+
+
+- **Parameters:** std::unique_ptr<ILogHandler> handler
+
+- **Return:** `void`
 
 ---

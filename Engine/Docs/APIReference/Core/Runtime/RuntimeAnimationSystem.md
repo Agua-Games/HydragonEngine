@@ -1,161 +1,331 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeAnimationSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeAnimationSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableBlending`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableIK`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableRagdoll`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMorphTargets`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxAnimatedEntities`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxActiveLayers`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `defaultBlendTime`
+
+- **Type:** `float`
+
+- **Default Value:** `0.25f`
+
+
+
+### `ikSolverIterations`
+
+- **Type:** `float`
+
+- **Default Value:** `10`
+
+
+
+### `animationCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Animations"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeAnimationConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const PlaybackParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeAnimationConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeAnimationStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeAnimationConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeAnimationSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeAnimationConfig& config = {}
+- **Parameters:** const RuntimeAnimationConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### PlayAnimation
-
-
-
-**Parameters:** EntityHandle entity, const std::string& animName, const PlaybackParams& params = {}
+- **Return:** `void`
 
 ---
 
-### StopAnimation
+## Update
 
 
 
-**Parameters:** AnimationHandle handle
+- **Parameters:** 
 
----
-
-### PauseAnimation
-
-
-
-**Parameters:** AnimationHandle handle
+- **Return:** `void`
 
 ---
 
-### ResumeAnimation
+## PlayAnimation
 
 
 
-**Parameters:** AnimationHandle handle
+- **Parameters:** EntityHandle entity, const std::string& animName, const PlaybackParams& params = {}
 
----
-
-### SetBlendWeight
-
-
-
-**Parameters:** AnimationHandle handle, float weight
+- **Return:** `AnimationHandle`
 
 ---
 
-### SetPlaybackSpeed
+## StopAnimation
 
 
 
-**Parameters:** AnimationHandle handle, float speed
+- **Parameters:** AnimationHandle handle
 
----
-
-### SetTimePosition
-
-
-
-**Parameters:** AnimationHandle handle, float time
+- **Return:** `void`
 
 ---
 
-### AddAnimationLayer
+## PauseAnimation
 
 
 
-**Parameters:** EntityHandle entity, const std::string& layerName
+- **Parameters:** AnimationHandle handle
 
----
-
-### RemoveAnimationLayer
-
-
-
-**Parameters:** EntityHandle entity, const std::string& layerName
+- **Return:** `void`
 
 ---
 
-### SetLayerWeight
+## ResumeAnimation
 
 
 
-**Parameters:** EntityHandle entity, const std::string& layerName, float weight
+- **Parameters:** AnimationHandle handle
 
----
-
-### EnableIK
-
-
-
-**Parameters:** EntityHandle entity, const std::string& chainName
+- **Return:** `void`
 
 ---
 
-### DisableIK
+## SetBlendWeight
 
 
 
-**Parameters:** EntityHandle entity, const std::string& chainName
+- **Parameters:** AnimationHandle handle, float weight
 
----
-
-### SetIKTarget
-
-
-
-**Parameters:** EntityHandle entity, const std::string& chainName, const Vector3& target
+- **Return:** `void`
 
 ---
 
-### RegisterAnimationEvent
+## SetPlaybackSpeed
 
 
 
-**Parameters:** const std::string& eventName, const AnimationEventCallback& callback
+- **Parameters:** AnimationHandle handle, float speed
+
+- **Return:** `void`
 
 ---
 
-### UnregisterAnimationEvent
+## SetTimePosition
 
 
 
-**Parameters:** const std::string& eventName
+- **Parameters:** AnimationHandle handle, float time
+
+- **Return:** `void`
+
+---
+
+## AddAnimationLayer
+
+
+
+- **Parameters:** EntityHandle entity, const std::string& layerName
+
+- **Return:** `void`
+
+---
+
+## RemoveAnimationLayer
+
+
+
+- **Parameters:** EntityHandle entity, const std::string& layerName
+
+- **Return:** `void`
+
+---
+
+## SetLayerWeight
+
+
+
+- **Parameters:** EntityHandle entity, const std::string& layerName, float weight
+
+- **Return:** `void`
+
+---
+
+## EnableIK
+
+
+
+- **Parameters:** EntityHandle entity, const std::string& chainName
+
+- **Return:** `void`
+
+---
+
+## DisableIK
+
+
+
+- **Parameters:** EntityHandle entity, const std::string& chainName
+
+- **Return:** `void`
+
+---
+
+## SetIKTarget
+
+
+
+- **Parameters:** EntityHandle entity, const std::string& chainName, const Vector3& target
+
+- **Return:** `void`
+
+---
+
+## RegisterAnimationEvent
+
+
+
+- **Parameters:** const std::string& eventName, const AnimationEventCallback& callback
+
+- **Return:** `void`
+
+---
+
+## UnregisterAnimationEvent
+
+
+
+- **Parameters:** const std::string& eventName
+
+- **Return:** `void`
 
 ---

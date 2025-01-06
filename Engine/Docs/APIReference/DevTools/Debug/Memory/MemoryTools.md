@@ -1,89 +1,209 @@
+# Classes
+---
 
-## Classes
-
-### MemoryTools
-
-
-
-
-## Functions
-
-### Get
+## MemoryTools
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableLeakDetection`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCorruptionDetection`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAllocationTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableHeapProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxTrackingEntries`
+
+- **Type:** `size_t`
+
+- **Default Value:** `100000`
+
+
+
+### `stackTraceDepth`
+
+- **Type:** `size_t`
+
+- **Default Value:** `32`
+
+
+
+### `config`
+
+- **Type:** `const MemoryToolsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `MemoryToolsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `MemoryToolsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `MemoryToolsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static MemoryTools&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const MemoryToolsConfig& config = {}
+- **Parameters:** const MemoryToolsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### TakeSnapshot
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### CompareSnapshots
+## Update
 
 
 
-**Parameters:** const std::string& snapshot1, const std::string& snapshot2
+- **Parameters:** 
 
----
-
-### EnableStackTracing
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### EnableLeakDetection
+## TakeSnapshot
 
 
 
-**Parameters:** bool enable
+- **Parameters:** const std::string& name
 
----
-
-### AnalyzeHeapFragmentation
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### GenerateAllocationReport
+## CompareSnapshots
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** const std::string& snapshot1, const std::string& snapshot2
+
+- **Return:** `void`
+
+---
+
+## EnableStackTracing
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## EnableLeakDetection
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## AnalyzeHeapFragmentation
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## GenerateAllocationReport
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
 
 ---

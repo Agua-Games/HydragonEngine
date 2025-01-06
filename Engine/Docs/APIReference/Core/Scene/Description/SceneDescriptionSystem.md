@@ -1,105 +1,239 @@
+# Classes
+---
 
-## Classes
-
-### SceneDescriptionSystem
-
-
-
-
-## Functions
-
-### Get
+## SceneDescriptionSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableLazyEvaluation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCaching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableValidation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxNodes`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000000`
+
+
+
+### `maxConnections`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `2000000`
+
+
+
+### `memoryBudget`
+
+- **Type:** `size_t`
+
+- **Default Value:** `512 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const DescriptionConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `DescriptionConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `DescriptionStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `DescriptionConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `512 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static SceneDescriptionSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const DescriptionConfig& config = {}
+- **Parameters:** const DescriptionConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### CreateNode
+## Shutdown
 
 
 
-**Parameters:** const NodeDesc& desc
+- **Parameters:** 
 
----
-
-### DestroyNode
-
-
-
-**Parameters:** NodeHandle handle
+- **Return:** `void`
 
 ---
 
-### Connect
+## CreateNode
 
 
 
-**Parameters:** NodeHandle from, NodeHandle to, const ConnectionDesc& desc
+- **Parameters:** const NodeDesc& desc
 
----
-
-### Disconnect
-
-
-
-**Parameters:** NodeHandle from, NodeHandle to
+- **Return:** `NodeHandle`
 
 ---
 
-### SetParameter
+## DestroyNode
 
 
 
-**Parameters:** NodeHandle node, const char* name, const Parameter& value
+- **Parameters:** NodeHandle handle
 
----
-
-### Serialize
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### Deserialize
+## Connect
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** NodeHandle from, NodeHandle to, const ConnectionDesc& desc
 
----
-
-### Validate
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Optimize
+## Disconnect
 
 
 
-**Parameters:** 
+- **Parameters:** NodeHandle from, NodeHandle to
+
+- **Return:** `void`
+
+---
+
+## SetParameter
+
+
+
+- **Parameters:** NodeHandle node, const char* name, const Parameter& value
+
+- **Return:** `void`
+
+---
+
+## Serialize
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## Deserialize
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## Validate
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## Optimize
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

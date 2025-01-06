@@ -1,193 +1,365 @@
+# Classes
+---
 
-## Classes
-
-### AssetLoaderBindings
-
-
-
-
-## Functions
-
-### Get
+## AssetLoaderBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableBackgroundLoading`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePreloading`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableLoadPriorities`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableLoadGroups`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConcurrentLoads`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `maxLoadGroups`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `32`
+
+
+
+### `loadBufferSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8 * 1024 * 1024`
+
+
+
+### `loadCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/AssetLoads"`
+
+
+
+### `config`
+
+- **Type:** `const AssetLoaderBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `priority`
+
+- **Type:** `LoadPriority`
+
+- **Default Value:** `LoadPriority::Normal)`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AssetLoaderBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AssetLoaderBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AssetLoaderBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `8 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AssetLoaderBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AssetLoaderBindingsConfig& config = {}
+- **Parameters:** const AssetLoaderBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### QueueLoad
-
-
-
-**Parameters:** const std::string& path, LoadPriority priority = LoadPriority::Normal
+- **Return:** `void`
 
 ---
 
-### CancelLoad
+## Update
 
 
 
-**Parameters:** LoadHandle handle
+- **Parameters:** 
 
----
-
-### CreateLoadGroup
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### DestroyLoadGroup
+## QueueLoad
 
 
 
-**Parameters:** GroupHandle handle
+- **Parameters:** const std::string& path, LoadPriority priority = LoadPriority::Normal
 
----
-
-### AddToGroup
-
-
-
-**Parameters:** GroupHandle group, LoadHandle load
+- **Return:** `LoadHandle`
 
 ---
 
-### RemoveFromGroup
+## CancelLoad
 
 
 
-**Parameters:** GroupHandle group, LoadHandle load
+- **Parameters:** LoadHandle handle
 
----
-
-### PreloadAsset
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### PreloadGroup
+## CreateLoadGroup
 
 
 
-**Parameters:** const std::vector<std::string>& paths
+- **Parameters:** const std::string& name
 
----
-
-### CancelPreload
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `GroupHandle`
 
 ---
 
-### SetLoadCallback
+## DestroyLoadGroup
 
 
 
-**Parameters:** LoadHandle handle, const LoadCallback& callback
+- **Parameters:** GroupHandle handle
 
----
-
-### SetGroupCallback
-
-
-
-**Parameters:** GroupHandle handle, const GroupCallback& callback
+- **Return:** `void`
 
 ---
 
-### SetGlobalLoadCallback
+## AddToGroup
 
 
 
-**Parameters:** const GlobalLoadCallback& callback
+- **Parameters:** GroupHandle group, LoadHandle load
 
----
-
-### SetLoadPriority
-
-
-
-**Parameters:** LoadHandle handle, LoadPriority priority
+- **Return:** `void`
 
 ---
 
-### PauseLoading
+## RemoveFromGroup
 
 
 
-**Parameters:** bool pause
+- **Parameters:** GroupHandle group, LoadHandle load
 
----
-
-### CancelAllLoads
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### FlushLoadCache
+## PreloadAsset
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& path
 
----
-
-### EnableLoadProfiling
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### DumpLoadStats
+## PreloadGroup
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** const std::vector<std::string>& paths
+
+- **Return:** `void`
 
 ---
 
-### ValidateLoadQueue
+## CancelPreload
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## SetLoadCallback
+
+
+
+- **Parameters:** LoadHandle handle, const LoadCallback& callback
+
+- **Return:** `void`
+
+---
+
+## SetGroupCallback
+
+
+
+- **Parameters:** GroupHandle handle, const GroupCallback& callback
+
+- **Return:** `void`
+
+---
+
+## SetGlobalLoadCallback
+
+
+
+- **Parameters:** const GlobalLoadCallback& callback
+
+- **Return:** `void`
+
+---
+
+## SetLoadPriority
+
+
+
+- **Parameters:** LoadHandle handle, LoadPriority priority
+
+- **Return:** `void`
+
+---
+
+## PauseLoading
+
+
+
+- **Parameters:** bool pause
+
+- **Return:** `void`
+
+---
+
+## CancelAllLoads
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## FlushLoadCache
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## EnableLoadProfiling
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpLoadStats
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ValidateLoadQueue
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

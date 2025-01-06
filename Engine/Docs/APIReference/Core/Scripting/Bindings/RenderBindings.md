@@ -1,217 +1,401 @@
+# Classes
+---
 
-## Classes
-
-### RenderBindings
-
-
-
-
-## Functions
-
-### Get
+## RenderBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableCustomPipelines`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePostProcessing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableRenderTargets`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxCustomPipelines`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `50`
+
+
+
+### `maxPostEffects`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `20`
+
+
+
+### `maxRenderTargets`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `30`
+
+
+
+### `pipelineCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Pipelines"`
+
+
+
+### `config`
+
+- **Type:** `const RenderBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `instanceCount`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1)`
+
+
+
+### `instanceCount`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1)`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RenderBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RenderBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RenderBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RenderBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RenderBindingsConfig& config = {}
+- **Parameters:** const RenderBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreatePipeline
-
-
-
-**Parameters:** const PipelineDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyPipeline
+## Update
 
 
 
-**Parameters:** PipelineHandle handle
+- **Parameters:** 
 
----
-
-### SetPipelineState
-
-
-
-**Parameters:** PipelineHandle handle, const PipelineState& state
+- **Return:** `void`
 
 ---
 
-### CreateRenderTarget
+## CreatePipeline
 
 
 
-**Parameters:** const RenderTargetDesc& desc
+- **Parameters:** const PipelineDesc& desc
 
----
-
-### DestroyRenderTarget
-
-
-
-**Parameters:** RenderTargetHandle handle
+- **Return:** `PipelineHandle`
 
 ---
 
-### ResizeRenderTarget
+## DestroyPipeline
 
 
 
-**Parameters:** RenderTargetHandle handle, uint32_t width, uint32_t height
+- **Parameters:** PipelineHandle handle
 
----
-
-### AddPostEffect
-
-
-
-**Parameters:** const std::string& name, const PostEffectDesc& desc
+- **Return:** `void`
 
 ---
 
-### RemovePostEffect
+## SetPipelineState
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** PipelineHandle handle, const PipelineState& state
 
----
-
-### SetPostEffectEnabled
-
-
-
-**Parameters:** const std::string& name, bool enabled
+- **Return:** `void`
 
 ---
 
-### SetViewport
+## CreateRenderTarget
 
 
 
-**Parameters:** const Viewport& viewport
+- **Parameters:** const RenderTargetDesc& desc
 
----
-
-### SetScissor
-
-
-
-**Parameters:** const Scissor& scissor
+- **Return:** `RenderTargetHandle`
 
 ---
 
-### BindPipeline
+## DestroyRenderTarget
 
 
 
-**Parameters:** PipelineHandle handle
+- **Parameters:** RenderTargetHandle handle
 
----
-
-### BindRenderTarget
-
-
-
-**Parameters:** RenderTargetHandle handle
+- **Return:** `void`
 
 ---
 
-### BindVertexBuffers
+## ResizeRenderTarget
 
 
 
-**Parameters:** const std::vector<BufferHandle>& buffers
+- **Parameters:** RenderTargetHandle handle, uint32_t width, uint32_t height
 
----
-
-### BindIndexBuffer
-
-
-
-**Parameters:** BufferHandle buffer
+- **Return:** `void`
 
 ---
 
-### BindDescriptorSets
+## AddPostEffect
 
 
 
-**Parameters:** const std::vector<DescriptorSetHandle>& sets
+- **Parameters:** const std::string& name, const PostEffectDesc& desc
 
----
-
-### Draw
-
-
-
-**Parameters:** uint32_t vertexCount, uint32_t instanceCount = 1
+- **Return:** `void`
 
 ---
 
-### DrawIndexed
+## RemovePostEffect
 
 
 
-**Parameters:** uint32_t indexCount, uint32_t instanceCount = 1
+- **Parameters:** const std::string& name
 
----
-
-### DrawIndirect
-
-
-
-**Parameters:** BufferHandle buffer, uint32_t offset
+- **Return:** `void`
 
 ---
 
-### BeginProfileScope
+## SetPostEffectEnabled
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const std::string& name, bool enabled
 
----
-
-### EndProfileScope
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### SetDebugMarker
+## SetViewport
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const Viewport& viewport
+
+- **Return:** `void`
+
+---
+
+## SetScissor
+
+
+
+- **Parameters:** const Scissor& scissor
+
+- **Return:** `void`
+
+---
+
+## BindPipeline
+
+
+
+- **Parameters:** PipelineHandle handle
+
+- **Return:** `void`
+
+---
+
+## BindRenderTarget
+
+
+
+- **Parameters:** RenderTargetHandle handle
+
+- **Return:** `void`
+
+---
+
+## BindVertexBuffers
+
+
+
+- **Parameters:** const std::vector<BufferHandle>& buffers
+
+- **Return:** `void`
+
+---
+
+## BindIndexBuffer
+
+
+
+- **Parameters:** BufferHandle buffer
+
+- **Return:** `void`
+
+---
+
+## BindDescriptorSets
+
+
+
+- **Parameters:** const std::vector<DescriptorSetHandle>& sets
+
+- **Return:** `void`
+
+---
+
+## Draw
+
+
+
+- **Parameters:** uint32_t vertexCount, uint32_t instanceCount = 1
+
+- **Return:** `void`
+
+---
+
+## DrawIndexed
+
+
+
+- **Parameters:** uint32_t indexCount, uint32_t instanceCount = 1
+
+- **Return:** `void`
+
+---
+
+## DrawIndirect
+
+
+
+- **Parameters:** BufferHandle buffer, uint32_t offset
+
+- **Return:** `void`
+
+---
+
+## BeginProfileScope
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## EndProfileScope
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SetDebugMarker
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---

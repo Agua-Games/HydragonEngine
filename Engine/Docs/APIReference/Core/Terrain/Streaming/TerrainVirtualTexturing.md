@@ -1,81 +1,265 @@
+# Classes
+---
 
-## Classes
-
-### TerrainVirtualTexturing
-
-
-
-
-## Functions
-
-### updateFeedback
+## TerrainVirtualTexturing
+---
 
 
 
-**Parameters:** CommandBuffer* cmd
+
+# Variables
+---
+
+### `pageSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `128`
+
+
+
+### `feedbackBufferScale`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `4`
+
+
+
+### `maxResidentPages`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `2048`
+
+
+
+### `enableCompression`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `mipLevels`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `8`
+
+
+
+### `pageId`
+
+- **Type:** `uint32_t`
+
+
+
+### `mipLevel`
+
+- **Type:** `uint16_t`
+
+
+
+### `flags`
+
+- **Type:** `uint16_t`
+
+
+
+### `priority`
+
+- **Type:** `float`
+
+
+
+### `pageId`
+
+- **Type:** `uint32_t`
+
+
+
+### `mipLevel`
+
+- **Type:** `uint16_t`
+
+
+
+### `priority`
+
+- **Type:** `float`
+
+
+
+### `m_Device`
+
+- **Type:** `IRenderDevice*`
+
+
+
+### `m_Config`
+
+- **Type:** `VirtualTextureConfig`
+
+
+
+### `m_VirtualMemory`
+
+- **Type:** `VirtualMemoryManager`
+
+
+
+### `m_FeedbackBuffer`
+
+- **Type:** `TextureHandle`
+
+
+
+### `m_PageTableTexture`
+
+- **Type:** `TextureHandle`
+
+
+
+### `m_PageRequestBuffer`
+
+- **Type:** `BufferHandle`
+
+
+
+
+# Structs
+---
+
+### `VirtualTextureConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+### `PageTableEntry`
+
+- **Description:** 
+
+- **Members:**
+
+  - `pageId`: `uint32_t` - 
+
+  - `mipLevel`: `uint16_t` - 
+
+  - `flags`: `uint16_t` - 
+
+  - `priority`: `float` - 
+
+
+
+### `PageRequest`
+
+- **Description:** 
+
+- **Members:**
+
+  - `pageId`: `uint32_t` - 
+
+  - `mipLevel`: `uint16_t` - 
+
+  - `priority`: `float` - 
+
+
+
+
+# Functions
+---
+
+## updateFeedback
+
+
+
+- **Parameters:** CommandBuffer* cmd
+
+- **Return:** `void`
 
 ---
 
-### processPageRequests
+## processPageRequests
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### streamPages
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### evictPages
+## streamPages
 
 
 
-**Parameters:** uint32_t count
+- **Parameters:** 
 
----
-
-### drawPageTable
-
-
-
-**Parameters:** CommandBuffer* cmd
+- **Return:** `void`
 
 ---
 
-### drawFeedbackBuffer
+## evictPages
 
 
 
-**Parameters:** CommandBuffer* cmd
+- **Parameters:** uint32_t count
 
----
-
-### initializeResources
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### updatePageTable
+## drawPageTable
 
 
 
-**Parameters:** 
+- **Parameters:** CommandBuffer* cmd
+
+- **Return:** `void`
 
 ---
 
-### loadPage
+## drawFeedbackBuffer
 
 
 
-**Parameters:** const PageRequest& request
+- **Parameters:** CommandBuffer* cmd
+
+- **Return:** `void`
+
+---
+
+## initializeResources
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## updatePageTable
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## loadPage
+
+
+
+- **Parameters:** const PageRequest& request
+
+- **Return:** `bool`
 
 ---

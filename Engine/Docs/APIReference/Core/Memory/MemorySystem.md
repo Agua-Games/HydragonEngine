@@ -1,65 +1,123 @@
+# Classes
+---
 
-## Classes
-
-### MemorySystem
-
-
-
-
-## Functions
-
-### get
+## MemorySystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `config`
+
+- **Type:** `const MemoryConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `info`
+
+- **Type:** `const AllocationInfo&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Initialized`
+
+- **Type:** `return`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `m_DefaultStrategy`
+
+- **Type:** `IMemoryStrategy*`
+
+- **Default Value:** `nullptr`
+
+
+
+
+# Functions
+---
+
+## get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static MemorySystem&`
 
 ---
 
-### initialize
+## initialize
 
 
 
-**Parameters:** const MemoryConfig& config = {}
+- **Parameters:** const MemoryConfig& config = {}
 
----
-
-### shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### allocate
+## shutdown
 
 
 
-**Parameters:** size_t size, const AllocationInfo& info = {}
+- **Parameters:** 
 
----
-
-### deallocate
-
-
-
-**Parameters:** void* ptr
+- **Return:** `void`
 
 ---
 
-### addStrategy
+## allocate
 
 
 
-**Parameters:** const std::string& name, IMemoryStrategy* strategy
+- **Parameters:** size_t size, const AllocationInfo& info = {}
+
+- **Return:** `void*`
 
 ---
 
-### setDefaultStrategy
+## deallocate
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** void* ptr
+
+- **Return:** `void`
+
+---
+
+## addStrategy
+
+
+
+- **Parameters:** const std::string& name, IMemoryStrategy* strategy
+
+- **Return:** `void`
+
+---
+
+## setDefaultStrategy
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---

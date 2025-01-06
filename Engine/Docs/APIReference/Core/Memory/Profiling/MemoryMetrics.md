@@ -1,0 +1,57 @@
+
+# Variables
+---
+
+### `count`
+
+- **Type:** `size_t`
+
+
+
+### `totalSize`
+
+- **Type:** `size_t`
+
+
+
+### `avgLatency`
+
+- **Type:** `double`
+
+
+
+### `lastSecond`
+
+- **Type:** `AllocationStats`
+
+
+
+### `lastMinute`
+
+- **Type:** `AllocationStats`
+
+
+
+### `peakUsage`
+
+- **Type:** `size_t`
+
+
+
+
+# Structs
+---
+
+### `MemoryMetrics`
+
+- **Description:** 
+
+- **Members:**
+
+  - `count`: `size_t` - 
+
+  - `totalSize`: `size_t` - 
+
+  - `avgLatency`: `double` - 
+
+

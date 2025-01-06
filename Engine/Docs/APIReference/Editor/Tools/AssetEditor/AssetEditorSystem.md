@@ -1,113 +1,241 @@
+# Classes
+---
 
-## Classes
-
-### AssetEditorSystem
-
-
-
-
-## Functions
-
-### Get
+## AssetEditorSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableVersionControl`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAssetTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePreviewGeneration`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableBatchProcessing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxRecentAssets`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `50`
+
+
+
+### `previewCacheSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `256 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const AssetEditorConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AssetEditorConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AssetEditorStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AssetEditorConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `256 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AssetEditorSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AssetEditorConfig& config = {}
+- **Parameters:** const AssetEditorConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### OpenAsset
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### SaveAsset
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### CloseAsset
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### ImportAsset
+## OpenAsset
 
 
 
-**Parameters:** const std::string& sourcePath, const ImportOptions& options
+- **Parameters:** const std::string& path
 
----
-
-### ExportAsset
-
-
-
-**Parameters:** const std::string& path, const ExportOptions& options
+- **Return:** `void`
 
 ---
 
-### GeneratePreview
+## SaveAsset
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** const std::string& path
 
----
-
-### InvalidatePreview
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### RegisterAssetType
+## CloseAsset
 
 
 
-**Parameters:** const AssetTypeInfo& info
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
 
 ---
 
-### UnregisterAssetType
+## ImportAsset
 
 
 
-**Parameters:** const std::string& type
+- **Parameters:** const std::string& sourcePath, const ImportOptions& options
+
+- **Return:** `void`
+
+---
+
+## ExportAsset
+
+
+
+- **Parameters:** const std::string& path, const ExportOptions& options
+
+- **Return:** `void`
+
+---
+
+## GeneratePreview
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## InvalidatePreview
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## RegisterAssetType
+
+
+
+- **Parameters:** const AssetTypeInfo& info
+
+- **Return:** `void`
+
+---
+
+## UnregisterAssetType
+
+
+
+- **Parameters:** const std::string& type
+
+- **Return:** `void`
 
 ---

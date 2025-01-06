@@ -1,6 +1,47 @@
+# Classes
+---
 
-## Classes
+## AssetHotReloadManager
+---
 
-### AssetHotReloadManager
+
+
+
+# Variables
+---
+
+### `enableFileWatcher`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `autoReloadAssets`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxPendingReloads`
+
+- **Type:** `size_t`
+
+- **Default Value:** `32`
+
+
+
+
+# Structs
+---
+
+### `HotReloadConfig`
+
+- **Description:** 
+
+- **Members:**
 
 

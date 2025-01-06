@@ -1,161 +1,355 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeInventorySystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeInventorySystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableStacking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableWeightLimits`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEquipmentSlots`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableItemCategories`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxInventories`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxSlotsPerInventory`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxStackSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `999`
+
+
+
+### `defaultWeightCapacity`
+
+- **Type:** `float`
+
+- **Default Value:** `100.0f`
+
+
+
+### `itemDatabasePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Config/Items"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeInventoryConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `count`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1)`
+
+
+
+### `count`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1)`
+
+
+
+### `count`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1)`
+
+
+
+### `count`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1) const`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeInventoryConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeInventoryStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeInventoryConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeInventorySystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeInventoryConfig& config = {}
+- **Parameters:** const RuntimeInventoryConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateInventory
-
-
-
-**Parameters:** const InventoryDesc& desc
+- **Return:** `void`
 
 ---
 
-### DestroyInventory
+## Update
 
 
 
-**Parameters:** InventoryHandle handle
+- **Parameters:** 
 
----
-
-### AddItem
-
-
-
-**Parameters:** InventoryHandle handle, const ItemDesc& item, uint32_t count = 1
+- **Return:** `void`
 
 ---
 
-### RemoveItem
+## CreateInventory
 
 
 
-**Parameters:** InventoryHandle handle, ItemId itemId, uint32_t count = 1
+- **Parameters:** const InventoryDesc& desc
 
----
-
-### TransferItem
-
-
-
-**Parameters:** InventoryHandle from, InventoryHandle to, ItemId itemId, uint32_t count = 1
+- **Return:** `InventoryHandle`
 
 ---
 
-### EquipItem
+## DestroyInventory
 
 
 
-**Parameters:** InventoryHandle handle, ItemId itemId, const std::string& slot
+- **Parameters:** InventoryHandle handle
 
----
-
-### UnequipItem
-
-
-
-**Parameters:** InventoryHandle handle, const std::string& slot
+- **Return:** `void`
 
 ---
 
-### SwapItems
+## AddItem
 
 
 
-**Parameters:** InventoryHandle handle, uint32_t slotA, uint32_t slotB
+- **Parameters:** InventoryHandle handle, const ItemDesc& item, uint32_t count = 1
 
----
-
-### SetWeightCapacity
-
-
-
-**Parameters:** InventoryHandle handle, float capacity
+- **Return:** `bool`
 
 ---
 
-### SetSlotCount
+## RemoveItem
 
 
 
-**Parameters:** InventoryHandle handle, uint32_t count
+- **Parameters:** InventoryHandle handle, ItemId itemId, uint32_t count = 1
 
----
-
-### SetStackSize
-
-
-
-**Parameters:** ItemId itemId, uint32_t maxStack
+- **Return:** `bool`
 
 ---
 
-### RegisterItemProcessor
+## TransferItem
 
 
 
-**Parameters:** const std::string& type, std::unique_ptr<IItemProcessor> processor
+- **Parameters:** InventoryHandle from, InventoryHandle to, ItemId itemId, uint32_t count = 1
 
----
-
-### UnregisterItemProcessor
-
-
-
-**Parameters:** const std::string& type
+- **Return:** `bool`
 
 ---
 
-### RegisterInventoryCallback
+## EquipItem
 
 
 
-**Parameters:** InventoryEventType type, const InventoryCallback& callback
+- **Parameters:** InventoryHandle handle, ItemId itemId, const std::string& slot
+
+- **Return:** `bool`
 
 ---
 
-### UnregisterInventoryCallback
+## UnequipItem
 
 
 
-**Parameters:** InventoryEventType type
+- **Parameters:** InventoryHandle handle, const std::string& slot
+
+- **Return:** `bool`
+
+---
+
+## SwapItems
+
+
+
+- **Parameters:** InventoryHandle handle, uint32_t slotA, uint32_t slotB
+
+- **Return:** `bool`
+
+---
+
+## SetWeightCapacity
+
+
+
+- **Parameters:** InventoryHandle handle, float capacity
+
+- **Return:** `void`
+
+---
+
+## SetSlotCount
+
+
+
+- **Parameters:** InventoryHandle handle, uint32_t count
+
+- **Return:** `void`
+
+---
+
+## SetStackSize
+
+
+
+- **Parameters:** ItemId itemId, uint32_t maxStack
+
+- **Return:** `void`
+
+---
+
+## RegisterItemProcessor
+
+
+
+- **Parameters:** const std::string& type, std::unique_ptr<IItemProcessor> processor
+
+- **Return:** `void`
+
+---
+
+## UnregisterItemProcessor
+
+
+
+- **Parameters:** const std::string& type
+
+- **Return:** `void`
+
+---
+
+## RegisterInventoryCallback
+
+
+
+- **Parameters:** InventoryEventType type, const InventoryCallback& callback
+
+- **Return:** `void`
+
+---
+
+## UnregisterInventoryCallback
+
+
+
+- **Parameters:** InventoryEventType type
+
+- **Return:** `void`
 
 ---

@@ -1,81 +1,172 @@
+# Classes
+---
 
-## Classes
-
-### TraversalOrder
-
-
-
-### GraphTraversal
+## TraversalOrder
+---
 
 
 
-
-## Functions
-
-### TraverseSubtree
+## GraphTraversal
+---
 
 
 
-**Parameters:** NodeHandle root, const VisitorFunc& visitor, 
+
+# Variables
+---
+
+### `order`
+
+- **Type:** `TraversalOrder`
+
+- **Default Value:** `TraversalOrder::PreOrder`
+
+
+
+### `skipInvisible`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `skipCulled`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxDepth`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `UINT32_MAX`
+
+
+
+### `VisitorFunc`
+
+- **Type:** `using`
+
+- **Default Value:** `std::function<void(NodeHandle)>`
+
+
+
+### `options`
+
+- **Type:** `const TraversalOptions&`
+
+- **Default Value:** `{})`
+
+
+
+### `options`
+
+- **Type:** `const TraversalOptions&`
+
+- **Default Value:** `{})`
+
+
+
+
+# Structs
+---
+
+### `TraversalOptions`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## TraverseSubtree
+
+
+
+- **Parameters:** NodeHandle root, const VisitorFunc& visitor, 
                                const TraversalOptions& options = {}
 
----
-
-### TraverseAncestors
-
-
-
-**Parameters:** NodeHandle node, const VisitorFunc& visitor
+- **Return:** `static void`
 
 ---
 
-### TraverseSiblings
+## TraverseAncestors
 
 
 
-**Parameters:** NodeHandle node, const VisitorFunc& visitor
+- **Parameters:** NodeHandle node, const VisitorFunc& visitor
 
----
-
-### FindCommonAncestor
-
-
-
-**Parameters:** NodeHandle a, NodeHandle b
+- **Return:** `static void`
 
 ---
 
-### GetDepth
+## TraverseSiblings
 
 
 
-**Parameters:** NodeHandle node
+- **Parameters:** NodeHandle node, const VisitorFunc& visitor
+
+- **Return:** `static void`
 
 ---
 
-### TraversePreOrder
+## FindCommonAncestor
 
 
 
-**Parameters:** NodeHandle node, const VisitorFunc& visitor, 
+- **Parameters:** NodeHandle a, NodeHandle b
+
+- **Return:** `static NodeHandle`
+
+---
+
+## GetDepth
+
+
+
+- **Parameters:** NodeHandle node
+
+- **Return:** `static uint32_t`
+
+---
+
+## TraversePreOrder
+
+
+
+- **Parameters:** NodeHandle node, const VisitorFunc& visitor, 
                                 const TraversalOptions& options, uint32_t depth
 
+- **Return:** `static void`
+
 ---
 
-### TraversePostOrder
+## TraversePostOrder
 
 
 
-**Parameters:** NodeHandle node, const VisitorFunc& visitor,
+- **Parameters:** NodeHandle node, const VisitorFunc& visitor,
                                  const TraversalOptions& options, uint32_t depth
 
+- **Return:** `static void`
+
 ---
 
-### TraverseBreadthFirst
+## TraverseBreadthFirst
 
 
 
-**Parameters:** NodeHandle root, const VisitorFunc& visitor,
+- **Parameters:** NodeHandle root, const VisitorFunc& visitor,
                                     const TraversalOptions& options
+
+- **Return:** `static void`
 
 ---

@@ -1,121 +1,265 @@
+# Classes
+---
 
-## Classes
-
-### EditorUISystem
-
-
-
-
-## Functions
-
-### Get
+## EditorUISystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableDocking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableTheming`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCustomization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableLayoutSaving`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxWindows`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxLayouts`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10`
+
+
+
+### `defaultDpiScale`
+
+- **Type:** `float`
+
+- **Default Value:** `1.0f`
+
+
+
+### `defaultTheme`
+
+- **Type:** `string`
+
+- **Default Value:** `"Dark"`
+
+
+
+### `config`
+
+- **Type:** `const EditorUIConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `EditorUIConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `EditorUIStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `EditorUIConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static EditorUISystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const EditorUIConfig& config = {}
+- **Parameters:** const EditorUIConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### RegisterWindow
-
-
-
-**Parameters:** const std::string& name, std::unique_ptr<IEditorWindow> window
+- **Return:** `void`
 
 ---
 
-### UnregisterWindow
+## Update
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** 
 
----
-
-### ShowWindow
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### HideWindow
+## RegisterWindow
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const std::string& name, std::unique_ptr<IEditorWindow> window
 
----
-
-### FocusWindow
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### SaveLayout
+## UnregisterWindow
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const std::string& name
 
----
-
-### LoadLayout
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### ResetLayout
+## ShowWindow
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& name
 
----
-
-### SetTheme
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### CustomizeTheme
+## HideWindow
 
 
 
-**Parameters:** const ThemeCustomization& customization
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## FocusWindow
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## SaveLayout
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## LoadLayout
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## ResetLayout
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SetTheme
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## CustomizeTheme
+
+
+
+- **Parameters:** const ThemeCustomization& customization
+
+- **Return:** `void`
 
 ---

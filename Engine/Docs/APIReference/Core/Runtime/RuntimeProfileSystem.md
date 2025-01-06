@@ -1,105 +1,253 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeProfileSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeProfileSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableCPUProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableGPUProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMemoryProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableThreadProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxSampleCount`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `samplingIntervalMs`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `16`
+
+
+
+### `outputPath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Logs/Profile"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeProfileConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `data`
+
+- **Type:** `const MarkerData&`
+
+- **Default Value:** `{})`
+
+
+
+### `path`
+
+- **Type:** `string&`
+
+- **Default Value:** `"")`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeProfileConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeProfileStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeProfileConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeProfileSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeProfileConfig& config = {}
+- **Parameters:** const RuntimeProfileConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### BeginScope
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### EndScope
+## Update
 
 
 
-**Parameters:** ProfileScope scope
+- **Parameters:** 
 
----
-
-### BeginFrame
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### EndFrame
+## BeginScope
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& name
 
----
-
-### AddMarker
-
-
-
-**Parameters:** const std::string& name, const MarkerData& data = {}
+- **Return:** `ProfileScope`
 
 ---
 
-### AddCounter
+## EndScope
 
 
 
-**Parameters:** const std::string& name, float value
+- **Parameters:** ProfileScope scope
 
----
-
-### ExportProfile
-
-
-
-**Parameters:** const std::string& path = ""
+- **Return:** `void`
 
 ---
 
-### ClearProfile
+## BeginFrame
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## EndFrame
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## AddMarker
+
+
+
+- **Parameters:** const std::string& name, const MarkerData& data = {}
+
+- **Return:** `void`
+
+---
+
+## AddCounter
+
+
+
+- **Parameters:** const std::string& name, float value
+
+- **Return:** `void`
+
+---
+
+## ExportProfile
+
+
+
+- **Parameters:** const std::string& path = ""
+
+- **Return:** `void`
+
+---
+
+## ClearProfile
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

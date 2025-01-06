@@ -1,42 +1,71 @@
 
-## Functions
+# Variables
+---
 
-### MemoryVisualizerWindow
+### `parent`
+
+- **Type:** `QWidget*`
+
+- **Default Value:** `nullptr)`
 
 
 
-**Parameters:** QWidget* parent = nullptr
+### `m_VisualizerWidget`
+
+- **Type:** `MemoryVisualizerWidget*`
+
+
+
+
+# Functions
+---
+
+## MemoryVisualizerWindow
+
+
+
+- **Parameters:** QWidget* parent = nullptr
+
+- **Return:** `explicit`
 
 ---
 
-### setupMenus
+## setupMenus
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### setupDockWidgets
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### saveSnapshot
+## setupDockWidgets
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### loadSnapshot
+## saveSnapshot
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## loadSnapshot
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

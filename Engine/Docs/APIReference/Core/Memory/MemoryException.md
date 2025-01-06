@@ -1,6 +1,23 @@
+# Classes
+---
 
-## Classes
+## ErrorCode
+---
 
-### ErrorCode
+
+
+
+# Variables
+---
+
+### `m_ErrorCode`
+
+- **Type:** `return`
+
+
+
+### `m_ErrorCode`
+
+- **Type:** `ErrorCode`
 
 

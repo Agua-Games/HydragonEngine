@@ -1,26 +1,103 @@
 
-## Functions
+# Variables
+---
 
-### PoolAllocator
+### `blockSize`
+
+- **Type:** `size_t`
 
 
 
-**Parameters:** const PoolConfig& config
+### `blocksPerPool`
+
+- **Type:** `size_t`
+
+
+
+### `growOnDemand`
+
+- **Type:** `bool`
+
+
+
+### `memory`
+
+- **Type:** `void*`
+
+
+
+### `freeBlocks`
+
+- **Type:** `size_t`
+
+
+
+### `m_Config`
+
+- **Type:** `PoolConfig`
+
+
+
+
+# Structs
+---
+
+### `PoolConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `blockSize`: `size_t` - 
+
+  - `blocksPerPool`: `size_t` - 
+
+  - `growOnDemand`: `bool` - 
+
+
+
+### `MemoryPool`
+
+- **Description:** 
+
+- **Members:**
+
+  - `memory`: `void*` - 
+
+  - `freeBlocks`: `size_t` - 
+
+
+
+
+# Functions
+---
+
+## PoolAllocator
+
+
+
+- **Parameters:** const PoolConfig& config
+
+- **Return:** `explicit`
 
 ---
 
-### Defragment
+## Defragment
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---
 
-### CreatePool
+## CreatePool
 
 
 
-**Parameters:** 
+- **Parameters:** 
+
+- **Return:** `MemoryPool*`
 
 ---

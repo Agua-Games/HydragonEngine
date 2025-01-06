@@ -1,209 +1,383 @@
+# Classes
+---
 
-## Classes
-
-### CollaborationWorkspaceBindings
-
-
-
-
-## Functions
-
-### Get
+## CollaborationWorkspaceBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableWorkspaceSharing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSnapshotting`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableBranchManagement`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMerging`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxWorkspaces`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `16`
+
+
+
+### `maxSnapshots`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxBranches`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `32`
+
+
+
+### `workspaceCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Workspaces"`
+
+
+
+### `config`
+
+- **Type:** `const CollaborationWorkspaceBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `desc`
+
+- **Type:** `const WorkspaceDesc&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `CollaborationWorkspaceBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `CollaborationWorkspaceBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `CollaborationWorkspaceBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static CollaborationWorkspaceBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const CollaborationWorkspaceBindingsConfig& config = {}
+- **Parameters:** const CollaborationWorkspaceBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateWorkspace
-
-
-
-**Parameters:** const std::string& name, const WorkspaceDesc& desc = {}
+- **Return:** `void`
 
 ---
 
-### OpenWorkspace
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### CloseWorkspace
-
-
-
-**Parameters:** WorkspaceHandle handle
+- **Return:** `void`
 
 ---
 
-### SaveWorkspace
+## CreateWorkspace
 
 
 
-**Parameters:** WorkspaceHandle handle, const std::string& path
+- **Parameters:** const std::string& name, const WorkspaceDesc& desc = {}
 
----
-
-### ShareWorkspace
-
-
-
-**Parameters:** WorkspaceHandle handle, const std::vector<UserInfo>& users
+- **Return:** `WorkspaceHandle`
 
 ---
 
-### UnshareWorkspace
+## OpenWorkspace
 
 
 
-**Parameters:** WorkspaceHandle handle, const UserInfo& user
+- **Parameters:** const std::string& path
 
----
-
-### CreateSnapshot
-
-
-
-**Parameters:** WorkspaceHandle workspace, const std::string& name
+- **Return:** `void`
 
 ---
 
-### RestoreSnapshot
+## CloseWorkspace
 
 
 
-**Parameters:** SnapshotHandle handle
+- **Parameters:** WorkspaceHandle handle
 
----
-
-### DeleteSnapshot
-
-
-
-**Parameters:** SnapshotHandle handle
+- **Return:** `void`
 
 ---
 
-### CreateBranch
+## SaveWorkspace
 
 
 
-**Parameters:** WorkspaceHandle workspace, const std::string& name
+- **Parameters:** WorkspaceHandle handle, const std::string& path
 
----
-
-### SwitchBranch
-
-
-
-**Parameters:** WorkspaceHandle workspace, BranchHandle branch
+- **Return:** `void`
 
 ---
 
-### MergeBranch
+## ShareWorkspace
 
 
 
-**Parameters:** BranchHandle source, BranchHandle target
+- **Parameters:** WorkspaceHandle handle, const std::vector<UserInfo>& users
 
----
-
-### DeleteBranch
-
-
-
-**Parameters:** BranchHandle handle
+- **Return:** `void`
 
 ---
 
-### AddToWorkspace
+## UnshareWorkspace
 
 
 
-**Parameters:** WorkspaceHandle workspace, AssetHandle asset
+- **Parameters:** WorkspaceHandle handle, const UserInfo& user
 
----
-
-### RemoveFromWorkspace
-
-
-
-**Parameters:** WorkspaceHandle workspace, AssetHandle asset
+- **Return:** `void`
 
 ---
 
-### ValidateWorkspace
+## CreateSnapshot
 
 
 
-**Parameters:** WorkspaceHandle handle
+- **Parameters:** WorkspaceHandle workspace, const std::string& name
 
----
-
-### RepairWorkspace
-
-
-
-**Parameters:** WorkspaceHandle handle
+- **Return:** `SnapshotHandle`
 
 ---
 
-### OptimizeWorkspace
+## RestoreSnapshot
 
 
 
-**Parameters:** WorkspaceHandle handle
+- **Parameters:** SnapshotHandle handle
 
----
-
-### EnableWorkspaceTracking
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### DumpWorkspaceState
+## DeleteSnapshot
 
 
 
-**Parameters:** WorkspaceHandle handle, const std::string& path
+- **Parameters:** SnapshotHandle handle
+
+- **Return:** `void`
 
 ---
 
-### AnalyzeWorkspaceUsage
+## CreateBranch
 
 
 
-**Parameters:** WorkspaceHandle handle
+- **Parameters:** WorkspaceHandle workspace, const std::string& name
+
+- **Return:** `BranchHandle`
+
+---
+
+## SwitchBranch
+
+
+
+- **Parameters:** WorkspaceHandle workspace, BranchHandle branch
+
+- **Return:** `void`
+
+---
+
+## MergeBranch
+
+
+
+- **Parameters:** BranchHandle source, BranchHandle target
+
+- **Return:** `void`
+
+---
+
+## DeleteBranch
+
+
+
+- **Parameters:** BranchHandle handle
+
+- **Return:** `void`
+
+---
+
+## AddToWorkspace
+
+
+
+- **Parameters:** WorkspaceHandle workspace, AssetHandle asset
+
+- **Return:** `void`
+
+---
+
+## RemoveFromWorkspace
+
+
+
+- **Parameters:** WorkspaceHandle workspace, AssetHandle asset
+
+- **Return:** `void`
+
+---
+
+## ValidateWorkspace
+
+
+
+- **Parameters:** WorkspaceHandle handle
+
+- **Return:** `void`
+
+---
+
+## RepairWorkspace
+
+
+
+- **Parameters:** WorkspaceHandle handle
+
+- **Return:** `void`
+
+---
+
+## OptimizeWorkspace
+
+
+
+- **Parameters:** WorkspaceHandle handle
+
+- **Return:** `void`
+
+---
+
+## EnableWorkspaceTracking
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpWorkspaceState
+
+
+
+- **Parameters:** WorkspaceHandle handle, const std::string& path
+
+- **Return:** `void`
+
+---
+
+## AnalyzeWorkspaceUsage
+
+
+
+- **Parameters:** WorkspaceHandle handle
+
+- **Return:** `void`
 
 ---

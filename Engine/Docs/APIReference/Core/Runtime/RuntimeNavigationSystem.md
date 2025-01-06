@@ -1,161 +1,331 @@
+# Classes
+---
 
-## Classes
-
-### RuntimeNavigationSystem
-
-
-
-
-## Functions
-
-### Get
+## RuntimeNavigationSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableDynamicObstacles`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAreaModifiers`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCrowdSimulation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAsyncPathfinding`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxPathRequests`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxCrowdAgents`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `500`
+
+
+
+### `maxAreaModifiers`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `tileSize`
+
+- **Type:** `float`
+
+- **Default Value:** `1.0f`
+
+
+
+### `navMeshCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Navigation"`
+
+
+
+### `config`
+
+- **Type:** `const RuntimeNavigationConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const PathfindingParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `RuntimeNavigationConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `RuntimeNavigationStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `RuntimeNavigationConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static RuntimeNavigationSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const RuntimeNavigationConfig& config = {}
+- **Parameters:** const RuntimeNavigationConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### LoadNavMesh
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### UnloadNavMesh
+## Update
 
 
 
-**Parameters:** NavMeshHandle handle
+- **Parameters:** 
 
----
-
-### BuildNavMesh
-
-
-
-**Parameters:** const NavMeshBuildSettings& settings
+- **Return:** `void`
 
 ---
 
-### RequestPath
+## LoadNavMesh
 
 
 
-**Parameters:** const Vector3& start, const Vector3& end, const PathfindingParams& params = {}
+- **Parameters:** const std::string& path
 
----
-
-### CancelPathRequest
-
-
-
-**Parameters:** PathRequestHandle handle
+- **Return:** `NavMeshHandle`
 
 ---
 
-### CreateCrowdAgent
+## UnloadNavMesh
 
 
 
-**Parameters:** const CrowdAgentDesc& desc
+- **Parameters:** NavMeshHandle handle
 
----
-
-### DestroyCrowdAgent
-
-
-
-**Parameters:** CrowdAgentHandle handle
+- **Return:** `void`
 
 ---
 
-### SetAgentDestination
+## BuildNavMesh
 
 
 
-**Parameters:** CrowdAgentHandle handle, const Vector3& destination
+- **Parameters:** const NavMeshBuildSettings& settings
 
----
-
-### AddDynamicObstacle
-
-
-
-**Parameters:** const Vector3& position, float radius
+- **Return:** `void`
 
 ---
 
-### RemoveDynamicObstacle
+## RequestPath
 
 
 
-**Parameters:** ObstacleHandle handle
+- **Parameters:** const Vector3& start, const Vector3& end, const PathfindingParams& params = {}
 
----
-
-### AddAreaModifier
-
-
-
-**Parameters:** const AreaModifierDesc& desc
+- **Return:** `PathRequestHandle`
 
 ---
 
-### RemoveAreaModifier
+## CancelPathRequest
 
 
 
-**Parameters:** AreaModifierHandle handle
+- **Parameters:** PathRequestHandle handle
 
----
-
-### UpdateAreaModifier
-
-
-
-**Parameters:** AreaModifierHandle handle, float cost
+- **Return:** `void`
 
 ---
 
-### RegisterNavigationFilter
+## CreateCrowdAgent
 
 
 
-**Parameters:** const std::string& name, std::unique_ptr<INavigationFilter> filter
+- **Parameters:** const CrowdAgentDesc& desc
+
+- **Return:** `CrowdAgentHandle`
 
 ---
 
-### UnregisterNavigationFilter
+## DestroyCrowdAgent
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** CrowdAgentHandle handle
+
+- **Return:** `void`
+
+---
+
+## SetAgentDestination
+
+
+
+- **Parameters:** CrowdAgentHandle handle, const Vector3& destination
+
+- **Return:** `void`
+
+---
+
+## AddDynamicObstacle
+
+
+
+- **Parameters:** const Vector3& position, float radius
+
+- **Return:** `void`
+
+---
+
+## RemoveDynamicObstacle
+
+
+
+- **Parameters:** ObstacleHandle handle
+
+- **Return:** `void`
+
+---
+
+## AddAreaModifier
+
+
+
+- **Parameters:** const AreaModifierDesc& desc
+
+- **Return:** `void`
+
+---
+
+## RemoveAreaModifier
+
+
+
+- **Parameters:** AreaModifierHandle handle
+
+- **Return:** `void`
+
+---
+
+## UpdateAreaModifier
+
+
+
+- **Parameters:** AreaModifierHandle handle, float cost
+
+- **Return:** `void`
+
+---
+
+## RegisterNavigationFilter
+
+
+
+- **Parameters:** const std::string& name, std::unique_ptr<INavigationFilter> filter
+
+- **Return:** `void`
+
+---
+
+## UnregisterNavigationFilter
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---

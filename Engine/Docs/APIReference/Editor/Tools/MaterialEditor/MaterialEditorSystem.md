@@ -1,121 +1,259 @@
+# Classes
+---
 
-## Classes
-
-### MaterialEditorSystem
-
-
-
-
-## Functions
-
-### Get
+## MaterialEditorSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableLivePreview`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableNodePreview`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableShaderDebug`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMaterialInstancing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxPreviewResolution`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `512`
+
+
+
+### `maxNodeCount`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `previewMemoryBudget`
+
+- **Type:** `size_t`
+
+- **Default Value:** `128 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const MaterialEditorConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `MaterialEditorConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `MaterialEditorStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `MaterialEditorConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `128 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static MaterialEditorSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const MaterialEditorConfig& config = {}
+- **Parameters:** const MaterialEditorConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateMaterial
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### LoadMaterial
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### SaveMaterial
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### AddNode
+## CreateMaterial
 
 
 
-**Parameters:** const NodeDesc& desc
+- **Parameters:** const std::string& name
 
----
-
-### RemoveNode
-
-
-
-**Parameters:** NodeHandle handle
+- **Return:** `void`
 
 ---
 
-### ConnectNodes
+## LoadMaterial
 
 
 
-**Parameters:** NodeHandle output, NodeHandle input, uint32_t slot
+- **Parameters:** const std::string& path
 
----
-
-### SetParameter
-
-
-
-**Parameters:** const std::string& name, const MaterialParameter& value
+- **Return:** `void`
 
 ---
 
-### UpdatePreview
+## SaveMaterial
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& path
 
----
-
-### CompileShader
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### ValidateGraph
+## AddNode
 
 
 
-**Parameters:** 
+- **Parameters:** const NodeDesc& desc
+
+- **Return:** `void`
+
+---
+
+## RemoveNode
+
+
+
+- **Parameters:** NodeHandle handle
+
+- **Return:** `void`
+
+---
+
+## ConnectNodes
+
+
+
+- **Parameters:** NodeHandle output, NodeHandle input, uint32_t slot
+
+- **Return:** `void`
+
+---
+
+## SetParameter
+
+
+
+- **Parameters:** const std::string& name, const MaterialParameter& value
+
+- **Return:** `void`
+
+---
+
+## UpdatePreview
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## CompileShader
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## ValidateGraph
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

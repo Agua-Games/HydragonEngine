@@ -1,97 +1,227 @@
+# Classes
+---
 
-## Classes
-
-### ThemeManagerSystem
-
-
-
-
-## Functions
-
-### Get
+## ThemeManagerSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableCustomization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePresets`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAnimations`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableColorSchemes`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxThemes`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `20`
+
+
+
+### `maxColorSchemes`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10`
+
+
+
+### `themeDirectory`
+
+- **Type:** `string`
+
+- **Default Value:** `"Editor/Themes"`
+
+
+
+### `config`
+
+- **Type:** `const ThemeManagerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ThemeManagerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ThemeManagerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ThemeManagerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ThemeManagerSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ThemeManagerConfig& config = {}
+- **Parameters:** const ThemeManagerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### LoadTheme
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### SaveTheme
+## Update
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** 
 
----
-
-### DeleteTheme
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### SetColorScheme
+## LoadTheme
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const std::string& name
 
----
-
-### CustomizeColors
-
-
-
-**Parameters:** const ColorCustomization& customization
+- **Return:** `void`
 
 ---
 
-### SetStyle
+## SaveTheme
 
 
 
-**Parameters:** const std::string& element, const StyleDesc& style
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
 
 ---
 
-### ResetStyle
+## DeleteTheme
 
 
 
-**Parameters:** const std::string& element
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## SetColorScheme
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## CustomizeColors
+
+
+
+- **Parameters:** const ColorCustomization& customization
+
+- **Return:** `void`
+
+---
+
+## SetStyle
+
+
+
+- **Parameters:** const std::string& element, const StyleDesc& style
+
+- **Return:** `void`
+
+---
+
+## ResetStyle
+
+
+
+- **Parameters:** const std::string& element
+
+- **Return:** `void`
 
 ---

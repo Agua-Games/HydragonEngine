@@ -1,97 +1,227 @@
+# Classes
+---
 
-## Classes
-
-### DialogManagerSystem
-
-
-
-
-## Functions
-
-### Get
+## DialogManagerSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableCustomDialogs`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableModalStack`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAnimations`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableBackdrop`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxModalDepth`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `5`
+
+
+
+### `fadeTime`
+
+- **Type:** `float`
+
+- **Default Value:** `0.2f`
+
+
+
+### `defaultStyle`
+
+- **Type:** `string`
+
+- **Default Value:** `"Modern"`
+
+
+
+### `config`
+
+- **Type:** `const DialogManagerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `DialogManagerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `DialogManagerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `DialogManagerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static DialogManagerSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const DialogManagerConfig& config = {}
+- **Parameters:** const DialogManagerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### ShowDialog
-
-
-
-**Parameters:** const std::string& type, const DialogDesc& desc
+- **Return:** `void`
 
 ---
 
-### CloseDialog
+## Update
 
 
 
-**Parameters:** DialogHandle handle
+- **Parameters:** 
 
----
-
-### CloseAllDialogs
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### ShowModal
+## ShowDialog
 
 
 
-**Parameters:** const std::string& type, const DialogDesc& desc
+- **Parameters:** const std::string& type, const DialogDesc& desc
 
----
-
-### CloseModal
-
-
-
-**Parameters:** DialogHandle handle
+- **Return:** `DialogHandle`
 
 ---
 
-### RegisterDialogType
+## CloseDialog
 
 
 
-**Parameters:** const std::string& type, std::unique_ptr<IDialog> dialog
+- **Parameters:** DialogHandle handle
+
+- **Return:** `void`
 
 ---
 
-### UnregisterDialogType
+## CloseAllDialogs
 
 
 
-**Parameters:** const std::string& type
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## ShowModal
+
+
+
+- **Parameters:** const std::string& type, const DialogDesc& desc
+
+- **Return:** `DialogHandle`
+
+---
+
+## CloseModal
+
+
+
+- **Parameters:** DialogHandle handle
+
+- **Return:** `void`
+
+---
+
+## RegisterDialogType
+
+
+
+- **Parameters:** const std::string& type, std::unique_ptr<IDialog> dialog
+
+- **Return:** `void`
+
+---
+
+## UnregisterDialogType
+
+
+
+- **Parameters:** const std::string& type
+
+- **Return:** `void`
 
 ---

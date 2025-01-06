@@ -1,6 +1,31 @@
+# Classes
+---
 
-## Classes
+## StreamingErrorCode
+---
 
-### StreamingErrorCode
+
+
+
+# Variables
+---
+
+### `m_Code`
+
+- **Type:** `return`
+
+
+
+### `m_Code`
+
+- **Type:** `StreamingErrorCode`
+
+
+
+### `StreamingResult`
+
+- **Type:** `using`
+
+- **Default Value:** `Common::Result<T, StreamingError>`
 
 

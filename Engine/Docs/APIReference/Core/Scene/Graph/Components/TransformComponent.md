@@ -1,65 +1,131 @@
+# Classes
+---
 
-## Classes
-
-### TransformComponent
-
-
-
-
-## Functions
-
-### SetPosition
+## TransformComponent
+---
 
 
 
-**Parameters:** const Vector3& position
+
+# Variables
+---
+
+### `m_LocalTransform`
+
+- **Type:** `return`
+
+
+
+### `m_WorldTransform`
+
+- **Type:** `return`
+
+
+
+### `parentTransform`
+
+- **Type:** `const Transform*`
+
+- **Default Value:** `nullptr)`
+
+
+
+### `m_Dirty`
+
+- **Type:** `return`
+
+
+
+### `m_LocalTransform`
+
+- **Type:** `Transform`
+
+
+
+### `m_WorldTransform`
+
+- **Type:** `Transform`
+
+
+
+### `m_Dirty`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+
+# Functions
+---
+
+## SetPosition
+
+
+
+- **Parameters:** const Vector3& position
+
+- **Return:** `void`
 
 ---
 
-### SetRotation
+## SetRotation
 
 
 
-**Parameters:** const Quaternion& rotation
+- **Parameters:** const Quaternion& rotation
 
----
-
-### SetScale
-
-
-
-**Parameters:** const Vector3& scale
+- **Return:** `void`
 
 ---
 
-### Translate
+## SetScale
 
 
 
-**Parameters:** const Vector3& translation
+- **Parameters:** const Vector3& scale
 
----
-
-### Rotate
-
-
-
-**Parameters:** const Quaternion& rotation
+- **Return:** `void`
 
 ---
 
-### Scale
+## Translate
 
 
 
-**Parameters:** const Vector3& scale
+- **Parameters:** const Vector3& translation
+
+- **Return:** `void`
 
 ---
 
-### UpdateWorldTransform
+## Rotate
 
 
 
-**Parameters:** const Transform* parentTransform = nullptr
+- **Parameters:** const Quaternion& rotation
+
+- **Return:** `void`
+
+---
+
+## Scale
+
+
+
+- **Parameters:** const Vector3& scale
+
+- **Return:** `void`
+
+---
+
+## UpdateWorldTransform
+
+
+
+- **Parameters:** const Transform* parentTransform = nullptr
+
+- **Return:** `void`
 
 ---

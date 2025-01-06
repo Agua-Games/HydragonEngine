@@ -1,33 +1,41 @@
+# Classes
+---
 
-## Classes
-
-### CollaborationManager
-
-
-
-
-## Functions
-
-### shareNodeGraph
+## CollaborationManager
+---
 
 
 
-**Parameters:** const NodeGraph& graph
+
+# Functions
+---
+
+## shareNodeGraph
+
+
+
+- **Parameters:** const NodeGraph& graph
+
+- **Return:** `void`
 
 ---
 
-### broadcastScriptChanges
+## broadcastScriptChanges
 
 
 
-**Parameters:** const ScriptChangeSet& changes
+- **Parameters:** const ScriptChangeSet& changes
+
+- **Return:** `void`
 
 ---
 
-### syncAssetChanges
+## syncAssetChanges
 
 
 
-**Parameters:** const AssetChangeSet& changes
+- **Parameters:** const AssetChangeSet& changes
+
+- **Return:** `void`
 
 ---

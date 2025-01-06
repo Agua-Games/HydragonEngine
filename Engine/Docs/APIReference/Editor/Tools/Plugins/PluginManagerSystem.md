@@ -1,97 +1,235 @@
+# Classes
+---
 
-## Classes
-
-### PluginManagerSystem
-
-
-
-
-## Functions
-
-### Get
+## PluginManagerSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableMarketplace`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDependencyResolution`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableSignatureVerification`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableChangeTracking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `updateCheckInterval`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `3600`
+
+
+
+### `marketplaceUrl`
+
+- **Type:** `string`
+
+
+
+### `cacheDirectory`
+
+- **Type:** `string`
+
+
+
+### `config`
+
+- **Type:** `const PluginManagerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `version`
+
+- **Type:** `string&`
+
+- **Default Value:** `"latest")`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `PluginManagerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `PluginManagerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `PluginManagerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `marketplaceUrl`: `string` - 
+
+  - `cacheDirectory`: `string` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static PluginManagerSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const PluginManagerConfig& config = {}
+- **Parameters:** const PluginManagerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### InstallPlugin
-
-
-
-**Parameters:** const std::string& pluginId, const std::string& version = "latest"
+- **Return:** `void`
 
 ---
 
-### UninstallPlugin
+## Update
 
 
 
-**Parameters:** const std::string& pluginId
+- **Parameters:** 
 
----
-
-### UpdatePlugin
-
-
-
-**Parameters:** const std::string& pluginId
+- **Return:** `void`
 
 ---
 
-### CheckForUpdates
+## InstallPlugin
 
 
 
-**Parameters:** 
+- **Parameters:** const std::string& pluginId, const std::string& version = "latest"
 
----
-
-### SyncPluginRegistry
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### RegisterUpdateCallback
+## UninstallPlugin
 
 
 
-**Parameters:** const UpdateCallback& callback
+- **Parameters:** const std::string& pluginId
+
+- **Return:** `void`
 
 ---
 
-### UnregisterUpdateCallback
+## UpdatePlugin
 
 
 
-**Parameters:** const std::string& callbackId
+- **Parameters:** const std::string& pluginId
+
+- **Return:** `void`
+
+---
+
+## CheckForUpdates
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SyncPluginRegistry
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## RegisterUpdateCallback
+
+
+
+- **Parameters:** const UpdateCallback& callback
+
+- **Return:** `void`
+
+---
+
+## UnregisterUpdateCallback
+
+
+
+- **Parameters:** const std::string& callbackId
+
+- **Return:** `void`
 
 ---

@@ -1,89 +1,209 @@
+# Classes
+---
 
-## Classes
-
-### PluginExtensionSystem
-
-
-
-
-## Functions
-
-### Get
+## PluginExtensionSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableVersionChecking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAPIValidation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableEventRouting`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMetricsCollection`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxExtensionPoints`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `maxExtensionsPerPoint`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `config`
+
+- **Type:** `const PluginExtensionConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `PluginExtensionConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `PluginExtensionStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `PluginExtensionConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static PluginExtensionSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const PluginExtensionConfig& config = {}
+- **Parameters:** const PluginExtensionConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### RegisterExtensionPoint
-
-
-
-**Parameters:** const std::string& point, const ExtensionPointDesc& desc
+- **Return:** `void`
 
 ---
 
-### UnregisterExtensionPoint
+## Update
 
 
 
-**Parameters:** const std::string& point
+- **Parameters:** 
 
----
-
-### AddExtension
-
-
-
-**Parameters:** const std::string& point, const Extension& extension
+- **Return:** `void`
 
 ---
 
-### RemoveExtension
+## RegisterExtensionPoint
 
 
 
-**Parameters:** const std::string& point, const std::string& extensionId
+- **Parameters:** const std::string& point, const ExtensionPointDesc& desc
 
----
-
-### EnableExtension
-
-
-
-**Parameters:** const std::string& point, const std::string& extensionId
+- **Return:** `void`
 
 ---
 
-### DisableExtension
+## UnregisterExtensionPoint
 
 
 
-**Parameters:** const std::string& point, const std::string& extensionId
+- **Parameters:** const std::string& point
+
+- **Return:** `void`
+
+---
+
+## AddExtension
+
+
+
+- **Parameters:** const std::string& point, const Extension& extension
+
+- **Return:** `void`
+
+---
+
+## RemoveExtension
+
+
+
+- **Parameters:** const std::string& point, const std::string& extensionId
+
+- **Return:** `void`
+
+---
+
+## EnableExtension
+
+
+
+- **Parameters:** const std::string& point, const std::string& extensionId
+
+- **Return:** `void`
+
+---
+
+## DisableExtension
+
+
+
+- **Parameters:** const std::string& point, const std::string& extensionId
+
+- **Return:** `void`
 
 ---

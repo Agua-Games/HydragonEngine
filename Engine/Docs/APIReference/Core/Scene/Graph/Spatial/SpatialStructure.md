@@ -1,6 +1,63 @@
+# Classes
+---
 
-## Classes
+## ISpatialStructure
+---
 
-### ISpatialStructure
+
+
+
+# Variables
+---
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `override`
+
+- **Type:** `const`
+
+
+
+### `bounds`
+
+- **Type:** `BoundingBox`
+
+
+
+### `isLeaf`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `m_Stats`
+
+- **Type:** `SpatialStats`
+
+
+
+
+# Structs
+---
+
+### `OctreeNode`
+
+- **Description:** 
+
+- **Members:**
+
+  - `bounds`: `BoundingBox` - 
 
 

@@ -1,97 +1,219 @@
+# Classes
+---
 
-## Classes
-
-### AIDebugger
-
-
-
-
-## Functions
-
-### Get
+## AIDebugger
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableBehaviorTreeViz`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDecisionGraphs`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableStateInspection`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enablePerformanceAnalysis`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxTrackedEntities`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `updateInterval`
+
+- **Type:** `float`
+
+- **Default Value:** `0.1f`
+
+
+
+### `config`
+
+- **Type:** `const AIDebuggerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AIDebuggerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AIDebuggerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AIDebuggerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AIDebugger&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AIDebuggerConfig& config = {}
+- **Parameters:** const AIDebuggerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** float deltaTime
+- **Parameters:** 
 
----
-
-### TrackEntity
-
-
-
-**Parameters:** EntityHandle entity
+- **Return:** `void`
 
 ---
 
-### UntrackEntity
+## Update
 
 
 
-**Parameters:** EntityHandle entity
+- **Parameters:** float deltaTime
 
----
-
-### VisualizeDecisionTree
-
-
-
-**Parameters:** EntityHandle entity
+- **Return:** `void`
 
 ---
 
-### VisualizeBehaviorTree
+## TrackEntity
 
 
 
-**Parameters:** EntityHandle entity
+- **Parameters:** EntityHandle entity
 
----
-
-### VisualizePathfinding
-
-
-
-**Parameters:** EntityHandle entity
+- **Return:** `void`
 
 ---
 
-### CaptureAISnapshot
+## UntrackEntity
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
 
 ---
 
-### CompareAISnapshots
+## VisualizeDecisionTree
 
 
 
-**Parameters:** const std::string& snapshot1, const std::string& snapshot2
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
+
+---
+
+## VisualizeBehaviorTree
+
+
+
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
+
+---
+
+## VisualizePathfinding
+
+
+
+- **Parameters:** EntityHandle entity
+
+- **Return:** `void`
+
+---
+
+## CaptureAISnapshot
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## CompareAISnapshots
+
+
+
+- **Parameters:** const std::string& snapshot1, const std::string& snapshot2
+
+- **Return:** `void`
 
 ---

@@ -1,81 +1,209 @@
+# Classes
+---
 
-## Classes
-
-### PluginSandboxSystem
-
-
-
-
-## Functions
-
-### Get
+## PluginSandboxSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableMemoryIsolation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableFileSystemIsolation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableNetworkIsolation`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableResourceLimiting`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConcurrentSandboxes`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10`
+
+
+
+### `sandboxMemoryLimit`
+
+- **Type:** `size_t`
+
+- **Default Value:** `128 * 1024 * 1024`
+
+
+
+### `sandboxRoot`
+
+- **Type:** `string`
+
+- **Default Value:** `"Editor/Sandbox"`
+
+
+
+### `config`
+
+- **Type:** `const PluginSandboxConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `PluginSandboxConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `PluginSandboxStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `PluginSandboxConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `128 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static PluginSandboxSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const PluginSandboxConfig& config = {}
+- **Parameters:** const PluginSandboxConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateSandbox
-
-
-
-**Parameters:** const std::string& pluginId
+- **Return:** `void`
 
 ---
 
-### DestroySandbox
+## Update
 
 
 
-**Parameters:** SandboxHandle handle
+- **Parameters:** 
 
----
-
-### SetResourceLimits
-
-
-
-**Parameters:** SandboxHandle handle, const ResourceLimits& limits
+- **Return:** `void`
 
 ---
 
-### SetPermissions
+## CreateSandbox
 
 
 
-**Parameters:** SandboxHandle handle, const SandboxPermissions& permissions
+- **Parameters:** const std::string& pluginId
+
+- **Return:** `SandboxHandle`
 
 ---
 
-### MonitorResource
+## DestroySandbox
 
 
 
-**Parameters:** SandboxHandle handle, ResourceType type
+- **Parameters:** SandboxHandle handle
+
+- **Return:** `void`
+
+---
+
+## SetResourceLimits
+
+
+
+- **Parameters:** SandboxHandle handle, const ResourceLimits& limits
+
+- **Return:** `void`
+
+---
+
+## SetPermissions
+
+
+
+- **Parameters:** SandboxHandle handle, const SandboxPermissions& permissions
+
+- **Return:** `void`
+
+---
+
+## MonitorResource
+
+
+
+- **Parameters:** SandboxHandle handle, ResourceType type
+
+- **Return:** `void`
 
 ---

@@ -1,161 +1,327 @@
+# Classes
+---
 
-## Classes
-
-### ResourceBindings
-
-
-
-
-## Functions
-
-### Get
+## ResourceBindings
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableAsyncLoading`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableHotReloading`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableResourcePacking`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCaching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxPendingLoads`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `maxCacheSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `256 * 1024 * 1024`
+
+
+
+### `maxPackageSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1024 * 1024 * 1024`
+
+
+
+### `resourceCachePath`
+
+- **Type:** `string`
+
+- **Default Value:** `"Cache/Resources"`
+
+
+
+### `config`
+
+- **Type:** `const ResourceBindingsConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `params`
+
+- **Type:** `const LoadParams&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ResourceBindingsConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ResourceBindingsStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `ResourceBindingsConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `256 * 1024 *` - 
+
+  - `1024`: `1024 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ResourceBindings&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ResourceBindingsConfig& config = {}
+- **Parameters:** const ResourceBindingsConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### LoadResource
-
-
-
-**Parameters:** const std::string& path, const LoadParams& params = {}
+- **Return:** `void`
 
 ---
 
-### UnloadResource
+## Update
 
 
 
-**Parameters:** ResourceHandle handle
+- **Parameters:** 
 
----
-
-### PreloadResource
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### SetResourcePriority
+## LoadResource
 
 
 
-**Parameters:** ResourceHandle handle, ResourcePriority priority
+- **Parameters:** const std::string& path, const LoadParams& params = {}
 
----
-
-### ReloadResource
-
-
-
-**Parameters:** ResourceHandle handle
+- **Return:** `ResourceHandle`
 
 ---
 
-### CreateResourcePackage
+## UnloadResource
 
 
 
-**Parameters:** const std::string& name, const std::vector<std::string>& resources
+- **Parameters:** ResourceHandle handle
 
----
-
-### LoadResourcePackage
-
-
-
-**Parameters:** const std::string& name
+- **Return:** `void`
 
 ---
 
-### UnloadResourcePackage
+## PreloadResource
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** const std::string& path
 
----
-
-### EnableResourceCaching
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### ClearResourceCache
+## SetResourcePriority
 
 
 
-**Parameters:** 
+- **Parameters:** ResourceHandle handle, ResourcePriority priority
 
----
-
-### SetCacheLimit
-
-
-
-**Parameters:** size_t sizeInBytes
+- **Return:** `void`
 
 ---
 
-### RegisterLoadCallback
+## ReloadResource
 
 
 
-**Parameters:** const std::string& path, const LoadCallback& callback
+- **Parameters:** ResourceHandle handle
 
----
-
-### UnregisterLoadCallback
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### EnableHotReload
+## CreateResourcePackage
 
 
 
-**Parameters:** const std::string& path, bool enable
+- **Parameters:** const std::string& name, const std::vector<std::string>& resources
+
+- **Return:** `void`
 
 ---
 
-### DumpResourceState
+## LoadResourcePackage
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## UnloadResourcePackage
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## EnableResourceCaching
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## ClearResourceCache
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SetCacheLimit
+
+
+
+- **Parameters:** size_t sizeInBytes
+
+- **Return:** `void`
+
+---
+
+## RegisterLoadCallback
+
+
+
+- **Parameters:** const std::string& path, const LoadCallback& callback
+
+- **Return:** `void`
+
+---
+
+## UnregisterLoadCallback
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## EnableHotReload
+
+
+
+- **Parameters:** const std::string& path, bool enable
+
+- **Return:** `void`
+
+---
+
+## DumpResourceState
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
 
 ---

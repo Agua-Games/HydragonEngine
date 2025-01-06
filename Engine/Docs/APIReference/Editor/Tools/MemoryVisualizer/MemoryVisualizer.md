@@ -1,73 +1,165 @@
+# Classes
+---
 
-## Classes
-
-### MemoryVisualizer
-
-
-
-
-## Functions
-
-### Get
+## MemoryVisualizer
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `config`
+
+- **Type:** `const MemoryVisualizerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `name`
+
+- **Type:** `const char*`
+
+
+
+### `size`
+
+- **Type:** `size_t`
+
+
+
+### `fragmentation`
+
+- **Type:** `float`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `MemoryVisualizerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `MemoryVisualizerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `VisualizationData`
+
+- **Description:** 
+
+- **Members:**
+
+  - `name`: `const char*` - 
+
+  - `size`: `size_t` - 
+
+  - `fragmentation`: `float` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static MemoryVisualizer&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const MemoryVisualizerConfig& config = {}
+- **Parameters:** const MemoryVisualizerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### TrackAllocation
-
-
-
-**Parameters:** const Memory::AllocationInfo& info
+- **Return:** `void`
 
 ---
 
-### GenerateHeatMap
+## Update
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### ExportVisualization
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### UpdateVisualization
+## TrackAllocation
 
 
 
-**Parameters:** const Memory::AllocationInfo& info
+- **Parameters:** const Memory::AllocationInfo& info
+
+- **Return:** `void`
+
+---
+
+## GenerateHeatMap
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## ExportVisualization
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## UpdateVisualization
+
+
+
+- **Parameters:** const Memory::AllocationInfo& info
+
+- **Return:** `void`
 
 ---

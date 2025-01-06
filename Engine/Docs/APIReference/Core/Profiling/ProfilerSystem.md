@@ -1,129 +1,317 @@
+# Classes
+---
 
-## Classes
-
-### ProfilerSystem
-
-
-
-
-## Functions
-
-### Get
+## ProfilerSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `timeline`
+
+- **Type:** `PerformanceTimeline`
+
+
+
+### `resources`
+
+- **Type:** `ResourceUtilization`
+
+
+
+### `bottlenecks`
+
+- **Type:** `BottleneckAnalysis`
+
+
+
+### `enableCPUProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableGPUProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMemoryProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableThreadProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableNetworkProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableFileIOProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxSampleCount`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `10000`
+
+
+
+### `maxFrameHistory`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `300`
+
+
+
+### `memoryBudget`
+
+- **Type:** `size_t`
+
+- **Default Value:** `64 * 1024 * 1024`
+
+
+
+### `config`
+
+- **Type:** `const ProfilerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `ProfilerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `ProfilerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `SystemMetrics`
+
+- **Description:** 
+
+- **Members:**
+
+  - `timeline`: `PerformanceTimeline` - 
+
+  - `resources`: `ResourceUtilization` - 
+
+  - `bottlenecks`: `BottleneckAnalysis` - 
+
+
+
+### `ProfilerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `64 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static ProfilerSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const ProfilerConfig& config = {}
+- **Parameters:** const ProfilerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### BeginFrame
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### EndFrame
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### BeginScope
+## BeginFrame
 
 
 
-**Parameters:** const char* name, ProfilerCategory category
+- **Parameters:** 
 
----
-
-### EndScope
-
-
-
-**Parameters:** ScopeHandle handle
+- **Return:** `void`
 
 ---
 
-### AddMarker
+## EndFrame
 
 
 
-**Parameters:** const char* name, ProfilerCategory category
+- **Parameters:** 
 
----
-
-### AddCounter
-
-
-
-**Parameters:** const char* name, float value
+- **Return:** `void`
 
 ---
 
-### BeginGPUScope
+## BeginScope
 
 
 
-**Parameters:** const char* name
+- **Parameters:** const char* name, ProfilerCategory category
 
----
-
-### EndGPUScope
-
-
-
-**Parameters:** 
+- **Return:** `ScopeHandle`
 
 ---
 
-### SetThreadName
+## EndScope
 
 
 
-**Parameters:** const std::string& name
+- **Parameters:** ScopeHandle handle
 
----
-
-### EnableCapture
-
-
-
-**Parameters:** bool enable
+- **Return:** `void`
 
 ---
 
-### ExportCapture
+## AddMarker
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** const char* name, ProfilerCategory category
+
+- **Return:** `void`
 
 ---
 
-### ClearCapture
+## AddCounter
 
 
 
-**Parameters:** 
+- **Parameters:** const char* name, float value
+
+- **Return:** `void`
+
+---
+
+## BeginGPUScope
+
+
+
+- **Parameters:** const char* name
+
+- **Return:** `void`
+
+---
+
+## EndGPUScope
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SetThreadName
+
+
+
+- **Parameters:** const std::string& name
+
+- **Return:** `void`
+
+---
+
+## EnableCapture
+
+
+
+- **Parameters:** bool enable
+
+- **Return:** `void`
+
+---
+
+## ExportCapture
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ClearCapture
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

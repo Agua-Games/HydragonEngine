@@ -1,25 +1,77 @@
+# Classes
+---
 
-## Classes
-
-### AnomalyDetector
-
-
-
-
-## Functions
-
-### addMemorySample
+## AnomalyDetector
+---
 
 
 
-**Parameters:** const MemoryState& state
+
+# Variables
+---
+
+### `memorySpikeTreshold`
+
+- **Type:** `float`
+
+- **Default Value:** `1.5f`
+
+
+
+### `streamingFailureRate`
+
+- **Type:** `float`
+
+- **Default Value:** `0.1f`
+
+
+
+### `historySamples`
+
+- **Type:** `size_t`
+
+- **Default Value:** `100`
+
+
+
+### `m_Config`
+
+- **Type:** `AnomalyConfig`
+
+
+
+
+# Structs
+---
+
+### `AnomalyConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## addMemorySample
+
+
+
+- **Parameters:** const MemoryState& state
+
+- **Return:** `void`
 
 ---
 
-### addStreamingSample
+## addStreamingSample
 
 
 
-**Parameters:** const StreamingState& state
+- **Parameters:** const StreamingState& state
+
+- **Return:** `void`
 
 ---

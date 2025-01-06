@@ -1,6 +1,33 @@
+# Classes
+---
 
-## Classes
+## Result
+---
 
-### Result
+
+
+
+# Variables
+---
+
+### `m_ErrorCode`
+
+- **Type:** `return`
+
+- **Default Value:** `= 0`
+
+
+
+### `m_ErrorCode`
+
+- **Type:** `int`
+
+- **Default Value:** `0`
+
+
+
+### `m_Message`
+
+- **Type:** `string`
 
 

@@ -1,177 +1,457 @@
+# Classes
+---
 
-## Classes
-
-### TerrainStreamingCoordinator
-
-
-
-
-## Functions
-
-### update
+## TerrainStreamingCoordinator
+---
 
 
 
-**Parameters:** const Camera& camera
+
+# Variables
+---
+
+### `streamingConfig`
+
+- **Type:** `StreamingConfig`
+
+
+
+### `meshletConfig`
+
+- **Type:** `MeshletConfig`
+
+
+
+### `textureConfig`
+
+- **Type:** `VirtualTextureConfig`
+
+
+
+### `meshletStreamingDistance`
+
+- **Type:** `float`
+
+- **Default Value:** `1000.0f`
+
+
+
+### `textureStreamingDistance`
+
+- **Type:** `float`
+
+- **Default Value:** `2000.0f`
+
+
+
+### `maxConcurrentOperations`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `4`
+
+
+
+### `averageLoadTime`
+
+- **Type:** `float`
+
+
+
+### `peakMemoryUsage`
+
+- **Type:** `size_t`
+
+
+
+### `activeStreamingTasks`
+
+- **Type:** `uint32_t`
+
+
+
+### `pendingRequests`
+
+- **Type:** `uint32_t`
+
+
+
+### `bandwidthUtilization`
+
+- **Type:** `float`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `regionId`
+
+- **Type:** `uint32_t`
+
+
+
+### `needsMeshlets`
+
+- **Type:** `bool`
+
+
+
+### `needsTextures`
+
+- **Type:** `bool`
+
+
+
+### `priority`
+
+- **Type:** `float`
+
+
+
+### `m_StreamingSystem`
+
+- **Type:** `TerrainStreamingSystem`
+
+
+
+### `m_MeshletSystem`
+
+- **Type:** `TerrainMeshletSystem`
+
+
+
+### `m_TextureSystem`
+
+- **Type:** `TerrainVirtualTexturing`
+
+
+
+### `m_IsPaused`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `m_AssetSystem`
+
+- **Type:** `AssetSystem*`
+
+- **Default Value:** `nullptr`
+
+
+
+### `m_CollabManager`
+
+- **Type:** `CollaborationManager*`
+
+- **Default Value:** `nullptr`
+
+
+
+### `m_AttributeSystem`
+
+- **Type:** `AttributeSystem*`
+
+- **Default Value:** `nullptr`
+
+
+
+### `m_Stats`
+
+- **Type:** `StreamingStats`
+
+
+
+### `m_QualityLevel`
+
+- **Type:** `StreamingQuality`
+
+- **Default Value:** `StreamingQuality::High`
+
+
+
+### `m_PrioritizedRegion`
+
+- **Type:** `BoundingBox`
+
+
+
+### `m_RegionPriority`
+
+- **Type:** `float`
+
+- **Default Value:** `1.0f`
+
+
+
+
+# Structs
+---
+
+### `CoordinatorConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `streamingConfig`: `StreamingConfig` - 
+
+  - `meshletConfig`: `MeshletConfig` - 
+
+  - `textureConfig`: `VirtualTextureConfig` - 
+
+
+
+### `StreamingStats`
+
+- **Description:** 
+
+- **Members:**
+
+  - `averageLoadTime`: `float` - 
+
+  - `peakMemoryUsage`: `size_t` - 
+
+  - `activeStreamingTasks`: `uint32_t` - 
+
+  - `pendingRequests`: `uint32_t` - 
+
+  - `bandwidthUtilization`: `float` - 
+
+
+
+### `StreamingTask`
+
+- **Description:** 
+
+- **Members:**
+
+  - `regionId`: `uint32_t` - 
+
+  - `needsMeshlets`: `bool` - 
+
+  - `needsTextures`: `bool` - 
+
+  - `priority`: `float` - 
+
+
+
+
+# Functions
+---
+
+## update
+
+
+
+- **Parameters:** const Camera& camera
+
+- **Return:** `void`
 
 ---
 
-### setStreamingPriority
+## setStreamingPriority
 
 
 
-**Parameters:** const Vector3& position, float priority
+- **Parameters:** const Vector3& position, float priority
 
----
-
-### pauseStreaming
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### resumeStreaming
+## pauseStreaming
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### drawDebugInfo
-
-
-
-**Parameters:** CommandBuffer* cmd
+- **Return:** `void`
 
 ---
 
-### handleAssetReload
+## resumeStreaming
 
 
 
-**Parameters:** const AssetReloadEvent& event
+- **Parameters:** 
 
----
-
-### registerStreamingAssets
-
-
-
-**Parameters:** AssetSystem& assetSystem
+- **Return:** `void`
 
 ---
 
-### handleCollaboratorUpdate
+## drawDebugInfo
 
 
 
-**Parameters:** const CollaboratorUpdate& update
+- **Parameters:** CommandBuffer* cmd
 
----
-
-### broadcastStreamingState
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### registerAttributes
+## handleAssetReload
 
 
 
-**Parameters:** AttributeSystem& attributes
+- **Parameters:** const AssetReloadEvent& event
 
----
-
-### setStreamingBudget
-
-
-
-**Parameters:** size_t budgetMB
+- **Return:** `void`
 
 ---
 
-### setPrioritizedRegion
+## registerStreamingAssets
 
 
 
-**Parameters:** const BoundingBox& region, float priority
+- **Parameters:** AssetSystem& assetSystem
 
----
-
-### setQualityLevel
-
-
-
-**Parameters:** StreamingQuality quality
+- **Return:** `void`
 
 ---
 
-### updateStreamingTasks
+## handleCollaboratorUpdate
 
 
 
-**Parameters:** const Camera& camera
+- **Parameters:** const CollaboratorUpdate& update
 
----
-
-### processStreamingTasks
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### synchronizeSystems
+## broadcastStreamingState
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### handleStreamingFailure
-
-
-
-**Parameters:** const StreamingError& error
+- **Return:** `void`
 
 ---
 
-### updateStreamingStats
+## registerAttributes
 
 
 
-**Parameters:** 
+- **Parameters:** AttributeSystem& attributes
 
----
-
-### notifyCollaborators
-
-
-
-**Parameters:** const StreamingEvent& event
+- **Return:** `void`
 
 ---
 
-### handleAssetDependencies
+## setStreamingBudget
 
 
 
-**Parameters:** uint32_t regionId
+- **Parameters:** size_t budgetMB
+
+- **Return:** `void`
 
 ---
 
-### calculateRegionPriority
+## setPrioritizedRegion
 
 
 
-**Parameters:** const BoundingBox& bounds, float distance
+- **Parameters:** const BoundingBox& region, float priority
+
+- **Return:** `void`
+
+---
+
+## setQualityLevel
+
+
+
+- **Parameters:** StreamingQuality quality
+
+- **Return:** `void`
+
+---
+
+## updateStreamingTasks
+
+
+
+- **Parameters:** const Camera& camera
+
+- **Return:** `void`
+
+---
+
+## processStreamingTasks
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## synchronizeSystems
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## handleStreamingFailure
+
+
+
+- **Parameters:** const StreamingError& error
+
+- **Return:** `void`
+
+---
+
+## updateStreamingStats
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## notifyCollaborators
+
+
+
+- **Parameters:** const StreamingEvent& event
+
+- **Return:** `void`
+
+---
+
+## handleAssetDependencies
+
+
+
+- **Parameters:** uint32_t regionId
+
+- **Return:** `void`
+
+---
+
+## calculateRegionPriority
+
+
+
+- **Parameters:** const BoundingBox& bounds, float distance
+
+- **Return:** `float`
 
 ---

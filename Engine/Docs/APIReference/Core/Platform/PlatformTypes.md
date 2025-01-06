@@ -1,14 +1,329 @@
+# Classes
+---
 
-## Classes
-
-### PlatformType
-
-
-
-### KeyCode
+## PlatformType
+---
 
 
 
-### MouseButton
+## KeyCode
+---
+
+
+
+## MouseButton
+---
+
+
+
+
+# Variables
+---
+
+### `WindowHandle`
+
+- **Type:** `using`
+
+- **Default Value:** `uint32_t`
+
+
+
+### `title`
+
+- **Type:** `string`
+
+
+
+### `width`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1280`
+
+
+
+### `height`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `720`
+
+
+
+### `fullscreen`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `resizable`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `decorated`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `vsync`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `platform`
+
+- **Type:** `PlatformType`
+
+
+
+### `osName`
+
+- **Type:** `string`
+
+
+
+### `osVersion`
+
+- **Type:** `string`
+
+
+
+### `totalMemory`
+
+- **Type:** `size_t`
+
+
+
+### `availableMemory`
+
+- **Type:** `size_t`
+
+
+
+### `deviceName`
+
+- **Type:** `string`
+
+
+
+### `deviceModel`
+
+- **Type:** `string`
+
+
+
+### `width`
+
+- **Type:** `uint32_t`
+
+
+
+### `height`
+
+- **Type:** `uint32_t`
+
+
+
+### `refreshRate`
+
+- **Type:** `uint32_t`
+
+
+
+### `dpiScale`
+
+- **Type:** `float`
+
+
+
+### `hdrSupported`
+
+- **Type:** `bool`
+
+
+
+### `vendor`
+
+- **Type:** `string`
+
+
+
+### `model`
+
+- **Type:** `string`
+
+
+
+### `cores`
+
+- **Type:** `uint32_t`
+
+
+
+### `threads`
+
+- **Type:** `uint32_t`
+
+
+
+### `clockSpeed`
+
+- **Type:** `uint32_t`
+
+
+
+### `hasAVX`
+
+- **Type:** `bool`
+
+
+
+### `hasSSE4`
+
+- **Type:** `bool`
+
+
+
+### `activeWindows`
+
+- **Type:** `uint32_t`
+
+
+
+### `eventCount`
+
+- **Type:** `uint32_t`
+
+
+
+### `frameCount`
+
+- **Type:** `uint32_t`
+
+
+
+### `frameTimeMs`
+
+- **Type:** `float`
+
+
+
+### `memoryUsed`
+
+- **Type:** `size_t`
+
+
+
+
+# Structs
+---
+
+### `Vector2`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+### `WindowDesc`
+
+- **Description:** 
+
+- **Members:**
+
+  - `title`: `string` - 
+
+
+
+### `SystemInfo`
+
+- **Description:** 
+
+- **Members:**
+
+  - `platform`: `PlatformType` - 
+
+  - `osName`: `string` - 
+
+  - `osVersion`: `string` - 
+
+  - `totalMemory`: `size_t` - 
+
+  - `availableMemory`: `size_t` - 
+
+  - `deviceName`: `string` - 
+
+  - `deviceModel`: `string` - 
+
+
+
+### `DisplayInfo`
+
+- **Description:** 
+
+- **Members:**
+
+  - `width`: `uint32_t` - 
+
+  - `height`: `uint32_t` - 
+
+  - `refreshRate`: `uint32_t` - 
+
+  - `dpiScale`: `float` - 
+
+  - `hdrSupported`: `bool` - 
+
+
+
+### `ProcessorInfo`
+
+- **Description:** 
+
+- **Members:**
+
+  - `vendor`: `string` - 
+
+  - `model`: `string` - 
+
+  - `cores`: `uint32_t` - 
+
+  - `threads`: `uint32_t` - 
+
+  - `clockSpeed`: `uint32_t` - 
+
+  - `hasAVX`: `bool` - 
+
+  - `hasSSE4`: `bool` - 
+
+
+
+### `PlatformStats`
+
+- **Description:** 
+
+- **Members:**
+
+  - `activeWindows`: `uint32_t` - 
+
+  - `eventCount`: `uint32_t` - 
+
+  - `frameCount`: `uint32_t` - 
+
+  - `frameTimeMs`: `float` - 
+
+  - `memoryUsed`: `size_t` - 
 
 

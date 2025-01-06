@@ -1,130 +1,278 @@
+# Classes
+---
 
-## Classes
-
-### AssetManagerSystem
-
-
-
-
-## Functions
-
-### Get
+## AssetManagerSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableContentBrowser`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableAssetIndexing`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableMetadataCache`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableThumbnails`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxConcurrentImports`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `4`
+
+
+
+### `thumbnailSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `256`
+
+
+
+### `metadataCacheSize`
+
+- **Type:** `size_t`
+
+- **Default Value:** `64 * 1024 * 1024`
+
+
+
+### `assetRoot`
+
+- **Type:** `path`
+
+- **Default Value:** `"Content"`
+
+
+
+### `config`
+
+- **Type:** `const AssetManagerConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `AssetManagerConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `AssetManagerStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `AssetManagerConfig`
+
+- **Description:** 
+
+- **Members:**
+
+  - `1024`: `64 * 1024 *` - 
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static AssetManagerSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const AssetManagerConfig& config = {}
+- **Parameters:** const AssetManagerConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### CreateFolder
-
-
-
-**Parameters:** const std::string& path
+- **Return:** `void`
 
 ---
 
-### DeleteFolder
+## Update
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** 
 
----
-
-### RenameFolder
-
-
-
-**Parameters:** const std::string& oldPath, const std::string& newPath
+- **Return:** `void`
 
 ---
 
-### MoveAsset
+## CreateFolder
 
 
 
-**Parameters:** const std::string& sourcePath, const std::string& targetPath
+- **Parameters:** const std::string& path
 
----
-
-### CopyAsset
-
-
-
-**Parameters:** const std::string& sourcePath, const std::string& targetPath
+- **Return:** `void`
 
 ---
 
-### DeleteAsset
+## DeleteFolder
 
 
 
-**Parameters:** const std::string& path
+- **Parameters:** const std::string& path
 
----
-
-### ImportAssets
-
-
-
-**Parameters:** const std::vector<std::string>& paths
+- **Return:** `void`
 
 ---
 
-### ExportAssets
+## RenameFolder
 
 
 
-**Parameters:** const std::vector<std::string>& paths, const std::string& targetDir
+- **Parameters:** const std::string& oldPath, const std::string& newPath
 
----
-
-### BuildAssetIndex
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### SearchAssets
+## MoveAsset
 
 
 
-**Parameters:** const AssetSearchQuery& query, AssetSearchResults& results
+- **Parameters:** const std::string& sourcePath, const std::string& targetPath
+
+- **Return:** `void`
 
 ---
 
-### RegisterAssetProcessor
+## CopyAsset
 
 
 
-**Parameters:** const std::string& extension, 
+- **Parameters:** const std::string& sourcePath, const std::string& targetPath
+
+- **Return:** `void`
+
+---
+
+## DeleteAsset
+
+
+
+- **Parameters:** const std::string& path
+
+- **Return:** `void`
+
+---
+
+## ImportAssets
+
+
+
+- **Parameters:** const std::vector<std::string>& paths
+
+- **Return:** `void`
+
+---
+
+## ExportAssets
+
+
+
+- **Parameters:** const std::vector<std::string>& paths, const std::string& targetDir
+
+- **Return:** `void`
+
+---
+
+## BuildAssetIndex
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SearchAssets
+
+
+
+- **Parameters:** const AssetSearchQuery& query, AssetSearchResults& results
+
+- **Return:** `void`
+
+---
+
+## RegisterAssetProcessor
+
+
+
+- **Parameters:** const std::string& extension, 
                               std::unique_ptr<IAssetProcessor> processor
+
+- **Return:** `void`
 
 ---

@@ -1,69 +1,300 @@
+# Classes
+---
 
-## Classes
-
-### MemoryManager
-
-
-
-### PoolType
+## MemoryManager
+---
 
 
 
-
-## Functions
-
-### Deallocate
+## PoolType
+---
 
 
 
-**Parameters:** void* ptr
+
+# Variables
+---
+
+### `MemoryBlock`
+
+- **Type:** `struct`
+
+
+
+### `IMemoryStrategy`
+
+- **Type:** `class`
+
+
+
+### `instance`
+
+- **Type:** `static MemoryManager`
+
+
+
+### `instance`
+
+- **Type:** `return`
+
+
+
+### `operator`
+
+- **Type:** `MemoryManager&`
+
+- **Default Value:** `(const MemoryManager&) = delete`
+
+
+
+### `alignment`
+
+- **Type:** `size_t`
+
+- **Default Value:** `alignof(std::max_align_t))`
+
+
+
+### `m_TotalAllocated`
+
+- **Type:** `return`
+
+
+
+### `m_TotalFreed`
+
+- **Type:** `return`
+
+
+
+### `m_CurrentStrategy`
+
+- **Type:** `return`
+
+
+
+### `totalSize`
+
+- **Type:** `size_t`
+
+
+
+### `usedSize`
+
+- **Type:** `size_t`
+
+
+
+### `peakUsage`
+
+- **Type:** `size_t`
+
+
+
+### `allocationCount`
+
+- **Type:** `size_t`
+
+
+
+### `enableCanaries`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `randomizePoolSizes`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `validateStrategies`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableNetworkSecurity`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+### `address`
+
+- **Type:** `void*`
+
+
+
+### `size`
+
+- **Type:** `size_t`
+
+
+
+### `canary`
+
+- **Type:** `Canary`
+
+
+
+### `m_TotalAllocated`
+
+- **Type:** `size_t`
+
+- **Default Value:** `0`
+
+
+
+### `m_TotalFreed`
+
+- **Type:** `size_t`
+
+- **Default Value:** `0`
+
+
+
+### `m_CurrentStrategy`
+
+- **Type:** `IMemoryStrategy*`
+
+- **Default Value:** `nullptr`
+
+
+
+### `m_SecurityConfig`
+
+- **Type:** `SecurityConfig`
+
+
+
+### `m_NetworkSecurityConfig`
+
+- **Type:** `NetworkSecurityConfig`
+
+
+
+
+# Structs
+---
+
+### `PoolStats`
+
+- **Description:** 
+
+- **Members:**
+
+  - `totalSize`: `size_t` - 
+
+  - `usedSize`: `size_t` - 
+
+  - `peakUsage`: `size_t` - 
+
+  - `allocationCount`: `size_t` - 
+
+
+
+### `SecurityConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+### `MemoryWatchpoint`
+
+- **Description:** 
+
+- **Members:**
+
+  - `address`: `void*` - 
+
+  - `size`: `size_t` - 
+
+  - `canary`: `Canary` - 
+
+
+
+
+# Functions
+---
+
+## Deallocate
+
+
+
+- **Parameters:** void* ptr
+
+- **Return:** `void`
 
 ---
 
-### SetSecurityConfig
+## SetSecurityConfig
 
 
 
-**Parameters:** const SecurityConfig& config
+- **Parameters:** const SecurityConfig& config
 
----
-
-### AddWatchpoint
-
-
-
-**Parameters:** void* ptr, const MemoryWatchpoint& watchpoint
+- **Return:** `void`
 
 ---
 
-### RemoveWatchpoint
+## AddWatchpoint
 
 
 
-**Parameters:** void* ptr
+- **Parameters:** void* ptr, const MemoryWatchpoint& watchpoint
 
----
-
-### SetDebugEncryptionKey
-
-
-
-**Parameters:** const std::array<uint8_t, 32>& key
+- **Return:** `void`
 
 ---
 
-### SecureAllocate
+## RemoveWatchpoint
 
 
 
-**Parameters:** size_t size, size_t alignment
+- **Parameters:** void* ptr
+
+- **Return:** `void`
 
 ---
 
-### RandomizePoolSizes
+## SetDebugEncryptionKey
 
 
 
-**Parameters:** 
+- **Parameters:** const std::array<uint8_t, 32>& key
+
+- **Return:** `void`
+
+---
+
+## SecureAllocate
+
+
+
+- **Parameters:** size_t size, size_t alignment
+
+- **Return:** `void*`
+
+---
+
+## RandomizePoolSizes
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
 
 ---

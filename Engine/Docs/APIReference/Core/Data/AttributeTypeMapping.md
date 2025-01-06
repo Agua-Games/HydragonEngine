@@ -1,61 +1,124 @@
+# Classes
+---
 
-## Classes
-
-### TypeConverter
-
-
-
-### TypeValidator
+## TypeConverter
+---
 
 
 
-
-## Functions
-
-### CanConvert
+## TypeValidator
+---
 
 
 
-**Parameters:** ValueType from, ValueType to
+
+# Variables
+---
+
+### `TypeToValueType`
+
+- **Type:** `struct`
+
+
+
+### `value`
+
+- **Type:** `static constexpr ValueType`
+
+- **Default Value:** `ValueType::Boolean`
+
+
+
+### `value`
+
+- **Type:** `static constexpr ValueType`
+
+- **Default Value:** `ValueType::Integer`
+
+
+
+### `value`
+
+- **Type:** `static constexpr ValueType`
+
+- **Default Value:** `ValueType::Float`
+
+
+
+### `value`
+
+- **Type:** `static constexpr ValueType`
+
+- **Default Value:** `ValueType::String`
+
+
+
+### `value`
+
+- **Type:** `return`
+
+
+
+
+# Functions
+---
+
+## CanConvert
+
+
+
+- **Parameters:** ValueType from, ValueType to
+
+- **Return:** `static bool`
 
 ---
 
-### GetTypeName
+## GetTypeName
 
 
 
-**Parameters:** ValueType type
+- **Parameters:** ValueType type
 
----
-
-### ValidateType
-
-
-
-**Parameters:** ValueType expected, ValueType actual
+- **Return:** `string`
 
 ---
 
-### ValidateRange
+## ValidateType
 
 
 
-**Parameters:** ValueType type, const std::string& value
+- **Parameters:** ValueType expected, ValueType actual
 
----
-
-### ValidateFormat
-
-
-
-**Parameters:** ValueType type, const std::string& value
+- **Return:** `static bool`
 
 ---
 
-### ValidateValueImpl
+## ValidateRange
 
 
 
-**Parameters:** value, desc.type
+- **Parameters:** ValueType type, const std::string& value
+
+- **Return:** `static bool`
+
+---
+
+## ValidateFormat
+
+
+
+- **Parameters:** ValueType type, const std::string& value
+
+- **Return:** `static bool`
+
+---
+
+## ValidateValueImpl
+
+
+
+- **Parameters:** value, desc.type
+
+- **Return:** `return`
 
 ---

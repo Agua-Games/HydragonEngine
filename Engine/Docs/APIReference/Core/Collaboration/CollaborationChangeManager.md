@@ -1,6 +1,7 @@
+# Classes
+---
 
-## Classes
-
-### IChangeManager
+## IChangeManager
+---
 
 

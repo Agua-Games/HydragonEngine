@@ -1,82 +1,208 @@
+# Classes
+---
 
-## Classes
-
-### NodeExecutionSystem
-
-
-
-
-## Functions
-
-### Get
+## NodeExecutionSystem
+---
 
 
 
-**Parameters:** 
+
+# Variables
+---
+
+### `enableLiveExecution`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableDebugVisualization`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableProfiling`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `enableCaching`
+
+- **Type:** `bool`
+
+- **Default Value:** `true`
+
+
+
+### `maxExecutionDepth`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `100`
+
+
+
+### `cacheSize`
+
+- **Type:** `uint32_t`
+
+- **Default Value:** `1000`
+
+
+
+### `executionTimeout`
+
+- **Type:** `float`
+
+- **Default Value:** `5000.0f`
+
+
+
+### `config`
+
+- **Type:** `const NodeExecutionConfig&`
+
+- **Default Value:** `{})`
+
+
+
+### `m_Stats`
+
+- **Type:** `return`
+
+
+
+### `m_Config`
+
+- **Type:** `NodeExecutionConfig`
+
+
+
+### `m_Stats`
+
+- **Type:** `NodeExecutionStats`
+
+
+
+### `m_Initialized`
+
+- **Type:** `bool`
+
+- **Default Value:** `false`
+
+
+
+
+# Structs
+---
+
+### `NodeExecutionConfig`
+
+- **Description:** 
+
+- **Members:**
+
+
+
+
+# Functions
+---
+
+## Get
+
+
+
+- **Parameters:** 
+
+- **Return:** `static NodeExecutionSystem&`
 
 ---
 
-### Initialize
+## Initialize
 
 
 
-**Parameters:** const NodeExecutionConfig& config = {}
+- **Parameters:** const NodeExecutionConfig& config = {}
 
----
-
-### Shutdown
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### Update
+## Shutdown
 
 
 
-**Parameters:** 
+- **Parameters:** 
 
----
-
-### ExecuteNode
-
-
-
-**Parameters:** NodeHandle handle
+- **Return:** `void`
 
 ---
 
-### ExecuteGraph
+## Update
 
 
 
-**Parameters:** const std::vector<NodeHandle>& outputNodes
+- **Parameters:** 
 
----
-
-### StopExecution
-
-
-
-**Parameters:** 
+- **Return:** `void`
 
 ---
 
-### SetNodeInput
+## ExecuteNode
 
 
 
-**Parameters:** NodeHandle handle, uint32_t pin, const NodeValue& value
+- **Parameters:** NodeHandle handle
+
+- **Return:** `void`
 
 ---
 
-### RegisterExecutor
+## ExecuteGraph
 
 
 
-**Parameters:** const std::string& nodeType, 
+- **Parameters:** const std::vector<NodeHandle>& outputNodes
+
+- **Return:** `void`
+
+---
+
+## StopExecution
+
+
+
+- **Parameters:** 
+
+- **Return:** `void`
+
+---
+
+## SetNodeInput
+
+
+
+- **Parameters:** NodeHandle handle, uint32_t pin, const NodeValue& value
+
+- **Return:** `void`
+
+---
+
+## RegisterExecutor
+
+
+
+- **Parameters:** const std::string& nodeType, 
                          std::unique_ptr<INodeExecutor> executor
+
+- **Return:** `void`
 
 ---
