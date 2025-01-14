@@ -1,0 +1,145 @@
+## \# Classes
+
+## \## ShaderStage
+
+## \# Variables
+
+### `PipelineHandle`
+
+-   **Type:** `using`
+
+-   **Default Value:** `uint32_t`
+
+### `ShaderHandle`
+
+-   **Type:** `using`
+
+-   **Default Value:** `uint32_t`
+
+### `stage`
+
+-   **Type:** `ShaderStage`
+
+### `source`
+
+-   **Type:** `string`
+
+### `entryPoint`
+
+-   **Type:** `string`
+
+### `vertexLayout`
+
+-   **Type:** `VertexLayout`
+
+### `rasterState`
+
+-   **Type:** `RasterState`
+
+### `depthState`
+
+-   **Type:** `DepthStencilState`
+
+### `blendState`
+
+-   **Type:** `BlendState`
+
+### `wireframe`
+
+-   **Type:** `bool`
+
+### `cullBackface`
+
+-   **Type:** `bool`
+
+### `depthTest`
+
+-   **Type:** `bool`
+
+### `alphaBlend`
+
+-   **Type:** `bool`
+
+### `activePipelines`
+
+-   **Type:** `uint32_t`
+
+### `shaderCompilations`
+
+-   **Type:** `uint32_t`
+
+### `pipelineBindings`
+
+-   **Type:** `uint32_t`
+
+### `stateChanges`
+
+-   **Type:** `uint32_t`
+
+### `cacheSize`
+
+-   **Type:** `size_t`
+
+### `compileTimeMs`
+
+-   **Type:** `float`
+
+## \# Structs
+
+### `ShaderDesc`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `stage`: `ShaderStage` -
+
+    -   `source`: `string` -
+
+    -   `entryPoint`: `string` -
+
+### `PipelineDesc`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `vertexLayout`: `VertexLayout` -
+
+    -   `rasterState`: `RasterState` -
+
+    -   `depthState`: `DepthStencilState` -
+
+    -   `blendState`: `BlendState` -
+
+### `PipelineState`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `wireframe`: `bool` -
+
+    -   `cullBackface`: `bool` -
+
+    -   `depthTest`: `bool` -
+
+    -   `alphaBlend`: `bool` -
+
+### `PipelineStats`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `activePipelines`: `uint32_t` -
+
+    -   `shaderCompilations`: `uint32_t` -
+
+    -   `pipelineBindings`: `uint32_t` -
+
+    -   `stateChanges`: `uint32_t` -
+
+    -   `cacheSize`: `size_t` -
+
+    -   `compileTimeMs`: `float` -

@@ -1,0 +1,163 @@
+## \# Classes
+
+## \## PluginSystem
+
+## \# Variables
+
+### `enableHotReload`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableVersionCheck`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableDependencyCheck`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableSandboxing`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `maxPlugins`
+
+-   **Type:** `uint32_t`
+
+-   **Default Value:** `100`
+
+### `memoryBudget`
+
+-   **Type:** `size_t`
+
+-   **Default Value:** `64 * 1024 * 1024`
+
+### `pluginDirectory`
+
+-   **Type:** `string`
+
+### `config`
+
+-   **Type:** `const PluginConfig&`
+
+-   **Default Value:** `{})`
+
+### `m_Stats`
+
+-   **Type:** `return`
+
+### `m_Config`
+
+-   **Type:** `PluginConfig`
+
+### `m_Stats`
+
+-   **Type:** `PluginStats`
+
+### `m_Initialized`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `false`
+
+## \# Structs
+
+### `PluginConfig`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `1024`: `64 * 1024 *` -
+
+    -   `pluginDirectory`: `string` -
+
+## \# Functions
+
+## Get
+
+-   **Parameters:** \`\`
+
+-   **Return:** `static PluginSystem&`
+
+------------------------------------------------------------------------
+
+## Initialize
+
+-   **Parameters:** `const PluginConfig& config = {}`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## Shutdown
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## Update
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## LoadPlugin
+
+-   **Parameters:** `const std::string& path`
+
+-   **Return:** `PluginHandle`
+
+------------------------------------------------------------------------
+
+## UnloadPlugin
+
+-   **Parameters:** `PluginHandle handle`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## EnablePlugin
+
+-   **Parameters:** `PluginHandle handle`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## DisablePlugin
+
+-   **Parameters:** `PluginHandle handle`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## GetPluginFunction
+
+-   **Parameters:** `PluginHandle handle`, `const std::string& name`
+
+-   **Return:** `void*`
+
+------------------------------------------------------------------------
+
+## RegisterInterface
+
+-   **Parameters:** `const std::string& name`, `void* interface`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------

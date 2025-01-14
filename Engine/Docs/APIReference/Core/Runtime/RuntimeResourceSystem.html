@@ -1,0 +1,155 @@
+## \# Classes
+
+## \## RuntimeResourceSystem
+
+## \# Variables
+
+### `enableAsyncLoading`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableResourcePools`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableHotReload`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableDefragmentation`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `maxConcurrentLoads`
+
+-   **Type:** `uint32_t`
+
+-   **Default Value:** `8`
+
+### `poolGrowthFactor`
+
+-   **Type:** `uint32_t`
+
+-   **Default Value:** `2`
+
+### `defaultPoolSize`
+
+-   **Type:** `size_t`
+
+-   **Default Value:** `64 * 1024 * 1024`
+
+### `config`
+
+-   **Type:** `const RuntimeResourceConfig&`
+
+-   **Default Value:** `{})`
+
+### `m_Stats`
+
+-   **Type:** `return`
+
+### `m_Config`
+
+-   **Type:** `RuntimeResourceConfig`
+
+### `m_Stats`
+
+-   **Type:** `RuntimeResourceStats`
+
+### `m_Initialized`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `false`
+
+## \# Structs
+
+### `RuntimeResourceConfig`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `1024`: `64 * 1024 *` -
+
+## \# Functions
+
+## Get
+
+-   **Parameters:** \`\`
+
+-   **Return:** `static RuntimeResourceSystem&`
+
+------------------------------------------------------------------------
+
+## Initialize
+
+-   **Parameters:** `const RuntimeResourceConfig& config = {}`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## Shutdown
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## Update
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## LoadResource
+
+-   **Parameters:** `const ResourceDesc& desc`
+
+-   **Return:** `ResourceHandle`
+
+------------------------------------------------------------------------
+
+## UnloadResource
+
+-   **Parameters:** `ResourceHandle handle`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## CreateResourcePool
+
+-   **Parameters:** `const std::string& name`, `size_t initialSize`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## DestroyResourcePool
+
+-   **Parameters:** `const std::string& name`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## SetResourcePriority
+
+-   **Parameters:** `ResourceHandle handle`, `ResourcePriority priority`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------

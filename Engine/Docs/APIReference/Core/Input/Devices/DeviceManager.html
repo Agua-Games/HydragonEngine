@@ -1,0 +1,125 @@
+## \# Classes
+
+## \## DeviceManager
+
+## \# Variables
+
+### `enableAutoDetection`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableWireless`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableBluetooth`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `scanIntervalMs`
+
+-   **Type:** `uint32_t`
+
+-   **Default Value:** `1000`
+
+### `connectionTimeoutMs`
+
+-   **Type:** `uint32_t`
+
+-   **Default Value:** `5000`
+
+### `config`
+
+-   **Type:** `const DeviceConfig&`
+
+-   **Default Value:** `{})`
+
+### `m_Stats`
+
+-   **Type:** `return`
+
+### `m_Config`
+
+-   **Type:** `DeviceConfig`
+
+### `m_Stats`
+
+-   **Type:** `DeviceStats`
+
+### `m_Initialized`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `false`
+
+## \# Structs
+
+### `DeviceConfig`
+
+-   **Description:**
+
+-   **Members:**
+
+## \# Functions
+
+## Get
+
+-   **Parameters:** \`\`
+
+-   **Return:** `static DeviceManager&`
+
+------------------------------------------------------------------------
+
+## Initialize
+
+-   **Parameters:** `const DeviceConfig& config = {}`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## Shutdown
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## Update
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## StartDeviceDiscovery
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## StopDeviceDiscovery
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## SetDeviceConfig
+
+-   **Parameters:** `DeviceHandle handle`, `const DeviceConfig& config`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------

@@ -1,0 +1,135 @@
+## \# Variables
+
+### `name`
+
+-   **Type:** `string`
+
+### `classId`
+
+-   **Type:** `uint32_t`
+
+### `reliable`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `predictable`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `false`
+
+### `priority`
+
+-   **Type:** `float`
+
+-   **Default Value:** `1.0f`
+
+### `transform`
+
+-   **Type:** `Transform`
+
+### `sequence`
+
+-   **Type:** `uint32_t`
+
+### `timestamp`
+
+-   **Type:** `float`
+
+### `delay`
+
+-   **Type:** `float`
+
+-   **Default Value:** `0.1f`
+
+### `smoothing`
+
+-   **Type:** `float`
+
+-   **Default Value:** `0.5f`
+
+### `extrapolate`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `maxExtrapolationTicks`
+
+-   **Type:** `uint32_t`
+
+-   **Default Value:** `10`
+
+### `replicatedEntities`
+
+-   **Type:** `uint32_t`
+
+### `stateUpdates`
+
+-   **Type:** `uint32_t`
+
+### `bytesReplicated`
+
+-   **Type:** `uint32_t`
+
+### `updateTimeMs`
+
+-   **Type:** `float`
+
+### `interpolationDelay`
+
+-   **Type:** `float`
+
+### `memoryUsed`
+
+-   **Type:** `size_t`
+
+## \# Structs
+
+### `EntityDesc`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `name`: `string` -
+
+    -   `classId`: `uint32_t` -
+
+### `EntityState`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `transform`: `Transform` -
+
+    -   `sequence`: `uint32_t` -
+
+    -   `timestamp`: `float` -
+
+### `InterpolationConfig`
+
+-   **Description:**
+
+-   **Members:**
+
+### `ReplicationStats`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `replicatedEntities`: `uint32_t` -
+
+    -   `stateUpdates`: `uint32_t` -
+
+    -   `bytesReplicated`: `uint32_t` -
+
+    -   `updateTimeMs`: `float` -
+
+    -   `interpolationDelay`: `float` -
+
+    -   `memoryUsed`: `size_t` -

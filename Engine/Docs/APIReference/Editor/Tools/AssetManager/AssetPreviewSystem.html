@@ -1,0 +1,172 @@
+## \# Classes
+
+## \## AssetPreviewSystem
+
+## \# Variables
+
+### `enableBackgroundGeneration`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableCaching`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableCompression`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `enableMipMaps`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `maxPreviewSize`
+
+-   **Type:** `uint32_t`
+
+-   **Default Value:** `512`
+
+### `maxConcurrentPreviews`
+
+-   **Type:** `uint32_t`
+
+-   **Default Value:** `4`
+
+### `previewCacheSize`
+
+-   **Type:** `size_t`
+
+-   **Default Value:** `128 * 1024 * 1024`
+
+### `config`
+
+-   **Type:** `const AssetPreviewConfig&`
+
+-   **Default Value:** `{})`
+
+### `m_Stats`
+
+-   **Type:** `return`
+
+### `m_Config`
+
+-   **Type:** `AssetPreviewConfig`
+
+### `m_Stats`
+
+-   **Type:** `AssetPreviewStats`
+
+### `m_Initialized`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `false`
+
+## \# Structs
+
+### `AssetPreviewConfig`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `1024`: `128 * 1024 *` -
+
+## \# Functions
+
+## Get
+
+-   **Parameters:** \`\`
+
+-   **Return:** `static AssetPreviewSystem&`
+
+------------------------------------------------------------------------
+
+## Initialize
+
+-   **Parameters:** `const AssetPreviewConfig& config = {}`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## Shutdown
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## Update
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## RequestPreview
+
+-   **Parameters:** `const std::string& assetPath`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## CancelPreview
+
+-   **Parameters:** `const std::string& assetPath`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## SetPreviewSize
+
+-   **Parameters:** `uint32_t size`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## SetPreviewQuality
+
+-   **Parameters:** `PreviewQuality quality`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## RegisterPreviewGenerator
+
+-   **Parameters:** `const std::string& assetType`,
+    `std::unique_ptr<IPreviewGenerator> generator`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## InvalidatePreview
+
+-   **Parameters:** `const std::string& assetPath`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------
+
+## ClearPreviewCache
+
+-   **Parameters:** \`\`
+
+-   **Return:** `void`
+
+------------------------------------------------------------------------

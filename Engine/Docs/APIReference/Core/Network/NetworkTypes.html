@@ -1,0 +1,214 @@
+## \# Classes
+
+## \## ConnectionType
+
+## \## ChannelType
+
+## \# Variables
+
+### `ConnectionHandle`
+
+-   **Type:** `using`
+
+-   **Default Value:** `uint32_t`
+
+### `EntityHandle`
+
+-   **Type:** `using`
+
+-   **Default Value:** `uint32_t`
+
+### `MessageType`
+
+-   **Type:** `using`
+
+-   **Default Value:** `uint32_t`
+
+### `address`
+
+-   **Type:** `string`
+
+### `port`
+
+-   **Type:** `uint16_t`
+
+### `type`
+
+-   **Type:** `ConnectionType`
+
+### `protocol`
+
+-   **Type:** `string`
+
+-   **Default Value:** `"UDP"`
+
+### `encrypted`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `timeout`
+
+-   **Type:** `float`
+
+-   **Default Value:** `30.0f`
+
+### `type`
+
+-   **Type:** `MessageType`
+
+### `channel`
+
+-   **Type:** `ChannelType`
+
+### `sequence`
+
+-   **Type:** `uint32_t`
+
+### `channel`
+
+-   **Type:** `ChannelType`
+
+-   **Default Value:** `ChannelType::Reliable`
+
+### `compress`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `encrypt`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `true`
+
+### `timeout`
+
+-   **Type:** `float`
+
+-   **Default Value:** `5.0f`
+
+### `retries`
+
+-   **Type:** `uint32_t`
+
+-   **Default Value:** `3`
+
+### `updateRate`
+
+-   **Type:** `float`
+
+-   **Default Value:** `0.1f`
+
+### `relevanceDistance`
+
+-   **Type:** `float`
+
+-   **Default Value:** `100.0f`
+
+### `fullState`
+
+-   **Type:** `bool`
+
+-   **Default Value:** `false`
+
+### `MessageHandler`
+
+-   **Type:** `using`
+
+-   **Default Value:**
+    `std::function<void(ConnectionHandle, const NetworkMessage&)>`
+
+### `activeConnections`
+
+-   **Type:** `uint32_t`
+
+### `messagesSent`
+
+-   **Type:** `uint32_t`
+
+### `messagesReceived`
+
+-   **Type:** `uint32_t`
+
+### `bytesIn`
+
+-   **Type:** `uint32_t`
+
+### `bytesOut`
+
+-   **Type:** `uint32_t`
+
+### `averageLatencyMs`
+
+-   **Type:** `float`
+
+### `packetLoss`
+
+-   **Type:** `float`
+
+### `memoryUsed`
+
+-   **Type:** `size_t`
+
+## \# Structs
+
+### `ConnectionDesc`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `address`: `string` -
+
+    -   `port`: `uint16_t` -
+
+    -   `type`: `ConnectionType` -
+
+### `NetworkMessage`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `type`: `MessageType` -
+
+    -   `channel`: `ChannelType` -
+
+    -   `sequence`: `uint32_t` -
+
+### `SendConfig`
+
+-   **Description:**
+
+-   **Members:**
+
+### `ReplicationFilter`
+
+-   **Description:**
+
+-   **Members:**
+
+### `NetworkStats`
+
+-   **Description:**
+
+-   **Members:**
+
+    -   `activeConnections`: `uint32_t` -
+
+    -   `messagesSent`: `uint32_t` -
+
+    -   `messagesReceived`: `uint32_t` -
+
+    -   `bytesIn`: `uint32_t` -
+
+    -   `bytesOut`: `uint32_t` -
+
+    -   `averageLatencyMs`: `float` -
+
+    -   `packetLoss`: `float` -
+
+    -   `memoryUsed`: `size_t` -

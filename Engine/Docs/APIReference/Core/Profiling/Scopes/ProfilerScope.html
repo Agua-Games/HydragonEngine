@@ -1,0 +1,30 @@
+## \# Classes
+
+## \## ProfilerScope
+
+## \# Variables
+
+### `category`
+
+-   **Type:** `ProfilerCategory`
+
+-   **Default Value:**
+    `ProfilerCategory::CPU)         : m_Name(name)         , m_Category(category) {         m_Handle = ProfilerSystem::Get().BeginScope(name, category)`
+
+### `operator`
+
+-   **Type:** `ProfilerScope&`
+
+-   **Default Value:** `(const ProfilerScope&) = delete`
+
+### `m_Name`
+
+-   **Type:** `const char*`
+
+### `m_Category`
+
+-   **Type:** `ProfilerCategory`
+
+### `m_Handle`
+
+-   **Type:** `ScopeHandle`
