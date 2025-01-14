@@ -25,6 +25,10 @@ CMakeFiles/
 /ThirdParty/**/*.so
 /ThirdParty/**/*.dylib
 
+# Ignore ML models, to avoid huge file transfers
+/Shared/Models/
+/ThirdParty/Models/
+
 #Ignore precompiled Editor
 /Editor/
 
