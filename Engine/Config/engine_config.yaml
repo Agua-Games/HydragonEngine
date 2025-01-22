@@ -3,13 +3,7 @@ engine:
   name: "Hydragon Engine"
   version: "alpha"
   company: "Agua Games"
-  website: "https://hydragon.com"
+  website: "https://aguagames.webflow.io/hydragon-engine-home"
   copyright_year: 2024
   license: "Agua Games License 1.0"
 
-# Documentation settings
-documentation:
-  website_name: "Hydragon Website"
-  website_url: "https://hydragon.com"
-  tool_name: "Hydragon Documentation Tool"
-  tool_version: "1.0.0"

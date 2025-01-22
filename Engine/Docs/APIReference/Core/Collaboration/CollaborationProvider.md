@@ -1,7 +1,0 @@
-# Classes
----
-
-## ICollaborationProvider
----
-
-
