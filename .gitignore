@@ -1,12 +1,9 @@
 
-# Ignore intermediate folders
-Binaries/
+# Ignore intermediate folders, build artifacts
+Bin/
 BuildOutput/
 Cache/
 .vscode/
-
-# Ignore third-party dependencies
-/ThirdParty/
 
 # Ignore CMake's cache and temporary files
 /CMakeCache.txt
@@ -21,21 +18,12 @@ CMakeFiles/
 
 # Ignore ThirdParty files which get generated
 #when compiling the engine
-/ThirdParty/**/*.dll
-/ThirdParty/**/*.so
-/ThirdParty/**/*.dylib
+/Bin/ThirdParty/**/*.dll
+/Bin/ThirdParty/**/*.so
+/Bin/ThirdParty/**/*.dylib
 
 # Ignore ML models, to avoid huge file transfers
-/Shared/Models/
-/ThirdParty/Models/
-
-#Ignore precompiled Editor
-/Editor/
-
-# Ignore Tools files which get generated
-#when compiling the engine
-/Tools/**/*.exe
-/Tools/**/*.dll
+/Shared/Models_ML/
 
 # Ignore temporary files
 *.log
@@ -47,6 +35,8 @@ CMakeFiles/
 Thumbs.db
 
 # Ignore IDEs files
+.vscode/
+.idea/
 *.user
 *.suo
 *.userosscache
