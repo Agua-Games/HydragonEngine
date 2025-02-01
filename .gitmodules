@@ -5,3 +5,6 @@
 [submodule "Engine/Source/ThirdParty/glm"]
 	path = Engine/Source/ThirdParty/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "Engine/Source/ThirdParty/Vulkan-Hpp"]
+	path = Engine/Source/ThirdParty/Vulkan-Hpp
+	url = https://github.com/KhronosGroup/Vulkan-Hpp.git
