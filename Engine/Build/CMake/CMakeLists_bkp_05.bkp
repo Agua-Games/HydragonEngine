@@ -1,0 +1,52 @@
+# Set minimum required CMake version
+cmake_minimum_required(VERSION 3.10)
+
+# Define the project name (HydragonEngine)
+project(HydragonEngine)
+
+# Set C++ standard to C++17
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Detect the platform and set the output directory
+if(WIN32)
+    set(PLATFORM "Win64")
+elseif(UNIX AND NOT APPLE)
+    set(PLATFORM "Linux")
+elseif(APPLE)
+    set(PLATFORM "Mac")
+else()
+    set(PLATFORM "Android")
+endif()
+
+# Set output directories based on platform and build type (Debug/Release)
+set(OUTPUT_DIR "${CMAKE_SOURCE_DIR}/Engine/Bin/${PLATFORM}/$<CONFIG>")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})  # For executables and shared libraries
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})  # For shared libraries
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})  # For static libraries
+
+# Add source files (main.cpp, etc.)
+add_executable(Hydragon
+    main.cpp
+    # Add other source files here if needed
+)
+
+# Include third-party libraries from the local repository
+add_subdirectory(${CMAKE_SOURCE_DIR}/Engine/Source/ThirdParty/imgui)
+add_subdirectory(${CMAKE_SOURCE_DIR}/Engine/Source/ThirdParty/Vulkan-Hpp)
+
+# Link third-party libraries
+target_link_libraries(Hydragon
+    imgui
+    Vulkan-Hpp
+)
+
+# Include directories for third-party libraries
+target_include_directories(Hydragon PUBLIC
+    ${CMAKE_SOURCE_DIR}/Engine/Source/ThirdParty/imgui
+    ${CMAKE_SOURCE_DIR}/Engine/Source/ThirdParty/Vulkan-Hpp/include
+)
+
+# Install prefix and directory (optional, for packaging)
+set(CMAKE_INSTALL_PREFIX "Engine")
+set(INSTALL_DIR "Bin")
