@@ -1,3 +1,13 @@
+# Example usage, from the repository root directory:
+# mkdir Engine/Build/CMake/build
+# cd Engine/Build/CMake/build
+# cmake Engine/Build/CMake -DCMAKE_BUILD_TYPE=Release
+# cmake --build . --config Release
+
+# Additional build options you can use:
+# -DENABLE_DEBUG_LOGGING=ON
+# -DENABLE_VULKAN_VALIDATION=ON
+
 cmake_minimum_required(VERSION 3.10)
 
 # Define the project name and version
@@ -56,6 +66,23 @@ file(GLOB_RECURSE SOURCES
     "${ENGINE_ROOT_DIR}/Source/*.hpp"
 )
 
+# Exclude Vulkan-Hpp samples
+list(FILTER SOURCES EXCLUDE REGEX ".*/Vulkan-Hpp/RAII_Samples/.*")
+list(FILTER SOURCES EXCLUDE REGEX ".*/Vulkan-Hpp/samples/.*")
+
+# Add third-party sources
+list(APPEND SOURCES
+    "${ENGINE_ROOT_DIR}/Source/ThirdParty/imgui/backends/imgui_impl_vulkan.cpp"
+    "${ENGINE_ROOT_DIR}/Source/ThirdParty/imgui/backends/imgui_impl_vulkan.h"
+    # Add your platform-specific backend, e.g. GLFW:
+    "${ENGINE_ROOT_DIR}/Source/ThirdParty/imgui/backends/imgui_impl_glfw.cpp"
+    "${ENGINE_ROOT_DIR}/Source/ThirdParty/imgui/backends/imgui_impl_glfw.h"
+
+    # If using Visual Studio, add the debugger helpers
+    "${ENGINE_ROOT_DIR}/Source/ThirdParty/imgui/misc/debuggers/imgui.natvis"
+    "${ENGINE_ROOT_DIR}/Source/ThirdParty/imgui/misc/debuggers/imgui.natstepfilter"
+)
+
 # Group source files by directory structure
 foreach(SOURCE ${SOURCES})
     get_filename_component(SOURCE_PATH "${SOURCE}" PATH)
@@ -68,14 +95,12 @@ endforeach()
 add_executable(Hydragon ${SOURCES})
 
 # Include third-party libraries
-add_subdirectory("${ENGINE_ROOT_DIR}/Source/ThirdParty/imgui" "${CMAKE_BINARY_DIR}/imgui")
-add_subdirectory("${ENGINE_ROOT_DIR}/Source/ThirdParty/Vulkan-Hpp" "${CMAKE_BINARY_DIR}/Vulkan-Hpp")
+#add_subdirectory("${ENGINE_ROOT_DIR}/Source/ThirdParty/imgui" "${CMAKE_BINARY_DIR}/imgui")
+#add_subdirectory("${ENGINE_ROOT_DIR}/Source/ThirdParty/Vulkan-Hpp" "${CMAKE_BINARY_DIR}/Vulkan-Hpp")
 
 # Link third-party libraries
 target_link_libraries(Hydragon
     PRIVATE
-        imgui
-        Vulkan-Hpp
         Vulkan::Vulkan
 )
 

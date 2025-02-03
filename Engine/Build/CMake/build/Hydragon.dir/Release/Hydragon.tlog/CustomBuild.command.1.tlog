@@ -1,0 +1,10 @@
+^D:\AGUAGAMES\HYDRAGONENGINE\ALPHA\ENGINE\BUILD\CMAKE\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake -BD:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build --check-stamp-file D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
