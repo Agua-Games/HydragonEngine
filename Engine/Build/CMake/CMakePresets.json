@@ -1,0 +1,171 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 2,
+    "minor": 0,
+    "patch": 0
+  },
+  "configurePresets" : [
+    {
+      "name": "base",
+      "description": "Sets generator, build and install directory",
+      "hidden": true,			
+      "generator": "Ninja",		
+      "binaryDir": "${sourceDir}/build/${presetName}"
+    },
+
+    {
+      "name": "windows-base",
+      "description": "Sets x64 arch, compilers, build type",
+      "hidden" : true,
+      "inherits": [ "base" ],
+      "architecture": {"value": "x64", "strategy": "external"},
+      "cacheVariables": {"CMAKE_CXX_COMPILER": "cl"},
+      "vendor": { }
+    },
+    {
+      "name": "windows-debug",
+      "description": "Sets CMake Build Type to Debug",
+      "inherits": [ "windows-base" ],
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug"}
+    },
+    {
+      "name": "windows-release",
+      "description": "Sets CMake Build Type to Release",
+      "inherits": [ "windows-base" ],
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Release"}
+    },
+  
+    {
+      "name": "macos-base",
+      "description": "Sets compilers, build type",
+      "hidden" : true,
+      "inherits": [ "base" ],
+      "cacheVariables": {"CMAKE_CXX_COMPILER": "clang++"},
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": "macOS" } }
+    },
+    {
+      "name": "macos-debug",
+      "description": "Sets CMake Build Type to Debug",
+      "inherits": [ "macos-base" ],
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug"}
+    },
+    {
+      "name": "macos-release",
+      "description": "Sets CMake Build Type to Release",
+      "inherits": [ "macos-base" ],
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Release"}
+    },
+
+    {
+      "name": "linux-base",
+      "description": "Sets compilers, build type",
+      "hidden" : true,
+      "inherits": [ "base" ],
+      "cacheVariables": {"CMAKE_CXX_COMPILER": "g++"},
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": "Linux" } }
+    },
+    {
+      "name": "linux-warnings",
+      "description": "Enables dev warnings (-wdev)",
+      "inherits": [ "linux-base" ],
+      "warnings": { "dev": true}
+    },
+    {
+      "name": "linux-debug",
+      "description": "Sets Cmake Build Type to Debug",
+      "inherits": [ "linux-base" ],
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug"}
+    },
+    {
+      "name": "linux-release",
+      "description": "Sets Cmake Build Type to Release",
+      "inherits": [ "linux-base" ],
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Release"}
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "core-build",
+      "description": "Inherits environment from base configurePreset",
+      "configurePreset": "base",
+      "hidden": true,
+      "inheritConfigureEnvironment": true
+    },
+
+    {
+      "name": "windows-clean-build-debug",
+      "description": "Cleans before build (--clean-first), Debug mode",
+      "configurePreset": "windows-debug",
+      "inherits": [ "core-build" ],
+      "cleanFirst": true
+    },
+    {
+      "name": "windows-clean-build-release",
+      "description": "Cleans before build (--clean-first), Release mode",
+      "configurePreset": "windows-release",
+      "inherits": [ "core-build" ],
+      "cleanFirst": true
+    },
+    {
+      "name": "windows-debug-verbose",
+      "description": "Passes -v to Ninja, Debug mode",
+      "configurePreset": "windows-debug",
+      "inherits": [ "core-build" ],
+      "nativeToolOptions": ["-v"]
+    },
+
+    {
+      "name": "macos-clean-build-debug",
+      "description": "Cleans before build (--clean-first), Debug mode",
+      "configurePreset": "macos-debug",
+      "inherits": [ "core-build" ],
+      "cleanFirst": true
+    },
+    {
+      "name": "macos-clean-build-release",
+      "description": "Cleans before build (--clean-first), Release mode",
+      "configurePreset": "macos-release",
+      "inherits": [ "core-build" ],
+      "cleanFirst": true
+    },
+    {
+      "name": "macos-debug-verbose",
+      "description": "Passes -v to Ninja, Debug",
+      "configurePreset": "macos-debug",
+      "inherits": [ "core-build" ],
+      "nativeToolOptions": ["-v"]
+    },
+
+    {
+      "name": "linux-clean-build-debug",
+      "description": "Cleans before build (--clean-first), Debug mode",
+      "configurePreset": "linux-debug",
+      "inherits": [ "core-build" ],
+      "cleanFirst": true
+    },
+    {
+      "name": "linux-clean-build-release",
+      "description": "Cleans before build (--clean-first), Release mode",
+      "configurePreset": "linux-release",
+      "inherits": [ "core-build" ],
+      "cleanFirst": true
+    },
+    {
+      "name": "lnux-verbose-build",
+      "description": "Passes -v to Ninja, Debug mode",
+      "configurePreset": "linux-debug",
+      "inherits": [ "core-build" ],
+      "nativeToolOptions": ["-v"]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "test-all",
+      "displayName": "Test All",
+      "configurePreset": "base",
+      "output": {"outputOnFailure": true},
+      "execution": {"noTestsAction": "error", "stopOnFailure": true}
+    }
+  ]
+}

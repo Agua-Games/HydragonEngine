@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "glfw/docs",
+		"source" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/glfw/docs"
+	}
+}
