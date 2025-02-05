@@ -30,21 +30,19 @@ endif()
 # =====================================================================
 # Detect Platform
 # =====================================================================
-#if(WIN32)
-#    set(PLATFORM "Windows")
-#elseif(UNIX AND NOT APPLE)
-#    set(PLATFORM "Linux")
-#elseif(APPLE)
-#    set(PLATFORM "MacOS")
-#endif()
+if(WIN32)
+    set(PLATFORM "Windows")
+elseif(UNIX AND NOT APPLE)
+    set(PLATFORM "Linux")
+elseif(APPLE)
+    set(PLATFORM "MacOS")
+endif()
 
 # =====================================================================
 # Configure paths for CMake
 # =====================================================================
-# Define the root directory (2 levels up from CMakeLists.txt location)
+# PROJECT/REPO ROOT - Define the root directory (2 levels up from CMakeLists.txt location)
 set(ENGINE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
-# Explicitly set the output directory
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin)
 
 # Define other useful paths
 set(SOURCE_DIR "${ENGINE_ROOT_DIR}/Source")
@@ -54,9 +52,23 @@ set(EDITOR_SOURCE_DIR "${ENGINE_ROOT_DIR}/Source/Editor")
 set(THIRD-PARTY_SOURCE_DIR "${ENGINE_ROOT_DIR}/Source/ThirdParty")
 set(BINARIES_DIR "${ENGINE_ROOT_DIR}/Bin")
 
-# Define the output directory for the build
-#set(OUTPUT_DIR "${BINARIES_DIR}/${PLATFORM}/$<CONFIG>")
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+# BINARIES - Define the output directory for the builds -----------------
+set(OUTPUT_DIR "${BINARIES_DIR}/${PLATFORM}/$<CONFIG>")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})           # .exe, .so
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})           # .lib, .a
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})           # .dll, .so
+
+# INSTALL - Define CMAKE_INSTALL_PREFIX with Custom Engine Path ---------
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${ENGINE_ROOT_DIR}/Engine/Install" CACHE PATH "Install directory" FORCE)
+endif()
+
+# Define output directories for different platforms/configurations.
+# (Why use CMAKE_SYSTEM_NAME instead of PLATFORM? Because CMAKE_SYSTEM_NAME is a CMake variable that 
+# is set by CMake to the name of the host system, automatically - so better suited for end user installs.)
+set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/Bin/${CMAKE_SYSTEM_NAME}/$<CONFIG>")
+set(INSTALL_ASSETS_DIR "${CMAKE_INSTALL_PREFIX}/Assets")
+set(INSTALL_CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/Config")
 
 # ========================================================================================================
 # Find and store external dependencies. Packages, libraries (system libraries, precompiled libraries, etc)
@@ -130,11 +142,10 @@ set(IMGUI_DIR ${THIRD-PARTY_SOURCE_DIR}/imgui)                                  
 include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends)
 
 # Vulkan
-# Currently using vulkan headers from glfw. 
-# *Note: Vulkan is a system library, so it is not necessary to include it here.
-# The vulkan.h header file is included in the Vulkan SDK, which should be installed on the system, available to the compiler.
-# The vulkan.h file seems to be a definition of many Vulkan structures, default value mappings etc.
-#include_directories(${GLFW_DIR}/deps)                       
+# We were initially using Vulkan through the header in glfw/glad, but it is better to use the Vulkan SDK,
+# which should be installed on the system, available to the compiler. It can be downloaded at 
+# https://vulkan.lunarg.com/sdk/home.
+# The vulkan.h file seems to be a definition of many Vulkan structures, default value mappings etc.              
 
 # end of third-party libraries ---------------------------------------------------------------------------
 
@@ -188,20 +199,27 @@ set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
 # In this case, the order of the libraries in the target_link_libraries() command is important.
 # If EngineCore depends on Vulkan::Vulkan, linking EngineCore first ensures proper resolution.
 
-# Link the Hydragon executable to the EngineCore and EditorUI libraries.
-#target_link_libraries(Hydragon PRIVATE EngineCore EditorUI)    # need to check these namings. Maybe Core and Editor.
+# Link the Hydragon executable to the Core and Editor libraries.
+#target_link_libraries(Hydragon PRIVATE Core Editor)    # # Uncomment when these are implemented.
 
 # Enable runtime mode definitions
-#target_compile_definitions(Hydragon PRIVATE ENABLE_EDITOR_SUPPORT=1)
+#target_compile_definitions(Hydragon PRIVATE ENABLE_EDITOR_SUPPORT=1)           # uncomment when editor is implemented.
 
 # Add external precompiled libraries (e.g. GLFW, Vulkan, etc) to the target executable
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
 # ==================================================================================
-# Installation Rules
+# Install Executable - for end user, tests.
 # ==================================================================================
-# Install the executable to the specified directory
-#install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${BINARY_DIR})
+# Install binaries in Engine/Bin/<platform>/<config>
+#install(TARGETS ${PROJECT_NAME}  RUNTIME DESTINATION ${INSTALL_BIN_DIR})            # uncomment to enable installs.
+
+# ==================================================================================
+# 3️⃣ Install Additional Files (Assets, Configs)
+# ==================================================================================
+
+#install(DIRECTORY ${CMAKE_SOURCE_DIR}/Assets DESTINATION ${INSTALL_ASSETS_DIR})    # uncomment to enable installs.
+#install(FILES ${CMAKE_SOURCE_DIR}/config.ini DESTINATION ${INSTALL_CONFIG_DIR})    # uncomment to enable installs.
 
 # ==================================================================================
 # Optional: Custom Build Options
