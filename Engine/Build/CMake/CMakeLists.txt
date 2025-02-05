@@ -23,9 +23,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Global options for the builds
 # =====================================================================
 # Optional: Default build type if not specified
-#if(NOT CMAKE_BUILD_TYPE)
-#    set(CMAKE_BUILD_TYPE Release)
-#endif()
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
 
 # =====================================================================
 # Detect Platform
@@ -43,6 +43,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # =====================================================================
 # Define the root directory (2 levels up from CMakeLists.txt location)
 set(ENGINE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+# Explicitly set the output directory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin)
 
 # Define other useful paths
 set(SOURCE_DIR "${ENGINE_ROOT_DIR}/Source")
@@ -187,7 +189,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
 # If EngineCore depends on Vulkan::Vulkan, linking EngineCore first ensures proper resolution.
 
 # Link the Hydragon executable to the EngineCore and EditorUI libraries.
-#target_link_libraries(Hydragon PRIVATE EngineCore EditorUI)
+#target_link_libraries(Hydragon PRIVATE EngineCore EditorUI)    # need to check these namings. Maybe Core and Editor.
 
 # Enable runtime mode definitions
 #target_compile_definitions(Hydragon PRIVATE ENABLE_EDITOR_SUPPORT=1)
