@@ -1,0 +1,48 @@
+
+# Ignore intermediate folders, build artifacts
+Bin/
+BuildOutput/
+Cache/
+.vscode/
+
+# Ignore CMake's cache and temporary files
+/CMakeCache.txt
+CMakeFiles/
+/Makefile
+
+# Ignore PLugin files which get generated
+#when compiling the engine
+/Plugins/**/*.dll
+/Plugins/**/*.so
+/Plugins/**/*.dylib
+
+# Ignore ThirdParty files which get generated
+#when compiling the engine
+/Bin/ThirdParty/**/*.dll
+/Bin/ThirdParty/**/*.so
+/Bin/ThirdParty/**/*.dylib
+
+# Ignore ML models, to avoid huge file transfers
+/Shared/Models_ML/
+
+# Ignore temporary files
+*.log
+*.bak
+*.tmp
+
+# Ignore OS files (Windows, macOS, etc.)
+.DS_Store
+Thumbs.db
+
+# Ignore IDEs files
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+
+#Ignore Roadmap.md, for now
+/Roadmap.md
+
+#Ignore Roadmap chats
+RoadmapChat/
