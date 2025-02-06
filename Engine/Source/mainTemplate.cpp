@@ -1,3 +1,4 @@
+#if 0
 /*
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
@@ -11,6 +12,9 @@
 #include "imgui_impl_vulkan.h"
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
+#include "hdImgui.h"
+
+float appIdleSleepTime = 60.0f;
 
 /**
  * @brief Initializes the application and its main loop.
@@ -21,20 +25,21 @@
  * @return void
  */
 void RunApplication() {
-    // Initialize GLFW, Vulkan, ImGui, etc. =================
+    // =========== Initialization ===========
+    // Initialize GLFW, Vulkan, ImGui, etc.
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
         return;
     }
 
-    // Create a window and Vulkan context ================================================
+    // Create a window and Vulkan context
     GLFWwindow* window = glfwCreateWindow(1280, 720, "ImGui Example", nullptr, nullptr);
     if (!window) {
         glfwTerminate();
         return;
     }
 
-    // Initialize ImGui =========================
+    // Initialize ImGui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForVulkan(window, true);
@@ -42,22 +47,37 @@ void RunApplication() {
     // Fill in Vulkan initialization info...
     ImGui_ImplVulkan_Init(&init_info);
 
-    // Main loop ===============================
+    // =========== Main Loop ===========
     while (!glfwWindowShouldClose(window)) {
+        // Poll and handle window and input events
         glfwPollEvents();
+
+        // Start the Dear ImGui frame
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // Hydragon's ImGui code here
+        // Process user interactions to handle wake-up
+        hdImgui::ProcessUserInteractions(window);
+
+        // Auto-sleep logic
+        hdImgui::AutoSleepAfterInactivity(appIdleSleepTime);
+
+        // Render your UI here
+        if (!hdImgui::IsSleeping()) {
+            // Your application's UI rendering code
+            ImGui::Begin("Example Window");
+            ImGui::Text("Hello, world!");
+            ImGui::End();
+        }
 
         // ImGui rendering
         ImGui::Render();
 
-        // Vulkan rendering code here
+        // Vulkan rendering
     }
 
-    // Cleanup =================
+    // =========== Cleanup ===========
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -88,3 +108,4 @@ void RunApplication() {
     RunApplication();
     return 0;
 } */
+#endif
