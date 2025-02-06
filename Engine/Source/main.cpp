@@ -1,8 +1,5 @@
 /*
- * Copyright (c) 2024 Agua Games. All rights reserved.
- * Licensed under the Agua Games License 1.0
- *
- * Hydragon Engine's main entry point.
+ * (Insert copyright notice here after refactoring imgui's example code)
  */
 #include <windows.h>
 #include <iostream>
