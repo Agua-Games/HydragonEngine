@@ -27,6 +27,8 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+#set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS /SUBSYSTEM:CONSOLE)
+
 # =====================================================================
 # Detect Platform
 # =====================================================================
@@ -74,7 +76,8 @@ set(INSTALL_CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/Config")
 # Find and store external dependencies. Packages, libraries (system libraries, precompiled libraries, etc)
 # =========================================================================================================
 # Vulkan - Find the Vulkan SDK on the system. REQUIRED means that the build will fail if not found.
-find_package(Vulkan REQUIRED)                   
+find_package(Vulkan REQUIRED)    
+
 set(LIBRARIES "glfw;Vulkan::Vulkan")
 
 # ========================================================================================================

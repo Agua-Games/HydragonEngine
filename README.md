@@ -22,17 +22,9 @@ For licensing inquiries or further information, please contact **Agua Games** at
 
 This software uses the following third-party libraries:
 
-- **Open3D**: Licensed under the [MIT License](./third_party/open3d/LICENSE).
-- **OpenVDB**: Licensed under the [MPL 2.0 License](./third_party/openvdb/LICENSE).
-- **Taichi**: Licensed under the [Apache License 2.0](./third_party/taichi/LICENSE).
-- **NumPy**: Licensed under the [BSD 3-Clause License](./third_party/numpy/LICENSE).
-- **SciPy**: Licensed under the [BSD 3-Clause License](./third_party/scipy/LICENSE).
-- **Pandas**: Licensed under the [BSD 3-Clause License](./third_party/pandas/LICENSE).
-- **Matplotlib**: Licensed under the [Matplotlib License](./third_party/matplotlib/LICENSE).
-- **Pillow**: Licensed under the [HPND License](./third_party/pillow/LICENSE).
-- **Requests**: Licensed under the [Apache License 2.0](./third_party/requests/LICENSE).
-- **PyYAML**: Licensed under the [MIT License](./third_party/pyyaml/LICENSE).
-- **SQLAlchemy**: Licensed under the [MIT License](./third_party/sqlalchemy/LICENSE).
+- **glfw**: Licensed under the [zlib License](./Engine/Source/ThirdParty/Licenses/glfw_LICENSE.md).
+- **imgui**: Licensed under the [MIT License](./Engine/Source/ThirdParty/Licenses/imgui_LICENSE.txt).
+- **vulkan-headers**: Licensed under the [Apache 2.0 License](./Engine/Source/ThirdParty/Licenses/vulkan-headers_LICENSE.txt).
 
 For more information about the licensing terms of these libraries, please refer to their respective license files in the `third_party` directory.
 

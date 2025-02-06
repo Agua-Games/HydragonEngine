@@ -6,10 +6,11 @@
  */
 #include <windows.h>
 #include <iostream>
-#include <glfw/glfw3.h>
-#include "ThirdParty/imgui/imgui.h"
-#include "ThirdParty/imgui/backends/imgui_impl_glfw.h"
-#include "ThirdParty/imgui/backends/imgui_impl_vulkan.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_vulkan.h"
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 int Test() {
     return 0;

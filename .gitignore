@@ -5,6 +5,10 @@ BuildOutput/
 Cache/
 .vscode/
 
+# Ignore folders not needed for compiling source
+Templates/
+
+
 # Ignore CMake's cache and temporary files
 /CMakeCache.txt
 CMakeFiles/
@@ -25,10 +29,16 @@ CMakeFiles/
 # Ignore ML models, to avoid huge file transfers
 /Shared/Models_ML/
 
+# Ignore heavy files, used for local temp storages, backups.
+# Remove later the proper extensions, if deciding to use github for large files also.
+*.rar
+*.zip
+
 # Ignore temporary files
 *.log
 *.bak
 *.tmp
+*.bkp
 
 # Ignore OS files (Windows, macOS, etc.)
 .DS_Store
