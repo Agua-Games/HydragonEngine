@@ -27,8 +27,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-#set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS /SUBSYSTEM:CONSOLE)
-
 # =====================================================================
 # Detect Platform
 # =====================================================================
@@ -194,6 +192,18 @@ add_executable(${PROJECT_NAME} ${SRC_FILES_AUTO} ${SRC_FILES_MANUAL})
 
 # Set the target properties for the executable
 set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
+
+# ======================================================================================
+# Include directories to target executable
+# ======================================================================================
+
+# vulkan/vulkan.h: This is the Vulkan header file, which provides the function declarations 
+# and types for Vulkan. It is included in the source code to access Vulkan’s API.
+#
+# vulkan-1.lib: This is the Vulkan import library, which is used during linking to resolve 
+# Vulkan functions at runtime. It is required to link the application with the Vulkan loader.
+# So, here we include the Vulkan include directory and link the Vulkan library.
+target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
 
 # ======================================================================================
 # Link libraries to the target executable

@@ -15,7 +15,8 @@
 		[
 			"add_executable",
 			"target_link_libraries",
-			"include_directories"
+			"include_directories",
+			"target_include_directories"
 		],
 		"files" : 
 		[
@@ -29,25 +30,31 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 188,
+				"line" : 186,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 212,
+				"line" : 222,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 139,
+				"line" : 137,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 145,
+				"line" : 143,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 206,
 				"parent" : 0
 			}
 		]
@@ -80,7 +87,7 @@
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/glfw/include"
 				},
 				{
-					"backtrace" : 2,
+					"backtrace" : 5,
 					"isSystem" : true,
 					"path" : "C:/VulkanSDK/1.4.304.0/Include"
 				}

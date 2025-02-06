@@ -13,13 +13,11 @@
 #include <vulkan/vulkan.h>
 
 /**
- * @brief Main entry point for the application.
- * Initializes GLFW, Vulkan, ImGui, creates a window and Vulkan context, and runs the main loop.
- * The main loop is where your ImGui code  and other code which needs to be updated every frame 
- * should go. 
- * The ImGui objects are updated and rendered in this function.
- * To run the application as a console application (headless mode), with command line arguments, 
- * it should be called directly from this function.
+ * @brief Initializes the application and its main loop.
+ * Initializes the windows manager (GLFW), graphics APIs (Vulkan, Directx), UI (ImGui), creates 
+ * a window and Vulkan context, and runs the main loop.
+ * The main loop is where your UI (ImGui) code and other code which needs to be updated every frame 
+ * should go. The ImGui objects are updated and rendered in this function.
  * @return void
  */
 void RunApplication() {
@@ -68,14 +66,25 @@ void RunApplication() {
 }
 
 /**
- * @brief Entry point for the Windows application, when run on Windows.
+ * @brief The main entry point of the application when run in console mode.
+ * @param argc The number of command-line arguments.
+ * @param argv The array of command-line arguments.
+ * @return 0 if the initialization was successful.
+ */
+/* int main(int argc, char** argv) {
+    RunApplication();
+    return 0;
+} */
+
+/**
+ * @brief The main entry point of the application when run in Windows GUI mode.
  * @param hInstance The instance handle of the application.
  * @param hPrevInstance The previous instance handle of the application.
  * @param lpCmdLine The command line arguments.
  * @param nCmdShow The show state of the window.
  * @return 0 if the initialization was successful.
  */
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+/* int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     RunApplication();
     return 0;
-}
+} */
