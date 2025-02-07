@@ -39,11 +39,8 @@ CMakeFiles/
 *.log
 *.bak
 *.tmp
-<<<<<<< Updated upstream
 *.bkp
-=======
 *.rar
->>>>>>> Stashed changes
 
 # Ignore OS files (Windows, macOS, etc.)
 .DS_Store
