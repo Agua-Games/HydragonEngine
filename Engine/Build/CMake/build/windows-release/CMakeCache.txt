@@ -14,6 +14,8 @@
 # EXTERNAL cache entries
 ########################
 
+:UNINITIALIZED=======
+
 //Build shared libraries
 BUILD_SHARED_LIBS:BOOL=OFF
 
@@ -526,7 +528,7 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: DOXYGEN_EXECUTABLE
 DOXYGEN_EXECUTABLE-ADVANCED:INTERNAL=1
 //Details about finding Threads
-FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
+FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v======()]
 //Details about finding Vulkan
 FIND_PACKAGE_MESSAGE_DETAILS_Vulkan:INTERNAL=[C:/VulkanSDK/1.4.304.0/Lib/vulkan-1.lib][C:/VulkanSDK/1.4.304.0/Include][cfound components: glslc glslangValidator ][v1.4.304()]
 //GLFW pkg-config Libs.private

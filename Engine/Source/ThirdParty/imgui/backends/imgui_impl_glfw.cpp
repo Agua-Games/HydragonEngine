@@ -100,14 +100,22 @@
 #endif
 
 // GLFW
+<<<<<<< Updated upstream
 #include <GLFW/glfw3.h>
+=======
+#include <glfw/glfw3.h>
+>>>>>>> Stashed changes
 
 #ifdef _WIN32
 #undef APIENTRY
 #ifndef GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WIN32
 #endif
+<<<<<<< Updated upstream
 #include <GLFW/glfw3native.h>   // for glfwGetWin32Window()
+=======
+#include <glfw/glfw3native.h>   // for glfwGetWin32Window()
+>>>>>>> Stashed changes
 #endif
 #ifdef __APPLE__
 #ifndef GLFW_EXPOSE_NATIVE_COCOA
