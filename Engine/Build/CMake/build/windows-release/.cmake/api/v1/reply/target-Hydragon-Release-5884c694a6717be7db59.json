@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Bin/Windows/Release/======Hydragon.exe"
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Bin/Windows/Release/Hydragon.exe"
 		},
 		{
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Bin/Windows/Release/======Hydragon.pdb"
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Bin/Windows/Release/Hydragon.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -154,7 +154,7 @@
 		"language" : "CXX"
 	},
 	"name" : "Hydragon",
-	"nameOnDisk" : "======Hydragon.exe",
+	"nameOnDisk" : "Hydragon.exe",
 	"paths" : 
 	{
 		"build" : ".",

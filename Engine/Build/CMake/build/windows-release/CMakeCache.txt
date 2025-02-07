@@ -14,8 +14,6 @@
 # EXTERNAL cache entries
 ########################
 
-:UNINITIALIZED=======
-
 //Build shared libraries
 BUILD_SHARED_LIBS:BOOL=OFF
 
@@ -26,8 +24,8 @@ CMAKE_AR:FILEPATH=C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Too
 // MinSizeRel ...
 CMAKE_BUILD_TYPE:STRING=Release
 
-//No help, variable specified on the command line.
-CMAKE_CXX_COMPILER:UNINITIALIZED=cl
+//CXX compiler
+CMAKE_CXX_COMPILER:STRING=C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/HostX64/x64/cl.exe
 
 //Flags used by the CXX compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=/DWIN32 /D_WINDOWS /W3 /GR /EHsc
@@ -341,9 +339,6 @@ Vulkan_INCLUDE_DIR:PATH=C:/VulkanSDK/1.4.304.0/Include
 //Path to a library.
 Vulkan_LIBRARY:FILEPATH=C:/VulkanSDK/1.4.304.0/Lib/vulkan-1.lib
 
-//The directory containing a CMake configuration file for glfw3.
-glfw3_DIR:PATH=C:/Users/Athos/AppData/Local/Programs/Python/Python312/lib/cmake/glfw3
-
 
 ########################
 # INTERNAL cache entries
@@ -528,7 +523,7 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: DOXYGEN_EXECUTABLE
 DOXYGEN_EXECUTABLE-ADVANCED:INTERNAL=1
 //Details about finding Threads
-FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v======()]
+FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding Vulkan
 FIND_PACKAGE_MESSAGE_DETAILS_Vulkan:INTERNAL=[C:/VulkanSDK/1.4.304.0/Lib/vulkan-1.lib][C:/VulkanSDK/1.4.304.0/Include][cfound components: glslc glslangValidator ][v1.4.304()]
 //GLFW pkg-config Libs.private
