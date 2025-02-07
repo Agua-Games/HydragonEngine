@@ -33,6 +33,7 @@ CMakeFiles/
 # Remove later the proper extensions, if deciding to use github for large files also.
 *.rar
 *.zip
+# test
 
 # Ignore temporary files
 *.log
