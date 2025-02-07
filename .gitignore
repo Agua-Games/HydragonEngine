@@ -33,14 +33,12 @@ CMakeFiles/
 # Remove later the proper extensions, if deciding to use github for large files also.
 *.rar
 *.zip
-# test
 
 # Ignore temporary files
 *.log
 *.bak
 *.tmp
 *.bkp
-*.rar
 
 # Ignore OS files (Windows, macOS, etc.)
 .DS_Store
