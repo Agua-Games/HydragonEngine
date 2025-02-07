@@ -1,0 +1,4 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/Engine/Build/CMake",
+    "C_Cpp.default.compilerPath": "cl.exe"
+}

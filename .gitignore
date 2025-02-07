@@ -1,9 +1,9 @@
 
 # Ignore intermediate folders, build artifacts
 Bin/
+/Engine/Build/CMake/build/	# Ignore all files inside of ../CMake/build/
 BuildOutput/
 Cache/
-.vscode/
 
 # Ignore folders not needed for compiling source
 Templates/
@@ -15,16 +15,16 @@ CMakeFiles/
 /Makefile
 
 # Ignore PLugin files which get generated
-#when compiling the engine
+# when compiling the engine
 /Plugins/**/*.dll
 /Plugins/**/*.so
 /Plugins/**/*.dylib
 
 # Ignore ThirdParty files which get generated
-#when compiling the engine
-/Bin/ThirdParty/**/*.dll
-/Bin/ThirdParty/**/*.so
-/Bin/ThirdParty/**/*.dylib
+# when compiling the engine
+/Bin/**/*.dll
+/Bin/**/*.so
+/Bin/**/*.dylib
 
 # Ignore ML models, to avoid huge file transfers
 /Shared/Models_ML/
@@ -45,8 +45,8 @@ CMakeFiles/
 Thumbs.db
 
 # Ignore IDEs files
-.vscode/
 .idea/
+.vs/
 *.user
 *.suo
 *.userosscache
