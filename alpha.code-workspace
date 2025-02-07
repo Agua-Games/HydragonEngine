@@ -5,6 +5,10 @@
 		}
 	],
 	"settings": {
-		"makefile.makefilePath": "Engine/Build/CMake/CMakeLists.txt"
+		"makefile.makefilePath": "Engine/Build/CMake/CMakeLists.txt",
+		"files.associations": {
+			"h": "cpp",
+			"unordered_map": "cpp"
+		}
 	}
 }

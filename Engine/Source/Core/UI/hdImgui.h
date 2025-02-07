@@ -3,6 +3,7 @@
 
 #include <string>
 #include "imgui.h"  // Include ImGui's header
+#include <GLFW/glfw3.h>  // Include GLFW header for GLFWwindow
 
 /**
  * @brief Namespace for ImGui integration functions.
@@ -42,6 +43,6 @@ namespace hdImgui {
      * @param window The GLFW window to process user interactions for.
      */
     void ProcessUserInteractions(GLFWwindow* window);
-
 } // namespace hdImgui
 #endif
+

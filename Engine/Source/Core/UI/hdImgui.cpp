@@ -2,26 +2,15 @@
 #include "hdImgui.h"
 #include "imgui_internal.h"  // For internal ImGui functions if needed
 #include <chrono>
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>     // Include GLFW header for GLFWwindow
 
 namespace hdImgui {
 
     // =========== Input variables ===========
     // Static variables for sleep/idle functionality
-    static bool s_isSleeping = false;
+    bool s_isSleeping = false;
     static std::chrono::steady_clock::time_point s_lastInteractionTime;
 
-    // =========== Initialization ===========   void Initialize(GLFWwindow* window) {
-        // Set default ImGui style (or your custom default)
-        StyleColorsHydragonDark();
-        // Load default fonts
-        LoadFonts();
-
-        // Initialize last interaction time
-        s_lastInteractionTime = std::chrono::steady_clock::now();
-        // Set up GLFW key and mouse button callbacks
-        glfwSetKeyCallback(window, KeyCallback);
-        glfwSetMouseButtonCallback(window, MouseButtonCallback);
     }
     // =========== Styling ===========
     void StyleColorsHydragonDark() {
@@ -137,11 +126,14 @@ namespace hdImgui {
         StyleColorsHydragonDark();
         // Load default fonts
         LoadFonts();
+
         // Initialize last interaction time
         s_lastInteractionTime = std::chrono::steady_clock::now();
-
         // Set up GLFW key callback
         glfwSetKeyCallback(window, KeyCallback);
+        glfwSetMouseButtonCallback(window, MouseButtonCallback);
     }
 } // namespace hdImgui
 #endif
+
+
