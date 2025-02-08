@@ -194,7 +194,7 @@ add_executable(${PROJECT_NAME} ${SRC_FILES_AUTO} ${SRC_FILES_MANUAL})
 set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
 
 # ======================================================================================
-# Include directories to target executable
+# Include directories from external dependencies to target executable
 # ======================================================================================
 
 # vulkan/vulkan.h: This is the Vulkan header file, which provides the function declarations 
@@ -204,6 +204,38 @@ set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
 # Vulkan functions at runtime. It is required to link the application with the Vulkan loader.
 # So, here we include the Vulkan include directory and link the Vulkan library.
 target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
+
+# ======================================================================================
+# Include engine directories (Core, Devtools, Editor) to target executable
+# ======================================================================================
+
+# Option 1: Manually list subdirectories
+#target_include_directories(${PROJECT_NAME} PUBLIC
+#    ${CORE_SOURCE_DIR}
+#    ${CORE_SOURCE_DIR}/
+#    ${CORE_SOURCE_DIR}/Rendering
+#    ${CORE_SOURCE_DIR}/Utils
+#)
+
+# Option 2: Automatically collect subdirectories (if needed)
+# Loop over Source/Core:
+function(get_all_subdirectories root_dir result)
+    file(GLOB_RECURSE subdirs LIST_DIRECTORIES true "${root_dir}/*")
+    set(dir_list "")
+    foreach(subdir ${subdirs})
+        if(IS_DIRECTORY ${subdir})
+            list(APPEND dir_list ${subdir})
+        endif()
+    endforeach()
+    set(${result} ${dir_list} PARENT_SCOPE)
+endfunction()
+
+get_all_subdirectories(${CORE_SOURCE_DIR} CORE_SUBDIRS)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CORE_SOURCE_DIR}
+    ${CORE_SUBDIRS}
+)
 
 # ======================================================================================
 # Link libraries to the target executable
