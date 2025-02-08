@@ -13,11 +13,11 @@
 #include "imgui.h"
 
 namespace hdImgui {
-
     // =========== Input variables ===========
     // Static variables for sleep/idle functionality
     bool s_isSleeping = false;
     static std::chrono::steady_clock::time_point s_lastInteractionTime;
+
     #if 0
     // =========== Initialization ===========
     void Initialize(GLFWwindow* window) {
@@ -216,14 +216,21 @@ namespace hdImgui {
         }
     }
 
+    // =========== Rendering ===================
     #endif
-    // =========== Rendering ===========
     void RenderHydragonEditor() {
+        // Enable docking universally for imgui windows
+        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+        // Create a separate dock space for the custom window
+        ImGui::DockSpaceOverViewport(ImGui::GetID("MainViewportDockSpace"));
+
         // Begin rendering
-        ImGui::Begin("Hydragon");
+        ImGui::Begin("Hydragon", nullptr, ImGuiWindowFlags_NoCollapse);
+
+        ImGui::BeginMenuBar();
 
         // sketch temp
-        ImGui::ShowDemoWindow();
         ImGui::Text("Hello, world!");// Display some text
         ImGui::Button("Close Me");
         static float value = 0.0f;
@@ -238,5 +245,6 @@ namespace hdImgui {
 
         // End the window
         ImGui::End();
+        ImGui::ShowDemoWindow();
     }
 } // namespace hdImgui
