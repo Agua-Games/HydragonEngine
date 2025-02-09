@@ -217,8 +217,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
 #    ${CORE_SOURCE_DIR}/Utils
 #)
 
-# Option 2: Automatically collect subdirectories (if needed)
-# Loop over Source/Core:
+# Option 2: Automatically collect subdirectories (if needed). 
+
+# Firs implement a recursive agnostic loop function:
 function(get_all_subdirectories root_dir result)
     file(GLOB_RECURSE subdirs LIST_DIRECTORIES true "${root_dir}/*")
     set(dir_list "")
@@ -230,9 +231,12 @@ function(get_all_subdirectories root_dir result)
     set(${result} ${dir_list} PARENT_SCOPE)
 endfunction()
 
+# Now, collect the proper subdirectories of /Source
 get_all_subdirectories(${CORE_SOURCE_DIR} CORE_SUBDIRS)
+get_all_subdirectories(${DEV_TOOLS_SOURCE_DIR} DEV_TOOLS_SUBDIRS)
+get_all_subdirectories(${EDITOR_SOURCE_DIR} EDITOR_SUBDIRS)
 
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(${PROJECT_NAME} PRIVATE
     ${CORE_SOURCE_DIR}
     ${CORE_SUBDIRS}
 )

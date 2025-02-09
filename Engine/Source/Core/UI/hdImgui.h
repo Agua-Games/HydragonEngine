@@ -5,7 +5,7 @@
 #pragma once
 #include <string>
 #include <GLFW/glfw3.h>  // Include GLFW header for GLFWwindow
-#include "imgui.h"  // Include ImGui's header
+#include <imgui.h>  // Include ImGui's header
 
 /**
  * @brief Namespace for ImGui integration functions.
@@ -18,6 +18,7 @@ namespace hdImgui {
      * @param window The GLFW window to initialize ImGui for.
      */
     void Initialize(GLFWwindow* window);
+    ImGuiIO& io;
 
     // =========== Styling =========== 
     #endif   

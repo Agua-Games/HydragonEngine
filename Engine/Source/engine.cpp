@@ -8,11 +8,14 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_vulkan.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_vulkan.h>
+
 #include "hdImgui.h"
 
-int Test() {
-    return 0;
+namespace hd{
+    int Test() {
+        return 0;
+    }
 }
