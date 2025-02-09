@@ -338,12 +338,15 @@ namespace hdImgui {
             ImGuiTreeNodeFlags_OpenOnDoubleClick;
         if (ImGui::TreeNodeEx("Castle", SceneGraphTreeNodeFlags)) {
             // Child nodes
-            if (ImGui::TreeNode("Child Node 1")) {
-                ImGui::Text("Tower 1");
+            if (ImGui::TreeNode("Tower 1")) {
+                if (ImGui::TreeNode("Door 1")){
+                    ImGui::Text("Handle 1");
+                    ImGui::TreePop();
+                }
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode("Tower 2")) {
-                ImGui::Text("This is the second child node.");
+                ImGui::Text("Bullwark 1");
                 ImGui::TreePop();
             }
             ImGui::TreePop();
@@ -379,13 +382,34 @@ namespace hdImgui {
         // which in effect is the same as the NodeGraph Editor (is an editor in itself).
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("NodeGraph", nullptr);
+        ImGui::Button("Open Graph");
+        ImGui::Button("New Graph");
+        ImGui::Button("Save Graph");
         ImGui::Button("Add Node");
+        ImGui::Button("Group Selected Nodes");
+        bool autoCompile = true;
+        ImGui::Checkbox("Auto-Compile", &autoCompile);
+        ImGui::Button("Compile Graph");
+        ImGui::Button("Run Graph");
+        ImGui::Button("Validate Graph");
         ImGui::End();
 
         // === Scripting Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Scripting", nullptr);
+        ImGui::Button("Import Script");
+        ImGui::Button("New Script");
+        ImGui::Button("Record Macro");
+        ImGui::Button("Save Script");
+        ImGui::Button("Compile Script");
         ImGui::Button("Run Script");
+        ImGui::Button("Validate Script");
+        ImGui::Button("Go To Line");
+        ImGui::Button("Debug Script");
+        ImGui::Button("Add Script");
+        ImGui::Button("Ask Agent");
+        ImGui::Button("Run Agent");
+        ImGui::Button("Validate Agent");
         ImGui::End();
 
         // === Scripts Palette ===
@@ -408,6 +432,19 @@ namespace hdImgui {
         ImGui::Button("Add Agent");
         ImGui::Button("Load Model");
         ImGui::Button("Start Server");
+        ImGui::Button("Stop Server");
+        ImGui::Button("Start Client");
+        ImGui::Button("Stop Client");
+        ImGui::Button("Run Agent");
+        ImGui::Button("Validate Agent");
+        ImGui::Button("Ask Agent");
+        ImGui::Button("Run Command");
+        ImGui::Button("Validate Command");
+        ImGui::Button("Add Command");
+        ImGui::Button("Run Macro");
+        ImGui::Button("Validate Macro");
+        ImGui::Button("Add Macro");
+        ImGui::Button("Load Macro");
         ImGui::End();
 
         // === Viewports ===
@@ -428,7 +465,19 @@ namespace hdImgui {
         // === Asset Manager ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Asset Manager", nullptr);
-        ImGui::Button("Load Asset");
+        ImGui::Button("Import Asset");
+        ImGui::Button("New Asset");
+        ImGui::Button("Export Asset");
+        ImGui::Button("Share Asset");
+        ImGui::Button("Import Library");
+        ImGui::Button("New Library");
+        ImGui::Button("Library Settings");
+        ImGui::Button("Add to Library");
+        ImGui::Button("Remove from Library");
+        ImGui::Button("Rename Library");
+        ImGui::Button("Delete Library");
+        ImGui::Button("Export Library");
+        ImGui::Button("Share Library");
         ImGui::End();
 
         // === Bottom status bar ===
@@ -439,7 +488,19 @@ namespace hdImgui {
         // === File Explorer ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("File Explorer", nullptr);
-        ImGui::Button("Load File");
+        ImGui::Button("New...");
+        ImGui::Button("Open...");
+        ImGui::Button("Open As...");
+        ImGui::Button("Open Recent");
+        ImGui::Button("Close");
+        ImGui::Button("Close All");
+        ImGui::Button("Save");
+        ImGui::Button("Save As...");
+        ImGui::Button("Import");
+        ImGui::Button("Export");
+        ImGui::Button("Automate");
+        ImGui::Button("File Info");
+        ImGui::Button("Bookmarks");
         ImGui::End();
 
         // === Pattern Orchestrator ===
@@ -451,13 +512,27 @@ namespace hdImgui {
         // === Profiler ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Profiler", nullptr);
-        ImGui::Button("Clear");
+        bool profilerRecordingEnabled = true;
+        ImGui::Checkbox("Recording Enabled", &profilerRecordingEnabled);
+        ImGui::Button("Start Profiler");
+        ImGui::Button("Pause Profiler");
+        ImGui::Button("Stop Profiler");
+        ImGui::Button("Clear Profiler");
+        ImGui::Button("Export Profiler");
+        ImGui::Button("Share Profiler");
+        ImGui::Button("Save Profiler");
+        ImGui::Button("Export Profiling Session");
+        ImGui::Button("Profiler Settings");
         ImGui::End();
 
         // === Streaming Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Streaming", nullptr);
-        ImGui::Button("Start Streaming");
+        bool streamingEnabled = true;
+        ImGui::Checkbox("Streaming Enabled", &streamingEnabled);
+        ImGui::Button("Start Streaming Engine");
+        ImGui::Button("Refresh Streaming Engine");
+        ImGui::Button("Streaming Engine Settings");
         ImGui::End();
 
         // === Image Editor ===
@@ -471,7 +546,16 @@ namespace hdImgui {
         // === Audio Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Audio", nullptr);
+        ImGui::Button("Import Audio");
+        ImGui::Button("New Audio");
+        ImGui::Button("Save Audio");
         ImGui::Button("Load Audio");
+        ImGui::Button("Play Audio");
+        ImGui::Button("Stop Audio");
+        ImGui::Button("Export Audio");
+        ImGui::Button("Share Audio");
+        ImGui::Button("Add Audio");
+        ImGui::Button("Remove Audio");
         ImGui::End();
 
         // === Montage Editor ===
@@ -481,7 +565,16 @@ namespace hdImgui {
         // with two visualization modes: collapsed and expanded (defaults to expanded).
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Montage", nullptr);
-        ImGui::Button("Load Video");
+        ImGui::Button("Import Montage");
+        ImGui::Button("New Montage");
+        ImGui::Button("Save Montage");
+        ImGui::Button("Load Montage");
+        ImGui::Button("Play Montage");
+        ImGui::Button("Stop Montage");
+        ImGui::Button("Export Montage");
+        ImGui::Button("Share Montage");
+        ImGui::Button("Add Montage");
+        ImGui::Button("Remove Montage");
         ImGui::End();
 
         // === Text Editor ===
@@ -493,19 +586,45 @@ namespace hdImgui {
         // === Font Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Font", nullptr);
+        ImGui::Button("Import Font");
+        ImGui::Button("New Font");
+        ImGui::Button("Save Font");
         ImGui::Button("Load Font");
+        ImGui::Button("Export Font");
+        ImGui::Button("Share Font");
+        ImGui::Button("Add Font");
+        ImGui::Button("Remove Font");
+        ImGui::Button("Font Settings");
+        ImGui::Button("Compile Font");
         ImGui::End();
 
         // === Plugin Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Plugin", nullptr);
+        ImGui::Button("Import Plugin");
+        ImGui::Button("Add Plugin");
+        ImGui::Button("Save Plugin");
         ImGui::Button("Load Plugin");
+        ImGui::Button("Unload Plugin");
+        ImGui::Button("Reload Plugin");
+        ImGui::Button("Export Plugin");
+        ImGui::Button("Share Plugin");
+        ImGui::Button("Remove Plugin");
+        ImGui::Button("Plugin Settings");
         ImGui::End();
 
         // === Extensions Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Extensions", nullptr);
+        ImGui::Button("Add Extension");
+        ImGui::Button("Save Extension");
         ImGui::Button("Load Extension");
+        ImGui::Button("Unload Extension");
+        ImGui::Button("Reload Extension");
+        ImGui::Button("Export Extension");
+        ImGui::Button("Share Extension");
+        ImGui::Button("Remove Extension");
+        ImGui::Button("Extension Settings");
         ImGui::End();
 
         // === Macros Editor ===
@@ -517,43 +636,98 @@ namespace hdImgui {
         // === Drama Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Drama", nullptr);
+        ImGui::Button("Import Drama");
+        ImGui::Button("New Drama");
+        ImGui::Button("Save Drama");
         ImGui::Button("Load Drama");
+        ImGui::Button("Play Drama");
+        ImGui::Button("Stop Drama");
+        ImGui::Button("Export Drama");
+        ImGui::Button("Share Drama");
+        ImGui::Button("Add Drama");
+        ImGui::Button("Remove Drama");
+        ImGui::Button("Drama Settings");
         ImGui::End();
 
         // === Chimera Pipeline Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Chimera Pipeline", nullptr);
+        ImGui::Button("Start Server");
+        ImGui::Button("Refresh Server");
+        ImGui::Button("Stop Server");
+        ImGui::Button("Import Chimera Pipeline");
+        ImGui::Button("New Chimera Pipeline");
+        ImGui::Button("Save Chimera Pipeline");
         ImGui::Button("Load Livelink");
+        ImGui::Button("Watch Livelink");
+        ImGui::Button("Synchronize");
         ImGui::End();
 
         // === UI Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("UI", nullptr);
+        ImGui::Button("Import UI");
+        ImGui::Button("New UI");
+        ImGui::Button("Save UI");
         ImGui::Button("Load UI");
+        ImGui::Button("Export UI");
+        ImGui::Button("Share UI");
+        ImGui::Button("Add UI");
+        ImGui::Button("Remove UI");
+        ImGui::Button("UI Settings");
         ImGui::End();
 
         // === Networking Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Networking", nullptr);
+        ImGui::Button("Start Server");
+        ImGui::Button("Refresh Server");
+        ImGui::Button("Stop Server");
         ImGui::Button("Load Networking Config");
+        ImGui::Button("Share Networking Config");
+        ImGui::Button("Networking Settings");
+        ImGui::Button("Start Client");
+        ImGui::Button("Refresh Client");
+        ImGui::Button("Stop Client");
+        ImGui::Button("Load Client Config");
+        ImGui::Button("Share Client Config");
+        ImGui::Button("Client Settings");
+        ImGui::Button("Export Client Config");
         ImGui::End();
 
         // === Performance Scalability Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Performance Scalability", nullptr);
+        ImGui::Button("Import Performance Scalability Config");
+        ImGui::Button("New Performance Scalability Config");
+        ImGui::Button("Save Performance Scalability Config");
         ImGui::Button("Load Performance Scalability Config");
+        ImGui::Button("Export Performance Scalability Config");
+        ImGui::Button("Share Performance Scalability Config");
+        ImGui::Button("Performance Scalability Settings");
         ImGui::End();
 
         // === Reflection Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Reflection", nullptr);
+        ImGui::Button("Import Reflection Config");
+        ImGui::Button("New Reflection Config");
+        ImGui::Button("Save Reflection Config");
         ImGui::Button("Load Reflection Config");
+        ImGui::Button("Export Reflection Config");
+        ImGui::Button("Share Reflection Config");
+        ImGui::Button("Reflection Settings");
         ImGui::End();
 
         // === Collaboration Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Collaboration", nullptr);
+        ImGui::Button("Connect to Server");
+        ImGui::Button("Disconnect from Server");
+        ImGui::Button("Connect to Client Node");
+        ImGui::Button("Disconnect from Client Node");
         ImGui::Button("Load Collaboration Config");
+
         ImGui::End();
 
         // === Community Editor ===
@@ -565,19 +739,35 @@ namespace hdImgui {
         /// === Project Insights Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Project Insights", nullptr);
+        ImGui::Button("Run Project Analysis");
+        ImGui::Button("Stop Project Analysis");
+        ImGui::Button("Send Analysis Results to Agent");
+        ImGui::Button("Export Project Insights");
+        ImGui::Button("Save Project Insights Config");
         ImGui::Button("Load Project Insights Config");
         ImGui::End();
 
         // === Input Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Input", nullptr);
+        ImGui::Button("Import Input Config");
+        ImGui::Button("New Input Config");
         ImGui::Button("Load Input Config");
+        ImGui::Button("Save Input Config");
+        ImGui::Button("Export Input Config");
+        ImGui::Button("Share Input Config");
         ImGui::End();
 
         // === Localization Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Localization", nullptr);
+        ImGui::Button("Import Localization Config");
+        ImGui::Button("New Localization Config");
         ImGui::Button("Load Localization Config");
+        ImGui::Button("Save Localization Config");
+        ImGui::Button("Export Localization Config");
+        ImGui::Button("Share Localization Config");
+        ImGui::Button("Localization Settings");
         ImGui::End();
 
         // === Settings Editor ===
