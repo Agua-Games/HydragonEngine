@@ -49,8 +49,11 @@
 #include "CollaborationEditor.h"
 #include "CommunityEditor.h"
 #include "InputEditor.h"
+#include "PropertiesMatrixEditor.h"
 #include "LocalizationEditor.h"
 #include "SettingsEditor.h"
+#include "MeshEditor.h"
+#include "VolumeEditor.h"
 #endif
 
 namespace hdImgui {
@@ -447,13 +450,54 @@ namespace hdImgui {
         ImGui::Button("Load Macro");
         ImGui::End();
 
-        // === Viewports ===
+        // === Viewport 3D ===
         ImGui::Begin("Viewport 3D");
         ImGui::Button("Shading Mode");
+        ImGui::Button("Buffer Visualization");
+        ImGui::Button("Render Mode");
+
+        ImGui::Button("Perspective On");
+        ImGui::Button("Camera Mode");
+        ImGui::Button("Camera Orbit");
+        ImGui::Button("Camera Pan");
+        ImGui::Button("Camera Zoom");
+        ImGui::Button("Camera Track");
+        ImGui::Button("Camera Walk");
+        ImGui::Button("Camera Fly");
+        ImGui::Button("Camera Free");
+        ImGui::Button("Camera Target");
+        ImGui::Button("Camera Follow");
+
+        ImGui::Button("Transform Mode");
+        ImGui::Button("Transform Translate");
+        ImGui::Button("Transform Rotate");
+        ImGui::Button("Transform Scale");
+
+        ImGui::Button("Toggle Grid");
+        ImGui::Button("Grid Settings");
+        ImGui::Button("Toggle Helpers");
+        ImGui::Button("Toggle Axes");
+        ImGui::Button("Toggle Bounding Boxes");
+        ImGui::Button("Toggle Normals");
+        ImGui::Button("Toggle Wireframe");
+        ImGui::Button("Toggle Outline");
+        ImGui::Button("Toggle Wireframe Colors");
+
+        ImGui::Button("Visible Only");
+        ImGui::Button("Visible Selected");
+        ImGui::Button("Visible All");
+        ImGui::Button("Visible Layers");
         ImGui::End();
 
-        ImGui::Begin("Viewport 2D");
+        // === Viewport 2D ===
+        ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
+        ImGui::Begin("Viewport 2D", nullptr);
         ImGui::Button("Brush Size");
+        ImGui::Button("Brush Opacity");
+        ImGui::Button("Brush Color");
+        ImGui::Button("Brush Texture");
+        ImGui::Button("Brush Mode");
+        ImGui::Button("Brush Tool");
         ImGui::End();
 
         // === Properties Editor ===
@@ -540,7 +584,28 @@ namespace hdImgui {
         // configure procedurals, use AI-assisted texture generation etc.
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Image", nullptr);
-        ImGui::Button("Load Texture");
+        ImGui::Button("Import Image");
+        ImGui::Button("New Image");
+        ImGui::Button("Save Image");
+        ImGui::Button("Load Image");
+        ImGui::Button("Export Image");
+        ImGui::Button("Share Image");
+        ImGui::Button("Add Image as Layer");
+        ImGui::Button("Add Layer");
+        ImGui::Button("Duplicate Layer");
+        ImGui::Button("Rename Layer");
+        ImGui::Button("Delete Layer");
+        ImGui::Button("Layer Settings");
+        ImGui::Button("Add Image as Channel");
+        ImGui::Button("Add Channel");
+        ImGui::Button("Duplicate Channel");
+        ImGui::Button("Rename Channel");
+        ImGui::Button("Pack Layers as Packed Texture");
+        ImGui::Button("Pack Layers as Texture Set Node");
+        ImGui::Button("Remove Layer");
+        ImGui::Button("Convert Layers to Atlas");
+        ImGui::Button("Add Image to Atlas");
+        ImGui::Button("Remove Image from Atlas");
         ImGui::End();
 
         // === Audio Editor ===
@@ -727,13 +792,44 @@ namespace hdImgui {
         ImGui::Button("Connect to Client Node");
         ImGui::Button("Disconnect from Client Node");
         ImGui::Button("Load Collaboration Config");
-
+        ImGui::Button("Share Collaboration Config");
+        ImGui::Button("Collaboration Settings");
         ImGui::End();
 
         // === Community Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Community", nullptr);
+        ImGui::Button("Import Community Config");
+        ImGui::Button("New Community Config");
+        ImGui::Button("Save Community Config");
         ImGui::Button("Load Community Config");
+        ImGui::Button("Export Community Config");
+        ImGui::Button("Share Community Config");
+        ImGui::Button("Report Issue");
+        ImGui::Button("Report Bug");
+        ImGui::Button("Ask Question");
+        ImGui::Button("Community Settings");
+        ImGui::Button("Request Feature");
+        ImGui::Button("Request Support");
+        ImGui::Button("Request Documentation");
+        ImGui::Button("Request Training");
+        ImGui::Button("Request Sponsorship");           // If the user has a Patreon account; have a project needing sponsorship
+        ImGui::Button("Request Sponsorship Package");
+        ImGui::Button("Request Sponsorship Support");
+        ImGui::End();
+
+        /// === Monetization Editor ===
+        ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
+        ImGui::Begin("Monetization", nullptr);
+        ImGui::Button("Import Monetization Config");
+        ImGui::Button("New Monetization Config");
+        ImGui::Button("Save Monetization Config");
+        ImGui::Button("Load Monetization Config");
+        ImGui::Button("Export Monetization Config");
+        ImGui::Button("Share Monetization Config");
+        ImGui::Button("Monetization Settings");
+        ImGui::Button("Connect Monetization Service");
+        ImGui::Button("Connect to Sponsorship");
         ImGui::End();
 
         /// === Project Insights Editor ===
@@ -758,6 +854,13 @@ namespace hdImgui {
         ImGui::Button("Share Input Config");
         ImGui::End();
 
+        // === Properties Matrix Editor ===
+        ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
+        ImGui::Begin("Properties Matrix", nullptr);
+        ImGui::Button("Load Selected Objects");
+        ImGui::Button("Diff Selected");
+        ImGui::End();
+
         // === Localization Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Localization", nullptr);
@@ -774,6 +877,39 @@ namespace hdImgui {
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Settings", nullptr);
         ImGui::Button("Save Settings");
+        ImGui::End();
+
+        // === Mesh Editor ===
+        ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
+        ImGui::Begin("Mesh", nullptr);
+        ImGui::Button("Edit Mesh");
+        ImGui::Button("Import Mesh");
+        ImGui::Button("Load Mesh");
+        ImGui::Button("Save Mesh");
+        ImGui::Button("Procedural Tools");      // overlay, context menus
+        ImGui::Button("Generate Mesh");
+        ImGui::Button("Decimate Mesh");
+        ImGui::Button("Voxelize Mesh");
+        ImGui::Button("Simplify Mesh");
+        ImGui::Button("Optimize Mesh");
+        ImGui::Button("Mesh From Points");
+        ImGui::Button("Mesh From Point Cloud");
+        ImGui::Button("Export Mesh");
+        ImGui::Button("Mesh Settings");
+        ImGui::Button("Load Mesh Settings");
+        ImGui::End();
+
+        // === Volume Editor ===
+        ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
+        ImGui::Begin("Volume", nullptr);
+        ImGui::Button("Import VDB Volume");
+        ImGui::Button("New VDB Volume");
+        ImGui::Button("Save Volume");
+        ImGui::Button("Edit Volume");
+        ImGui::Button("Load Volume");
+        ImGui::Button("Procedural VDB Nodes");      // overlay, context menus
+        ImGui::Button("Volumetric VDB Tools");          // overlay, context menus
+        ImGui::Button("Volume Settings");
         ImGui::End();
 
         // === Temporary, for referencing the components' names in imgui code files ===
