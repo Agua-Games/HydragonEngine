@@ -219,32 +219,250 @@ namespace hdImgui {
     // =========== Rendering ===================
     #endif
     void RenderHydragonEditor() {
+        // === Docking ===
         // Enable docking universally for imgui windows
         ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        // Create the main DockSpace
+        ImGui::DockSpaceOverViewport(ImGui::GetID("MainDockSpace"));
 
-        // Create a separate dock space for the custom window
-        ImGui::DockSpaceOverViewport(ImGui::GetID("MainViewportDockSpace"));
-
-        // Begin rendering
-        ImGui::Begin("Hydragon", nullptr, ImGuiWindowFlags_NoCollapse);
-
+        // === Top Menu bar ===
         ImGui::BeginMenuBar();
+        //ImGui::EndMenuBar();
 
-        // sketch temp
-        ImGui::Text("Hello, world!");// Display some text
-        ImGui::Button("Close Me");
-        static float value = 0.0f;
-        ImGui::DragFloat("value", &value, 0.01f, 0.0f, 1.0f);
-
-        // Add UI elements
-        // =========== Top menu bar ===========
-
-        // =========== Top Tools bar ===========
-
-        // =========== Bottom status bar ===========
-
-        // End the window
+        // === Top Tools bar ===
+        ImGui::Begin("Main Tools", nullptr);
         ImGui::End();
+
+        // === Left sidebar ====
+        ImGui::Begin("Left Sidebar", nullptr);
+        ImGui::End();
+
+        // === Right sidebar ====
+        ImGui::Begin("Right Sidebar", nullptr);
+        ImGui::End();
+
+        // === SceneGraph Editor ====
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("SceneGraphEditor", nullptr);
+        ImGui::Button("Add Layer");
+        ImGui::TreeNode("Layer 1");
+        //ImGui::TreePop();
+        ImGui::End(); 
+        
+        // === NodeGraph Editor ====
+        // At first, materials will also be edited in the NodeGraph Editor.
+        // Also other objects can be edited in the NodeGraph Editor, like Meshes, Textures,
+        // Audio mixing graphs, rendering graphs, post-processing graphs, physics graphs,
+        // effects graphs, etc.
+        // using  context-sensitive overlays, menus. 
+        // The base asset in Hydragon is a graph of nodes.
+        // The properties/params of the inner nodes can be exposed to the parent graph's properties,
+        // thus consolidating the inner nodes into a single node with a single UI (properties, overlays, menus),
+        // which in effect is the same as the NodeGraph Editor (is an editor in itself).
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("NodeGraph Editor", nullptr);
+        ImGui::Button("Add Node");
+        ImGui::End();
+
+        // === Scripting Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Scripting Editor", nullptr);
+        ImGui::Button("Run Script");
+        ImGui::End();
+
+        // === Scripts Palette ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Scripts Palette", nullptr);   
+        ImGui::Button("Add Script"); 
+        ImGui::Button("My Macro Script 1"); 
+        ImGui::Button("My Macro Script 2"); 
+        ImGui::End();
+
+        // === Commands Console ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Commands Console", nullptr);
+        ImGui::Button("Run Command");
+        ImGui::End();
+
+        // === Viewports ===
+        ImGui::Begin("Viewport 3D");
+        ImGui::Button("Shading Mode");
+        ImGui::End();
+
+        ImGui::Begin("Viewport 2D");
+        ImGui::Button("Brush Size");
+        ImGui::End();
+
+        // === Properties Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Properties Editor", nullptr);
+        ImGui::Button("Load Template");
+        ImGui::End();
+
+        // === Asset Manager ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Asset Manager", nullptr);
+        ImGui::Button("Load Asset");
+        ImGui::End();
+
+        // === Timeline ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Timeline", nullptr);
+        ImGui::Button("Play");
+        ImGui::End();
+
+        // === Bottom status bar ===
+        ImGui::Begin("Status Bar", nullptr);
+        ImGui::Button("FPS");
+        ImGui::End();
+
+        // === File Explorer ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("File Explorer", nullptr);
+        ImGui::Button("Load File");
+        ImGui::End();
+
+        // === Pattern Orchestrator ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Pattern Orchestrator", nullptr);
+        ImGui::Button("Load Pattern");
+        ImGui::End();
+
+        // === Profiler ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Profiler", nullptr);
+        ImGui::Button("Clear");
+        ImGui::End();
+
+        // === Streaming Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Streaming Editor", nullptr);
+        ImGui::Button("Start Streaming");
+        ImGui::End();
+
+        // === Image Editor ===
+        // Used to display and edit textures, texture settings, edit UVs, packed textures, apply adjustments,
+        // configure procedurals, use AI-assisted texture generation etc.
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Image Editor", nullptr);
+        ImGui::Button("Load Texture");
+        ImGui::End();
+
+        // === Audio Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Audio Editor", nullptr);
+        ImGui::Button("Load Audio");
+        ImGui::End();
+
+        // === Montage Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Montage Editor", nullptr);
+        ImGui::Button("Load Video");
+        ImGui::End();
+
+        // === Text Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Text Editor", nullptr);
+        ImGui::Button("Load Text");
+        ImGui::End();
+
+        // === Font Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Font Editor", nullptr);
+        ImGui::Button("Load Font");
+        ImGui::End();
+
+        // === Plugin Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Plugin Editor", nullptr);
+        ImGui::Button("Load Plugin");
+        ImGui::End();
+
+        // === Extensions Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Extensions Editor", nullptr);
+        ImGui::Button("Load Extension");
+        ImGui::End();
+
+        // === Macro Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Macro Editor", nullptr);
+        ImGui::Button("Load Macro");
+        ImGui::End();
+
+        // === Drama Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Drama Editor", nullptr);
+        ImGui::Button("Load Drama");
+        ImGui::End();
+
+        // === Chimera Pipeline Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Chimera Pipeline Editor", nullptr);
+        ImGui::Button("Load Livelink");
+        ImGui::End();
+
+        // === UI Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("UI Editor", nullptr);
+        ImGui::Button("Load UI");
+        ImGui::End();
+
+        // === Networking Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Networking Editor", nullptr);
+        ImGui::Button("Load Networking Config");
+        ImGui::End();
+
+        // === Performance Scalability Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Performance Scalability Editor", nullptr);
+        ImGui::Button("Load Performance Scalability Config");
+        ImGui::End();
+
+        // === Reflection Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Reflection Editor", nullptr);
+        ImGui::Button("Load Reflection Config");
+        ImGui::End();
+
+        // === Collaboration Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Collaboration Editor", nullptr);
+        ImGui::Button("Load Collaboration Config");
+        ImGui::End();
+
+        // === Community Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Community Editor", nullptr);
+        ImGui::Button("Load Community Config");
+        ImGui::End();
+
+        /// === Project Insights Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Project Insights Editor", nullptr);
+        ImGui::Button("Load Project Insights Config");
+        ImGui::End();
+
+        // === Input Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Input Editor", nullptr);
+        ImGui::Button("Load Input Config");
+        ImGui::End();
+
+        // === Localization Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Localization Editor", nullptr);
+        ImGui::Button("Load Localization Config");
+        ImGui::End();
+
+        // === Settings Editor ===
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::Begin("Settings Editor", nullptr);
+        ImGui::Button("Save Settings");
+        ImGui::End();
+
+        // === Temporary, for referencing the components' names in imgui code files ===
         ImGui::ShowDemoWindow();
     }
 } // namespace hdImgui
