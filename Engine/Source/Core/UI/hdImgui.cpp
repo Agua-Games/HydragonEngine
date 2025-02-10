@@ -21,7 +21,8 @@
 #include "NodeGraphEditor.h"
 #include "ScriptEditor.h"
 #include "ScriptsPalette.h"
-#include "CommandsConsole.h"
+#include "CommandsPalette.h"
+#include "ConsoleEditor.h"
 #include "AgentsEditor.h"
 #include "Viewport3D.h"
 #include "Viewport2D.h"
@@ -53,6 +54,7 @@
 #include "LocalizationEditor.h"
 #include "SettingsEditor.h"
 #include "MeshEditor.h"
+#include "MonetizationEditor.h"
 #include "VolumeEditor.h"
 #endif
 
@@ -312,9 +314,147 @@ namespace hdImgui {
         // Create the main DockSpace
         ImGui::DockSpaceOverViewport(ImGui::GetID("MainDockSpace"));
 
-        // === Top Menu bar ===
-        ImGui::BeginMenuBar();
-        //ImGui::EndMenuBar();
+        // === Top Menu bar ===  
+        if (ImGui::BeginMainMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("New")) {}
+                if (ImGui::MenuItem("Open Project", "Ctrl+O")) {}
+                if (ImGui::BeginMenu("Open Recent Project"))
+                {
+                    ImGui::MenuItem("StGeorgeKnights.hdproj");
+                    ImGui::MenuItem("Kendo.hdproj");
+                    ImGui::MenuItem("SoulOfSaka.hdproj");
+                    if (ImGui::BeginMenu("More.."))
+                    {
+                        ImGui::MenuItem("ActionAdventureTemplate.hdproj");
+                        ImGui::MenuItem("FightGameTemplate.hdproj"); 
+                        ImGui::EndMenu();
+                    }
+                    ImGui::EndMenu();
+                }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Close Project", "Ctrl+W")) {}
+                if (ImGui::MenuItem("Save Project", "Ctrl+S")) {}
+                if (ImGui::MenuItem("Save Project As..")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Open SceneGraph", "Ctrl+Shift+O")) {}
+                if (ImGui::MenuItem("Open Recent SceneGraph", "Ctrl+Shift+O")) {}
+                if (ImGui::MenuItem("Close SceneGraph", "Ctrl+Shift+O")) {}
+                if (ImGui::MenuItem("Save SceneGraph As..", "Ctrl+Shift+O")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Open NodeGraph", "Ctrl+M")) {}
+                if (ImGui::MenuItem("Open Recent NodeGraph", "Ctrl+M")) {}
+                if (ImGui::MenuItem("Close NodeGraph", "Ctrl+M")) {}
+                if (ImGui::MenuItem("Save NodeGraph As..", "Ctrl+M")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Open Asset Manager", "Ctrl+A")) {}
+                if (ImGui::MenuItem("Import Asset", "Ctrl+I")) {}
+                if (ImGui::MenuItem("Export Asset", "Ctrl+E")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Open Script", "Ctrl+Shift+O")) {}
+                if (ImGui::MenuItem("Run Script")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Exit", "Alt+F4")) {}
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Edit"))
+            {
+                if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+                if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+                ImGui::Separator();
+                if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+                if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+                if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+                static bool enabled = true;
+                ImGui::MenuItem("Enabled", "", &enabled);
+                ImGui::BeginChild("child", ImVec2(0, 60), ImGuiChildFlags_Borders);
+                for (int i = 0; i < 10; i++)
+                    ImGui::Text("Scrolling Text %d", i);
+                ImGui::EndChild();
+                static float f = 0.5f;
+                static int n = 0;
+                ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
+                ImGui::InputFloat("Input", &f, 0.1f);
+                ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("View"))
+            {
+                if (ImGui::MenuItem("Grid", "Ctrl+M")) {}
+                if (ImGui::MenuItem("Contextual Info Overlay", "Ctrl+O")) {}
+                ImGui::Separator();
+                if (ImGui::BeginMenu("Hide")) 
+                {   if (ImGui::MenuItem("Hide Selected")){}
+                        if (ImGui::MenuItem("Hide Unselected")){}
+                        if (ImGui::MenuItem("All")){}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Hide Icons")){}
+                        if (ImGui::MenuItem("Hide Gizmos")){}
+                        if (ImGui::MenuItem("Hide Deformers")){}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Hide Meshes")){}
+                        if (ImGui::MenuItem("Hide Joints")){}
+                        if (ImGui::MenuItem("Hide Lights")){}
+                        if (ImGui::MenuItem("Hide Cameras")){}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Hide VDB Volumes")){}
+                        //if (ImGui::MenuItem("Hide Alembic Volumes")){}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Hide Points")){}
+                        if (ImGui::MenuItem("Hide Particles")){}
+                        if (ImGui::MenuItem("Hide Fields")){}
+                        if (ImGui::MenuItem("Hide Simulation Boundaries")){}
+                        if (ImGui::MenuItem("Hide Springs")){}
+                        if (ImGui::MenuItem("Hide Rigid Bodies")){}
+                        if (ImGui::MenuItem("Hide Dynamic Joints")){}
+                        if (ImGui::MenuItem("Hide Dynamic Constraints")){}
+                        if (ImGui::MenuItem("Hide Clothes")){}
+                        if (ImGui::MenuItem("Hide Fluids")){}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("Show")) 
+                {   if (ImGui::MenuItem("Show Selected")){}
+                        if (ImGui::MenuItem("Show Unselected")){}
+                        if (ImGui::MenuItem("All")){}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Show Icons")){}
+                        if (ImGui::MenuItem("Show Gizmos")){}
+                        if (ImGui::MenuItem("Show Deformers")){}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Show Meshes")){}
+                        if (ImGui::MenuItem("Show Joints")){}
+                        if (ImGui::MenuItem("Show Lights")){}
+                        if (ImGui::MenuItem("Show Cameras")){}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Show VDB Volumes")){}
+                        //if (ImGui::MenuItem("Show Alembic Volumes")){}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Show Points")){}
+                        if (ImGui::MenuItem("Show Particles")){}
+                        if (ImGui::MenuItem("Show Fields")){}
+                        if (ImGui::MenuItem("Show Simulation Boundaries")){}
+                        if (ImGui::MenuItem("Show Springs")){}
+                        if (ImGui::MenuItem("Show Rigid Bodies")){}
+                        if (ImGui::MenuItem("Show Dynamic Joints")){}
+                        if (ImGui::MenuItem("Show Dynamic Constraints")){}
+                        if (ImGui::MenuItem("Show Clothes")){}
+                        if (ImGui::MenuItem("Show Fluids")){}
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Window"))
+            {
+                if (ImGui::MenuItem("NodeGraph", "Ctrl+M")) {}
+                if (ImGui::MenuItem("SceneGraph", "Ctrl+O")) {}
+                if (ImGui::MenuItem("Asset Manager", "Ctrl+A")) {}
+                if (ImGui::MenuItem("Script Editor", "Ctrl+Shift+O")) {}
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
+        }
 
         // === Top Toolbar ===
         ImGui::Begin("Top Toolbar", nullptr);
@@ -423,9 +563,16 @@ namespace hdImgui {
         ImGui::Button("My Macro Script 2"); 
         ImGui::End();
 
-        // === Commands Console ===
+        // === Commands Palette ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
-        ImGui::Begin("Commands Console", nullptr);
+        ImGui::Begin("Commands Palette", nullptr);
+        ImGui::Button("Run Command");
+        ImGui::End();
+
+        // === Console Editor ===
+        ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
+        ImGui::Begin("Console", nullptr);
+        ImGui::Button("Clear Console");
         ImGui::Button("Run Command");
         ImGui::End();
 
@@ -451,53 +598,281 @@ namespace hdImgui {
         ImGui::End();
 
         // === Viewport 3D ===
-        ImGui::Begin("Viewport 3D");
-        ImGui::Button("Shading Mode");
-        ImGui::Button("Buffer Visualization");
-        ImGui::Button("Render Mode");
+        ImGui::Begin("Viewport 3D", nullptr);
+        ImGui::End();
 
-        ImGui::Button("Perspective On");
-        ImGui::Button("Camera Mode");
-        ImGui::Button("Camera Orbit");
-        ImGui::Button("Camera Pan");
-        ImGui::Button("Camera Zoom");
-        ImGui::Button("Camera Track");
-        ImGui::Button("Camera Walk");
-        ImGui::Button("Camera Fly");
-        ImGui::Button("Camera Free");
-        ImGui::Button("Camera Target");
-        ImGui::Button("Camera Follow");
+        // === Viewport 3D Tools ===
+        ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
+        ImGui::Begin("Viewport 3D Tools", nullptr, ImGuiWindowFlags_MenuBar);
 
-        ImGui::Button("Transform Mode");
-        ImGui::Button("Transform Translate");
-        ImGui::Button("Transform Rotate");
-        ImGui::Button("Transform Scale");
-
-        ImGui::Button("Toggle Grid");
-        ImGui::Button("Grid Settings");
-        ImGui::Button("Toggle Helpers");
-        ImGui::Button("Toggle Axes");
-        ImGui::Button("Toggle Bounding Boxes");
-        ImGui::Button("Toggle Normals");
-        ImGui::Button("Toggle Wireframe");
-        ImGui::Button("Toggle Outline");
-        ImGui::Button("Toggle Wireframe Colors");
-
-        ImGui::Button("Visible Only");
-        ImGui::Button("Visible Selected");
-        ImGui::Button("Visible All");
-        ImGui::Button("Visible Layers");
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("New")) {}
+                if (ImGui::MenuItem("Import SceneGraph", "Ctrl+O")) {}
+                if (ImGui::MenuItem("Open SceneGraph", "Ctrl+A")) {}
+                if (ImGui::BeginMenu("Open Recent SceneGraph"))
+                {
+                    ImGui::MenuItem("Museum.usd");
+                    ImGui::MenuItem("Restaurant.husd");
+                    ImGui::MenuItem("WarHorse.usd");
+                    if (ImGui::BeginMenu("More.."))
+                    {
+                        ImGui::MenuItem("Submarine.usd");
+                        ImGui::MenuItem("ArcticStation.usd"); 
+                        ImGui::EndMenu();
+                    }
+                    ImGui::EndMenu();
+                }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Close SceneGraph", "Ctrl+W")) {}
+                if (ImGui::MenuItem("Save SceneGraph", "Ctrl+S")) {}
+                if (ImGui::MenuItem("Save SceneGraph As..")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Add SceneGraph As Layer", "Ctrl+Shift+A")) {}
+                if (ImGui::MenuItem("Remove Layer", "Ctrl+R")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Open in NodeGraph", "Ctrl+M")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Exit", "Alt+F4")) {}
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Edit"))
+            {
+                if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+                if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+                ImGui::Separator();
+                if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+                if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+                if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
+        if (ImGui::CollapsingHeader("SceneGraph")) {
+            if (ImGui::CollapsingHeader("Main"))
+            {
+                ImGui::Button("Import SceneGraph");
+            }
+            if (ImGui::CollapsingHeader("Layers"))
+            {
+                ImGui::Button("Add Layer");
+                ImGui::Button("Remove Layer");
+            }
+            if (ImGui::CollapsingHeader("Nodes")) 
+            {
+                ImGui::Button("Add Node");
+                ImGui::Button("Remove Node");
+                ImGui::Button("Replace Node");
+                ImGui::Button("Duplicate Node");
+                ImGui::Button("Rename Node");
+                ImGui::Button("Edit Node");
+                ImGui::Button("Create Node");
+            }
+            if (ImGui::CollapsingHeader("Instances")) {
+                ImGui::Button("Add Instance");
+                ImGui::Button("Remove Instance");
+                ImGui::Button("Duplicate Instance");
+                ImGui::Button("Override Instance Inherits");
+                ImGui::Button("Rename Instance");
+                ImGui::Button("Edit Instance");
+                ImGui::Button("Create Instance");
+            }
+            if (ImGui::CollapsingHeader("Compositions")) {
+                ImGui::Button("Create Composition");
+                ImGui::Button("Duplicate Composition");
+                ImGui::Button("Remove Composition");
+                ImGui::Button("Rename Composition");
+                ImGui::Button("Edit Composition");
+            }
+            if (ImGui::CollapsingHeader("Variants")) {
+                ImGui::Button("Create Variants");
+                ImGui::Button("Duplicate Variant");
+            }
+        }
+        if (ImGui::CollapsingHeader("Camera")) {
+            ImGui::Button("Perspective On");
+            ImGui::Button("Camera Mode");
+            ImGui::Button("Camera Orbit");
+            ImGui::Button("Camera Pan");
+            ImGui::Button("Camera Zoom");
+            ImGui::Button("Camera Track");
+            ImGui::Button("Camera Walk");
+            ImGui::Button("Camera Fly");
+            ImGui::Button("Camera Free");
+            ImGui::Button("Camera Target");
+            ImGui::Button("Camera Follow");
+        }
+        if (ImGui::CollapsingHeader("Transform")) {
+            ImGui::Button("Transform Mode");
+            ImGui::Button("Transform Translate");
+            ImGui::Button("Transform Rotate");
+            ImGui::Button("Transform Scale");
+        }
+        if (ImGui::CollapsingHeader("Grid")) {
+            bool showViewport2DGrid = true;
+            ImGui::Checkbox("Show Grid", &showViewport2DGrid);
+            bool snapToViewport2DGrid = true;
+            ImGui::Checkbox("Snap to Grid", &snapToViewport2DGrid);
+        }
+        if (ImGui::CollapsingHeader("Axes")) {
+            bool showViewport2DAxes = true;
+            ImGui::Checkbox("Show Axes", &showViewport2DAxes);
+        }
+        if (ImGui::CollapsingHeader("Helpers")) {
+            ImGui::Button("Show Helpers");
+        }
+        if (ImGui::CollapsingHeader("Gizmos")) {
+            ImGui::Button("Show Gizmos");
+            ImGui::Button("Gizmo Mode");
+            ImGui::Button("Gizmo Tools");
+        }
+        if (ImGui::CollapsingHeader("Selection")) {
+            ImGui::Button("Selection Mode");
+            ImGui::Button("Selection Tools");
+        }
+        if (ImGui::CollapsingHeader("Shading")) {
+            ImGui::Button("Shading Mode");
+            ImGui::Button("Shading Settings");
+            int viewport3DAntiAliasing = 2;
+            ImGui::SliderInt("AntiAliasing", &viewport3DAntiAliasing, 0, 2);
+        }
+        if (ImGui::CollapsingHeader("Lighting")) {
+            ImGui::Button("Lighting Mode");
+            ImGui::Button("Lighting Settings");
+        }
+        if (ImGui::CollapsingHeader("Fog")) {
+            ImGui::Button("Fog Mode");
+            ImGui::Button("Fog Settings");
+        }
+        if (ImGui::CollapsingHeader("Environment")) {
+            ImGui::Button("Environment Mode");
+            ImGui::Button("Environment Settings");
+        }
+        if (ImGui::CollapsingHeader("Skybox")) {
+            ImGui::Button("Skybox Mode");
+            ImGui::Button("Skybox Settings");
+        }
+        if (ImGui::CollapsingHeader("Rendering")) {
+            ImGui::Button("Rendering Mode");
+            ImGui::Button("Buffer Mode");
+            ImGui::Button("Rendering Settings");
+        }
+        if (ImGui::CollapsingHeader("Post-Processing")) {
+            ImGui::Button("Post-Processing Mode");
+            ImGui::Button("Post-Processing Settings");
+        }
+        if (ImGui::CollapsingHeader("Effects")) {
+            ImGui::Button("Effects Mode");
+            ImGui::Button("Effects Settings");
+        }
+        if (ImGui::CollapsingHeader("Audio")) {
+            ImGui::Button("Audio Mode");
+            ImGui::Button("Audio Settings");
+        }
+        if (ImGui::CollapsingHeader("Physics")) {
+            ImGui::Button("Physics Mode");
+            ImGui::Button("Physics Settings");
+        }
+        if (ImGui::CollapsingHeader("Brush")) {
+            ImGui::Button("Load Brush");
+            ImGui::Button("Save Brush");
+            float brushSizeMin = 0.0f, brushSizeMax = 100.0f, brushSize = 1.0f;
+            ImGui::SliderFloat("Brush Size", &brushSize, brushSizeMin, brushSizeMax, nullptr, ImGuiSliderFlags_AlwaysClamp);
+            float brushOpacityMin = 0.0f, brushOpacityMax = 1.0f, brushOpacity = 1.0f;
+            ImGui::SliderFloat("Brush Opacity", &brushSize, brushSizeMin, brushSizeMax, nullptr, ImGuiSliderFlags_AlwaysClamp);
+            float brushHardnessMin = 0.0f, brushHardnessMax = 1.0f, brushHardness = 1.0f;
+            ImGui::SliderFloat("Brush Hardness", &brushHardness, brushHardnessMin, brushHardnessMax, nullptr, ImGuiSliderFlags_AlwaysClamp);
+            ImGui::Button("Load Brush Alpha");
+            float brushColor[3] = { 0.0f, 0.0f, 0.0f };
+            ImGui::ColorEdit3("Brush Color", (float*)&brushColor, ImGuiColorEditFlags_Float);
+            ImGui::Button("Brush Mode");
+            ImGui::Button("Brush Tools");
+        }
+        if (ImGui::CollapsingHeader("UVs")) {
+            bool showViewport2DUVs = true;
+            ImGui::Checkbox("Show UVs", &showViewport2DUVs);
+            ImGui::Button("UV Visibility Mode");
+            ImGui::Button("UV Tools");
+            ImGui::Button("UV Unwrap");
+            ImGui::Button("Reproject Texture Keeping UVs");
+            ImGui::Button("Add UV Set");
+            ImGui::Button("Remove UV Set");
+            ImGui::Button("Rename UV Set");
+        }
+        if (ImGui::CollapsingHeader("Navigation")) {
+            ImGui::Button("Navigation Mode");
+            ImGui::Button("Navigation Tools");
+        }
+        if (ImGui::CollapsingHeader("Timeline")) {
+            ImGui::Button("Timeline Mode");
+            ImGui::Button("Timeline Tools");
+        }
+        if (ImGui::CollapsingHeader("Animation")) {
+            ImGui::Button("Animation Mode");
+            ImGui::Button("Animation Tools");
+        }
+        if (ImGui::CollapsingHeader("Visibility")) {
+            ImGui::Button("Visible Only");
+            ImGui::Button("Visible Selected");
+            ImGui::Button("Visible All");
+            ImGui::Button("Visible Layers");
+        }
         ImGui::End();
 
         // === Viewport 2D ===
-        ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
+        ImGui::SetNextWindowBgAlpha(1.0f);
         ImGui::Begin("Viewport 2D", nullptr);
-        ImGui::Button("Brush Size");
-        ImGui::Button("Brush Opacity");
-        ImGui::Button("Brush Color");
-        ImGui::Button("Brush Texture");
-        ImGui::Button("Brush Mode");
-        ImGui::Button("Brush Tool");
+        ImGui::End();
+
+        // === Viewport 2D Tools ===
+        // Most of the settings below should actually be in a separate floating, dockable tab, like "Viewport 2D Settings". Preferrably with a
+        // semi-transparent background, to be automatically called as an overlay when the user is in the Viewport 2D tab. With each category
+        // under separate headers (like "Brush Settings", "Grid Settings", etc). Or maybe even each category under separate semi-transparent tabs,
+        // to be used as overlays, collapsed by default.
+        ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
+        ImGui::Begin("Viewport 2D Tools", nullptr);
+
+        if (ImGui::CollapsingHeader("Brush")) {
+            ImGui::Button("Load Brush");
+            ImGui::Button("Save Brush");
+            float brushSizeMin = 0.0f, brushSizeMax = 100.0f, brushSize = 1.0f;
+            ImGui::SliderFloat("Brush Size", &brushSize, brushSizeMin, brushSizeMax, nullptr, ImGuiSliderFlags_AlwaysClamp);
+            float brushOpacityMin = 0.0f, brushOpacityMax = 1.0f, brushOpacity = 1.0f;
+            ImGui::SliderFloat("Brush Opacity", &brushSize, brushSizeMin, brushSizeMax, nullptr, ImGuiSliderFlags_AlwaysClamp);
+            float brushHardnessMin = 0.0f, brushHardnessMax = 1.0f, brushHardness = 1.0f;
+            ImGui::SliderFloat("Brush Hardness", &brushHardness, brushHardnessMin, brushHardnessMax, nullptr, ImGuiSliderFlags_AlwaysClamp);
+            ImGui::Button("Load Brush Alpha");
+            float brushColor[3] = { 0.0f, 0.0f, 0.0f };
+            ImGui::ColorEdit3("Brush Color", (float*)&brushColor, ImGuiColorEditFlags_Float);
+            ImGui::Button("Brush Mode");
+            ImGui::Button("Brush Tools");
+        }
+        if (ImGui::CollapsingHeader("UVs")) {
+            bool showViewport2DUVs = true;
+            ImGui::Checkbox("Show UVs", &showViewport2DUVs);
+            ImGui::Button("UV Visibility Mode");
+            ImGui::Button("UV Tools");
+            ImGui::Button("UV Unwrap");
+            ImGui::Button("Reproject Texture Keeping UVs");
+            ImGui::Button("Add UV Set");
+            ImGui::Button("Remove UV Set");
+            ImGui::Button("Rename UV Set");
+        }
+        if (ImGui::CollapsingHeader("Grid")) {
+            bool showViewport2DGrid = true;
+            ImGui::Checkbox("Show Grid", &showViewport2DGrid);
+            bool snapToViewport2DGrid = true;
+            ImGui::Checkbox("Snap to Grid", &snapToViewport2DGrid);
+        }
+        if (ImGui::CollapsingHeader("Axes")) {
+            bool showViewport2DAxes = true;
+            ImGui::Checkbox("Show Axes", &showViewport2DAxes);
+        }
+        if (ImGui::CollapsingHeader("Helpers")) {
+            ImGui::Button("Show Helpers");
+        }
         ImGui::End();
 
         // === Properties Editor ===
@@ -583,29 +958,76 @@ namespace hdImgui {
         // Used to display and edit textures, texture settings, edit UVs, packed textures, apply adjustments,
         // configure procedurals, use AI-assisted texture generation etc.
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
-        ImGui::Begin("Image", nullptr);
-        ImGui::Button("Import Image");
-        ImGui::Button("New Image");
-        ImGui::Button("Save Image");
-        ImGui::Button("Load Image");
-        ImGui::Button("Export Image");
-        ImGui::Button("Share Image");
-        ImGui::Button("Add Image as Layer");
-        ImGui::Button("Add Layer");
-        ImGui::Button("Duplicate Layer");
-        ImGui::Button("Rename Layer");
-        ImGui::Button("Delete Layer");
-        ImGui::Button("Layer Settings");
-        ImGui::Button("Add Image as Channel");
-        ImGui::Button("Add Channel");
-        ImGui::Button("Duplicate Channel");
-        ImGui::Button("Rename Channel");
-        ImGui::Button("Pack Layers as Packed Texture");
-        ImGui::Button("Pack Layers as Texture Set Node");
-        ImGui::Button("Remove Layer");
-        ImGui::Button("Convert Layers to Atlas");
-        ImGui::Button("Add Image to Atlas");
-        ImGui::Button("Remove Image from Atlas");
+        ImGui::Begin("Image Tools", nullptr);
+        if (ImGui::CollapsingHeader("Image")) {
+            ImGui::Button("Import Image");
+            ImGui::Button("New Image");
+            ImGui::Button("Save Image");
+            ImGui::Button("Load Image");
+            ImGui::Button("Export Image");
+            ImGui::Button("Share Image");
+        }
+        if (ImGui::CollapsingHeader("Layers")) {
+            ImGui::Button("Add Image as Layer");
+            ImGui::Button("Add Layer");
+            ImGui::Button("Duplicate Layer");
+            ImGui::Button("Rename Layer");
+            ImGui::Button("Delete Layer");
+            ImGui::Button("Layer Settings");
+        }
+        if (ImGui::CollapsingHeader("Channels")) {
+            ImGui::Button("Add Image as Channel");
+            ImGui::Button("Add Channel");
+            ImGui::Button("Duplicate Channel");
+            ImGui::Button("Rename Channel");
+        }
+        if (ImGui::CollapsingHeader("Procedurals")) {
+            ImGui::Button("Generate Procedural");
+            ImGui::Button("Add Image as Procedural");
+            ImGui::Button("Add Procedural");
+            ImGui::Button("Duplicate Procedural");
+            ImGui::Button("Rename Procedural");
+            ImGui::Button("Delete Procedural");
+            ImGui::Button("Procedural Settings");
+        }
+        if (ImGui::CollapsingHeader("Packed Texture")) {
+            ImGui::Button("Pack Layers as Packed Texture");
+            ImGui::Button("Pack Layers as Texture Set Node");
+        }
+        if (ImGui::CollapsingHeader("Adjustments")) {
+            ImGui::Button("Add Adjustment");
+            ImGui::Button("Duplicate Adjustment");
+            ImGui::Button("Rename Adjustment");
+            ImGui::Button("Delete Adjustment");
+        }
+        if (ImGui::CollapsingHeader("Image Generation")) {
+            ImGui::Button("Generate Image");
+            ImGui::Button("Upscale Image");
+            ImGui::Button("Send to Texture Set Node");
+            ImGui::Button("Upscale to Packed Texture");
+            ImGui::Button("Send to Layer");
+            ImGui::Button("Send to Channel");
+            ImGui::Button("Send to Procedural");
+            ImGui::Button("Synthesis Texture Set Node");
+            ImGui::Button("Synthesis Packed Texture");
+        }
+        if (ImGui::CollapsingHeader("Texture Settings")) {
+            ImGui::Button("Maximum Size");
+            ImGui::Button("Mipmaps");
+            ImGui::Button("Generate Mipmaps");
+            ImGui::Button("Filtering");
+            ImGui::Button("Anisotropic Filtering");
+        }
+        if (ImGui::CollapsingHeader("Texture Compression")) {
+            ImGui::Button("Lossless Compression");
+            ImGui::Button("Lossy Compression");
+        }
+        if (ImGui::CollapsingHeader("Image Sequence & Atlas")) {
+            ImGui::Button("Import Image Sequence");
+            ImGui::Button("Convert Layers to Atlas");
+            ImGui::Button("Add Image to Atlas");
+            ImGui::Button("Remove Image from Atlas");
+        }
         ImGui::End();
 
         // === Audio Editor ===
