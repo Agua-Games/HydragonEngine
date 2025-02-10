@@ -380,9 +380,264 @@ namespace hdImgui {
                 ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Create"))
+            {
+                if (ImGui::BeginMenu("SceneGraph")) 
+                {
+                    if (ImGui::MenuItem("Procedural SceneGraph")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("L-Tree SceneGraph")){}
+                    if (ImGui::MenuItem("Fractal SceneGraph")){}
+                    if (ImGui::MenuItem("Debris SceneGraph")){}     // a quickstart rig with some physics simulation, baking etc.
+                    if (ImGui::MenuItem("Raycast Rules SceneGraph")){}
+                    if (ImGui::MenuItem("Terrain Rules SceneGraph")){}
+                    if (ImGui::MenuItem("Spline Path SceneGraph")){}
+                    if (ImGui::MenuItem("Proc Building SceneGraph")){}
+                    if (ImGui::MenuItem("Proc Settlement SceneGraph")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Basic SceneGraph")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Open SceneGraph Library")) {}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("NodeGraph")) 
+                {
+                    if (ImGui::MenuItem("Procedural NodeGraph")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("L-Tree NodeGraph")){}
+                    if (ImGui::MenuItem("Fractal NodeGraph")){}
+                    if (ImGui::MenuItem("Debris NodeGraph")){}     // a quickstart rig with some physics simulation, baking etc.
+                    if (ImGui::MenuItem("Raycast Rules NodeGraph")){}
+                    if (ImGui::MenuItem("Terrain Rules NodeGraph")){}
+                    if (ImGui::MenuItem("Spline Path NodeGraph")){}
+                    if (ImGui::MenuItem("Proc Building NodeGraph")){}
+                    if (ImGui::MenuItem("Proc Settlement NodeGraph")){}
+                    if (ImGui::MenuItem("Physics Destruction NodeGraph")){}
+                    if (ImGui::MenuItem("Physics FX Field NodeGraph")){}
+                    if (ImGui::MenuItem("Physicalised Anim NodeGraph")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Basic NodeGraph")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Open NodeGraph Library")) {}
+                    ImGui::EndMenu();
+                }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Transform/Space Locator")){}
+                ImGui::Separator();
+                if (ImGui::BeginMenu("Curve Primitive")) 
+                {
+                    if (ImGui::MenuItem("Procedural Spline")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Spline L-Tree")){}
+                    if (ImGui::MenuItem("Spline Crawling")){}
+                    if (ImGui::MenuItem("Spline Fractal")){}
+                    if (ImGui::MenuItem("Spline Extrusion")){}
+                    if (ImGui::MenuItem("Spline")){}
+                    if (ImGui::MenuItem("Spline Rig")){}    // includes path constraints, optional physics etc. From roads to hanging cables, fences.
+                    if (ImGui::MenuItem("Spline Path")){}
+                    if (ImGui::MenuItem("Spline Cable")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Linear Spline")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Open Proc Spline Library")) {}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("Mesh Primitive")) 
+                {
+                    if (ImGui::MenuItem("Procedural Mesh")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Box")){}
+                    if (ImGui::MenuItem("Sphere")){}
+                    if (ImGui::MenuItem("Capsule")){}
+                    if (ImGui::MenuItem("Cylinder")){}
+                    if (ImGui::MenuItem("Cone")){}
+                    if (ImGui::MenuItem("Plane")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Platonic Solid")){}
+                    if (ImGui::MenuItem("Manifold Place")){}
+                    if (ImGui::MenuItem("Manifold Solid")){}
+                    if (ImGui::MenuItem("Pyramid")){}
+                    if (ImGui::MenuItem("Prism")){}
+                    if (ImGui::MenuItem("Pipe")){}
+                    if (ImGui::MenuItem("Helix")){}
+                    if (ImGui::MenuItem("Gear")){}
+                    if (ImGui::MenuItem("Gear")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Open Proc Mesh Library")) {}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("Volume Primitive")) 
+                {
+                    if (ImGui::MenuItem("Procedural Volume")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Voxels Array Structure")){}
+                    if (ImGui::MenuItem("Voxels Rock")){}
+                    if (ImGui::MenuItem("Voxels Cliff")){}
+                    if (ImGui::MenuItem("Voxels Debris")){}
+                    if (ImGui::MenuItem("Voxels Cave")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Box")){}
+                    if (ImGui::MenuItem("Sphere")){}
+                    if (ImGui::MenuItem("Capsule")){}
+                    if (ImGui::MenuItem("Cylinder")){}
+                    if (ImGui::MenuItem("Cone")){}
+                    if (ImGui::MenuItem("Plane")){}     // for 2D fluid sim, sliced sim, for example.
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Open Proc Volume Library")) {}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("Light Primitive")) 
+                {
+                    if (ImGui::MenuItem("Procedural Light")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Ambient")){}
+                    if (ImGui::MenuItem("Directional")){}
+                    if (ImGui::MenuItem("Point")){}
+                    if (ImGui::MenuItem("Spot")){}
+                    if (ImGui::MenuItem("Area")){}
+                    if (ImGui::MenuItem("Volume")){}     // for 2D fluid sim, sliced sim, for example.
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Open Proc Light Library")) {}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("Camera Primitive")) 
+                {
+                    if (ImGui::MenuItem("Procedural Camera")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Camera & Cam Rig")){}
+                    if (ImGui::MenuItem("Camera & Light Rig")){}
+                    if (ImGui::MenuItem("Camera Film Set")){}
+                    if (ImGui::MenuItem("Physics Action Camera")){}
+                    if (ImGui::MenuItem("Physics Vehicle Camera")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Orthographic")){}
+                    if (ImGui::MenuItem("Perspective")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Open Proc Camera Library")) {}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("Texture Primitive")) 
+                {
+                    if (ImGui::MenuItem("Procedural Texture")) {}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Nature Ground Texture")) {}
+                    if (ImGui::MenuItem("Snow Texture")) {}
+                    if (ImGui::MenuItem("Ice Texture")) {}
+                    if (ImGui::MenuItem("Rock Texture")) {}
+                    if (ImGui::MenuItem("Cliff Texture")) {}
+                    if (ImGui::MenuItem("Bark Texture")) {}
+                    if (ImGui::MenuItem("Branch Texture")) {}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Architectural Ground Texture")) {}
+                    if (ImGui::MenuItem("Architectural Wall Texture")) {}
+                    if (ImGui::MenuItem("Architectural Roof Texture")) {}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Aged Metal Texture")) {}
+                    if (ImGui::MenuItem("Aged Armor Texture")) {}
+                    if (ImGui::MenuItem("Aged Fabric Texture")) {}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Skin Texture")) {}
+                    if (ImGui::MenuItem("Hair Texture")) {}
+                    if (ImGui::MenuItem("Fur Texture")) {}
+                    if (ImGui::MenuItem("Eye Texture")) {}
+                    if (ImGui::MenuItem("Scales Skin Texture")) {}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Render Target/Texture")) {}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Open Proc Texture Library")) {}
+                    ImGui::EndMenu();
+                }
+                ImGui::Separator();
+                if (ImGui::BeginMenu("Utilities")) 
+                {
+                    if (ImGui::MenuItem("Measure Distance")){}
+                    if (ImGui::MenuItem("Arc Length")){}
+                    if (ImGui::MenuItem("SceneGraph Note")){}
+                    if (ImGui::MenuItem("Construction Plane")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Open Proc Utility Library")) {}
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Select"))
+            {
+                if (ImGui::MenuItem("All")) {}
+                if (ImGui::BeginMenu("All By Type")) 
+                {   
+                    if (ImGui::MenuItem("Icons")){}
+                    if (ImGui::MenuItem("Gizmos")){}
+                    if (ImGui::MenuItem("Deformers")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Meshes")){}
+                    if (ImGui::MenuItem("Joints")){}
+                    if (ImGui::MenuItem("Lights")){}
+                    if (ImGui::MenuItem("Cameras")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("VDB Volumes")){}
+                    //if (ImGui::MenuItem("Alembic Volumes")){}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Points")){}
+                    if (ImGui::MenuItem("Particles")){}
+                    if (ImGui::MenuItem("Fields")){}
+                    if (ImGui::MenuItem("Simulation Boundaries")){}
+                    if (ImGui::MenuItem("Springs")){}
+                    if (ImGui::MenuItem("Rigid Bodies")){}
+                    if (ImGui::MenuItem("Dynamic Joints")){}
+                    if (ImGui::MenuItem("Dynamic Constraints")){}
+                    if (ImGui::MenuItem("Clothes")){}
+                    if (ImGui::MenuItem("Fluids")){}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::MenuItem("Deselect All", "Ctrl+D")) {}
+                if (ImGui::MenuItem("Hierarchy", "Ctrl+H")) {}
+                if (ImGui::MenuItem("Inverse", "Ctrl+I")) {}
+                if (ImGui::MenuItem("Similar", "Ctrl+S")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Grow", ">")) {}
+                if (ImGui::MenuItem("Shrink", "<")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Object/Component", "Ctrl+O")) {}
+                if (ImGui::BeginMenu("Polygon Components")) 
+                {
+                    if (ImGui::MenuItem("Vertex")){}
+                    if (ImGui::MenuItem("Edge")){}
+                    if (ImGui::MenuItem("Face")){}
+                    if (ImGui::MenuItem("UV")){}
+                    if (ImGui::MenuItem("UV Shell")){}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("Volume Components")) 
+                {
+                    if (ImGui::MenuItem("Voxel")){}
+                    if (ImGui::MenuItem("Boundaries")){}
+                    ImGui::EndMenu();
+                }
+                if (ImGui::BeginMenu("Physics Components")) 
+                {
+                    if (ImGui::MenuItem("Particle/Point")){}
+                    if (ImGui::MenuItem("Emitter")){}
+                    if (ImGui::MenuItem("Spring")){}
+                    if (ImGui::MenuItem("Rigid Body")){}
+                    if (ImGui::MenuItem("Dynamic Joint")){}
+                    if (ImGui::MenuItem("Dynamic Constraint")){}
+                    if (ImGui::MenuItem("Cloth Mesh")){}
+                    if (ImGui::MenuItem("Fluid")){}
+                    if (ImGui::MenuItem("Destructible Collection")){}
+                    if (ImGui::MenuItem("Destructible Chunk")){}
+                    if (ImGui::MenuItem("Collider")){}
+                    if (ImGui::MenuItem("Field")){}
+                    if (ImGui::MenuItem("Simulation Boundary")){}
+                    if (ImGui::MenuItem("System")){}
+                    if (ImGui::MenuItem("Solver & Assigned")){}
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMenu();
+            }
             if (ImGui::BeginMenu("View"))
             {
-                if (ImGui::MenuItem("Grid", "Ctrl+M")) {}
+                static bool s_showGrid = true;
+                if (ImGui::Checkbox("Grid", &s_showGrid)) {}
                 if (ImGui::MenuItem("Contextual Info Overlay", "Ctrl+O")) {}
                 ImGui::Separator();
                 if (ImGui::BeginMenu("Hide")) 
@@ -407,6 +662,7 @@ namespace hdImgui {
                         if (ImGui::MenuItem("Hide Fields")){}
                         if (ImGui::MenuItem("Hide Simulation Boundaries")){}
                         if (ImGui::MenuItem("Hide Springs")){}
+                        if (ImGui::MenuItem("Hide Colliders")){}
                         if (ImGui::MenuItem("Hide Rigid Bodies")){}
                         if (ImGui::MenuItem("Hide Dynamic Joints")){}
                         if (ImGui::MenuItem("Hide Dynamic Constraints")){}
@@ -436,6 +692,7 @@ namespace hdImgui {
                         if (ImGui::MenuItem("Show Fields")){}
                         if (ImGui::MenuItem("Show Simulation Boundaries")){}
                         if (ImGui::MenuItem("Show Springs")){}
+                        if (ImGui::MenuItem("Show Colliders")){}
                         if (ImGui::MenuItem("Show Rigid Bodies")){}
                         if (ImGui::MenuItem("Show Dynamic Joints")){}
                         if (ImGui::MenuItem("Show Dynamic Constraints")){}
@@ -445,12 +702,86 @@ namespace hdImgui {
                 }
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Generate"))
+            {
+                if (ImGui::MenuItem("Call Agent", "Ctrl+Shift+N")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("NodeGraph", "Ctrl+Shift+N")) {}
+                if (ImGui::MenuItem("SceneGraph", "Ctrl+Shift+N")) {}
+                if (ImGui::MenuItem("Script", "Ctrl+Shift+S")) {}
+                if (ImGui::MenuItem("Procedural", "Ctrl+P")) {}
+                if (ImGui::MenuItem("Macro", "Ctrl+Shift+M")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Image", "Ctrl+Shift+I")) {}        
+                if (ImGui::MenuItem("Mesh", "Ctrl+Shift+I")) {}        
+                ImGui::Separator();
+                ImGui::EndMenu();
+            }
             if (ImGui::BeginMenu("Window"))
             {
                 if (ImGui::MenuItem("NodeGraph", "Ctrl+M")) {}
                 if (ImGui::MenuItem("SceneGraph", "Ctrl+O")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Viewport 3D", "Ctrl+Shift+V")) {}
+                if (ImGui::MenuItem("Viewport 2D", "Ctrl+Shift+D")) {}
+                ImGui::Separator();
                 if (ImGui::MenuItem("Asset Manager", "Ctrl+A")) {}
-                if (ImGui::MenuItem("Script Editor", "Ctrl+Shift+O")) {}
+                if (ImGui::MenuItem("Chimera Pipeline", "Ctrl+Shift+C")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Agents", "Ctrl+Shift+A")) {}        
+                ImGui::Separator();         
+                if (ImGui::MenuItem("Mesh Editor", "Ctrl+Shift+M")) {}
+                if (ImGui::MenuItem("Volume Editor", "Ctrl+Shift+V")) {}
+                if (ImGui::MenuItem("Montage Editor", "Ctrl+Shift+T")) {}
+                if (ImGui::MenuItem("Audio Editor", "Ctrl+Shift+A")) {}
+                if (ImGui::MenuItem("Drama Editor", "Ctrl+Shift+D")) {}
+                if (ImGui::MenuItem("Streaming Editor", "Ctrl+Shift+M")) {}
+                if (ImGui::MenuItem("Networking Editor", "Ctrl+Shift+N")) {}
+                if (ImGui::MenuItem("Input Editor", "Ctrl+Shift+T")) {}
+                if (ImGui::MenuItem("Localization Editor", "Ctrl+Shift+E")) {}
+                if (ImGui::MenuItem("LProperties Matrix", "Ctrl+Shift+E")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("UI Editor", "Ctrl+Shift+U")) {}
+                if (ImGui::MenuItem("Font Editor", "Ctrl+Shift+F")) {}
+                if (ImGui::MenuItem("Text Editor", "Ctrl+Shift+X")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Command Palette", "Ctrl+Shift+P")) {}
+                if (ImGui::MenuItem("Console", "Ctrl+Shift+L")) {}
+                ImGui::Separator();
+                if (ImGui::BeginMenu("Developer"))
+                {
+                    if (ImGui::MenuItem("Macros Editor", "Ctrl+Shift+M")) {}
+                    if (ImGui::MenuItem("Script Editor", "Ctrl+Shift+O")) {}
+                    if (ImGui::MenuItem("Reflection Editor", "Ctrl+Shift+R")) {}
+                    if (ImGui::MenuItem("Plugin Editor", "Ctrl+Shift+L")) {}
+                    if (ImGui::MenuItem("Extensions Editor", "Ctrl+Shift+E")) {}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Collaboration Editor", "Ctrl+Shift+E")) {}
+                    if (ImGui::MenuItem("Community Editor", "Ctrl+Shift+E")) {}
+                    if (ImGui::MenuItem("Monetization Editor", "Ctrl+Shift+E")) {}
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Performance Scalability", "Ctrl+Shift+B")) {}
+                    if (ImGui::MenuItem("Project Insights", "Ctrl+Shift+B")) {}
+                    if (ImGui::MenuItem("Profiler Editor", "Ctrl+Shift+P")) {}
+                    if (ImGui::MenuItem("Debugger Editor", "Ctrl+Shift+D")) {}
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Help"))
+            {
+                if (ImGui::MenuItem("Hydragon Documentation", "F1")) {}
+                if (ImGui::MenuItem("What's New")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Intro Tutorials")) {}
+                if (ImGui::MenuItem("Learn", "F3")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Support Center")) {}
+                if (ImGui::MenuItem("Report a Problem")) {}
+                if (ImGui::MenuItem("Contribute")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("About Hydragon")) {}
+                if (ImGui::MenuItem("Hydragon Home Page")) {}
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
@@ -537,7 +868,7 @@ namespace hdImgui {
         ImGui::Button("Validate Graph");
         ImGui::End();
 
-        // === Scripting Editor ===
+        // === Script Editor ===
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
         ImGui::Begin("Scripting", nullptr);
         ImGui::Button("Import Script");
