@@ -68,7 +68,7 @@ void RunApplication() {
         // Render your UI here
         if (!hdImgui::IsSleeping()) {
             // Your application's UI rendering code
-            ImGui::Begin("Example Window");
+            ImGui::Begin("Hydragon Editor");
             ImGui::Text("Hello, world!");
             ImGui::End();
         }

@@ -70,6 +70,60 @@ namespace hdImgui {
     // === Styling variables ===
     float globalWindowBgAlpha = 0.35f;
 
+    // === Rendering Variables ===
+    struct HydragonEditorWindowData 
+    {
+        // Track the open/closed state of each window
+        bool isTopToolbarWindowOpen = true;
+        bool isLeftToolbarWindowOpen = true;
+        bool isRightToolbarWindowOpen = true;
+        bool isBottomToolbarWindowOpen = true;
+        bool isSceneGraphWindowOpen = true;
+        bool isNodeGraphWindowOpen = true;
+        bool isScriptWindowOpen = true;
+        bool isScriptsPaletteWindowOpen = true;
+        bool isCommandsPaletteWindowOpen = true;
+        bool isConsoleWindowOpen = true;
+        bool isAgentsWindowOpen = true;
+        bool isViewport3DWindowOpen = true;
+        bool isViewport2DWindowOpen = true;
+        bool isPropertyEditorWindowOpen = true;
+        bool isAssetManagerWindowOpen = true;
+        bool isLightingWindowOpen = true;
+        bool isPhysicsWindowOpen = true;
+        bool isBottomStatusBarWindowOpen = true;
+        bool isFileExplorerWindowOpen = true;
+        bool isPatternOrchestratorWindowOpen = true;
+        bool isProfilerWindowOpen = true;
+        bool isStreamingWindowOpen = true;
+        bool isImageWindowOpen = true;
+        bool isAudioWindowOpen = true;
+        bool isMontageWindowOpen = true;
+        bool isTextWindowOpen = true;
+        bool isFontWindowOpen = true;
+        bool isPluginWindowOpen = true;
+        bool isExtensionsWindowOpen = true;
+        bool isMacrosWindowOpen = true;
+        bool isDramaWindowOpen = true;
+        bool isChimeraPipelineWindowOpen = true;
+        bool isUIEditorWindowOpen = true;
+        bool isNetworkingWindowOpen = true;
+        bool isPerformanceScalabilityWindowOpen = true;
+        bool isReflectionWindowOpen = true;
+        bool isCollaborationWindowOpen = true;
+        bool isCommunityWindowOpen = true;
+        bool isInputWindowOpen = true;
+        bool isPropertiesMatrixWindowOpen = true;
+        bool isLocalizationWindowOpen = true;
+        bool isSettingsWindowOpen = true;
+        bool isMeshEditorWindowOpen = true;
+        bool isMonetizationWindowOpen = true;
+        bool isVolumeEditorWindowOpen = true;
+        bool isPresetEditorWindowOpen = true;
+    };
+    // Store data for each window
+    static HydragonEditorWindowData hdEditorWindowData;
+
     #if 0
     // =========== Initialization ===========
     void Initialize(GLFWwindow* window) {
@@ -779,16 +833,35 @@ namespace hdImgui {
                 if (ImGui::MenuItem("Open SceneGraph Library", "Ctrl+O")) {}
                 ImGui::EndMenu();
             }
-            if (ImGui::BeginMenu("Lighting"))
+            if (ImGui::BeginMenu("Rendering"))
             {
                 static int s_lightingType = 3;
                 if (ImGui::Combo("Lighting Type", &s_lightingType, "No Lighting\0Lighting Only\0Lighting\0Lighting + Detail")) {}
                 ImGui::Separator();
                 static bool s_enableGI = true;
+                static bool s_enableSSAO = true;
+                static bool s_enableSkylight = true;
+                static bool s_enableAtmosphere = true;
+                static bool s_enableClouds = true;
+                static int s_cloudsMethod = 0;
+                static bool s_enableFog = true;
+                static int s_fogMethod = 0;
+                static bool s_enableShadows = true;
+                static int s_shadowMethod = 0;
+                if (ImGui::Checkbox("Enable Shadows", &s_enableShadows)) {}
+                if (ImGui::Combo("Shadows Method", &s_shadowMethod, "Depth Map Shadows\0Virtual Shadows Simple\0Virtual Shadows Advanced")) {}
                 if (ImGui::Checkbox("Enable GI", &s_enableGI)) {}
+                if (ImGui::Checkbox("Enable SSAO", &s_enableSSAO)) {}
+                if (ImGui::Checkbox("Enable Skylight", &s_enableSkylight)) {}
+                if (ImGui::Checkbox("Enable Atmosphere", &s_enableAtmosphere)) {}
+                if (ImGui::Checkbox("Enable Clouds", &s_enableClouds)) {}
+                if (ImGui::Combo("Clouds Method", &s_cloudsMethod, "Flat Layer\0Basic Volumetric\0Detailed Volumetric", 3)) {}
+                if (ImGui::Checkbox("Enable Fog", &s_enableFog)) {}
+                if (ImGui::Combo("Fog Type", &s_fogMethod, "Simple Depth-based\0Basic Volumetric\0Detailed Volumetric", 3)) {}
                 ImGui::Separator();
                 if (ImGui::MenuItem("Lighting Editor", "Ctrl+O")) {}      
                 if (ImGui::MenuItem("Lighting Profiler", "Ctrl+O")) {}      // Opens the Lighting tab in the Profiler Editor
+                if (ImGui::MenuItem("Rendering Settings", "Ctrl+O")) {} 
                 ImGui::Separator();
                 if (ImGui::MenuItem("Open Lighting Library", "Ctrl+O")) {}
                 ImGui::EndMenu();
@@ -901,8 +974,13 @@ namespace hdImgui {
             }
             if (ImGui::BeginMenu("Window"))
             {
+                if (ImGui::MenuItem("Top Toolbar", "Ctrl+I")) {}
+                if (ImGui::MenuItem("Left Toolbar", "Ctrl+I")) {}
+                if (ImGui::MenuItem("Right Toolbar", "Ctrl+I")) {}
+                if (ImGui::MenuItem("Bottom Toolbar", "Ctrl+I")) {}
+                ImGui::Separator();
                 if (ImGui::MenuItem("NodeGraph", "Ctrl+M")) {}
-                if (ImGui::MenuItem("SceneGraph", "Ctrl+O")) {}
+                if (ImGui::MenuItem("SceneGraph", "Ctrl+O")) {hdEditorWindowData.isSceneGraphWindowOpen = true;}
                 ImGui::Separator();
                 if (ImGui::MenuItem("Viewport 3D", "Ctrl+Shift+V")) {}
                 if (ImGui::MenuItem("Viewport 2D", "Ctrl+Shift+D")) {}
@@ -983,48 +1061,139 @@ namespace hdImgui {
 
         // === SceneGraph Editor ====
         ImGui::SetNextWindowBgAlpha(globalWindowBgAlpha);
-        ImGui::Begin("SceneGraph ", nullptr);
-        ImGui::Button("Add Layer");
-
-        // Example: TreeNode with flags
-        ImGuiTreeNodeFlags SceneGraphTreeNodeFlags = 
-            ImGuiTreeNodeFlags_DefaultOpen | 
-            ImGuiTreeNodeFlags_Framed | 
-            ImGuiTreeNodeFlags_OpenOnArrow |
-            ImGuiTreeNodeFlags_OpenOnDoubleClick;
-        if (ImGui::TreeNodeEx("Castle", SceneGraphTreeNodeFlags)) {
-            // Child nodes
-            if (ImGui::TreeNode("Tower 1")) {
-                if (ImGui::TreeNode("Door 1")){
-                    ImGui::Text("Handle 1");
+        if (hdEditorWindowData.isSceneGraphWindowOpen)
+        {
+            if (ImGui::Begin("SceneGraph ", &hdEditorWindowData.isSceneGraphWindowOpen, ImGuiWindowFlags_MenuBar))
+            {
+                if (ImGui::BeginMenuBar())
+                {
+                    if (ImGui::BeginMenu("File"))
+                    {
+                        if (ImGui::MenuItem("New SceneGraph")) {}
+                        if (ImGui::MenuItem("Import SceneGraph", "Ctrl+O")) {}
+                        if (ImGui::MenuItem("Open SceneGraph", "Ctrl+A")) {}
+                        if (ImGui::BeginMenu("Open Recent SceneGraph"))
+                        {
+                            ImGui::MenuItem("Museum.usd");
+                            ImGui::MenuItem("Restaurant.husd");
+                            ImGui::MenuItem("WarHorse.usd");
+                            if (ImGui::BeginMenu("More.."))
+                            {
+                                ImGui::MenuItem("Submarine.usd");
+                                ImGui::MenuItem("ArcticStation.usd"); 
+                                ImGui::EndMenu();
+                            }
+                            ImGui::EndMenu();
+                        }
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Close SceneGraph", "Ctrl+W")) {}
+                        if (ImGui::MenuItem("Save SceneGraph", "Ctrl+S")) {}
+                        if (ImGui::MenuItem("Save SceneGraph As..")) {}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Add SceneGraph As Layer", "Ctrl+Shift+A")) {}
+                        if (ImGui::MenuItem("Remove Layer", "Ctrl+R")) {}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Open in NodeGraph", "Ctrl+M")) {}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Exit", "Alt+F4")) {}
+                        ImGui::EndMenu();
+                    }
+                    if (ImGui::BeginMenu("Edit"))
+                    {
+                        if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+                        if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+                        if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+                        if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+                        ImGui::EndMenu();
+                    }
+                    if (ImGui::BeginMenu("Compose"))
+                    {
+                        if (ImGui::MenuItem("Add Layer", "CTRL+A")) {}
+                        if (ImGui::MenuItem("Duplicate Layer", "CTRL+D")) {} 
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Replace Layer", "CTRL+R")) {}
+                        if (ImGui::MenuItem("Remove Layer", "CTRL+R")) {}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Move Layer Up", "CTRL+UP")) {}
+                        if (ImGui::MenuItem("Move Layer Down", "CTRL+DOWN")) {}
+                        ImGui::Separator();
+                        
+                        ImGui::EndMenu();
+                    }
+                    if (ImGui::BeginMenu("Instance"))
+                    {
+                        if (ImGui::MenuItem("Add Instance", "CTRL+A")) {}
+                        if (ImGui::MenuItem("Duplicate Instance", "CTRL+D")) {}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Replace Instance", "CTRL+R")) {}
+                        if (ImGui::MenuItem("Remove Instance", "CTRL+R")) {}
+                        ImGui::Separator();
+                        if (ImGui::MenuItem("Open in NodeGraph", "CTRL+M")) {}
+                        ImGui::EndMenu();
+                    }   
+                    ImGui::EndMenuBar();
+                }
+                // Example: TreeNode with flags
+                ImGuiTreeNodeFlags SceneGraphTreeNodeFlags = 
+                    ImGuiTreeNodeFlags_DefaultOpen | 
+                    ImGuiTreeNodeFlags_Framed | 
+                    ImGuiTreeNodeFlags_OpenOnArrow |
+                    ImGuiTreeNodeFlags_OpenOnDoubleClick;
+                if (ImGui::TreeNodeEx("Castle", SceneGraphTreeNodeFlags)) {
+                    // Child nodes
+                    if (ImGui::TreeNode("Tower 1")) {
+                        if (ImGui::TreeNode("Door 1")){
+                            ImGui::Text("Handle 1");
+                            ImGui::TreePop();
+                        }
+                        ImGui::TreePop();
+                    }
+                    if (ImGui::TreeNode("Tower 2")) {
+                        ImGui::Text("Bullwark 1");
+                        ImGui::TreePop();
+                    }
                     ImGui::TreePop();
                 }
-                ImGui::TreePop();
-            }
-            if (ImGui::TreeNode("Tower 2")) {
-                ImGui::Text("Bullwark 1");
-                ImGui::TreePop();
-            }
-            ImGui::TreePop();
+                if (ImGui::TreeNodeEx("Bridge", SceneGraphTreeNodeFlags)) {
+                    // Child nodes
+                    if (ImGui::TreeNode("Ending Node 1")) {
+                        ImGui::Text("Tower 1");
+                        ImGui::TreePop();
+                    }
+                    if (ImGui::TreeNode("Shaft 1")) {
+                        ImGui::Text("This is the second child node.");
+                        ImGui::TreePop();
+                    }
+                    if (ImGui::TreeNode("Ending Node 2")) {
+                        ImGui::Text("Tower 1");
+                        ImGui::TreePop();
+                    }
+                    // End the root node
+                    ImGui::TreePop();
+                }
+                ImGui::Separator();
+                if (ImGui::CollapsingHeader("SceneGraph Layers"))
+                {
+                    ImGui::Button("Add Layer");
+                    ImGui::Button("Duplicate Layer");
+                    ImGui::Button("Replace Layer");
+                    ImGui::Button("Remove Layer");
+                }
+                if (ImGui::CollapsingHeader("Streaming"))
+                {
+                    static int s_streamingMethod = 1;
+                    static int s_streamingPriority = 0;
+                    ImGui::Combo("Method", &s_streamingMethod, "Lazy\0Standard\0Priority\0", 3);
+                    ImGui::Combo("Priority", &s_streamingPriority, "Low\0Medium\0High\0", 3);
+                    ImGui::Separator();
+                    ImGui::Button("Open in NodeGraph");
+                }
+                ImGui::End(); 
+            }    
         }
-        if (ImGui::TreeNodeEx("Bridge", SceneGraphTreeNodeFlags)) {
-            // Child nodes
-            if (ImGui::TreeNode("Ending Node 1")) {
-                ImGui::Text("Tower 1");
-                ImGui::TreePop();
-            }
-            if (ImGui::TreeNode("Shaft 1")) {
-                ImGui::Text("This is the second child node.");
-                ImGui::TreePop();
-            }
-            if (ImGui::TreeNode("Ending Node 2")) {
-                ImGui::Text("Tower 1");
-                ImGui::TreePop();
-            }
-            // End the root node
-            ImGui::TreePop();
-        }
-        ImGui::End(); 
+        
         
         // === NodeGraph Editor ====
         // At first, materials will also be edited in the NodeGraph Editor.
