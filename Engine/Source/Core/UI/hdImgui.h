@@ -12,13 +12,16 @@
  */
 namespace hdImgui {
     #if 0
+    // === Input variables ===
+    ImGuiIO& io;
+
     // =========== Initialization ===========
     /** 
      * @brief Initializes hdImgui.
      * @param window The GLFW window to initialize ImGui for.
      */
     void Initialize(GLFWwindow* window);
-    ImGuiIO& io;
+    void InitializeWindows();
 
     // =========== Styling =========== 
     #endif   
@@ -43,6 +46,9 @@ namespace hdImgui {
 
     // Utility to check if ImGui is sleeping
     bool IsSleeping();
+    
+    // Function to reset interaction time and wake up the application
+    void ResetInteractionTime();
 
     // =========== Input handling ===========
     void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

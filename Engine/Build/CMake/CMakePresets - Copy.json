@@ -11,9 +11,9 @@
       "description": "Sets generator, build and install directory",
       "hidden": true,			
       "generator": "Ninja",		
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": {"CMAKE_CXX_COMPILER_LAUNCHER": "ccache"}
+      "binaryDir": "${sourceDir}/build/${presetName}"
     },
+
     {
       "name": "windows-base",
       "description": "Sets x64 arch, compilers, build type",
