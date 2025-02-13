@@ -107,8 +107,10 @@ namespace hdImgui {
         bool isSettingsWindowOpen = true;
         bool isMeshWindowOpen = true;
         bool isMonetizationWindowOpen = true;
+        bool isProjectInsightsWindowOpen = true;
         bool isVolumeWindowOpen = true;
-        bool isPresetEditorWindowOpen = true;
+        bool isPresetsWindowOpen = true;
+        bool isDebugWindowOpen = true;
     };
 
     #if 0

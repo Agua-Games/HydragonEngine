@@ -671,17 +671,18 @@ namespace hdImgui {
                     if (ImGui::MenuItem("Macros Editor", "Ctrl+Shift+M")) { windowData->isMacrosWindowOpen = true; }
                     if (ImGui::MenuItem("Script Editor", "Ctrl+Shift+O")) { windowData->isScriptWindowOpen = true; }
                     if (ImGui::MenuItem("Reflection Editor", "Ctrl+Shift+R")) { windowData->isReflectionWindowOpen = true; }
-                    if (ImGui::MenuItem("Plugin Editor", "Ctrl+Shift+L")) { windowData->isPluginWindowOpen = true; }
-                    if (ImGui::MenuItem("Extensions Editor", "Ctrl+Shift+E")) { windowData->isExtensionsWindowOpen = true; }
+                    if (ImGui::MenuItem("Plugin", "Ctrl+Shift+L")) { windowData->isPluginWindowOpen = true; }
+                    if (ImGui::MenuItem("Extensions", "Ctrl+Shift+E")) { windowData->isExtensionsWindowOpen = true; }
                     ImGui::Separator();
                     if (ImGui::MenuItem("Collaboration Editor", "Ctrl+Shift+E")) { windowData->isCollaborationWindowOpen = true; }
                     if (ImGui::MenuItem("Community Editor", "Ctrl+Shift+E")) { windowData->isCommunityWindowOpen = true; }
                     if (ImGui::MenuItem("Monetization Editor", "Ctrl+Shift+E")) { windowData->isMonetizationWindowOpen = true; }
                     ImGui::Separator();
                     if (ImGui::MenuItem("Performance Scalability", "Ctrl+Shift+B")) { windowData->isPerformanceScalabilityWindowOpen = true; }
-                    if (ImGui::MenuItem("Project Insights", "Ctrl+Shift+B")) {}
-                    if (ImGui::MenuItem("Profiler Editor", "Ctrl+Shift+P")) {}
-                    if (ImGui::MenuItem("Debugger Editor", "Ctrl+Shift+D")) {}
+                    if (ImGui::MenuItem("Project Insights", "Ctrl+Shift+B")) { windowData->isProjectInsightsWindowOpen = true; }
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Profiler", "Ctrl+Shift+P")) { windowData->isProfilerWindowOpen = true; }
+                    if (ImGui::MenuItem("Debugger", "Ctrl+Shift+D")) { windowData->isDebugWindowOpen = true; }
                     ImGui::EndMenu();
                 }
                 ImGui::EndMenu();

@@ -59,8 +59,10 @@
 #include "SettingsEditor.h"
 #include "MeshEditor.h"
 #include "MonetizationEditor.h"
+#include "ProjectInsightsEditor.h"
 #include "VolumeEditor.h"
 #include "PresetEditor.h"
+#include "DebugEditor.h"
 
 namespace hdImgui {
     // === Input variables ===
@@ -380,293 +382,59 @@ namespace hdImgui {
         // configure procedurals, use AI-assisted texture generation etc.
         if (hdEditorWindowData.isImageWindowOpen) { hdImgui::ShowImageTools(&hdEditorWindowData.isImageWindowOpen, &hdEditorWindowData); }
         // Audio Editor
+        if (hdEditorWindowData.isAudioWindowOpen) { hdImgui::ShowAudioEditor(&hdEditorWindowData.isAudioWindowOpen, &hdEditorWindowData); }
         // Montage Editor
         // Timeline with tracks, blending, transitions, etc. Used to compose animations, cutscenes, video clips, 
         // audio clips, images and other time varying media.
         // Whereas DCC apps usually rely on a simple timeline by default, Hydragon uses a more advanced montage editor,
         // with two visualization modes: collapsed and expanded (defaults to expanded).
-        
-
-        // === Text Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Text", nullptr);
-        ImGui::Button("Load Text");
-        ImGui::End();
-
-        // === Font Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Font", nullptr);
-        ImGui::Button("Import Font");
-        ImGui::Button("New Font");
-        ImGui::Button("Save Font");
-        ImGui::Button("Load Font");
-        ImGui::Button("Export Font");
-        ImGui::Button("Share Font");
-        ImGui::Button("Add Font");
-        ImGui::Button("Remove Font");
-        ImGui::Button("Font Settings");
-        ImGui::Button("Compile Font");
-        ImGui::End();
-
-        // === Plugin Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Plugin", nullptr);
-        ImGui::Button("Import Plugin");
-        ImGui::Button("Add Plugin");
-        ImGui::Button("Save Plugin");
-        ImGui::Button("Load Plugin");
-        ImGui::Button("Unload Plugin");
-        ImGui::Button("Reload Plugin");
-        ImGui::Button("Export Plugin");
-        ImGui::Button("Share Plugin");
-        ImGui::Button("Remove Plugin");
-        ImGui::Button("Plugin Settings");
-        ImGui::End();
-
-        // === Extensions Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Extensions", nullptr);
-        ImGui::Button("Add Extension");
-        ImGui::Button("Save Extension");
-        ImGui::Button("Load Extension");
-        ImGui::Button("Unload Extension");
-        ImGui::Button("Reload Extension");
-        ImGui::Button("Export Extension");
-        ImGui::Button("Share Extension");
-        ImGui::Button("Remove Extension");
-        ImGui::Button("Extension Settings");
-        ImGui::End();
-
-        // === Macros Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Macros", nullptr);
-        ImGui::Button("Load Macro");
-        ImGui::End();
-        //test
-        // === Drama Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Drama", nullptr);
-        ImGui::Button("Import Drama");
-        ImGui::Button("New Drama");
-        ImGui::Button("Save Drama");
-        ImGui::Button("Load Drama");
-        ImGui::Button("Play Drama");
-        ImGui::Button("Stop Drama");
-        ImGui::Button("Export Drama");
-        ImGui::Button("Share Drama");
-        ImGui::Button("Add Drama");
-        ImGui::Button("Remove Drama");
-        ImGui::Button("Drama Settings");
-        ImGui::End();
-
-        // === Chimera Pipeline Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Chimera Pipeline", nullptr);
-        ImGui::Button("Start Server");
-        ImGui::Button("Refresh Server");
-        ImGui::Button("Stop Server");
-        ImGui::Button("Import Chimera Pipeline");
-        ImGui::Button("New Chimera Pipeline");
-        ImGui::Button("Save Chimera Pipeline");
-        ImGui::Button("Load Livelink");
-        ImGui::Button("Watch Livelink");
-        ImGui::Button("Synchronize");
-        ImGui::End();
-
-        // === UI Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("UI", nullptr);
-        ImGui::Button("Import UI");
-        ImGui::Button("New UI");
-        ImGui::Button("Save UI");
-        ImGui::Button("Load UI");
-        ImGui::Button("Export UI");
-        ImGui::Button("Share UI");
-        ImGui::Button("Add UI");
-        ImGui::Button("Remove UI");
-        ImGui::Button("UI Settings");
-        ImGui::End();
-
-        // === Networking Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Networking", nullptr);
-        ImGui::Button("Start Server");
-        ImGui::Button("Refresh Server");
-        ImGui::Button("Stop Server");
-        ImGui::Button("Load Networking Config");
-        ImGui::Button("Share Networking Config");
-        ImGui::Button("Networking Settings");
-        ImGui::Button("Start Client");
-        ImGui::Button("Refresh Client");
-        ImGui::Button("Stop Client");
-        ImGui::Button("Load Client Config");
-        ImGui::Button("Share Client Config");
-        ImGui::Button("Client Settings");
-        ImGui::Button("Export Client Config");
-        ImGui::End();
-
-        // === Performance Scalability Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Performance Scalability", nullptr);
-        ImGui::Button("Import Performance Scalability Config");
-        ImGui::Button("New Performance Scalability Config");
-        ImGui::Button("Save Performance Scalability Config");
-        ImGui::Button("Load Performance Scalability Config");
-        ImGui::Button("Export Performance Scalability Config");
-        ImGui::Button("Share Performance Scalability Config");
-        ImGui::Button("Performance Scalability Settings");
-        ImGui::End();
-
-        // === Reflection Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Reflection", nullptr);
-        ImGui::Button("Import Reflection Config");
-        ImGui::Button("New Reflection Config");
-        ImGui::Button("Save Reflection Config");
-        ImGui::Button("Load Reflection Config");
-        ImGui::Button("Export Reflection Config");
-        ImGui::Button("Share Reflection Config");
-        ImGui::Button("Reflection Settings");
-        ImGui::End();
-
-        // === Collaboration Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Collaboration", nullptr);
-        ImGui::Button("Connect to Server");
-        ImGui::Button("Disconnect from Server");
-        ImGui::Button("Connect to Client Node");
-        ImGui::Button("Disconnect from Client Node");
-        ImGui::Button("Load Collaboration Config");
-        ImGui::Button("Share Collaboration Config");
-        ImGui::Button("Collaboration Settings");
-        ImGui::End();
-
-        // === Community Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Community", nullptr);
-        ImGui::Button("Import Community Config");
-        ImGui::Button("New Community Config");
-        ImGui::Button("Save Community Config");
-        ImGui::Button("Load Community Config");
-        ImGui::Button("Export Community Config");
-        ImGui::Button("Share Community Config");
-        ImGui::Button("Report Issue");
-        ImGui::Button("Report Bug");
-        ImGui::Button("Ask Question");
-        ImGui::Button("Community Settings");
-        ImGui::Button("Request Feature");
-        ImGui::Button("Request Support");
-        ImGui::Button("Request Documentation");
-        ImGui::Button("Request Training");
-        ImGui::Button("Request Sponsorship");           // If the user has a Patreon account; have a project needing sponsorship
-        ImGui::Button("Request Sponsorship Package");
-        ImGui::Button("Request Sponsorship Support");
-        ImGui::End();
-
-        /// === Monetization Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Monetization", nullptr);
-        ImGui::Button("Import Monetization Config");
-        ImGui::Button("New Monetization Config");
-        ImGui::Button("Save Monetization Config");
-        ImGui::Button("Load Monetization Config");
-        ImGui::Button("Export Monetization Config");
-        ImGui::Button("Share Monetization Config");
-        ImGui::Button("Monetization Settings");
-        ImGui::Button("Connect Monetization Service");
-        ImGui::Button("Connect to Sponsorship");
-        ImGui::End();
-
-        /// === Project Insights Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Project Insights", nullptr);
-        ImGui::Button("Run Project Analysis");
-        ImGui::Button("Stop Project Analysis");
-        ImGui::Button("Send Analysis Results to Agent");
-        ImGui::Button("Export Project Insights");
-        ImGui::Button("Save Project Insights Config");
-        ImGui::Button("Load Project Insights Config");
-        ImGui::End();
-
-        // === Input Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Input", nullptr);
-        ImGui::Button("Import Input Config");
-        ImGui::Button("New Input Config");
-        ImGui::Button("Load Input Config");
-        ImGui::Button("Save Input Config");
-        ImGui::Button("Export Input Config");
-        ImGui::Button("Share Input Config");
-        ImGui::End();
-
-        // === Properties Matrix Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Properties Matrix", nullptr);
-        ImGui::Button("Load Selected Objects");
-        ImGui::Button("Diff Selected");
-        ImGui::End();
-
-        // === Localization Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Localization", nullptr);
-        ImGui::Button("Import Localization Config");
-        ImGui::Button("New Localization Config");
-        ImGui::Button("Load Localization Config");
-        ImGui::Button("Save Localization Config");
-        ImGui::Button("Export Localization Config");
-        ImGui::Button("Share Localization Config");
-        ImGui::Button("Localization Settings");
-        ImGui::End();
-
-        // === Settings Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Settings", nullptr);
-        ImGui::Button("Save Settings");
-        ImGui::End();
-
-        // === Mesh Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Mesh", nullptr);
-        ImGui::Button("Edit Mesh");
-        ImGui::Button("Import Mesh");
-        ImGui::Button("Load Mesh");
-        ImGui::Button("Save Mesh");
-        ImGui::Button("Procedural Tools");      // overlay, context menus
-        ImGui::Button("Generate Mesh");
-        ImGui::Button("Decimate Mesh");
-        ImGui::Button("Voxelize Mesh");
-        ImGui::Button("Simplify Mesh");
-        ImGui::Button("Optimize Mesh");
-        ImGui::Button("Mesh From Points");
-        ImGui::Button("Mesh From Point Cloud");
-        ImGui::Button("Export Mesh");
-        ImGui::Button("Mesh Settings");
-        ImGui::Button("Load Mesh Settings");
-        ImGui::End();
-
-        // === Volume Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Volume", nullptr);
-        ImGui::Button("Import VDB Volume");
-        ImGui::Button("New VDB Volume");
-        ImGui::Button("Save Volume");
-        ImGui::Button("Edit Volume");
-        ImGui::Button("Load Volume");
-        ImGui::Button("Procedural VDB Nodes");      // overlay, context menus
-        ImGui::Button("Volumetric VDB Tools");          // overlay, context menus
-        ImGui::Button("Volume Settings");
-        ImGui::End();
-
-        // === Preset Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Preset Editor", nullptr);
-        ImGui::Button("Import Presets File");
-        ImGui::Button("New Presets File");
-        ImGui::Button("Save Presets File");
-        ImGui::Button("Edit Presets");
-        ImGui::Button("Load Presets File");
-        ImGui::Button("Extract Presets from Current Config");      // overlay, context menus
-        ImGui::End();
+        if (hdEditorWindowData.isMontageWindowOpen) { hdImgui::ShowMontageEditor(&hdEditorWindowData.isMontageWindowOpen, &hdEditorWindowData); }
+        // Text Editor
+        if (hdEditorWindowData.isTextWindowOpen) { hdImgui::ShowTextEditor(&hdEditorWindowData.isTextWindowOpen, &hdEditorWindowData); }
+        // Font Editor
+        if (hdEditorWindowData.isFontWindowOpen) { hdImgui::ShowFontEditor(&hdEditorWindowData.isFontWindowOpen, &hdEditorWindowData); }
+        // Plugin Editor
+        if (hdEditorWindowData.isPluginWindowOpen) { hdImgui::ShowPluginEditor(&hdEditorWindowData.isPluginWindowOpen, &hdEditorWindowData); }
+        // Extensions Editor
+        if (hdEditorWindowData.isExtensionsWindowOpen) { hdImgui::ShowExtensionsEditor(&hdEditorWindowData.isExtensionsWindowOpen, &hdEditorWindowData); }
+        // Macros Editor
+        if (hdEditorWindowData.isMacrosWindowOpen) { hdImgui::ShowMacrosEditor(&hdEditorWindowData.isMacrosWindowOpen, &hdEditorWindowData); }
+        // Drama Editor
+        if (hdEditorWindowData.isDramaWindowOpen) { hdImgui::ShowDramaEditor(&hdEditorWindowData.isDramaWindowOpen, &hdEditorWindowData); }
+        // Chimera Pipeline Editor
+        if (hdEditorWindowData.isChimeraPipelineWindowOpen) { hdImgui::ShowChimeraPipelineEditor(&hdEditorWindowData.isChimeraPipelineWindowOpen, &hdEditorWindowData); }
+        // UI Editor
+        if (hdEditorWindowData.isUIEditorWindowOpen) { hdImgui::ShowUIEditor(&hdEditorWindowData.isUIEditorWindowOpen, &hdEditorWindowData); }
+        // Networking Editor
+        if (hdEditorWindowData.isNetworkingWindowOpen) { hdImgui::ShowNetworkingEditor(&hdEditorWindowData.isNetworkingWindowOpen, &hdEditorWindowData); }
+        // Performance Scalability Editor
+        if (hdEditorWindowData.isPerformanceScalabilityWindowOpen) { hdImgui::ShowPerformanceScalabilityEditor(&hdEditorWindowData.isPerformanceScalabilityWindowOpen, &hdEditorWindowData); }
+        // Reflection Editor
+        if (hdEditorWindowData.isReflectionWindowOpen) { hdImgui::ShowReflectionEditor(&hdEditorWindowData.isReflectionWindowOpen, &hdEditorWindowData); }
+        // Collaboration Editor
+        if (hdEditorWindowData.isCollaborationWindowOpen) { hdImgui::ShowCollaborationEditor(&hdEditorWindowData.isCollaborationWindowOpen, &hdEditorWindowData); }
+        // Community Editor
+        if (hdEditorWindowData.isCommunityWindowOpen) { hdImgui::ShowCommunityEditor(&hdEditorWindowData.isCommunityWindowOpen, &hdEditorWindowData); }
+        // Monetization Editor
+        if (hdEditorWindowData.isMonetizationWindowOpen) { hdImgui::ShowMonetizationEditor(&hdEditorWindowData.isMonetizationWindowOpen, &hdEditorWindowData); }
+        // Project Insights Editor
+        if (hdEditorWindowData.isProjectInsightsWindowOpen) { hdImgui::ShowProjectInsightsEditor(&hdEditorWindowData.isProjectInsightsWindowOpen, &hdEditorWindowData); }
+        // Input Editor
+        if (hdEditorWindowData.isInputWindowOpen) { hdImgui::ShowInputEditor(&hdEditorWindowData.isInputWindowOpen, &hdEditorWindowData); }
+        // Properties Matrix Editor
+        if (hdEditorWindowData.isPropertiesMatrixWindowOpen) { hdImgui::ShowPropertiesMatrixEditor(&hdEditorWindowData.isPropertiesMatrixWindowOpen, &hdEditorWindowData); }
+        // Localization Editor
+        if (hdEditorWindowData.isLocalizationWindowOpen) { hdImgui::ShowLocalizationEditor(&hdEditorWindowData.isLocalizationWindowOpen, &hdEditorWindowData); }
+        // Settings Editor
+        if (hdEditorWindowData.isSettingsWindowOpen) { hdImgui::ShowSettingsEditor(&hdEditorWindowData.isSettingsWindowOpen, &hdEditorWindowData); }
+        // Mesh Editor
+        if (hdEditorWindowData.isMeshWindowOpen) { hdImgui::ShowMeshEditor(&hdEditorWindowData.isMeshWindowOpen, &hdEditorWindowData); }
+        // Volume Editor
+        if (hdEditorWindowData.isVolumeWindowOpen) { hdImgui::ShowVolumeEditor(&hdEditorWindowData.isVolumeWindowOpen, &hdEditorWindowData); }
+        // Preset Editor
+         if (hdEditorWindowData.isPresetsWindowOpen) { hdImgui::ShowPresetEditor(&hdEditorWindowData.isPresetsWindowOpen, &hdEditorWindowData); }
+        // Debug Editor
+         if (hdEditorWindowData.isDebugWindowOpen) { hdImgui::ShowDebugEditor(&hdEditorWindowData.isDebugWindowOpen, &hdEditorWindowData); }
 
         // === Temporary, for referencing the components' names in imgui code files ===
         ImGui::ShowDemoWindow();

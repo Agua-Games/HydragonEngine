@@ -6,18 +6,20 @@
 #include <imgui.h>  // Include ImGui's header
 #include <string>
 
-#include "MacrosEditor.h"
+#include "DebugEditor.h"
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowMacrosEditor(bool* p_open, HdEditorWindowData* windowData) 
+    void ShowDebugEditor(bool* p_open, HdEditorWindowData* windowData) 
     {
         ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Macros", p_open, ImGuiWindowFlags_MenuBar))
+        if (ImGui::Begin("Debug", p_open, ImGuiWindowFlags_MenuBar))
         {
-            ImGui::Button("Save Macro");
-            ImGui::Button("Load Macro");
-        }  
+            ImGui::Button("Clear Terminal");
+            ImGui::Button("Save Debug Log");
+            ImGui::Separator();
+            ImGui::Button("Debug Settings");
+        }      
         ImGui::End();
     }
 } // namespace hdImgui

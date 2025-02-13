@@ -319,7 +319,9 @@
 				55,
 				56,
 				57,
-				58
+				58,
+				59,
+				60
 			]
 		}
 	],
@@ -431,7 +433,9 @@
 				55,
 				56,
 				57,
-				58
+				58,
+				59,
+				60
 			]
 		}
 	],
@@ -495,6 +499,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ConsoleEditor.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/DebugEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -627,6 +637,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Profiler.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ProjectInsightsEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
