@@ -11,10 +11,96 @@
  * @brief Namespace for ImGui integration functions.
  */
 namespace hdImgui {
-    #if 0
-    // === Input variables ===
-    ImGuiIO& io;
+    struct HdEditorWindowData 
+    {
+        // Layout
+        float globalWindowBgAlpha = 0.35f;
 
+        // Editor sleep and auto-sleep feature
+        bool isSleeping;
+
+        // State - Track the open/closed state of each window
+        bool isMainMenuBarWindowOpen = true;
+        bool isTopToolbarWindowOpen = true;
+        bool isLeftToolbarWindowOpen = true;
+        bool isRightToolbarWindowOpen = true;
+        bool isBottomToolbarWindowOpen = true;
+        bool isSceneGraphWindowOpen = true;
+
+        bool isNodeGraphWindowOpen = true;
+        bool nodeGraphEditor_autoCompile = true;
+
+        bool isScriptWindowOpen = true;
+        bool isScriptsPaletteWindowOpen = true;
+        bool isCommandsPaletteWindowOpen = true;
+        bool isConsoleWindowOpen = true;
+        bool isAgentsWindowOpen = true;
+
+        bool isViewport3DWindowOpen = true;
+        bool showViewport3DGrid = true;
+        bool snapToViewport3DGrid = true;
+        bool showViewport3DAxes = true;
+        int viewport3D_AntiAliasing = 2;
+        float viewport3D_BrushSize = 1.0f;
+        float viewport3D_BrushMinSize = 0.0f;
+        float viewport3D_BrushMaxSize = 100.0f;
+        float viewport3D_BrushOpacity = 1.0f;
+        float viewport3D_BrushMinOpacity = 0.0f;
+        float viewport3D_BrushMaxOpacity = 1.0f;  
+        float viewport3D_BrushHardness = 1.0f;  
+        float viewport3D_BrushMinHardness = 0.0f;  
+        float viewport3D_BrushMaxHardness = 1.0f;  
+        float viewport3D_BrushColor[3] = { 0.0f, 0.0f, 0.0f};  
+        bool isViewport3DToolsWindowOpen = true;
+
+        bool isViewport2DWindowOpen = true;
+        bool showViewport2DGrid = true;
+        bool snapToViewport2DGrid = true;
+        bool showViewport2DAxes = true;
+        bool showViewport2DUVs = true;
+        bool isViewport2DToolsWindowOpen = true;
+
+        bool isPropertyEditorWindowOpen = true;
+        bool isAssetManagerWindowOpen = true;
+        bool isLightingWindowOpen = true;
+        bool isPhysicsWindowOpen = true;
+        bool isBottomStatusBarWindowOpen = true;
+        bool isFileExplorerWindowOpen = true;
+        bool isPatternOrchestratorWindowOpen = true;
+
+        bool isProfilerWindowOpen = true;
+        bool profilerRecordingEnabled = true;
+
+        bool isStreamingWindowOpen = true;
+        bool streamingEnabled = true;
+
+        bool isImageWindowOpen = true;
+        bool isAudioWindowOpen = true;
+        bool isMontageWindowOpen = true;
+        bool isTextWindowOpen = true;
+        bool isFontWindowOpen = true;
+        bool isPluginWindowOpen = true;
+        bool isExtensionsWindowOpen = true;
+        bool isMacrosWindowOpen = true;
+        bool isDramaWindowOpen = true;
+        bool isChimeraPipelineWindowOpen = true;
+        bool isUIEditorWindowOpen = true;
+        bool isNetworkingWindowOpen = true;
+        bool isPerformanceScalabilityWindowOpen = true;
+        bool isReflectionWindowOpen = true;
+        bool isCollaborationWindowOpen = true;
+        bool isCommunityWindowOpen = true;
+        bool isInputWindowOpen = true;
+        bool isPropertiesMatrixWindowOpen = true;
+        bool isLocalizationWindowOpen = true;
+        bool isSettingsWindowOpen = true;
+        bool isMeshEditorWindowOpen = true;
+        bool isMonetizationWindowOpen = true;
+        bool isVolumeEditorWindowOpen = true;
+        bool isPresetEditorWindowOpen = true;
+    };
+
+    #if 0
     // =========== Initialization ===========
     /** 
      * @brief Initializes hdImgui.

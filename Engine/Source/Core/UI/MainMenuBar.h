@@ -5,6 +5,8 @@
 #pragma once
 #include <imgui.h>  // Include ImGui's header
 
+#include "hdImgui.h"
+
 namespace hdImgui {
-    void MainMenuBar();
-}
+    void ShowMainMenuBar(bool* p_open, HdEditorWindowData* windowData);
+} // namespace hdImgui
