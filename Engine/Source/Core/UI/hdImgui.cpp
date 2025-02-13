@@ -16,6 +16,7 @@
 #include "TopToolbar.h"
 #include "LeftToolbar.h"
 #include "RightToolbar.h"
+#include "BottomToolbar.h"
 #include "SceneGraphEditor.h"
 #include "NodeGraphEditor.h"
 #include "ScriptEditor.h"
@@ -23,9 +24,10 @@
 #include "CommandsPalette.h"
 #include "ConsoleEditor.h"
 #include "AgentsEditor.h"
-#if 0
 #include "Viewport3D.h"
+#include "Viewport3DTools.h"
 #include "Viewport2D.h"
+#include "Viewport2DTools.h"
 #include "PropertyEditor.h"
 #include "AssetManager.h"
 #include "LightingEditor.h"
@@ -35,7 +37,7 @@
 #include "PatternOrchestrator.h"
 #include "Profiler.h"
 #include "StreamingEditor.h"
-#include "ImageEditor.h"
+#include "ImageTools.h"
 #include "AudioEditor.h"
 #include "MontageEditor.h"
 #include "TextEditor.h"
@@ -59,7 +61,6 @@
 #include "MonetizationEditor.h"
 #include "VolumeEditor.h"
 #include "PresetEditor.h"
-#endif
 
 namespace hdImgui {
     // === Input variables ===
@@ -328,555 +329,63 @@ namespace hdImgui {
         if (hdEditorWindowData.isLeftToolbarWindowOpen) { hdImgui::ShowLeftToolbar(&hdEditorWindowData.isLeftToolbarWindowOpen, &hdEditorWindowData); }
         // Right toolbar
         if (hdEditorWindowData.isRightToolbarWindowOpen) { hdImgui::ShowRightToolbar(&hdEditorWindowData.isRightToolbarWindowOpen, &hdEditorWindowData); }
+        // Bottom toolbar
+        if (hdEditorWindowData.isBottomToolbarWindowOpen) { hdImgui::ShowBottomToolbar(&hdEditorWindowData.isBottomToolbarWindowOpen, &hdEditorWindowData); }
         // SceneGraph Editor
         if (hdEditorWindowData.isSceneGraphWindowOpen) { hdImgui::ShowSceneGraphEditor(&hdEditorWindowData.isSceneGraphWindowOpen, &hdEditorWindowData); }
         // NodeGraph Editor
         if (hdEditorWindowData.isNodeGraphWindowOpen) { hdImgui::ShowNodeGraphEditor(&hdEditorWindowData.isNodeGraphWindowOpen, &hdEditorWindowData); }
-
-        // === Script Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Scripting", nullptr);
-        ImGui::Button("Import Script");
-        ImGui::Button("New Script");
-        ImGui::Button("Record Macro");
-        ImGui::Button("Save Script");
-        ImGui::Button("Compile Script");
-        ImGui::Button("Run Script");
-        ImGui::Button("Validate Script");
-        ImGui::Button("Go To Line");
-        ImGui::Button("Debug Script");
-        ImGui::Button("Add Script");
-        ImGui::Button("Ask Agent");
-        ImGui::Button("Run Agent");
-        ImGui::Button("Validate Agent");
-        ImGui::End();
-
-        // === Scripts Palette ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Scripts Palette", nullptr);  
-        if (ImGui::BeginTabBar("Scripts Palette Tabs"))
-        {
-            if (ImGui::BeginTabItem("Hydragon"))
-            {
-                if (ImGui::CollapsingHeader("Physics")) {
-                    ImGui::Button("Optimize Simulation For Solver");
-                    ImGui::Button("Setup Basic Destructible");
-                }
-                ImGui::EndTabItem();
-            }
-            if (ImGui::BeginTabItem("User"))
-            {
-                ImGui::Button("Add Script");    // Migrate to consolidated Menu bar later
-                ImGui::Button("Customize UI for my project"); 
-                ImGui::Button("Add My Project's Macros"); 
-                ImGui::Button("Add, Open My Project's UI"); 
-                ImGui::EndTabItem();
-            }
-            ImGui::EndTabBar();
-        }
-        ImGui::End();
-
-        // === Commands Palette ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Commands Palette", nullptr);
-        ImGui::Button("Run Command");
-        ImGui::End();
-
-        // === Console Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Console", nullptr);
-        ImGui::Button("Clear Console");
-        ImGui::Button("Run Command");
-        ImGui::End();
-
-        // === Agents Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Agents", nullptr);
-        ImGui::Button("Add Agent");
-        ImGui::Button("Load Model");
-        ImGui::Button("Start Server");
-        ImGui::Button("Stop Server");
-        ImGui::Button("Start Client");
-        ImGui::Button("Stop Client");
-        ImGui::Button("Run Agent");
-        ImGui::Button("Validate Agent");
-        ImGui::Button("Ask Agent");
-        ImGui::Button("Run Command");
-        ImGui::Button("Validate Command");
-        ImGui::Button("Add Command");
-        ImGui::Button("Run Macro");
-        ImGui::Button("Validate Macro");
-        ImGui::Button("Add Macro");
-        ImGui::Button("Load Macro");
-        ImGui::End();
-
-        // === Viewport 3D ===
-        ImGui::Begin("Viewport 3D", nullptr);
-        ImGui::End();
-
-        // === Viewport 3D Tools ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        if (hdEditorWindowData.isViewport3DToolsWindowOpen)
-        {
-            ImGui::Begin("Viewport 3D Tools", &hdEditorWindowData.isViewport3DToolsWindowOpen, ImGuiWindowFlags_MenuBar);
-            if (ImGui::BeginMenuBar())
-            {
-                if (ImGui::BeginMenu("File"))
-                {
-                    if (ImGui::MenuItem("New")) {}
-                    if (ImGui::MenuItem("Import SceneGraph", "Ctrl+O")) {}
-                    if (ImGui::MenuItem("Open SceneGraph", "Ctrl+A")) {}
-                    if (ImGui::BeginMenu("Open Recent SceneGraph"))
-                    {
-                        ImGui::MenuItem("Museum.usd");
-                        ImGui::MenuItem("Restaurant.husd");
-                        ImGui::MenuItem("WarHorse.usd");
-                        if (ImGui::BeginMenu("More.."))
-                        {
-                            ImGui::MenuItem("Submarine.usd");
-                            ImGui::MenuItem("ArcticStation.usd"); 
-                            ImGui::EndMenu();
-                        }
-                        ImGui::EndMenu();
-                    }
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Close SceneGraph", "Ctrl+W")) {}
-                    if (ImGui::MenuItem("Save SceneGraph", "Ctrl+S")) {}
-                    if (ImGui::MenuItem("Save SceneGraph As..")) {}
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Add SceneGraph As Layer", "Ctrl+Shift+A")) {}
-                    if (ImGui::MenuItem("Remove Layer", "Ctrl+R")) {}
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Open in NodeGraph", "Ctrl+M")) {}
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Exit", "Alt+F4")) {}
-                    ImGui::EndMenu();
-                }
-                if (ImGui::BeginMenu("Edit"))
-                {
-                    if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-                    if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-                    if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-                    if (ImGui::MenuItem("Paste", "CTRL+V")) {}
-                    ImGui::EndMenu();
-                }
-                ImGui::EndMenuBar();
-            }
-            if (ImGui::CollapsingHeader("SceneGraph")) {
-                if (ImGui::CollapsingHeader("Main"))
-                {
-                    ImGui::Button("Import SceneGraph");
-                }
-                if (ImGui::CollapsingHeader("Layers"))
-                {
-                    ImGui::Button("Add Layer");
-                    ImGui::Button("Remove Layer");
-                }
-                if (ImGui::CollapsingHeader("Nodes")) 
-                {
-                    ImGui::Button("Add Node");
-                    ImGui::Button("Remove Node");
-                    ImGui::Button("Replace Node");
-                    ImGui::Button("Duplicate Node");
-                    ImGui::Button("Rename Node");
-                    ImGui::Button("Edit Node");
-                    ImGui::Button("Create Node");
-                }
-                if (ImGui::CollapsingHeader("Instances")) {
-                    ImGui::Button("Add Instance");
-                    ImGui::Button("Remove Instance");
-                    ImGui::Button("Duplicate Instance");
-                    ImGui::Button("Override Instance Inherits");
-                    ImGui::Button("Rename Instance");
-                    ImGui::Button("Edit Instance");
-                    ImGui::Button("Create Instance");
-                }
-                if (ImGui::CollapsingHeader("Compositions")) {
-                    ImGui::Button("Create Composition");
-                    ImGui::Button("Duplicate Composition");
-                    ImGui::Button("Remove Composition");
-                    ImGui::Button("Rename Composition");
-                    ImGui::Button("Edit Composition");
-                }
-                if (ImGui::CollapsingHeader("Variants")) {
-                    ImGui::Button("Create Variants");
-                    ImGui::Button("Duplicate Variant");
-                }
-            }
-            if (ImGui::CollapsingHeader("Camera")) {
-                ImGui::Button("Perspective On");
-                ImGui::Button("Camera Mode");
-                ImGui::Button("Camera Orbit");
-                ImGui::Button("Camera Pan");
-                ImGui::Button("Camera Zoom");
-                ImGui::Button("Camera Track");
-                ImGui::Button("Camera Walk");
-                ImGui::Button("Camera Fly");
-                ImGui::Button("Camera Free");
-                ImGui::Button("Camera Target");
-                ImGui::Button("Camera Follow");
-            }
-            if (ImGui::CollapsingHeader("Transform")) {
-                ImGui::Button("Transform Mode");
-                ImGui::Button("Transform Translate");
-                ImGui::Button("Transform Rotate");
-                ImGui::Button("Transform Scale");
-            }
-            if (ImGui::CollapsingHeader("Grid")) {
-                ImGui::Checkbox("Show Grid", &hdEditorWindowData.showViewport2DGrid);
-                ImGui::Checkbox("Snap to Grid", &hdEditorWindowData.snapToViewport2DGrid);
-            }
-            if (ImGui::CollapsingHeader("Axes")) {
-                ImGui::Checkbox("Show Axes", &hdEditorWindowData.showViewport2DAxes);
-            }
-            if (ImGui::CollapsingHeader("Helpers")) {
-                ImGui::Button("Show Helpers");
-            }
-            if (ImGui::CollapsingHeader("Gizmos")) {
-                ImGui::Button("Show Gizmos");
-                ImGui::Button("Gizmo Mode");
-                ImGui::Button("Gizmo Tools");
-            }
-            if (ImGui::CollapsingHeader("Selection")) {
-                ImGui::Button("Selection Mode");
-                ImGui::Button("Selection Tools");
-            }
-            if (ImGui::CollapsingHeader("Shading")) {
-                ImGui::Button("Shading Mode");
-                ImGui::Button("Shading Settings");
-                ImGui::SliderInt("AntiAliasing", &hdEditorWindowData.viewport3D_AntiAliasing, 0, 8);
-            }
-            if (ImGui::CollapsingHeader("Lighting")) {
-                ImGui::Button("Lighting Mode");
-                ImGui::Button("Lighting Settings");
-            }
-            if (ImGui::CollapsingHeader("Fog")) {
-                ImGui::Button("Fog Mode");
-                ImGui::Button("Fog Settings");
-            }
-            if (ImGui::CollapsingHeader("Environment")) {
-                ImGui::Button("Environment Mode");
-                ImGui::Button("Environment Settings");
-            }
-            if (ImGui::CollapsingHeader("Skybox")) {
-                ImGui::Button("Skybox Mode");
-                ImGui::Button("Skybox Settings");
-            }
-            if (ImGui::CollapsingHeader("Rendering")) {
-                ImGui::Button("Rendering Mode");
-                ImGui::Button("Buffer Mode");
-                ImGui::Button("Rendering Settings");
-            }
-            if (ImGui::CollapsingHeader("Post-Processing")) {
-                ImGui::Button("Post-Processing Mode");
-                ImGui::Button("Post-Processing Settings");
-            }
-            if (ImGui::CollapsingHeader("Effects")) {
-                ImGui::Button("Effects Mode");
-                ImGui::Button("Effects Settings");
-            }
-            if (ImGui::CollapsingHeader("Audio")) {
-                ImGui::Button("Audio Mode");
-                ImGui::Button("Audio Settings");
-            }
-            if (ImGui::CollapsingHeader("Physics")) {
-                ImGui::Button("Physics Mode");
-                ImGui::Button("Physics Settings");
-            }
-            if (ImGui::CollapsingHeader("Brush")) {
-                ImGui::Button("Load Brush");
-                ImGui::Button("Save Brush");
-                ImGui::SliderFloat("Brush Size", &hdEditorWindowData.viewport3D_BrushSize, hdEditorWindowData.viewport3D_BrushMinSize, hdEditorWindowData.viewport3D_BrushMaxSize, nullptr, ImGuiSliderFlags_AlwaysClamp);
-                ImGui::SliderFloat("Brush Opacity", &hdEditorWindowData.viewport3D_BrushOpacity, hdEditorWindowData.viewport3D_BrushMinOpacity, hdEditorWindowData.viewport3D_BrushMaxOpacity, nullptr, ImGuiSliderFlags_AlwaysClamp);
-                ImGui::SliderFloat("Brush Hardness", &hdEditorWindowData.viewport3D_BrushHardness, hdEditorWindowData.viewport3D_BrushMinHardness, hdEditorWindowData.viewport3D_BrushMaxHardness, nullptr, ImGuiSliderFlags_AlwaysClamp);
-                ImGui::Button("Load Brush Alpha");
-                float brushColor[3] = { 0.0f, 0.0f, 0.0f };
-                ImGui::ColorEdit3("Brush Color", &hdEditorWindowData.viewport3D_BrushColor[0], ImGuiColorEditFlags_Float);
-                ImGui::Button("Brush Mode");
-                ImGui::Button("Brush Tools");
-            }
-            if (ImGui::CollapsingHeader("UVs")) {
-                ImGui::Checkbox("Show UVs", &hdEditorWindowData.showViewport2DUVs);
-                ImGui::Button("UV Visibility Mode");
-                ImGui::Button("UV Tools");
-                ImGui::Button("UV Unwrap");
-                ImGui::Button("Reproject Texture Keeping UVs");
-                ImGui::Button("Add UV Set");
-                ImGui::Button("Remove UV Set");
-                ImGui::Button("Rename UV Set");
-            }
-            if (ImGui::CollapsingHeader("Navigation")) {
-                ImGui::Button("Navigation Mode");
-                ImGui::Button("Navigation Tools");
-            }
-            if (ImGui::CollapsingHeader("Timeline")) {
-                ImGui::Button("Timeline Mode");
-                ImGui::Button("Timeline Tools");
-            }
-            if (ImGui::CollapsingHeader("Animation")) {
-                ImGui::Button("Animation Mode");
-                ImGui::Button("Animation Tools");
-            }
-            if (ImGui::CollapsingHeader("Visibility")) {
-                ImGui::Button("Visible Only");
-                ImGui::Button("Visible Selected");
-                ImGui::Button("Visible All");
-                ImGui::Button("Visible Layers");
-            }
-            ImGui::End();
-        }
-        
-
-        // === Viewport 2D ===
-        ImGui::SetNextWindowBgAlpha(1.0f);
-        ImGui::Begin("Viewport 2D", nullptr);
-        ImGui::End();
-
-        // === Viewport 2D Tools ===
+        // Script Editor
+        if (hdEditorWindowData.isScriptWindowOpen) { hdImgui::ShowScriptEditor(&hdEditorWindowData.isScriptWindowOpen, &hdEditorWindowData); }
+        // Scripts Palette=
+        if (hdEditorWindowData.isScriptsPaletteWindowOpen) { hdImgui::ShowScriptsPalette(&hdEditorWindowData.isScriptsPaletteWindowOpen, &hdEditorWindowData); }
+        // Commands Palette
+        if (hdEditorWindowData.isCommandsPaletteWindowOpen) { hdImgui::ShowCommandsPalette(&hdEditorWindowData.isCommandsPaletteWindowOpen, &hdEditorWindowData); }
+        // Console Editor
+        if (hdEditorWindowData.isConsoleWindowOpen) { hdImgui::ShowConsole(&hdEditorWindowData.isConsoleWindowOpen, &hdEditorWindowData); }
+        // Agents Editor
+        if (hdEditorWindowData.isAgentsWindowOpen) { hdImgui::ShowAgentsEditor(&hdEditorWindowData.isAgentsWindowOpen, &hdEditorWindowData); }
+        // Viewport 3D
+        if (hdEditorWindowData.isViewport3DWindowOpen) { hdImgui::ShowViewport3D(&hdEditorWindowData.isViewport3DWindowOpen, &hdEditorWindowData); }
+        // Viewport 3D Tools
+        if (hdEditorWindowData.isViewport3DToolsWindowOpen) { hdImgui::ShowViewport3DTools(&hdEditorWindowData.isViewport3DToolsWindowOpen, &hdEditorWindowData); }
+        // Viewport 2D
+        if (hdEditorWindowData.isViewport2DWindowOpen) { hdImgui::ShowViewport2D(&hdEditorWindowData.isViewport2DWindowOpen, &hdEditorWindowData); }
+        // Viewport 2D Tools
         // Most of the settings below should actually be in a separate floating, dockable tab, like "Viewport 2D Settings". Preferrably with a
         // semi-transparent background, to be automatically called as an overlay when the user is in the Viewport 2D tab. With each category
         // under separate headers (like "Brush Settings", "Grid Settings", etc). Or maybe even each category under separate semi-transparent tabs,
         // to be used as overlays, collapsed by default.
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Viewport 2D Tools", nullptr);
-
-        if (ImGui::CollapsingHeader("Brush")) {
-            ImGui::Button("Load Brush");
-            ImGui::Button("Save Brush");
-            float brushSizeMin = 0.0f, brushSizeMax = 100.0f, brushSize = 1.0f;
-            ImGui::SliderFloat("Brush Size", &brushSize, brushSizeMin, brushSizeMax, nullptr, ImGuiSliderFlags_AlwaysClamp);
-            float brushOpacityMin = 0.0f, brushOpacityMax = 1.0f, brushOpacity = 1.0f;
-            ImGui::SliderFloat("Brush Opacity", &brushSize, brushSizeMin, brushSizeMax, nullptr, ImGuiSliderFlags_AlwaysClamp);
-            float brushHardnessMin = 0.0f, brushHardnessMax = 1.0f, brushHardness = 1.0f;
-            ImGui::SliderFloat("Brush Hardness", &brushHardness, brushHardnessMin, brushHardnessMax, nullptr, ImGuiSliderFlags_AlwaysClamp);
-            ImGui::Button("Load Brush Alpha");
-            float brushColor[3] = { 0.0f, 0.0f, 0.0f };
-            ImGui::ColorEdit3("Brush Color", (float*)&brushColor, ImGuiColorEditFlags_Float);
-            ImGui::Button("Brush Mode");
-            ImGui::Button("Brush Tools");
-        }
-        if (ImGui::CollapsingHeader("UVs")) {
-            ImGui::Checkbox("Show UVs", &hdEditorWindowData.showViewport2DUVs);
-            ImGui::Button("UV Visibility Mode");
-            ImGui::Button("UV Tools");
-            ImGui::Button("UV Unwrap");
-            ImGui::Button("Reproject Texture Keeping UVs");
-            ImGui::Button("Add UV Set");
-            ImGui::Button("Remove UV Set");
-            ImGui::Button("Rename UV Set");
-        }
-        if (ImGui::CollapsingHeader("Grid")) {
-            ImGui::Checkbox("Show Grid", &hdEditorWindowData.showViewport2DGrid);
-            ImGui::Checkbox("Snap to Grid", &hdEditorWindowData.snapToViewport2DGrid);
-        }
-        if (ImGui::CollapsingHeader("Axes")) {
-            ImGui::Checkbox("Show Axes", &hdEditorWindowData.showViewport2DAxes);
-        }
-        if (ImGui::CollapsingHeader("Helpers")) {
-            ImGui::Button("Show Helpers");
-        }
-        ImGui::End();
-
-        // === Properties Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Properties", nullptr);
-        ImGui::Button("Load Template");
-        ImGui::End();
-
-        // === Asset Manager ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Asset Manager", nullptr);
-        ImGui::Button("Import Asset");
-        ImGui::Button("New Asset");
-        ImGui::Button("Export Asset");
-        ImGui::Button("Share Asset");
-        ImGui::Button("Import Library");
-        ImGui::Button("New Library");
-        ImGui::Button("Library Settings");
-        ImGui::Button("Add to Library");
-        ImGui::Button("Remove from Library");
-        ImGui::Button("Rename Library");
-        ImGui::Button("Delete Library");
-        ImGui::Button("Export Library");
-        ImGui::Button("Share Library");
-        ImGui::End();
-
-        // === Lighting Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Lighting Editor", nullptr);
-        ImGui::Button("Import Light Rig");
-        ImGui::End();
-
-        // === Physics Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Physics Editor", nullptr);
-        ImGui::Button("Import Physics Rig");
-        ImGui::End();
-
-        // === Bottom status bar ===
-        ImGui::Begin("Status Bar", nullptr);
-        ImGui::Button("FPS");
-        ImGui::End();
-
-        // === File Explorer ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("File Explorer", nullptr);
-        ImGui::Button("New...");
-        ImGui::Button("Open...");
-        ImGui::Button("Open As...");
-        ImGui::Button("Open Recent");
-        ImGui::Button("Close");
-        ImGui::Button("Close All");
-        ImGui::Button("Save");
-        ImGui::Button("Save As...");
-        ImGui::Button("Import");
-        ImGui::Button("Export");
-        ImGui::Button("Automate");
-        ImGui::Button("File Info");
-        ImGui::Button("Bookmarks");
-        ImGui::End();
-
-        // === Pattern Orchestrator ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Pattern Orchestrator", nullptr);
-        ImGui::Button("Load Pattern");
-        ImGui::End();
-
-        // === Profiler ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Profiler", nullptr);
-        ImGui::Checkbox("Recording Enabled", &hdEditorWindowData.profilerRecordingEnabled);
-        ImGui::Button("Start Profiler");
-        ImGui::Button("Pause Profiler");
-        ImGui::Button("Stop Profiler");
-        ImGui::Button("Clear Profiler");
-        ImGui::Button("Export Profiler");
-        ImGui::Button("Share Profiler");
-        ImGui::Button("Save Profiler");
-        ImGui::Button("Export Profiling Session");
-        ImGui::Button("Profiler Settings");
-        ImGui::End();
-
-        // === Streaming Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Streaming", nullptr);
-        ImGui::Checkbox("Streaming Enabled", &hdEditorWindowData.streamingEnabled);
-        ImGui::Button("Start Streaming Engine");
-        ImGui::Button("Refresh Streaming Engine");
-        ImGui::Button("Streaming Engine Settings");
-        ImGui::End();
-
-        // === Image Editor ===
+        if (hdEditorWindowData.isViewport2DToolsWindowOpen) { hdImgui::ShowViewport2DTools(&hdEditorWindowData.isViewport2DToolsWindowOpen, &hdEditorWindowData); }
+        // Properties Editor
+        if (hdEditorWindowData.isPropertiesWindowOpen) { hdImgui::ShowPropertyEditor(&hdEditorWindowData.isPropertiesWindowOpen, &hdEditorWindowData); }
+        // Asset Manager
+        if (hdEditorWindowData.isAssetManagerWindowOpen) { hdImgui::ShowAssetManager(&hdEditorWindowData.isAssetManagerWindowOpen, &hdEditorWindowData); }
+        // Lighting Editor
+        if (hdEditorWindowData.isLightingWindowOpen) { hdImgui::ShowLightingEditor(&hdEditorWindowData.isLightingWindowOpen, &hdEditorWindowData); }
+        // Physics Editor
+        if (hdEditorWindowData.isPhysicsWindowOpen) { hdImgui::ShowPhysicsEditor(&hdEditorWindowData.isPhysicsWindowOpen, &hdEditorWindowData); }
+        // Bottom status bar
+        if (hdEditorWindowData.isBottomStatusBarWindowOpen) { hdImgui::ShowBottomStatusBar(&hdEditorWindowData.isBottomStatusBarWindowOpen, &hdEditorWindowData); }
+        // File Explorer
+        if (hdEditorWindowData.isFileExplorerWindowOpen) { hdImgui::ShowFileExplorer(&hdEditorWindowData.isFileExplorerWindowOpen, &hdEditorWindowData); }
+        // Pattern Orchestrator
+        if (hdEditorWindowData.isPatternOrchestratorWindowOpen) { hdImgui::ShowPatternOrchestrator(&hdEditorWindowData.isPatternOrchestratorWindowOpen, &hdEditorWindowData); }
+        // Profiler
+        if (hdEditorWindowData.isProfilerWindowOpen) { hdImgui::ShowProfiler(&hdEditorWindowData.isProfilerWindowOpen, &hdEditorWindowData); }
+        // Streaming Editor
+        if (hdEditorWindowData.isStreamingWindowOpen) { hdImgui::ShowStreamingEditor(&hdEditorWindowData.isStreamingWindowOpen, &hdEditorWindowData); }
+        // Image Editor
         // Used to display and edit textures, texture settings, edit UVs, packed textures, apply adjustments,
         // configure procedurals, use AI-assisted texture generation etc.
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Image Tools", nullptr);
-        if (ImGui::CollapsingHeader("Image")) {
-            ImGui::Button("Import Image");
-            ImGui::Button("New Image");
-            ImGui::Button("Save Image");
-            ImGui::Button("Load Image");
-            ImGui::Button("Export Image");
-            ImGui::Button("Share Image");
-        }
-        if (ImGui::CollapsingHeader("Layers")) {
-            ImGui::Button("Add Image as Layer");
-            ImGui::Button("Add Layer");
-            ImGui::Button("Duplicate Layer");
-            ImGui::Button("Rename Layer");
-            ImGui::Button("Delete Layer");
-            ImGui::Button("Layer Settings");
-        }
-        if (ImGui::CollapsingHeader("Channels")) {
-            ImGui::Button("Add Image as Channel");
-            ImGui::Button("Add Channel");
-            ImGui::Button("Duplicate Channel");
-            ImGui::Button("Rename Channel");
-        }
-        if (ImGui::CollapsingHeader("Procedurals")) {
-            ImGui::Button("Generate Procedural");
-            ImGui::Button("Add Image as Procedural");
-            ImGui::Button("Add Procedural");
-            ImGui::Button("Duplicate Procedural");
-            ImGui::Button("Rename Procedural");
-            ImGui::Button("Delete Procedural");
-            ImGui::Button("Procedural Settings");
-        }
-        if (ImGui::CollapsingHeader("Packed Texture")) {
-            ImGui::Button("Pack Layers as Packed Texture");
-            ImGui::Button("Pack Layers as Texture Set Node");
-        }
-        if (ImGui::CollapsingHeader("Adjustments")) {
-            ImGui::Button("Add Adjustment");
-            ImGui::Button("Duplicate Adjustment");
-            ImGui::Button("Rename Adjustment");
-            ImGui::Button("Delete Adjustment");
-        }
-        if (ImGui::CollapsingHeader("Image Generation")) {
-            ImGui::Button("Generate Image");
-            ImGui::Button("Upscale Image");
-            ImGui::Button("Send to Texture Set Node");
-            ImGui::Button("Upscale to Packed Texture");
-            ImGui::Button("Send to Layer");
-            ImGui::Button("Send to Channel");
-            ImGui::Button("Send to Procedural");
-            ImGui::Button("Synthesis Texture Set Node");
-            ImGui::Button("Synthesis Packed Texture");
-        }
-        if (ImGui::CollapsingHeader("Texture Settings")) {
-            ImGui::Button("Maximum Size");
-            ImGui::Button("Mipmaps");
-            ImGui::Button("Generate Mipmaps");
-            ImGui::Button("Filtering");
-            ImGui::Button("Anisotropic Filtering");
-        }
-        if (ImGui::CollapsingHeader("Texture Compression")) {
-            ImGui::Button("Lossless Compression");
-            ImGui::Button("Lossy Compression");
-        }
-        if (ImGui::CollapsingHeader("Image Sequence & Atlas")) {
-            ImGui::Button("Import Image Sequence");
-            ImGui::Button("Convert Layers to Atlas");
-            ImGui::Button("Add Image to Atlas");
-            ImGui::Button("Remove Image from Atlas");
-        }
-        ImGui::End();
-
-        // === Audio Editor ===
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Audio", nullptr);
-        ImGui::Button("Import Audio");
-        ImGui::Button("New Audio");
-        ImGui::Button("Save Audio");
-        ImGui::Button("Load Audio");
-        ImGui::Button("Play Audio");
-        ImGui::Button("Stop Audio");
-        ImGui::Button("Export Audio");
-        ImGui::Button("Share Audio");
-        ImGui::Button("Add Audio");
-        ImGui::Button("Remove Audio");
-        ImGui::End();
-
-        // === Montage Editor ===
+        if (hdEditorWindowData.isImageWindowOpen) { hdImgui::ShowImageTools(&hdEditorWindowData.isImageWindowOpen, &hdEditorWindowData); }
+        // Audio Editor
+        // Montage Editor
         // Timeline with tracks, blending, transitions, etc. Used to compose animations, cutscenes, video clips, 
         // audio clips, images and other time varying media.
         // Whereas DCC apps usually rely on a simple timeline by default, Hydragon uses a more advanced montage editor,
         // with two visualization modes: collapsed and expanded (defaults to expanded).
-        ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);
-        ImGui::Begin("Montage", nullptr);
-        ImGui::Button("Import Montage");
-        ImGui::Button("New Montage");
-        ImGui::Button("Save Montage");
-        ImGui::Button("Load Montage");
-        ImGui::Button("Play Montage");
-        ImGui::Button("Stop Montage");
-        ImGui::Button("Export Montage");
-        ImGui::Button("Share Montage");
-        ImGui::Button("Add Montage");
-        ImGui::Button("Remove Montage");
-        ImGui::End();
+        
 
         // === Text Editor ===
         ImGui::SetNextWindowBgAlpha(hdEditorWindowData.globalWindowBgAlpha);

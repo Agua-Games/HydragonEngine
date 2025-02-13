@@ -621,54 +621,64 @@ namespace hdImgui {
             if (ImGui::BeginMenu("Window"))
             {
                 if (ImGui::MenuItem("Top Toolbar", "Ctrl+I")) { windowData->isTopToolbarWindowOpen = true; }
-                if (ImGui::MenuItem("Left Toolbar", "Ctrl+I")) {}
-                if (ImGui::MenuItem("Right Toolbar", "Ctrl+I")) {}
-                if (ImGui::MenuItem("Bottom Toolbar", "Ctrl+I")) {}
+                if (ImGui::MenuItem("Left Toolbar", "Ctrl+I")) { windowData->isLeftToolbarWindowOpen = true; }
+                if (ImGui::MenuItem("Right Toolbar", "Ctrl+I")) { windowData->isRightToolbarWindowOpen = true; }
+                if (ImGui::MenuItem("Bottom Toolbar", "Ctrl+I")) { windowData->isBottomToolbarWindowOpen = true; }
                 ImGui::Separator();
-                if (ImGui::MenuItem("NodeGraph", "Ctrl+M")) {}
-                if (ImGui::MenuItem("SceneGraph", "Ctrl+O")) {windowData->isSceneGraphWindowOpen = true;}
+                if (ImGui::MenuItem("NodeGraph", "Ctrl+M")) { windowData->isNodeGraphWindowOpen = true; }
+                if (ImGui::MenuItem("SceneGraph", "Ctrl+O")) { windowData->isSceneGraphWindowOpen = true; }
                 ImGui::Separator();
-                if (ImGui::MenuItem("Viewport 3D", "Ctrl+Shift+V")) {}
-                if (ImGui::MenuItem("Viewport 3D Tools", "Ctrl+Shift+T")) {windowData->isViewport3DToolsWindowOpen = true;}
-                if (ImGui::MenuItem("Viewport 2D", "Ctrl+Shift+D")) {}
-                if (ImGui::MenuItem("Viewport 2D Tools", "Ctrl+Shift+O")) {}
+                if (ImGui::MenuItem("Viewport 3D", "Ctrl+Shift+V")) { windowData->isViewport3DWindowOpen = true; }
+                if (ImGui::MenuItem("Viewport 3D Tools", "Ctrl+Shift+T")) {windowData->isViewport3DToolsWindowOpen = true; }
+                if (ImGui::MenuItem("Viewport 2D", "Ctrl+Shift+D")) { windowData->isViewport2DWindowOpen = true; }
+                if (ImGui::MenuItem("Viewport 2D Tools", "Ctrl+Shift+O")) { windowData->isViewport2DToolsWindowOpen = true; }
                 ImGui::Separator();
-                if (ImGui::MenuItem("Asset Manager", "Ctrl+A")) {}
-                if (ImGui::MenuItem("Chimera Pipeline", "Ctrl+Shift+C")) {}
+                if (ImGui::MenuItem("Asset Manager", "Ctrl+A")) { windowData->isAssetManagerWindowOpen = true; }
+                if (ImGui::MenuItem("Chimera Pipeline", "Ctrl+Shift+C")) { windowData->isChimeraPipelineWindowOpen = true; }
                 ImGui::Separator();
-                if (ImGui::MenuItem("Agents", "Ctrl+Shift+A")) {}        
-                ImGui::Separator();         
-                if (ImGui::MenuItem("Mesh Editor", "Ctrl+Shift+M")) {}
-                if (ImGui::MenuItem("Volume Editor", "Ctrl+Shift+V")) {}
-                if (ImGui::MenuItem("Montage Editor", "Ctrl+Shift+T")) {}
-                if (ImGui::MenuItem("Audio Editor", "Ctrl+Shift+A")) {}
-                if (ImGui::MenuItem("Drama Editor", "Ctrl+Shift+D")) {}
-                if (ImGui::MenuItem("Streaming Editor", "Ctrl+Shift+M")) {}
-                if (ImGui::MenuItem("Networking Editor", "Ctrl+Shift+N")) {}
-                if (ImGui::MenuItem("Input Editor", "Ctrl+Shift+T")) {}
-                if (ImGui::MenuItem("Localization Editor", "Ctrl+Shift+E")) {}
-                if (ImGui::MenuItem("Properties Matrix", "Ctrl+Shift+E")) {}
+                if (ImGui::MenuItem("Agents", "Ctrl+Shift+A")) { windowData->isAgentsWindowOpen = true; }        
+                ImGui::Separator();  
+                if (ImGui::MenuItem("Properties", "Ctrl+Shift+P")) { windowData->isPropertiesWindowOpen = true; }       
+                if (ImGui::MenuItem("Settings", "Ctrl+Shift+P")) { windowData->isSettingsWindowOpen = true; }
+                ImGui::Separator();  
+                if (ImGui::MenuItem("File Explorer", "Ctrl+Shift+M")) { windowData->isFileExplorerWindowOpen = true; }
+                if (ImGui::MenuItem("Lighting Editor", "Ctrl+Shift+M")) { windowData->isLightingWindowOpen = true; }
+                if (ImGui::MenuItem("Physics Editor", "Ctrl+Shift+M")) { windowData->isPhysicsWindowOpen = true; }
+                if (ImGui::MenuItem("Image Tools", "Ctrl+Shift+M")) { windowData->isImageWindowOpen = true; }
+                if (ImGui::MenuItem("Mesh Editor", "Ctrl+Shift+M")) { windowData->isMeshWindowOpen = true; }
+                if (ImGui::MenuItem("Volume Editor", "Ctrl+Shift+V")) { windowData->isVolumeWindowOpen = true; }
+                if (ImGui::MenuItem("Montage Editor", "Ctrl+Shift+T")) { windowData->isMontageWindowOpen = true; }
+                if (ImGui::MenuItem("Audio Editor", "Ctrl+Shift+A")) { windowData->isAudioWindowOpen = true; }
+                if (ImGui::MenuItem("Drama Editor", "Ctrl+Shift+D")) { windowData->isDramaWindowOpen = true; }
+                if (ImGui::MenuItem("Pattern Orchestrator", "Ctrl+Shift+D")) { windowData->isPatternOrchestratorWindowOpen = true; }
+                if (ImGui::MenuItem("Streaming Editor", "Ctrl+Shift+M")) { windowData->isStreamingWindowOpen = true; }
+                if (ImGui::MenuItem("Networking Editor", "Ctrl+Shift+N")) { windowData->isNetworkingWindowOpen = true; }
+                if (ImGui::MenuItem("Input Editor", "Ctrl+Shift+T")) { windowData->isInputWindowOpen = true; }
+                if (ImGui::MenuItem("Localization Editor", "Ctrl+Shift+E")) { windowData->isLocalizationWindowOpen = true; }
+                if (ImGui::MenuItem("Properties Matrix", "Ctrl+Shift+E")) { windowData->isPropertiesMatrixWindowOpen = true; }
                 ImGui::Separator();
-                if (ImGui::MenuItem("UI Editor", "Ctrl+Shift+U")) {}
-                if (ImGui::MenuItem("Font Editor", "Ctrl+Shift+F")) {}
-                if (ImGui::MenuItem("Text Editor", "Ctrl+Shift+X")) {}
+                if (ImGui::MenuItem("UI Editor", "Ctrl+Shift+U")) { windowData->isUIEditorWindowOpen = true; }
+                if (ImGui::MenuItem("Font Editor", "Ctrl+Shift+F")) { windowData->isFontWindowOpen = true; }
+                if (ImGui::MenuItem("Text Editor", "Ctrl+Shift+X")) { windowData->isTextWindowOpen = true; }
                 ImGui::Separator();
-                if (ImGui::MenuItem("Command Palette", "Ctrl+Shift+P")) {}
-                if (ImGui::MenuItem("Console", "Ctrl+Shift+L")) {}
+                if (ImGui::MenuItem("Scripts Palette", "Ctrl+Shift+P")) { windowData->isScriptsPaletteWindowOpen = true; }
+                if (ImGui::MenuItem("Command Palette", "Ctrl+Shift+P")) { windowData->isCommandsPaletteWindowOpen = true; }
+                if (ImGui::MenuItem("Console", "Ctrl+Shift+L")) { windowData->isConsoleWindowOpen = true; }
+                if (ImGui::MenuItem("Bottom Status Bar", "Ctrl+Shift+L")) { windowData->isBottomStatusBarWindowOpen = true; }
                 ImGui::Separator();
                 if (ImGui::BeginMenu("Developer"))
                 {
-                    if (ImGui::MenuItem("Macros Editor", "Ctrl+Shift+M")) {}
-                    if (ImGui::MenuItem("Script Editor", "Ctrl+Shift+O")) {}
-                    if (ImGui::MenuItem("Reflection Editor", "Ctrl+Shift+R")) {}
-                    if (ImGui::MenuItem("Plugin Editor", "Ctrl+Shift+L")) {}
-                    if (ImGui::MenuItem("Extensions Editor", "Ctrl+Shift+E")) {}
+                    if (ImGui::MenuItem("Macros Editor", "Ctrl+Shift+M")) { windowData->isMacrosWindowOpen = true; }
+                    if (ImGui::MenuItem("Script Editor", "Ctrl+Shift+O")) { windowData->isScriptWindowOpen = true; }
+                    if (ImGui::MenuItem("Reflection Editor", "Ctrl+Shift+R")) { windowData->isReflectionWindowOpen = true; }
+                    if (ImGui::MenuItem("Plugin Editor", "Ctrl+Shift+L")) { windowData->isPluginWindowOpen = true; }
+                    if (ImGui::MenuItem("Extensions Editor", "Ctrl+Shift+E")) { windowData->isExtensionsWindowOpen = true; }
                     ImGui::Separator();
-                    if (ImGui::MenuItem("Collaboration Editor", "Ctrl+Shift+E")) {}
-                    if (ImGui::MenuItem("Community Editor", "Ctrl+Shift+E")) {}
-                    if (ImGui::MenuItem("Monetization Editor", "Ctrl+Shift+E")) {}
+                    if (ImGui::MenuItem("Collaboration Editor", "Ctrl+Shift+E")) { windowData->isCollaborationWindowOpen = true; }
+                    if (ImGui::MenuItem("Community Editor", "Ctrl+Shift+E")) { windowData->isCommunityWindowOpen = true; }
+                    if (ImGui::MenuItem("Monetization Editor", "Ctrl+Shift+E")) { windowData->isMonetizationWindowOpen = true; }
                     ImGui::Separator();
-                    if (ImGui::MenuItem("Performance Scalability", "Ctrl+Shift+B")) {}
+                    if (ImGui::MenuItem("Performance Scalability", "Ctrl+Shift+B")) { windowData->isPerformanceScalabilityWindowOpen = true; }
                     if (ImGui::MenuItem("Project Insights", "Ctrl+Shift+B")) {}
                     if (ImGui::MenuItem("Profiler Editor", "Ctrl+Shift+P")) {}
                     if (ImGui::MenuItem("Debugger Editor", "Ctrl+Shift+D")) {}

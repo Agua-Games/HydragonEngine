@@ -24,7 +24,7 @@ namespace hdImgui {
         bool isTopToolbarWindowOpen = true;
         bool isLeftToolbarWindowOpen = true;
         bool isRightToolbarWindowOpen = true;
-        bool isBottomToolbarWindowOpen = true;
+        bool isBottomToolbarWindowOpen = false;
         bool isSceneGraphWindowOpen = true;
 
         bool isNodeGraphWindowOpen = true;
@@ -58,9 +58,20 @@ namespace hdImgui {
         bool snapToViewport2DGrid = true;
         bool showViewport2DAxes = true;
         bool showViewport2DUVs = true;
+        int viewport2D_AntiAliasing = 2;
+        float viewport2D_BrushSize = 1.0f;
+        float viewport2D_BrushMinSize = 0.0f;
+        float viewport2D_BrushMaxSize = 100.0f;
+        float viewport2D_BrushOpacity = 1.0f;
+        float viewport2D_BrushMinOpacity = 0.0f;
+        float viewport2D_BrushMaxOpacity = 1.0f;  
+        float viewport2D_BrushHardness = 1.0f;  
+        float viewport2D_BrushMinHardness = 0.0f;  
+        float viewport2D_BrushMaxHardness = 1.0f;  
+        float viewport2D_BrushColor[3] = { 0.0f, 0.0f, 0.0f};  
         bool isViewport2DToolsWindowOpen = true;
 
-        bool isPropertyEditorWindowOpen = true;
+        bool isPropertiesWindowOpen = true;
         bool isAssetManagerWindowOpen = true;
         bool isLightingWindowOpen = true;
         bool isPhysicsWindowOpen = true;
@@ -94,9 +105,9 @@ namespace hdImgui {
         bool isPropertiesMatrixWindowOpen = true;
         bool isLocalizationWindowOpen = true;
         bool isSettingsWindowOpen = true;
-        bool isMeshEditorWindowOpen = true;
+        bool isMeshWindowOpen = true;
         bool isMonetizationWindowOpen = true;
-        bool isVolumeEditorWindowOpen = true;
+        bool isVolumeWindowOpen = true;
         bool isPresetEditorWindowOpen = true;
     };
 
