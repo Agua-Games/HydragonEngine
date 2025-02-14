@@ -18,6 +18,7 @@ namespace hd {
     // Struct to hold metadata and attributes for HD_Object
     struct HD_ObjectInfo {
         std::string Name;               // Optional name for debugging or identification
+        std::string description;        // Optional description
         bool IsSerializable = true;     // Whether the object supports serialization
         bool IsEditableInEditor = true; // Whether the object's properties are exposed to the editor
         std::unordered_map<std::string, std::any> CustomAttributes; // User-defined attributes
