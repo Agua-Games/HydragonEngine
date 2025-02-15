@@ -1,3 +1,14 @@
+/**
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ */
+#pragma once
+
+#include "Core/NodeGraph/HD_Node.h"
+#include "Core/Procedural/HD_ProceduralTypes.h"
+#include "Core/Procedural/HD_ProceduralOrchestrator.h"
+#include "Core/Rendering/HD_VolumetricTypes.h"
+
 namespace hd {
 
 struct HD_FogNodeInfo : public HD_NodeInfo {
@@ -5,33 +16,77 @@ struct HD_FogNodeInfo : public HD_NodeInfo {
     bool supportsDynamicPatterns = true;
 
     HD_FogNodeInfo() {
-        NodeType = "Atmosphere/Fog";
+        NodeType = "Weather/Fog";
         IsStreamable = true;
         IsAsyncLoadable = true;
         
-        // Define default ports
         Inputs = {
-            "WindIntensity",
-            "Humidity",
-            "Temperature",
-            "DensityPattern",
-            "TurbulencePattern",
-            "GlobalAtmosphere"
+            "WindIntensity",     // Wind effect on fog
+            "Humidity",          // Moisture content
+            "Temperature",       // Temperature influence
+            "DensityPattern",    // Base density distribution
+            "TurbulencePattern", // Turbulence influence
+            "GlobalAtmosphere",  // Atmospheric state
+            "TimeScale",         // Time-based evolution
+            "Evolution"          // Pattern evolution
         };
         
         Outputs = {
-            "VolumetricTexture",
-            "DensityField",
-            "ScatteringParams"
+            "VolumetricTexture", // 3D fog texture
+            "DensityField",      // 3D density distribution
+            "ScatteringParams",  // Light scattering parameters
+            "FogState"           // Current fog state
         };
     }
 };
 
-class HD_FogNode : public HD_Node {
+class HD_FogNode : public HD_Node<VolumetricTexture, DensityField, ScatteringParams> {
 public:
     explicit HD_FogNode(const HD_FogNodeInfo& info = HD_FogNodeInfo())
         : HD_Node(info), FogInfo(info) {
-        InitializeProceduralPorts();
+        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        fogPatternId = orchestrator.RegisterPattern(CreateDefaultFogPattern());
+    }
+
+    ~HD_FogNode() {
+        if (!fogPatternId.empty()) {
+            auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+            orchestrator.UnregisterPattern(fogPatternId);
+        }
+    }
+
+    void ProcessNodeGraph() override {
+        // Get input values
+        float windIntensity = GetInputValue<float>("WindIntensity");
+        float humidity = GetInputValue<float>("Humidity");
+        float temperature = GetInputValue<float>("Temperature");
+        
+        auto densityPattern = GetInputValue<ProceduralPatternData>("DensityPattern");
+        auto turbulencePattern = GetInputValue<ProceduralPatternData>("TurbulencePattern");
+        auto atmosphereState = GetInputValue<AtmosphereState>("GlobalAtmosphere");
+        
+        // Create procedural pattern if none provided
+        if (!densityPattern.IsValid()) {
+            ProceduralStructureParams fogParams;
+            fogParams.type = ProceduralStructureType::Organic;
+            fogParams.regularity = windIntensity * 0.5f;
+            fogParams.complexity = humidity;
+            
+            auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+            fogPatternId = orchestrator.CreateVolumeTexturePattern(fogParams);
+            densityPattern = orchestrator.GetProceduralPattern(fogPatternId);
+        }
+
+        // Process patterns and generate outputs
+        auto volumetricTexture = GenerateVolumetricTexture(densityPattern, turbulencePattern);
+        auto densityField = ComputeDensityField(densityPattern, temperature);
+        auto scatteringParams = CalculateScatteringParams(humidity, temperature, atmosphereState);
+
+        // Set output values
+        SetOutputValue("VolumetricTexture", volumetricTexture);
+        SetOutputValue("DensityField", densityField);
+        SetOutputValue("ScatteringParams", scatteringParams);
+        SetOutputValue("FogState", GenerateFogState());
     }
 
     std::vector<std::string> GetInputPorts() const override {
@@ -40,36 +95,6 @@ public:
 
     std::vector<std::string> GetOutputPorts() const override {
         return FogInfo.Outputs;
-    }
-
-    void ProcessNodeGraph() override {
-        // Get input values from connected nodes
-        float windIntensity = GetInputValue<float>("WindIntensity");
-        float humidity = GetInputValue<float>("Humidity");
-        float temperature = GetInputValue<float>("Temperature");
-        
-        auto densityPattern = GetInputValue<ProceduralPatternData>("DensityPattern");
-        auto turbulencePattern = GetInputValue<ProceduralPatternData>("TurbulencePattern");
-        
-        // If no pattern is connected, create procedural ones
-        if (!densityPattern.IsValid()) {
-            ProceduralStructureParams fogParams;
-            fogParams.type = ProceduralStructureType::Organic;
-            fogParams.regularity = windIntensity * 0.5f;
-            fogParams.complexity = humidity;
-            
-            densityPattern = CreateProceduralPattern(fogParams);
-        }
-
-        // Process the patterns
-        auto volumetricTexture = GenerateVolumetricTexture(densityPattern, turbulencePattern);
-        auto densityField = ComputeDensityField(densityPattern, temperature);
-        auto scatteringParams = CalculateScatteringParams(humidity, temperature);
-
-        // Set output values for connected nodes
-        SetOutputValue("VolumetricTexture", volumetricTexture);
-        SetOutputValue("DensityField", densityField);
-        SetOutputValue("ScatteringParams", scatteringParams);
     }
 
     void DrawInNodeGraph() override {
@@ -93,30 +118,14 @@ public:
 
 private:
     HD_FogNodeInfo FogInfo;
+    std::string fogPatternId;
 
-    void InitializeProceduralPorts() {
-        // Set up additional procedural-specific ports
-        if (FogInfo.supportsDynamicPatterns) {
-            FogInfo.Inputs.push_back("TimeScale");
-            FogInfo.Inputs.push_back("Evolution");
-        }
-    }
-
-    ProceduralPatternData CreateProceduralPattern(const ProceduralStructureParams& params) {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
-        std::string patternId = orchestrator.CreateVolumeTexturePattern(params);
-        return orchestrator.GetProceduralPattern(patternId);
-    }
+    VolumetricTexture GenerateVolumetricTexture(const ProceduralPatternData& density, 
+                                               const ProceduralPatternData& turbulence);
+    DensityField ComputeDensityField(const ProceduralPatternData& pattern, float temperature);
+    ScatteringParams CalculateScatteringParams(float humidity, float temperature, 
+                                             const AtmosphereState& atmosphere);
+    FogState GenerateFogState();
 };
 
 } // namespace hd
-```
-
-This revised approach:
-1. Properly integrates with the node graph system
-2. Allows visual composition in the editor
-3. Supports connection with other nodes (materials, atmosphere, weather, etc.)
-4. Maintains the procedural capabilities while being node-based
-5. Can be part of larger node graphs for complex atmospheric effects
-
-Should I revise the other systems similarly to make them node-based? This would allow users to create complex weather systems, vegetation systems, and particle effects through visual node composition while still leveraging the procedural orchestrator.

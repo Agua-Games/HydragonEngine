@@ -12,7 +12,12 @@
 #include <future>
 #include <mutex>
 
-#if 0
+#include "HD_Object.h"
+#include "HD_CompilationContext.h"
+#include "HD_CodeGenContext.h"
+#include "HD_DependencyGraph.h"
+
+
 namespace hd {
 
 // Struct to hold metadata and attributes for HD_Node
@@ -271,6 +276,123 @@ public:
         ImportCustomImplementation(elements);
     }
 
+    // Scripting Editor Integration
+    struct ScriptingInterface {
+        // Code templates for different languages
+        struct CodeTemplates {
+            std::string cpp;
+            std::string python;
+            std::string lua;
+            std::string blueprint; // Visual scripting
+        };
+        
+        // Language-specific metadata
+        struct LanguageMetadata {
+            std::string imports;          // Required imports/includes
+            std::string baseClass;        // Language-specific base class
+            std::string interfaceClass;   // Interface to implement
+            std::vector<std::string> attributes; // Language-specific attributes
+        };
+
+        // Debugging interface
+        struct DebugInterface {
+            std::vector<std::string> breakpointLocations;
+            std::vector<std::string> watchExpressions;
+            std::map<std::string, std::string> stateInspection;
+        };
+
+        CodeTemplates templates;
+        LanguageMetadata metadata;
+        DebugInterface debugInfo;
+    };
+
+    // AI Agent Integration
+    struct AIInterface {
+        // Task descriptions for AI manipulation
+        struct TaskDescription {
+            std::string intent;           // What the task aims to achieve
+            std::string constraints;      // Limitations and requirements
+            std::vector<std::string> prerequisites; // Required conditions
+            std::vector<std::string> effects;       // Expected outcomes
+        };
+
+        // Node manipulation capabilities
+        struct ManipulationCapabilities {
+            bool canModifyPorts;
+            bool canModifyLogic;
+            bool canModifyProperties;
+            bool canCreateConnections;
+            bool canOptimize;
+        };
+
+        // Semantic information for AI understanding
+        struct SemanticInfo {
+            std::string purpose;          // Node's primary function
+            std::string domain;           // Domain-specific context
+            std::vector<std::string> tags;// Semantic tags
+            std::string relationships;    // Relationship with other nodes
+        };
+
+        // Performance metrics for AI optimization
+        struct PerformanceMetrics {
+            float computationalCost;
+            float memoryUsage;
+            float latency;
+            std::vector<std::string> bottlenecks;
+        };
+
+        TaskDescription taskDesc;
+        ManipulationCapabilities capabilities;
+        SemanticInfo semantics;
+        PerformanceMetrics metrics;
+    };
+
+    // Scripting Editor methods
+    virtual ScriptingInterface GetScriptingInterface() const {
+        ScriptingInterface interface;
+        // Populate interface based on node type
+        return interface;
+    }
+
+    virtual void ExportToScriptingEditor() {
+        auto interface = GetScriptingInterface();
+        // Generate editor-specific code and metadata
+    }
+
+    virtual void ImportFromScriptingEditor(const std::string& code, 
+                                         const std::string& language) {
+        // Parse and validate code
+        // Update node implementation
+    }
+
+    // AI Agent methods
+    virtual AIInterface GetAIInterface() const {
+        AIInterface interface;
+        // Populate interface based on node type
+        return interface;
+    }
+
+    virtual bool ValidateAITask(const std::string& taskIntent) {
+        // Validate if the task is applicable to this node
+        return true;
+    }
+
+    virtual bool ApplyAITask(const std::string& taskIntent,
+                            const std::map<std::string, std::any>& parameters) {
+        // Apply AI-suggested changes
+        return true;
+    }
+
+    // AI-assisted optimization
+    virtual std::vector<std::string> GetOptimizationSuggestions() const {
+        return {}; // Return potential optimization opportunities
+    }
+
+    // AI safety and validation
+    virtual bool ValidateAIChanges(const std::vector<std::string>& changes) {
+        return true; // Validate proposed changes
+    }
+
 protected:
     HD_NodeInfo NodeInfo;                      // Metadata and attributes for the node
     std::vector<std::shared_ptr<HD_Node>> Children; // Child nodes (making this a node graph)
@@ -327,7 +449,33 @@ private:
     void ApplyCustomImplementation(const CustomizableElements& elements);
     std::string GenerateNodeSourceFile(const CustomizableElements& elements) const;
     CustomizableElements ParseNodeSourceFile(const std::string& sourceCode);
+
+    // Scripting support
+    virtual void GenerateLanguageSpecificCode(const std::string& language) = 0;
+    virtual void ValidateGeneratedCode(const std::string& code) = 0;
+    virtual void ApplyCodeChanges(const std::string& code) = 0;
+
+    // AI support
+    virtual bool IsAIManipulationAllowed() const { return true; }
+    virtual std::string GetNodeSemantics() const = 0;
+    virtual std::vector<std::string> GetSafetyConstraints() const = 0;
+
+    // Scripting editor state
+    struct {
+        std::string currentLanguage;
+        bool isDirty = false;
+        std::string lastValidCode;
+        std::vector<std::string> errorLog;
+    } scriptingState;
+
+    // AI agent state
+    struct {
+        std::vector<std::string> appliedTasks;
+        std::map<std::string, float> taskSuccess;
+        std::vector<std::string> rejectedTasks;
+        bool isUnderAIModification = false;
+    } aiState;
 };
 
 } // namespace hd
-#endif
+
