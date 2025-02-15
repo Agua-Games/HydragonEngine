@@ -12,10 +12,19 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_vulkan.h>
 
-#include "hdImgui.h"
+//#include "hdImgui.h"
 
 namespace hd{
-    int Test() {
-        return 0;
-    }
+    class Engine {
+    public:
+        // Default constructor and destructor
+        EngineModule() = default;
+        ~EngineModule() = default;
+    
+        // Custom constructor (optional)
+
+    
+    private:
+
+    };
 }

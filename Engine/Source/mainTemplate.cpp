@@ -15,6 +15,7 @@
 #include <imgui_impl_vulkan.h>
 
 #include "hdImgui.h"
+#include "ResourceManager.h"
 
 float appIdleSleepTime = 60.0f;
 
@@ -48,6 +49,13 @@ void RunApplication() {
     ImGui_ImplVulkan_InitInfo init_info = {};
     // Fill in Vulkan initialization info...
     ImGui_ImplVulkan_Init(&init_info);
+
+    // === Initialize Resources Manager ===
+    // Instantiate the ResourceManager
+    hd::ResourceManager resourceManager;
+
+    // Call GetEngineRootPath() to get the engine root path
+    fs::path rootPath = resourceManager.GetEngineRootPath();
 
     // =========== Main Loop ===========
     while (!glfwWindowShouldClose(window)) {

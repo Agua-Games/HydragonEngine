@@ -30,13 +30,13 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 186,
+				"line" : 185,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 258,
+				"line" : 261,
 				"parent" : 0
 			},
 			{
@@ -54,13 +54,13 @@
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 239,
+				"line" : 238,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 206,
+				"line" : 205,
 				"parent" : 0
 			}
 		]
@@ -255,6 +255,106 @@
 				{
 					"backtrace" : 5,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Utilities"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/BuildTools"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/ChimeraLiveLink"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/Coda"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/Coda/CodeAnalysis"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/Common"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/Common/__pycache__"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/CommunityManager"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/DebugTools"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/Experimental"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/ProfilingTools"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/TaskAutomation"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/DevTools/TestFrameworks"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Core"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/AssetEditor"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/AssetManager"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/MaterialEditor"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/MemoryVisualizer"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/NodeGraph"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/Plugins"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/SceneGraphEditor"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/Scripting"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/UI"
 				},
 				{
 					"backtrace" : 2,
@@ -459,6 +559,12 @@
 	],
 	"sources" : 
 	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Engine.cpp",
+			"sourceGroupIndex" : 0
+		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
@@ -781,12 +887,6 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/main.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/engine.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

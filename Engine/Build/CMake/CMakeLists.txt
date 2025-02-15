@@ -165,7 +165,6 @@ file(GLOB_RECURSE SRC_FILES_AUTO
 # =====================================================================================
 set(SRC_FILES_MANUAL
     ${SOURCE_DIR}/main.cpp
-    ${SOURCE_DIR}/engine.cpp
     ${IMGUI_DIR}/imgui.cpp
     ${IMGUI_DIR}/imgui_draw.cpp
     ${IMGUI_DIR}/imgui_demo.cpp
@@ -239,6 +238,10 @@ get_all_subdirectories(${EDITOR_SOURCE_DIR} EDITOR_SUBDIRS)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CORE_SOURCE_DIR}
     ${CORE_SUBDIRS}
+    ${DEV_TOOLS_SOURCE_DIR}
+    ${DEV_TOOLS_SUBDIRS}
+    ${EDITOR_SOURCE_DIR}
+    ${EDITOR_SUBDIRS}
 )
 
 # ======================================================================================

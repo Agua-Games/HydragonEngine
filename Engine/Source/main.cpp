@@ -3,6 +3,7 @@
  */
 #pragma once
 #include <windows.h>
+#include <filesystem>
 #include <iostream>
 #include <stdio.h>          // printf, fprintf
 #include <stdlib.h>         // abort
@@ -15,6 +16,7 @@
 #include <vulkan/vulkan.h>
 
 #include "hdImgui.h"
+#include "ResourceManager.h"
 
 // Volk headers
 #ifdef IMGUI_IMPL_VULKAN_USE_VOLK
@@ -341,6 +343,19 @@ static void FramePresent(ImGui_ImplVulkanH_Window* wd)
         check_vk_result(err);
     wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->SemaphoreCount; // Now we can use the next set of semaphores
 }
+
+// ========== Hydragon Code ==========
+// Leave it here until we replace this imgui example main.cpp file with our own, reworked, synthetic code, more
+// structured, etc.
+
+// === Initialize Resources Manager ===
+// Get the singleton instance of ResourceManager
+hd::ResourceManager& resourceManager = hd::ResourceManager::GetInstance();
+
+// Call GetEngineRootPath() to get the engine root path
+fs::path rootPath = resourceManager.GetEngineRootPath();
+
+// end of Hydragon Code ==============
 
 // Main code
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
