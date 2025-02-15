@@ -206,6 +206,27 @@ public:
         return IsProcedural() && HasInputsChanged();
     }
 
+    /**
+     * @brief Validates object state and connections
+     */
+    virtual bool Validate() const {
+        // Check property validity
+        for (const auto& [id, prop] : properties) {
+            if (!ValidateProperty(id, prop)) return false;
+        }
+
+        // Check dependency validity
+        for (const auto& dep : dependencies) {
+            if (auto ptr = dep.lock()) {
+                if (!ptr->Validate()) return false;
+            } else {
+                return false; // Invalid weak_ptr
+            }
+        }
+
+        return true;
+    }
+
 protected:
     HD_ObjectInfo Info;
     std::vector<std::shared_ptr<HD_Object>> Dependencies;
@@ -228,6 +249,14 @@ private:
     static bool IsVersionCompatible(const std::string& v1, const std::string& v2) {
         // Implement version compatibility check
         return v1 == v2; // Simplified for now
+    }
+
+    bool ValidateProperty(PropertyId id, const std::unique_ptr<PropertyBase>& prop) const {
+        if (!prop) return false;
+        
+        // Additional property validation logic
+        const auto& info = PropertyRegistry::GetInfo(id);
+        return prop->GetType() == info.type;
     }
 };
 
