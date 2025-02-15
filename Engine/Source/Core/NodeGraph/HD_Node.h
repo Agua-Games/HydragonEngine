@@ -35,6 +35,7 @@ struct HD_NodeInfo : public HD_ObjectInfo {
 };
 
 // Base class for all nodes in Hydragon
+template<typename... Types>
 class HD_Node : public HD_Object {
 public:
     // Constructor with HD_NodeInfo for initialization
@@ -94,7 +95,21 @@ public:
     // These methods should be implemented in derived classes.
     virtual std::vector<std::string> GetInputPorts() const = 0;  // Inputs for connections
     virtual std::vector<std::string> GetOutputPorts() const = 0; // Outputs for connections
-};
+
+    // Type-safe port system
+    template<typename T>
+    void SetPortValue(const std::string& portName, T&& value) {
+        static_assert((std::is_same_v<T, Types> || ...), 
+                     "Type not supported by this node");
+        // Implementation
+    }
+
+    template<typename T>
+    T GetPortValue(const std::string& portName) const {
+        static_assert((std::is_same_v<T, Types> || ...), 
+                     "Type not supported by this node");
+        // Implementation
+    }
 
     // Draw this node in the Inspector (can be overridden by derived classes)
     virtual void DrawInInspector() {
@@ -143,6 +158,119 @@ public:
         }
     }
 
+    // Support for compilation
+    virtual bool CanCompile() const { return false; }
+    
+    virtual void ContributeToCompilation(CompilationContext& context) {
+        // Default implementation for nodes that don't need special compilation handling
+        context.AddDefaultNodeCompilation(this);
+    }
+
+    // Optimization hints
+    virtual bool HasConstantOutput() const { return false; }
+    virtual bool CanInline() const { return false; }
+    virtual bool RequiresFullPrecision() const { return true; }
+
+    // Runtime execution
+    virtual void GenerateRuntimeCode(CodeGenContext& context) {
+        // Default implementation generates standard Process() call
+        context.AddProcessCall(this);
+    }
+
+    // Custom node support
+    struct CustomizableElements {
+        std::string processFunction;      // Main processing logic
+        std::string initializeFunction;   // Setup/initialization code
+        std::string cleanupFunction;      // Cleanup/destruction code
+        std::string validateFunction;     // Input validation logic
+        std::string cacheFunction;        // Custom caching logic
+        std::string optimizeFunction;     // Custom optimization hints
+        
+        // Port definitions and metadata
+        struct PortDefinition {
+            std::string name;
+            std::string type;
+            std::string defaultValue;
+            std::string validation;       // Optional validation expression
+            std::string description;      // Documentation
+            bool isRequired;
+            bool isAdvanced;             // Hidden by default in UI
+        };
+        std::vector<PortDefinition> inputs;
+        std::vector<PortDefinition> outputs;
+
+        // Node-specific properties
+        struct PropertyDefinition {
+            std::string name;
+            std::string type;
+            std::string defaultValue;
+            std::string uiHints;         // How to display in property panel
+            std::string validation;
+            bool isSerializable;
+            bool isExposed;              // Available to external scripts
+        };
+        std::vector<PropertyDefinition> properties;
+
+        // Custom UI elements
+        struct UIElement {
+            std::string type;            // Button, Slider, etc.
+            std::string label;
+            std::string callback;        // Function to call
+            std::string layout;          // UI layout hints
+        };
+        std::vector<UIElement> customUI;
+
+        // Debug/Development helpers
+        struct DebugInfo {
+            std::vector<std::string> watchedVariables;
+            std::vector<std::string> breakpoints;
+            std::string profileHints;    // Performance profiling hints
+        };
+        DebugInfo debugInfo;
+    };
+
+    // Convert built-in node to custom
+    virtual CustomizableElements ExportToCustomNode() const {
+        CustomizableElements elements;
+        // Export current node's implementation
+        elements.processFunction = GetProcessFunctionImpl();
+        elements.initializeFunction = GetInitializeFunctionImpl();
+        elements.cleanupFunction = GetCleanupFunctionImpl();
+        
+        // Export port definitions
+        for (const auto& port : GetInputPorts()) {
+            elements.inputs.push_back({
+                .name = port,
+                .type = GetPortType(port),
+                .defaultValue = GetPortDefaultValue(port),
+                .validation = GetPortValidation(port),
+                .description = GetPortDescription(port),
+                .isRequired = IsPortRequired(port)
+            });
+        }
+        // Similar for outputs...
+
+        return elements;
+    }
+
+    // Import custom implementation
+    virtual void ImportCustomImplementation(const CustomizableElements& elements) {
+        // Validate and apply custom implementation
+        if (ValidateCustomImplementation(elements)) {
+            ApplyCustomImplementation(elements);
+        }
+    }
+
+    // Support for external editing
+    virtual std::string GenerateExternalEditorFile() const {
+        return GenerateNodeSourceFile(ExportToCustomNode());
+    }
+
+    virtual void ImportFromExternalEditor(const std::string& sourceCode) {
+        auto elements = ParseNodeSourceFile(sourceCode);
+        ImportCustomImplementation(elements);
+    }
+
 protected:
     HD_NodeInfo NodeInfo;                      // Metadata and attributes for the node
     std::vector<std::shared_ptr<HD_Node>> Children; // Child nodes (making this a node graph)
@@ -154,6 +282,51 @@ protected:
 
     mutable std::mutex ChildrenMutex;         // Mutex for thread-safe access to children
     mutable std::mutex SerializationMutex;    // Mutex for thread-safe serialization
+
+    // Support for caching intermediate results
+    struct CacheEntry {
+        uint64_t inputHash;
+        std::vector<std::any> outputs;
+        bool isValid = false;
+    };
+    
+    mutable CacheEntry resultCache;
+
+    bool TryUseCache() const {
+        if (resultCache.isValid && resultCache.inputHash == CalculateInputHash()) {
+            RestoreOutputsFromCache();
+            return true;
+        }
+        return false;
+    }
+
+    void UpdateCache() {
+        resultCache.inputHash = CalculateInputHash();
+        StoreOutputsToCache();
+        resultCache.isValid = true;
+    }
+
+private:
+    uint64_t CalculateInputHash() const;
+    void StoreOutputsToCache();
+    void RestoreOutputsFromCache();
+
+    // Implementation extraction helpers
+    virtual std::string GetProcessFunctionImpl() const = 0;
+    virtual std::string GetInitializeFunctionImpl() const = 0;
+    virtual std::string GetCleanupFunctionImpl() const = 0;
+    
+    // Port information helpers
+    virtual std::string GetPortType(const std::string& portName) const = 0;
+    virtual std::string GetPortDefaultValue(const std::string& portName) const = 0;
+    virtual std::string GetPortValidation(const std::string& portName) const = 0;
+    virtual std::string GetPortDescription(const std::string& portName) const = 0;
+    virtual bool IsPortRequired(const std::string& portName) const = 0;
+
+    bool ValidateCustomImplementation(const CustomizableElements& elements);
+    void ApplyCustomImplementation(const CustomizableElements& elements);
+    std::string GenerateNodeSourceFile(const CustomizableElements& elements) const;
+    CustomizableElements ParseNodeSourceFile(const std::string& sourceCode);
 };
 
 } // namespace hd
