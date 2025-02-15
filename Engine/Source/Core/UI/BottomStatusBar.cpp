@@ -10,12 +10,12 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowBottomStatusBar(bool* p_open, HdEditorWindowData* windowData) 
+void ShowBottomStatusBar(bool* p_open, HdEditorWindowData* windowData) 
+{
+    if (ImGui::Begin("Status Bar", p_open))
     {
-        if (ImGui::Begin("Status Bar", p_open))
-        {
-            ImGui::Button("FPS");
-        }
-        ImGui::End();
+        ImGui::Button("FPS");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

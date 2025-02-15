@@ -10,21 +10,21 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("UI", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("UI", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Import UI");
-            ImGui::Button("New UI");
-            ImGui::Button("Save UI");
-            ImGui::Button("Load UI");
-            ImGui::Button("Export UI");
-            ImGui::Button("Share UI");
-            ImGui::Button("Add UI");
-            ImGui::Button("Remove UI");
-            ImGui::Button("UI Settings");
-        }    
-        ImGui::End();
-    }
+        ImGui::Button("Import UI");
+        ImGui::Button("New UI");
+        ImGui::Button("Save UI");
+        ImGui::Button("Load UI");
+        ImGui::Button("Export UI");
+        ImGui::Button("Share UI");
+        ImGui::Button("Add UI");
+        ImGui::Button("Remove UI");
+        ImGui::Button("UI Settings");
+    }    
+    ImGui::End();
+}
 } // namespace hdImgui

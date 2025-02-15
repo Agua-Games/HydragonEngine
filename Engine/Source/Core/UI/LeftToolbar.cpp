@@ -10,12 +10,12 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowLeftToolbar(bool* p_open, HdEditorWindowData* windowData) 
+void ShowLeftToolbar(bool* p_open, HdEditorWindowData* windowData) 
+{
+    if (ImGui::Begin("Left Toolbar", p_open))
     {
-        if (ImGui::Begin("Left Toolbar", p_open))
-        {
-            ImGui::Button("Test1");
-        }
-        ImGui::End();
+        ImGui::Button("Test1");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

@@ -10,18 +10,18 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowPresetEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowPresetEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Preset Editor", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Preset Editor", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Import Presets File");
-            ImGui::Button("New Presets File");
-            ImGui::Button("Save Presets File");
-            ImGui::Button("Edit Presets");
-            ImGui::Button("Load Presets File");
-            ImGui::Button("Extract Presets from Current Config");      // overlay, context menus
-        }  
-        ImGui::End();
-    }
+        ImGui::Button("Import Presets File");
+        ImGui::Button("New Presets File");
+        ImGui::Button("Save Presets File");
+        ImGui::Button("Edit Presets");
+        ImGui::Button("Load Presets File");
+        ImGui::Button("Extract Presets from Current Config");      // overlay, context menus
+    }  
+    ImGui::End();
+}
 } // namespace hdImgui

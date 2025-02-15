@@ -10,22 +10,22 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Montage", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Montage", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Import Montage");
-            ImGui::Button("New Montage");
-            ImGui::Button("Save Montage");
-            ImGui::Button("Load Montage");
-            ImGui::Button("Play Montage");
-            ImGui::Button("Stop Montage");
-            ImGui::Button("Export Montage");
-            ImGui::Button("Share Montage");
-            ImGui::Button("Add Montage");
-            ImGui::Button("Remove Montage");
-        }
-        ImGui::End();
+        ImGui::Button("Import Montage");
+        ImGui::Button("New Montage");
+        ImGui::Button("Save Montage");
+        ImGui::Button("Load Montage");
+        ImGui::Button("Play Montage");
+        ImGui::Button("Stop Montage");
+        ImGui::Button("Export Montage");
+        ImGui::Button("Share Montage");
+        ImGui::Button("Add Montage");
+        ImGui::Button("Remove Montage");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

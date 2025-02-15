@@ -10,12 +10,12 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowViewport3D(bool* p_open, HdEditorWindowData* windowData) 
+void ShowViewport3D(bool* p_open, HdEditorWindowData* windowData) 
+{
+    if (ImGui::Begin("Viewport 3D", p_open, ImGuiWindowFlags_MenuBar))
     {
-        if (ImGui::Begin("Viewport 3D", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            // TODO
-        }
-        ImGui::End();
+        // TODO
     }
+    ImGui::End();
+}
 } // namespace hdImgui

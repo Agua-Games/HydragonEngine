@@ -8,5 +8,5 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowSceneGraphEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowSceneGraphEditor(bool* p_open, HdEditorWindowData* windowData);
 } // namespace hdImgui

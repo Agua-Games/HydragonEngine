@@ -8,5 +8,5 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowChimeraPipelineEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowChimeraPipelineEditor(bool* p_open, HdEditorWindowData* windowData);
 } // namespace hdImgui

@@ -10,14 +10,14 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowConsole(bool* p_open, HdEditorWindowData* windowData) 
+void ShowConsole(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Console", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Console", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Clear Console");
-            ImGui::Button("Run Command");
-        }
-        ImGui::End();
+        ImGui::Button("Clear Console");
+        ImGui::Button("Run Command");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

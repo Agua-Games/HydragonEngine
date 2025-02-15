@@ -10,16 +10,16 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowDebugEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowDebugEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Debug", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Debug", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Clear Terminal");
-            ImGui::Button("Save Debug Log");
-            ImGui::Separator();
-            ImGui::Button("Debug Settings");
-        }      
-        ImGui::End();
-    }
+        ImGui::Button("Clear Terminal");
+        ImGui::Button("Save Debug Log");
+        ImGui::Separator();
+        ImGui::Button("Debug Settings");
+    }      
+    ImGui::End();
+}
 } // namespace hdImgui

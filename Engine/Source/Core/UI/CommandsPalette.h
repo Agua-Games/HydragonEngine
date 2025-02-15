@@ -8,5 +8,5 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowCommandsPalette(bool* p_open, HdEditorWindowData* windowData);
+void ShowCommandsPalette(bool* p_open, HdEditorWindowData* windowData);
 } // namespace hdImgui

@@ -10,20 +10,20 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowVolumeEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowVolumeEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Volume", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Volume", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Import VDB Volume");
-            ImGui::Button("New VDB Volume");
-            ImGui::Button("Save Volume");
-            ImGui::Button("Edit Volume");
-            ImGui::Button("Load Volume");
-            ImGui::Button("Procedural VDB Nodes");      // overlay, context menus
-            ImGui::Button("Volumetric VDB Tools");          // overlay, context menus
-            ImGui::Button("Volume Settings");
-        }
-        ImGui::End();
+        ImGui::Button("Import VDB Volume");
+        ImGui::Button("New VDB Volume");
+        ImGui::Button("Save Volume");
+        ImGui::Button("Edit Volume");
+        ImGui::Button("Load Volume");
+        ImGui::Button("Procedural VDB Nodes");      // overlay, context menus
+        ImGui::Button("Volumetric VDB Tools");          // overlay, context menus
+        ImGui::Button("Volume Settings");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

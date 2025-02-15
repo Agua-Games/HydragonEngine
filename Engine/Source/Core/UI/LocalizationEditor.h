@@ -8,5 +8,5 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowLocalizationEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowLocalizationEditor(bool* p_open, HdEditorWindowData* windowData);
 } // namespace hdImgui

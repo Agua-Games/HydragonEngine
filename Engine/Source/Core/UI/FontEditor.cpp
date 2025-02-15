@@ -10,22 +10,22 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Font", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Font", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Import Font");
-            ImGui::Button("New Font");
-            ImGui::Button("Save Font");
-            ImGui::Button("Load Font");
-            ImGui::Button("Export Font");
-            ImGui::Button("Share Font");
-            ImGui::Button("Add Font");
-            ImGui::Button("Remove Font");
-            ImGui::Button("Font Settings");
-            ImGui::Button("Compile Font");
-        }    
-        ImGui::End();
-    }
+        ImGui::Button("Import Font");
+        ImGui::Button("New Font");
+        ImGui::Button("Save Font");
+        ImGui::Button("Load Font");
+        ImGui::Button("Export Font");
+        ImGui::Button("Share Font");
+        ImGui::Button("Add Font");
+        ImGui::Button("Remove Font");
+        ImGui::Button("Font Settings");
+        ImGui::Button("Compile Font");
+    }    
+    ImGui::End();
+}
 } // namespace hdImgui

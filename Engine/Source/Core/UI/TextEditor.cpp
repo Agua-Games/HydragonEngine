@@ -10,16 +10,16 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowTextEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowTextEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Text", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Text", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("New Text");
-            ImGui::Button("Save Text");
-            ImGui::Button("Load Text");
-            ImGui::Button("Add Text");
-        }
-        ImGui::End();
+        ImGui::Button("New Text");
+        ImGui::Button("Save Text");
+        ImGui::Button("Load Text");
+        ImGui::Button("Add Text");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

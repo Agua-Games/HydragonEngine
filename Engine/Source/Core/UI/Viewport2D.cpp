@@ -10,13 +10,13 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowViewport2D(bool* p_open, HdEditorWindowData* windowData) 
+void ShowViewport2D(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Viewport 2D", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Viewport 2D", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            // TODO
-        }
-        ImGui::End();
+        // TODO
     }
+    ImGui::End();
+}
 } // namespace hdImgui

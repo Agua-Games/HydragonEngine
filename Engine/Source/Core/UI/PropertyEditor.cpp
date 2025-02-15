@@ -10,13 +10,13 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowPropertyEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowPropertyEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Properties", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Properties", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Load Template");
-        }
-        ImGui::End();
+        ImGui::Button("Load Template");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

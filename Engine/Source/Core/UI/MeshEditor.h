@@ -8,5 +8,5 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowMeshEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowMeshEditor(bool* p_open, HdEditorWindowData* windowData);
 } // namespace hdImgui

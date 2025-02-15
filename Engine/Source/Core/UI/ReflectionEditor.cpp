@@ -10,19 +10,19 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowReflectionEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowReflectionEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Reflection", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Reflection", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Import Reflection Config");
-            ImGui::Button("New Reflection Config");
-            ImGui::Button("Save Reflection Config");
-            ImGui::Button("Load Reflection Config");
-            ImGui::Button("Export Reflection Config");
-            ImGui::Button("Share Reflection Config");
-            ImGui::Button("Reflection Settings");
-        }  
-        ImGui::End();
-    }
+        ImGui::Button("Import Reflection Config");
+        ImGui::Button("New Reflection Config");
+        ImGui::Button("Save Reflection Config");
+        ImGui::Button("Load Reflection Config");
+        ImGui::Button("Export Reflection Config");
+        ImGui::Button("Share Reflection Config");
+        ImGui::Button("Reflection Settings");
+    }  
+    ImGui::End();
+}
 } // namespace hdImgui

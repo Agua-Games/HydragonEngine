@@ -10,13 +10,13 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Lighting Editor", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Lighting Editor", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Import Light Rig");
-        }
-        ImGui::End();
+        ImGui::Button("Import Light Rig");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

@@ -10,13 +10,13 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowPatternOrchestrator(bool* p_open, HdEditorWindowData* windowData) 
+void ShowPatternOrchestrator(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Pattern Orchestrator", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Pattern Orchestrator", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Load Pattern");
-        }  
-        ImGui::End();
-    }
+        ImGui::Button("Load Pattern");
+    }  
+    ImGui::End();
+}
 } // namespace hdImgui

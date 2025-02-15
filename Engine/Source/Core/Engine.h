@@ -18,12 +18,12 @@ namespace hd{
     class Engine {
     public:
         // Default constructor and destructor
-        EngineModule() = default;
-        ~EngineModule() = default;
+        Engine() = default;
+        ~Engine() = default;
     
         // Custom constructor (optional)
+        // ..
 
-    
     private:
 
     };

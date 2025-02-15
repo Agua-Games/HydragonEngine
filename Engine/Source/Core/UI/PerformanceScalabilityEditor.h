@@ -8,5 +8,5 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowPerformanceScalabilityEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowPerformanceScalabilityEditor(bool* p_open, HdEditorWindowData* windowData);
 } // namespace hdImgui

@@ -10,13 +10,13 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowPhysicsEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowPhysicsEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Physics Editor", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Physics Editor", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("Import Physics Rig");
-        }
-        ImGui::End();
+        ImGui::Button("Import Physics Rig");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

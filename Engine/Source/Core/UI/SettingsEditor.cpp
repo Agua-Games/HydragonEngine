@@ -10,15 +10,15 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowSettingsEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowSettingsEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Settings", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Settings", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Button("New Settings");
-            ImGui::Button("Load Settings");
-            ImGui::Button("Save Settings");
-        }
-        ImGui::End();
+        ImGui::Button("New Settings");
+        ImGui::Button("Load Settings");
+        ImGui::Button("Save Settings");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

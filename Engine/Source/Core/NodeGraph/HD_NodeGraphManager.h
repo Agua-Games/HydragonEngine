@@ -1,5 +1,5 @@
 
-#if 0
+namespace hd {
 class HD_NodeGraphManager {
     public:
         void ConnectNodes(const std::shared_ptr<HD_Node>& source, const std::shared_ptr<HD_Node>& target) {
@@ -29,4 +29,4 @@ class HD_NodeGraphManager {
             return true;  // Replace with actual validation logic
         }
     };
-    #endif
+} // namespace hd

@@ -10,16 +10,16 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Streaming", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Streaming", p_open, ImGuiWindowFlags_MenuBar))
-        {
-            ImGui::Checkbox("Streaming Enabled", &windowData->streamingEnabled);
-            ImGui::Button("Start Streaming Engine");
-            ImGui::Button("Refresh Streaming Engine");
-            ImGui::Button("Streaming Engine Settings");
-        }
-        ImGui::End();
+        ImGui::Checkbox("Streaming Enabled", &windowData->streamingEnabled);
+        ImGui::Button("Start Streaming Engine");
+        ImGui::Button("Refresh Streaming Engine");
+        ImGui::Button("Streaming Engine Settings");
     }
+    ImGui::End();
+}
 } // namespace hdImgui

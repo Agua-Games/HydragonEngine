@@ -10,13 +10,13 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowCommandsPalette(bool* p_open, HdEditorWindowData* windowData) 
+void ShowCommandsPalette(bool* p_open, HdEditorWindowData* windowData) 
+{
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (ImGui::Begin("Commands Palette", nullptr))
     {
-        ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-        if (ImGui::Begin("Commands Palette", nullptr))
-        {
-           ImGui::Button("Run Command"); 
-        }
-        ImGui::End();
+        ImGui::Button("Run Command"); 
     }
+    ImGui::End();
+}
 } // namespace hdImgui

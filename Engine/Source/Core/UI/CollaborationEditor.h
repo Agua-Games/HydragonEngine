@@ -8,5 +8,5 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
-    void ShowCollaborationEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowCollaborationEditor(bool* p_open, HdEditorWindowData* windowData);
 } // namespace hdImgui
