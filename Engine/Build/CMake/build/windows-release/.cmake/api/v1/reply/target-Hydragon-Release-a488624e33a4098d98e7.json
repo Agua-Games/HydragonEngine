@@ -126,6 +126,10 @@
 				},
 				{
 					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Design"
+				},
+				{
+					"backtrace" : 5,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/ECS"
 				},
 				{
@@ -134,11 +138,15 @@
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Graph"
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Geometry"
 				},
 				{
 					"backtrace" : 5,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Graphics"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Graphics/Directx"
 				},
 				{
 					"backtrace" : 5,
@@ -155,6 +163,10 @@
 				{
 					"backtrace" : 5,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Logging"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Materials"
 				},
 				{
 					"backtrace" : 5,
@@ -187,6 +199,10 @@
 				{
 					"backtrace" : 5,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Output"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Particles"
 				},
 				{
 					"backtrace" : 5,
@@ -250,11 +266,19 @@
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/UI/Fonts"
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Utilities"
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Utilities"
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Vegetation"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Vegetation/Examples"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Weather"
 				},
 				{
 					"backtrace" : 5,
@@ -438,7 +462,8 @@
 				58,
 				59,
 				60,
-				61
+				61,
+				62
 			]
 		}
 	],
@@ -553,7 +578,8 @@
 				58,
 				59,
 				60,
-				61
+				61,
+				62
 			]
 		}
 	],
@@ -563,6 +589,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Engine.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Graphics/Vulkan/VulkanBackend.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

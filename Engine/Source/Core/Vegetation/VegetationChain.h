@@ -1,5 +1,15 @@
+#pragma once
+
+#include "Core/NodeGraph/HD_Node.h"
+#include "Core/Vegetation/HD_ProcVegetationDensityNode.h"
+#include "Core/Vegetation/HD_ProcVegetationPlacementNode.h"
+#include "Core/Vegetation/HD_ProcVegetationGrowthNode.h"
+#include "Core/Vegetation/HD_ProcVegetationWindNode.h"
+
+namespace hd {
+
 // Example of how to chain vegetation nodes
-void CreateVegetationChain(HD_NodeGraph& graph) {
+inline void CreateVegetationChain(HD_Node& graph) {
     // Create nodes
     auto densityNode = graph.CreateNode<HD_ProcVegetationDensityNode>();
     auto placementNode = graph.CreateNode<HD_ProcVegetationPlacementNode>();
@@ -19,7 +29,9 @@ void CreateVegetationChain(HD_NodeGraph& graph) {
     
     graph.Connect(growthNode, "GrowthStates", 
                  windNode, "GrowthStates");
-    
-    // The chain provides similar functionality to HD_VegetationNode
-    // but with more granular control and flexibility
 }
+
+} // namespace hd
+```
+
+I added `inline` to the function since it's now in a header file, and `#pragma once` to prevent multiple inclusions.
