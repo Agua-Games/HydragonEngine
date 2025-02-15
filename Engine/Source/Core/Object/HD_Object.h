@@ -8,14 +8,11 @@
 #include <any>
 #include <memory>
 
-/**
- * @brief Base class for all objects in Hydragon.
- * @details Provides universally useful functionality, like reflection, 
- * serialization, and logging utilities, among others.
- */
 namespace hd {
 
-    // Struct to hold metadata and attributes for HD_Object
+    /**
+     * @brief Struct to hold metadata and attributes for HD_Object
+     */
     struct HD_ObjectInfo {
         std::string Name;               // Optional name for debugging or identification
         std::string description;        // Optional description
@@ -28,7 +25,11 @@ namespace hd {
             : Name(name), IsSerializable(isSerializable), IsEditableInEditor(isEditableInEditor) {}
     };
 
-    // Base class for all objects in Hydragon
+    /**
+     * @brief Base class for all objects in Hydragon.
+     * @details Provides universally useful functionality, like reflection, 
+     * serialization, and logging utilities, among others.
+     */
     class HD_Object {
     public:
         // Constructor with HD_ObjectInfo for initialization

@@ -9,7 +9,9 @@
 
 namespace hd {
 
-    // Struct to hold metadata and attributes for HD_Scene
+    /**
+     * @brief Struct to hold metadata and attributes for HD_Scene
+     */
     struct HD_SceneInfo : public HD_NodeInfo {
         std::string LayerPath;               // Path to the USD layer file
         std::vector<std::string> References; // List of referenced USD files
@@ -24,7 +26,9 @@ namespace hd {
               LayerPath(layerPath), References(references), IsLayered(isLayered) {}
     };
 
-    // Base class for all scenes in Hydragon
+    /**
+     * @brief Base class for all scenes in Hydragon
+     */
     class HD_SceneNode : public HD_Node {
     public:
         // Constructor with HD_SceneInfo for initialization
@@ -36,7 +40,9 @@ namespace hd {
         // Getters for metadata
         const HD_SceneInfo& GetSceneInfo() const { return SceneInfo; }
 
-        // Load the scene asynchronously
+        /**
+         * @brief Load the scene asynchronously
+         */
         std::future<void> LoadAsync() override {
             return std::async(std::launch::async, [this]() {
                 if (SceneInfo.IsAsyncLoadable) {
@@ -45,20 +51,26 @@ namespace hd {
             });
         }
 
-        // Stream the scene
+        /**
+         * @brief Stream the scene
+         */
         void Stream() override {
             if (SceneInfo.IsStreamable) {
                 StreamScene();
             }
         }
 
-        // Update the scene (propagate transformations, etc.)
+        /**
+         * @brief Update the scene. Propagate transformations, etc.
+         */
         void Update() override {
             PropagateTransformations();
             HD_Node::Update(); // Call base class update to process children
         }
 
-        // Draw this scene in the Inspector
+        /**
+         * @brief Draw this scene in the Inspector
+         */
         void DrawInInspector() override {
             ImGui::Text("Scene Name: %s", SceneInfo.Name.c_str());
             ImGui::Text("Layer Path: %s", SceneInfo.LayerPath.c_str());
@@ -68,7 +80,9 @@ namespace hd {
             }
         }
 
-        // Draw this scene in the Node Graph Editor
+        /**
+         * @brief Draw this scene in the Node Graph Editor
+         */
         void DrawInNodeGraph() override {
             ImGui::BeginGroup();
             ImGui::Text("Scene: %s", SceneInfo.Name.c_str());
@@ -83,7 +97,9 @@ namespace hd {
     protected:
         HD_SceneInfo SceneInfo; // Metadata and attributes for the scene
 
-        // Protected methods for derived classes
+        /**
+         * @brief Load the scene
+         */
         virtual void LoadScene() {
             // Load the scene from the USD layer file
             if (!SceneInfo.LayerPath.empty()) {

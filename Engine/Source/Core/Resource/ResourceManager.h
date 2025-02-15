@@ -18,17 +18,30 @@ namespace hd
     class ResourceManager 
     {
     public:
-        // ResourceManager is a singleton, so get the singleton instance (the only instance).
+        /**
+         * @brief Get the singleton instance of ResourceManager
+         * @returns The singleton instance
+         */
         static ResourceManager& GetInstance();
 
         // =========== Store Resource Paths ===========
-        // Get the engine root path
+        /**
+         * @brief Get the engine root path
+         * @returns The engine root path
+         */
         fs::path GetEngineRootPath();
 
-        // Get the path to a font
+        /**
+         * @brief Get the path to a font
+         * @param fontName The name of the font
+         * @returns The path to the font
+         */
         static std::string GetFontPath(const std::string& fontName);
         
         // =========== UI Resources Handling ===========
+        /**
+         * @brief Load fonts
+         */
         void LoadFonts();
     
     private:

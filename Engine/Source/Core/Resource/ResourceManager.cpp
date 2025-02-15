@@ -16,19 +16,11 @@
 
 //namespace fs = std::filesystem;
 namespace hd {
-    /**
-     * @brief Get the singleton instance of ResourceManager
-     * @returns The singleton instance
-     */
     ResourceManager& ResourceManager::GetInstance() {
         static ResourceManager instance;
         return instance;
     }
 
-    /**
-     * @brief Get the engine root path
-     * @returns The engine root path
-     */
     fs::path ResourceManager::GetEngineRootPath() {
         // Get the path to the executable, using a different approach for each platform
         char buffer[1024]; // Fixed-size path buffer for all platforms
@@ -63,20 +55,12 @@ namespace hd {
         return executablePath.parent_path().parent_path().parent_path();
     }
 
-    /**
-     * @brief Get the path to a font
-     * @param fontName The name of the font
-     * @returns The path to the font
-     */
     std::string ResourceManager::GetFontPath(const std::string& fontName) {
         fs::path engineRoot = ResourceManager::GetInstance().GetEngineRootPath();
         return (engineRoot / "Assets" / "Fonts" / fontName).string();
     }
 
     // =========== UI Resources Handling ===========
-    /**
-     * @brief Load fonts
-     */
     void LoadFonts() {
         // Get ImGuiIO (imgui's Input Output system)
         ImGuiIO& io = ImGui::GetIO();

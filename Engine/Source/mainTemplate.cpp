@@ -8,6 +8,8 @@
 #pragma once
 #include <windows.h>
 #include <iostream>
+#include <string>
+#include <filesystem>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 #include <imgui.h>
@@ -51,8 +53,8 @@ void RunApplication() {
     ImGui_ImplVulkan_Init(&init_info);
 
     // === Initialize Resources Manager ===
-    // Instantiate the ResourceManager
-    hd::ResourceManager resourceManager;
+    // Get the singleton instance of ResourceManager
+    hd::ResourceManager& resourceManager = hd::ResourceManager::GetInstance();
 
     // Call GetEngineRootPath() to get the engine root path
     fs::path rootPath = resourceManager.GetEngineRootPath();
