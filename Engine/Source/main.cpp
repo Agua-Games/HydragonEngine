@@ -5,6 +5,8 @@
  * Temporary implementation of the main entry point. To be replaced with our own implementation.
  * Updates, from newest to oldest:
  * 
+ * Updates saved below temporarily, just not to forget what I changed in imgui's example code:
+ * - Removed boilerplate code to allow compatibility with very old VS compilers.
  * - Removed the #include "imgui_impl_vulkan.h" as it is not used here. Instead, we use our own Core/Graphics/Vulkan/VulkanBackend.h
  * - Added code to initialize the engine's resource manager, load resources - fonts etc.
  * - Added includes for hdImgui, ResourceManager, and filesystem.
@@ -32,13 +34,6 @@
 #ifdef IMGUI_IMPL_VULKAN_USE_VOLK
 #define VOLK_IMPLEMENTATION
 #include <volk.h>
-#endif
-
-// [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
-// To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
-// Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
-#if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
-#pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
 //#define APP_USE_UNLIMITED_FRAME_RATE

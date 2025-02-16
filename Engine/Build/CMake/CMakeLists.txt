@@ -167,7 +167,7 @@ include_directories(${IMGUI_DIR})
 # Volk - Vulkan meta-loader.
 # Currently, we are using Volk for Vulkan loading and function resolution. We're using it as a
 # git submodule and building it as a static library, which is the recommended way to use it.
-#add_subdirectory(${VOLK_DIR} volk EXCLUDE_FROM_ALL)
+add_subdirectory(${VOLK_DIR} volk EXCLUDE_FROM_ALL)
 
 # end of third-party libraries ---------------------------------------------------------------------------
 
@@ -280,7 +280,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${DEV_TOOLS_SUBDIRS}
     ${EDITOR_SOURCE_DIR}
     ${EDITOR_SUBDIRS}
-    #${VOLK_DIR}
+    ${VOLK_DIR}
 )
 
 # ======================================================================================

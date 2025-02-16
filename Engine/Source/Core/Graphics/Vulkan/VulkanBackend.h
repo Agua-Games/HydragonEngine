@@ -27,41 +27,23 @@
 
 #pragma once
 #ifndef IMGUI_DISABLE
-#include "imgui.h"      // IMGUI_IMPL_API
 
-// [Configuration] in order to use a custom Vulkan function loader:
-// (1) You'll need to disable default Vulkan function prototypes.
-//     We provide a '#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES' convenience configuration flag.
-//     In order to make sure this is visible from the imgui_impl_vulkan.cpp compilation unit:
-//     - Add '#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES' in your imconfig.h file
-//     - Or as a compilation flag in your build system
-//     - Or uncomment here (not recommended because you'd be modifying imgui sources!)
-//     - Do not simply add it in a .cpp file!
-// (2) Call ImGui_ImplVulkan_LoadFunctions() before ImGui_ImplVulkan_Init() with your custom function.
-// If you have no idea what this is, leave it alone!
+// 1. First, ensure NO_PROTOTYPES is defined
+//#ifndef VK_NO_PROTOTYPES
+//#define VK_NO_PROTOTYPES
+//#endif
+
+// 2. Tell ImGui we'll handle function loading
 //#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES
 
-// Convenience support for Volk
-// (you can also technically use IMGUI_IMPL_VULKAN_NO_PROTOTYPES + wrap Volk via ImGui_ImplVulkan_LoadFunctions().)
+// 3. Force ImGui to use Volk
 //#define IMGUI_IMPL_VULKAN_USE_VOLK
 
-#if defined(IMGUI_IMPL_VULKAN_NO_PROTOTYPES) && !defined(VK_NO_PROTOTYPES)
-#define VK_NO_PROTOTYPES
-#endif
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && !defined(NOMINMAX)
-#define NOMINMAX
-#endif
+// 4. Include Volk before anything else
+//#include "volk.h"
 
-// Vulkan includes
-#ifdef IMGUI_IMPL_VULKAN_USE_VOLK
-#include <volk.h>
-#else
-#include <vulkan/vulkan.h>
-#endif
-#if defined(VK_VERSION_1_3) || defined(VK_KHR_dynamic_rendering)
-#define IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING
-#endif
-// include VMA - Vulkan Memory Allocator. For now I simply saved it directly into Graphics/Vulkan/
+// 5. Now include ImGui headers
+#include "imgui.h"
 #include "vk_mem_alloc.h"
 
 // Current version of the backend use 1 descriptor for the font atlas + as many as additional calls done to ImGui_ImplVulkan_AddTexture().

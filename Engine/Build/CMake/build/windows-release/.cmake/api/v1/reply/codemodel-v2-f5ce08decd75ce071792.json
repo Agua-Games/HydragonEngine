@@ -8,7 +8,8 @@
 					"build" : ".",
 					"childIndexes" : 
 					[
-						1
+						1,
+						4
 					],
 					"hasInstallRule" : true,
 					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
@@ -71,6 +72,21 @@
 					"parentIndex" : 1,
 					"projectIndex" : 1,
 					"source" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/glfw/docs"
+				},
+				{
+					"build" : "volk",
+					"jsonFile" : "directory-volk-Release-bc76d9b4cf19543f8eed.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/volk",
+					"targetIndexes" : 
+					[
+						4
+					]
 				}
 			],
 			"name" : "Release",
@@ -79,7 +95,8 @@
 				{
 					"childIndexes" : 
 					[
-						1
+						1,
+						2
 					],
 					"directoryIndexes" : 
 					[
@@ -106,6 +123,18 @@
 						2,
 						3
 					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4
+					],
+					"name" : "volk",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4
+					]
 				}
 			],
 			"targets" : 
@@ -113,7 +142,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Hydragon::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Hydragon-Release-72c21b2c29acae364697.json",
+					"jsonFile" : "target-Hydragon-Release-4fbdeab632e2fd2f58eb.json",
 					"name" : "Hydragon",
 					"projectIndex" : 0
 				},
@@ -137,6 +166,13 @@
 					"jsonFile" : "target-update_mappings-Release-ccdd24f042cabc249ec6.json",
 					"name" : "update_mappings",
 					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "volk::@6cea0f9166f4f52e9473",
+					"jsonFile" : "target-volk-Release-0681c049e8cf1b0ced22.json",
+					"name" : "volk",
+					"projectIndex" : 2
 				}
 			]
 		}

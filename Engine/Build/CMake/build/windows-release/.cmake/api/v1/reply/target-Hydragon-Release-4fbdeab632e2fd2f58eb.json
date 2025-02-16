@@ -398,6 +398,10 @@
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/UI"
 				},
 				{
+					"backtrace" : 7,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/ThirdParty/volk"
+				},
+				{
 					"backtrace" : 2,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/glfw/include"
 				},
