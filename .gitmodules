@@ -1,0 +1,3 @@
+[submodule "Engine/Source/ThirdParty/volk"]
+	path = Engine/Source/ThirdParty/volk
+	url = https://github.com/zeux/volk.git

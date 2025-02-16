@@ -22,6 +22,13 @@ This document lists all third-party libraries used by Hydragon Engine and their 
   - Version: v1.4.305
   - Repository: https://github.com/KhronosGroup/Vulkan-Hpp
   - Location: `Engine/Source/ThirdParty/Vulkan-Hpp`
+  - Notes: At first included Vulkan-Hpp, but then switched to using the Vulkan SDK, including vulkan.h (from outside the codebase). Then switched to Volk, afterwards. So, probably remove it later if sticking with Volk.
+
+- **Volk**: Vulkan meta-loader.
+  - Version: 1.4.304
+  - Repository: https://github.com/zeux/volk
+  - Location: `Engine/Source/ThirdParty/volk`
+  - Notes: Used for Vulkan loading and function resolution
 
 ## Notes
 - All dependencies are managed as Git submodules.

@@ -13,11 +13,16 @@ cmake_minimum_required(VERSION 3.10)
 project(Hydragon VERSION 0.1.0 LANGUAGES CXX C)
 
 # =====================================================================
-# C++ standard requirements,options)
+# C++ standard requirements,options
 # =====================================================================
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# =====================================================================
+# Volk requirements, options
+# =====================================================================
+#set(VOLK_STATIC_LOADING ON)
 
 # =====================================================================
 # Global options for the builds
@@ -51,6 +56,10 @@ set(DEV_TOOLS_SOURCE_DIR "${ENGINE_ROOT_DIR}/Source/DevTools")
 set(EDITOR_SOURCE_DIR "${ENGINE_ROOT_DIR}/Source/Editor")
 set(THIRD-PARTY_SOURCE_DIR "${ENGINE_ROOT_DIR}/Source/ThirdParty")
 set(BINARIES_DIR "${ENGINE_ROOT_DIR}/Bin")
+
+# Define Volk's directory
+# volk is a meta-loader for Vulkan. It allows you to dynamically load entrypoints required to use Vulkan.
+set(VOLK_DIR "${THIRD-PARTY_SOURCE_DIR}/volk")
 
 # BINARIES - Define the output directory for the builds -----------------
 set(OUTPUT_DIR "${BINARIES_DIR}/${PLATFORM}/$<CONFIG>")
@@ -111,7 +120,8 @@ include(FetchContent)               # for more info: https://cmake.org/cmake/hel
 #   GIT_TAG [tag]
 #   OVERRIDE_FIND_PACKAGE
 #)
-#FetchContent_MakeAvailable([lirary name] [library name] [library name] [library name]...)
+
+#FetchContent_MakeAvailable([library name] [library name] [library name] [library name]...)
 
 # ==============================================================================================================
 # Third-party libraries: GLFW, Dear ImGui, Vulkan, etc.
@@ -140,13 +150,24 @@ include_directories(${GLFW_DIR}/include)
 # Third-party libraries: Dear ImGui
 # =====================================================================
 set(IMGUI_DIR ${THIRD-PARTY_SOURCE_DIR}/imgui)                                                    # Set this to point to an up-to-date Dear ImGui repo
-include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends)
+#include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends)
+include_directories(${IMGUI_DIR})
 
-# Vulkan
+# =====================================================================
+# Third-party libraries: Vulkan
+# =====================================================================
 # We were initially using Vulkan through the header in glfw/glad, but it is better to use the Vulkan SDK,
 # which should be installed on the system, available to the compiler. It can be downloaded at 
 # https://vulkan.lunarg.com/sdk/home.
-# The vulkan.h file seems to be a definition of many Vulkan structures, default value mappings etc.              
+# The vulkan.h file seems to be a definition of many Vulkan structures, default value mappings etc. 
+
+# =====================================================================
+# Third-party libraries: Volk
+# =====================================================================
+# Volk - Vulkan meta-loader.
+# Currently, we are using Volk for Vulkan loading and function resolution. We're using it as a
+# git submodule and building it as a static library, which is the recommended way to use it.
+#add_subdirectory(${VOLK_DIR} volk EXCLUDE_FROM_ALL)
 
 # end of third-party libraries ---------------------------------------------------------------------------
 
@@ -171,7 +192,7 @@ set(SRC_FILES_MANUAL
     ${IMGUI_DIR}/imgui_tables.cpp
     ${IMGUI_DIR}/imgui_widgets.cpp
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
+    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
 )
 
 # ======================================================================================
@@ -203,6 +224,17 @@ set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
 # Vulkan functions at runtime. It is required to link the application with the Vulkan loader.
 # So, here we include the Vulkan include directory and link the Vulkan library.
 target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
+
+# ======================================================================================
+# Include directories from third-party libraries to target executable
+# ======================================================================================
+target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_DIR}/backends)
+
+# Explicitly add the imgui backend headers you want to include
+target_sources(${PROJECT_NAME} PRIVATE
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.h
+    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
+)
 
 # ======================================================================================
 # Include engine directories (Core, Devtools, Editor) to target executable
@@ -242,6 +274,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${DEV_TOOLS_SUBDIRS}
     ${EDITOR_SOURCE_DIR}
     ${EDITOR_SUBDIRS}
+    #${VOLK_DIR}
 )
 
 # ======================================================================================
@@ -258,7 +291,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 #target_compile_definitions(Hydragon PRIVATE ENABLE_EDITOR_SUPPORT=1)           # uncomment when editor is implemented.
 
 # Add external precompiled libraries (e.g. GLFW, Vulkan, etc) to the target executable
-target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+    #volk::volk
+    ${LIBRARIES})
 
 # ==================================================================================
 # Install Executable - for end user, tests.
@@ -280,3 +315,6 @@ option(ENABLE_DEBUG_LOGGING "Enable debug logging" OFF)
 if(ENABLE_DEBUG_LOGGING)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_DEBUG_LOGGING=1)
 endif()
+
+
+

@@ -1538,12 +1538,36 @@
 			"value" : "ON"
 		},
 		{
+			"name" : "FETCHCONTENT_SOURCE_DIR_VOLK",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "When not empty, overrides where to find pre-populated content for volk"
+				}
+			],
+			"type" : "PATH",
+			"value" : ""
+		},
+		{
 			"name" : "FETCHCONTENT_UPDATES_DISCONNECTED",
 			"properties" : 
 			[
 				{
 					"name" : "HELPSTRING",
 					"value" : "Enables UPDATE_DISCONNECTED behavior for all content population"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "FETCHCONTENT_UPDATES_DISCONNECTED_VOLK",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enables UPDATE_DISCONNECTED behavior just for population of volk"
 				}
 			],
 			"type" : "BOOL",
@@ -1572,6 +1596,22 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "[C:/VulkanSDK/1.4.304.0/Lib/vulkan-1.lib][C:/VulkanSDK/1.4.304.0/Include][cfound components: glslc glslangValidator ][v1.4.304()]"
+		},
+		{
+			"name" : "GIT_EXECUTABLE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Git command line client"
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files/Git/cmd/git.exe"
 		},
 		{
 			"name" : "GLFW_BINARY_DIR",
@@ -1766,6 +1806,66 @@
 			"value" : "ON"
 		},
 		{
+			"name" : "VOLK_HEADERS_ONLY",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Add interface library only"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "VOLK_INSTALL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Create installation targets"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "VOLK_PULL_IN_VULKAN",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Vulkan as a transitive dependency"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "VOLK_STATIC_DEFINES",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Additional defines for building the volk static library, e.g. Vulkan platform defines"
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "VULKAN_HEADERS_INSTALL_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Where to get the Vulkan headers"
+				}
+			],
+			"type" : "PATH",
+			"value" : ""
+		},
+		{
 			"name" : "Vulkan_GLSLANG_VALIDATOR_EXECUTABLE",
 			"properties" : 
 			[
@@ -1840,6 +1940,54 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Engine/Install"
+		},
+		{
+			"name" : "volk_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/volk"
+		},
+		{
+			"name" : "volk_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Redirected by FetchContent"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/CMakeFiles/pkgRedirects"
+		},
+		{
+			"name" : "volk_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "OFF"
+		},
+		{
+			"name" : "volk_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/volk"
 		}
 	],
 	"kind" : "cache",
