@@ -85,7 +85,7 @@ set(INSTALL_CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/Config")
 # Vulkan - Find the Vulkan SDK on the system. REQUIRED means that the build will fail if not found.
 find_package(Vulkan REQUIRED)    
 
-set(LIBRARIES "glfw;Vulkan::Vulkan")
+set(LIBRARIES glfw Vulkan::Vulkan)
 
 # ========================================================================================================
 # Add subdirectories for Hydragon Dev Tools
@@ -192,7 +192,7 @@ set(SRC_FILES_MANUAL
     ${IMGUI_DIR}/imgui_tables.cpp
     ${IMGUI_DIR}/imgui_widgets.cpp
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
+    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp    # removed in favor of our own Core/Graphics/Vulkan/VulkanBackend.cpp
 )
 
 # ======================================================================================
@@ -203,7 +203,10 @@ set(SRC_FILES_MANUAL
 # into the source files automatically by the compiler at compile time, via #include directives.
 
 # Define executable target, add sources to be compiled into the executable
-add_executable(${PROJECT_NAME} ${SRC_FILES_AUTO} ${SRC_FILES_MANUAL})
+add_executable(${PROJECT_NAME} 
+    ${SRC_FILES_AUTO} 
+    ${SRC_FILES_MANUAL}
+)
 
 # ======================================================================================
 # Set target properties - headless/command-line application vs GUI application
@@ -223,17 +226,20 @@ set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE)
 # vulkan-1.lib: This is the Vulkan import library, which is used during linking to resolve 
 # Vulkan functions at runtime. It is required to link the application with the Vulkan loader.
 # So, here we include the Vulkan include directory and link the Vulkan library.
-target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${Vulkan_INCLUDE_DIRS}
+    ${VULKAN_SDK}/Include)
 
 # ======================================================================================
 # Include directories from third-party libraries to target executable
 # ======================================================================================
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_DIR}/backends)
 
-# Explicitly add the imgui backend headers you want to include
+# Explicitly add the imgui backend headers you want to include, so that we won't include backends
+# we're replacing, like imgui_impl_vulkan.h
 target_sources(${PROJECT_NAME} PRIVATE
     ${IMGUI_DIR}/backends/imgui_impl_glfw.h
-    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
+    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp    # removed in favor of our own Core/Graphics/Vulkan/VulkanBackend
 )
 
 # ======================================================================================

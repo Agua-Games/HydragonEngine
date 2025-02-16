@@ -1,6 +1,16 @@
 /*
  * (Insert copyright notice here after refactoring imgui's example code)
  */
+/**
+ * Temporary implementation of the main entry point. To be replaced with our own implementation.
+ * Updates, from newest to oldest:
+ * 
+ * - Removed the #include "imgui_impl_vulkan.h" as it is not used here. Instead, we use our own Core/Graphics/Vulkan/VulkanBackend.h
+ * - Added code to initialize the engine's resource manager, load resources - fonts etc.
+ * - Added includes for hdImgui, ResourceManager, and filesystem.
+ * - Switched main() to WinMain() to be able to use the Windows API.
+ * - Turned off StyleColorsDark(), to use our own style - hdImgui::StyleColorsHydragonDark().
+ */
 #pragma once
 #include <windows.h>
 #include <filesystem>
