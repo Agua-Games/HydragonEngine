@@ -1,3 +1,6 @@
 [submodule "Engine/Source/ThirdParty/volk"]
 	path = Engine/Source/ThirdParty/volk
 	url = https://github.com/zeux/volk.git
+[submodule "Engine/Source/ThirdParty/fmt"]
+	path = Engine/Source/ThirdParty/fmt
+	url = https://github.com/fmtlib/fmt.git

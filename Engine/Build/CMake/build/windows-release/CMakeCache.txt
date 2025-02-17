@@ -294,6 +294,71 @@ FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
 //Enables UPDATE_DISCONNECTED behavior just for population of volk
 FETCHCONTENT_UPDATES_DISCONNECTED_VOLK:BOOL=OFF
 
+//Value Computed by CMake
+FMT_BINARY_DIR:STATIC=D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/fmt
+
+//Installation directory for cmake files, a relative path that
+// will be joined with D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Engine/Install
+// or an absolute path.
+FMT_CMAKE_DIR:STRING=lib/cmake/fmt
+
+//Generate the cuda-test target.
+FMT_CUDA_TEST:BOOL=OFF
+
+//Debug library postfix.
+FMT_DEBUG_POSTFIX:STRING=d
+
+//Generate the doc target.
+FMT_DOC:BOOL=OFF
+
+//Generate the fuzz target.
+FMT_FUZZ:BOOL=OFF
+
+//Installation directory for include files, a relative path that
+// will be joined with D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Engine/Install
+// or an absolute path.
+FMT_INC_DIR:STRING=include
+
+//Generate the install target.
+FMT_INSTALL:BOOL=ON
+
+//Value Computed by CMake
+FMT_IS_TOP_LEVEL:STATIC=OFF
+
+//Installation directory for libraries, a relative path that will
+// be joined to D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Engine/Install
+// or an absolute path.
+FMT_LIB_DIR:STRING=lib
+
+//Build a module instead of a traditional library.
+FMT_MODULE:BOOL=OFF
+
+//Include OS-specific APIs.
+FMT_OS:BOOL=ON
+
+//Enable extra warnings and expensive tests.
+FMT_PEDANTIC:BOOL=OFF
+
+//Installation directory for pkgconfig (.pc) files, a relative
+// path that will be joined with D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Engine/Install
+// or an absolute path.
+FMT_PKGCONFIG_DIR:STRING=lib/pkgconfig
+
+//Value Computed by CMake
+FMT_SOURCE_DIR:STATIC=D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt
+
+//Expose headers with marking them as system.
+FMT_SYSTEM_HEADERS:BOOL=OFF
+
+//Generate the test target.
+FMT_TEST:BOOL=OFF
+
+//Enable Unicode support.
+FMT_UNICODE:BOOL=ON
+
+//Halt the compilation with an error on compiler warnings.
+FMT_WERROR:BOOL=OFF
+
 //Git command line client
 GIT_EXECUTABLE:FILEPATH=C:/Program Files/Git/cmd/git.exe
 
@@ -367,6 +432,9 @@ Vulkan_INCLUDE_DIR:PATH=C:/VulkanSDK/1.4.304.0/Include
 
 //Path to a library.
 Vulkan_LIBRARY:FILEPATH=C:/VulkanSDK/1.4.304.0/Lib/vulkan-1.lib
+
+//The directory containing a CMake configuration file for fmt.
+fmt_DIR:PATH=fmt_DIR-NOTFOUND
 
 //Value Computed by CMake
 volk_BINARY_DIR:STATIC=D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/volk
@@ -512,7 +580,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MT
 CMAKE_MT-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=5
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
 //Platform information initialized
 CMAKE_PLATFORM_INFO_INITIALIZED:INTERNAL=1
 //noop for ranlib

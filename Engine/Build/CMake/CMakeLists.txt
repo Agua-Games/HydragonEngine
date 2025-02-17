@@ -83,9 +83,15 @@ set(INSTALL_CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/Config")
 # Find and store external dependencies. Packages, libraries (system libraries, precompiled libraries, etc)
 # =========================================================================================================
 # Vulkan - Find the Vulkan SDK on the system. REQUIRED means that the build will fail if not found.
-find_package(Vulkan REQUIRED)    
+find_package(Vulkan REQUIRED) 
 
-set(LIBRARIES glfw Vulkan::Vulkan)
+# fmt - Find the fmt library on the system. REQUIRED means that the build will fail if not found.
+# fmt is a modern formatting library for C++. It provides a safe alternative to printf and sprintf.
+
+set(LIBRARIES 
+    glfw 
+    Vulkan::Vulkan
+    fmt::fmt)
 
 # ========================================================================================================
 # Add subdirectories for Hydragon Dev Tools
@@ -168,6 +174,12 @@ include_directories(${IMGUI_DIR})
 # Currently, we are using Volk for Vulkan loading and function resolution. We're using it as a
 # git submodule and building it as a static library, which is the recommended way to use it.
 add_subdirectory(${VOLK_DIR} volk EXCLUDE_FROM_ALL)
+
+# =====================================================================
+# Third-party libraries: fmt
+# =====================================================================
+# fmt is a modern formatting library for C++. It provides a safe alternative to printf and sprintf.
+add_subdirectory(${SOURCE_DIR}/ThirdParty/fmt fmt EXCLUDE_FROM_ALL)
 
 # end of third-party libraries ---------------------------------------------------------------------------
 
@@ -297,7 +309,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 #target_compile_definitions(Hydragon PRIVATE ENABLE_EDITOR_SUPPORT=1)           # uncomment when editor is implemented.
 
 # Add external precompiled libraries (e.g. GLFW, Vulkan, etc) to the target executable
-target_link_libraries(${PROJECT_NAME} PRIVATE 
+target_link_libraries(${PROJECT_NAME} PRIVATE
     #volk::volk
     ${LIBRARIES})
 

@@ -31,49 +31,49 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 206,
+				"line" : 218,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 300,
+				"line" : 312,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 147,
+				"line" : 153,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 154,
+				"line" : 160,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 229,
+				"line" : 241,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 236,
+				"line" : 248,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 276,
+				"line" : 288,
 				"parent" : 0
 			},
 			{
 				"command" : 4,
 				"file" : 0,
-				"line" : 240,
+				"line" : 252,
 				"parent" : 0
 			}
 		]
@@ -85,6 +85,10 @@
 			[
 				{
 					"fragment" : "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG -std:c++17"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "/utf-8"
 				}
 			],
 			"includes" : 
@@ -406,6 +410,10 @@
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/glfw/include"
 				},
 				{
+					"backtrace" : 2,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include"
+				},
+				{
 					"backtrace" : 5,
 					"isSystem" : true,
 					"path" : "C:/VulkanSDK/1.4.304.0/Include"
@@ -416,7 +424,7 @@
 			{
 				"backtraces" : 
 				[
-					1
+					2
 				],
 				"standard" : "17"
 			},
@@ -492,6 +500,10 @@
 		{
 			"backtrace" : 2,
 			"id" : "glfw::@12507ebf64a5258d241e"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "fmt::@b8b4cdcf357fa61d5575"
 		}
 	],
 	"id" : "Hydragon::@6890427a1f51a3e7e1df",
@@ -515,6 +527,11 @@
 			{
 				"backtrace" : 2,
 				"fragment" : "C:\\VulkanSDK\\1.4.304.0\\Lib\\vulkan-1.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Bin\\Windows\\Release\\fmt.lib",
 				"role" : "libraries"
 			},
 			{
