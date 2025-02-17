@@ -103,7 +103,7 @@ void ResourceManager::LoadFonts() {
         //iconFontPath.c_str(),
         //"D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Assets\\Fonts\\Icons\\fa-6-regular-solid-900.ttf",
         "D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Assets\\Fonts\\Icons\\ms-sharp-filled-regular.ttf",
-        38.0f,
+        32.0f,
         &icons_config,
         icons_ranges
     );
