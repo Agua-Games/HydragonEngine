@@ -189,6 +189,13 @@ void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData)
 {
     if (!p_open || !windowData) return;
 
+    // Debug print
+    static bool first_run = true;
+    if (first_run) {
+        printf("FileExplorer: windowData->iconFont = %p\n", windowData->iconFont);
+        first_run = false;
+    }
+
     ImGui::SetNextWindowSize(ImVec2(1000, 600), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
 

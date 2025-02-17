@@ -18,6 +18,7 @@ struct HdEditorWindowData
     // Font pointers are initialized as nullptr and set during hdImgui::Initialize()
     // after ImGui context and ResourceManager are available
     ImFont* iconFont = nullptr;
+    ImFont* defaultFont = nullptr;
 
     // Editor sleep and auto-sleep feature
     bool isSleeping = false;
@@ -121,7 +122,11 @@ struct HdEditorWindowData
  * @brief Initializes hdImgui.
  * @param window The GLFW window to initialize ImGui for.
  */
-bool Initialize(GLFWwindow* window);
+bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData);
+
+// Add function declaration for icon font initialization
+void InitializeIconFont(HdEditorWindowData* windowData);
+
 #if 0
 void InitializeWindows();
 #endif
@@ -159,9 +164,7 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 /**
  * @brief Renders the ImGui user interface.
  */
-void RenderHydragonEditor();
+void RenderHydragonEditor(HdEditorWindowData* windowData);
 
-// Add function declaration for icon font initialization
-void InitializeIconFont(HdEditorWindowData* windowData);
 } // namespace hdImgui
 

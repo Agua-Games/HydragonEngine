@@ -337,7 +337,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 # ==================================================================================
 # Optional: Custom Build Options
 # ==================================================================================
-option(ENABLE_DEBUG_LOGGING "Enable debug logging" OFF)
+option(ENABLE_DEBUG_LOGGING "Enable debug logging" ON)
 if(ENABLE_DEBUG_LOGGING)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ENABLE_DEBUG_LOGGING=1)
 endif()

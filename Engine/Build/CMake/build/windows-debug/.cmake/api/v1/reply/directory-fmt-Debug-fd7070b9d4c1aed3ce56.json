@@ -1,0 +1,129 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 434,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 449,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 452,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 456,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "fmt-core",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Bin/Windows/Debug/fmtd.lib"
+			],
+			"targetId" : "fmt::@b8b4cdcf357fa61d5575",
+			"targetIndex" : 1,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "fmt-core",
+			"destination" : "include/fmt",
+			"paths" : 
+			[
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/args.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/base.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/chrono.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/color.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/compile.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/core.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/format.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/format-inl.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/os.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/ostream.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/printf.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/ranges.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/std.h",
+				"D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt/include/fmt/xchar.h"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "fmt-core",
+			"destination" : "lib/cmake/fmt",
+			"paths" : 
+			[
+				"build/windows-debug/fmt/fmt-config.cmake",
+				"build/windows-debug/fmt/fmt-config-version.cmake"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "fmt-core",
+			"destination" : "lib/cmake/fmt",
+			"exportName" : "fmt-targets",
+			"exportTargets" : 
+			[
+				{
+					"id" : "fmt::@b8b4cdcf357fa61d5575",
+					"index" : 1
+				},
+				{
+					"id" : "fmt-header-only::@b8b4cdcf357fa61d5575",
+					"index" : 0
+				}
+			],
+			"paths" : 
+			[
+				"fmt/CMakeFiles/Export/b834597d9b1628ff12ae4314c3a2e4b8/fmt-targets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "fmt-core",
+			"destination" : "lib/pkgconfig",
+			"paths" : 
+			[
+				"build/windows-debug/fmt/fmt.pc"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "fmt",
+		"source" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/fmt"
+	}
+}

@@ -354,6 +354,8 @@ static void FramePresent(ImGui_ImplVulkanH_Window* wd)
 // Main code
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+    // 1. Initialize GLFW and create a window
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -385,7 +387,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     ImGui_ImplVulkanH_Window* wd = &g_MainWindowData;
     SetupVulkanWindow(wd, surface, w, h);
 
-    // Setup Dear ImGui context
+    // 2. Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -393,21 +395,18 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-    //io.ConfigViewportsNoAutoMerge = true;
-    //io.ConfigViewportsNoTaskBarIcon = true;
 
-    // Setup Dear ImGui style
-    hdImgui::StyleColorsHydragonDark();
+    // 3. Initialize ResourceManager and load fonts
+    auto& resourceManager = hd::ResourceManager::GetInstance();
+    resourceManager.LoadFonts();  // This will load both default and icon fonts
 
-    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-    ImGuiStyle& style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        //style.WindowRounding = 0.0f;
-        //style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    }
+    // 4. Create and initialize window data structure
+    hdImgui::HdEditorWindowData hdEditorWindowData;
+    hdEditorWindowData.defaultFont = resourceManager.GetDefaultFont();
+    hdEditorWindowData.iconFont = resourceManager.GetIconFont();
+    hdImgui::Initialize(window, &hdEditorWindowData);
 
-    // Setup Platform/Renderer backends
+    // 5. Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForVulkan(window, true);
     ImGui_ImplVulkan_InitInfo init_info = {};
     init_info.Instance = g_Instance;
@@ -448,21 +447,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     bool show_Hydragon_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    // ========== Hydragon Code ==========
-    // Leave it here until we replace this imgui example main.cpp file with our own, reworked, synthetic code, more
-    // structured, etc.
-
-    // === Initialize Resources Manager ===
-    // Get the singleton instance of ResourceManager
-    hd::ResourceManager& resourceManager = hd::ResourceManager::GetInstance();
-
-    // Call GetEngineRootPath() to get the engine root path
-    fs::path rootPath = resourceManager.GetEngineRootPath();
-    struct hdImgui::HdEditorWindowData hdEditorWindowData;
-    hdImgui::Initialize(window);
-    
-    // end of Hydragon Code ==============
-
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
@@ -499,7 +483,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         // too much code in hdImgui.h)
         if (show_Hydragon_window)
         {
-            hdImgui::RenderHydragonEditor();
+            hdImgui::RenderHydragonEditor(&hdEditorWindowData);
         }
 
         // Rendering

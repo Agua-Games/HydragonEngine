@@ -15,7 +15,6 @@
 #include "ResourceManager.h"
 #include "IconsFontAwesome6.h"
 
-//namespace fs = std::filesystem;
 namespace hd {
 ResourceManager& ResourceManager::GetInstance() {
     static ResourceManager instance;
@@ -58,47 +57,62 @@ fs::path ResourceManager::GetEngineRootPath() {
 
 std::string ResourceManager::GetFontPath(const std::string& fontName) {
     fs::path engineRoot = ResourceManager::GetInstance().GetEngineRootPath();
-    return (engineRoot / "Assets" / "Fonts" / fontName).string();
+    return (engineRoot / "Engine" / "Assets" / "Fonts" / fontName).string();
 }
 
 std::string ResourceManager::GetIconFontPath(const std::string& iconFontName) {
     fs::path engineRoot = ResourceManager::GetInstance().GetEngineRootPath();
-    return (engineRoot / "Assets" / "Fonts" / "Icons" / iconFontName).string();
+    fs::path fullPath = engineRoot / "Engine "/ "Assets" / "Fonts" / "Icons" / iconFontName;
+    
+    // Debug prints
+    printf("Engine Root: %s\n", engineRoot.string().c_str());
+    printf("Full Icon Font Path: %s\n", fullPath.string().c_str());
+    printf("Path exists: %s\n", fs::exists(fullPath) ? "Yes" : "No");
+    
+    return fullPath.string();
 }
 
 void ResourceManager::LoadFonts() {
     ImGuiIO& io = ImGui::GetIO();
 
-    // Load default font
-    m_defaultFont = io.Fonts->AddFontDefault();
+    // Load font
+    m_defaultFont = io.Fonts->AddFontFromFileTTF("D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Assets\\Fonts\\Roboto-Regular.ttf", 16.0f);
+    //m_defaultFont = io.Fonts->AddFontFromFileTTF(GetFontPath("Roboto-Regular.ttf").c_str(), 16.0f);
     if (!m_defaultFont) {
         throw std::runtime_error("Failed to load default ImGui font");
     }
 
     // Load Font Awesome icon font
-    std::string iconFontPath = GetIconFontPath(FONT_ICON_FILE_NAME_FAR);  // This will use "fa-regular-400.ttf"
+    std::string iconFontPath = GetIconFontPath(FONT_ICON_FILE_NAME_FAR);
+    
+    // Debug print
+    printf("Loading icon font from: %s\n", iconFontPath.c_str());
     
     // Icon font configuration
     ImFontConfig icons_config;
-    icons_config.MergeMode = true;           // Merge icons into the previous font
-    icons_config.PixelSnapH = true;          // Align icons to pixel grid
-    icons_config.GlyphMinAdvanceX = 16.0f;   // Make icons monospaced
-    icons_config.GlyphOffset = ImVec2(0, 2); // Fine-tune icon position
+    icons_config.MergeMode = true;
+    icons_config.PixelSnapH = true;
+    icons_config.GlyphMinAdvanceX = 16.0f;
+    icons_config.GlyphOffset = ImVec2(0, 2);
     
-    // Define icon range (from IconsFontAwesome6.h)
     static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     
     // Load the icon font
     m_iconFont = io.Fonts->AddFontFromFileTTF(
         iconFontPath.c_str(),
-        16.0f,              // Font size
-        &icons_config,      // Font config
-        icons_ranges        // Icon ranges
+        16.0f,
+        &icons_config,
+        icons_ranges
     );
     
+    #if 0
     if (!m_iconFont) {
+        printf("Failed to load icon font!\n");
         throw std::runtime_error("Failed to load icon font: " + iconFontPath);
+    } else {
+        printf("Successfully loaded icon font\n");
     }
+    #endif
 
     // Build font atlas
     io.Fonts->Build();

@@ -24,7 +24,6 @@ public:
      */
     static ResourceManager& GetInstance();
 
-    // =========== Store Resource Paths ===========
     /**
      * @brief Get the engine root path
      * @returns The engine root path
@@ -38,11 +37,19 @@ public:
      */
     static std::string GetFontPath(const std::string& fontName);
     
-    // Add new method for icon font loading
+    /**
+     * @brief Get the path to an icon font
+     * @param iconFontName The name of the icon font
+     * @returns The path to the icon font
+     */
     static std::string GetIconFontPath(const std::string& iconFontName);
     
-    // Modified to handle both regular fonts and icon fonts
+    /**
+     * @brief Load fonts for ImGui
+     */
     void LoadFonts();
+
+    // Getters for fonts
     ImFont* GetDefaultFont() const { return m_defaultFont; }
     ImFont* GetIconFont() const { return m_iconFont; }
 
@@ -53,9 +60,9 @@ private:
     // ResourceManager is a singleton, so delete copy constructor and assignment operator
     ResourceManager(const ResourceManager&) = delete;
     ResourceManager& operator=(const ResourceManager&) = delete;
+
     // default member initializers
-    // ...
-    ImFont* m_defaultFont;
-    ImFont* m_iconFont;
+    ImFont* m_defaultFont = nullptr;
+    ImFont* m_iconFont = nullptr;
 };
 }
