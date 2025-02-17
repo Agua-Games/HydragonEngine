@@ -15,9 +15,12 @@ struct HdEditorWindowData
 {
     // Layout
     float globalWindowBgAlpha = 0.35f;
+    // Font pointers are initialized as nullptr and set during hdImgui::Initialize()
+    // after ImGui context and ResourceManager are available
+    ImFont* iconFont = nullptr;
 
     // Editor sleep and auto-sleep feature
-    bool isSleeping;
+    bool isSleeping = false;
 
     // State - Track the open/closed state of each window
     bool isMainMenuBarWindowOpen = true;
@@ -113,19 +116,17 @@ struct HdEditorWindowData
     bool isDebugWindowOpen = true;
 };
 
-#if 0
 // =========== Initialization ===========
 /** 
  * @brief Initializes hdImgui.
  * @param window The GLFW window to initialize ImGui for.
  */
-void Initialize(GLFWwindow* window);
-void InitializeWindows();
-
-// =========== Styling =========== 
-#endif   
-void StyleColorsHydragonDark();
+bool Initialize(GLFWwindow* window);
 #if 0
+void InitializeWindows();
+#endif
+// =========== Styling ===========  
+void StyleColorsHydragonDark();
 void StyleColorsHydragonLight();
 void StyleColorsHydragonClassic();
 void StyleColorsHydragonModern();
@@ -135,7 +136,7 @@ void LoadFonts(const std::string& defaultFontPath = "", float defaultFontSize = 
 
 // Icon font loading
 void LoadIconFonts(const std::string& iconFontPath = "", float iconFontSize = 13.0f);
-
+#if 0
 // =========== Input handling ===========
 /**
  * @brief Sleeps the ImGui window, pausing rendering and processing of most events.
@@ -159,5 +160,8 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
  * @brief Renders the ImGui user interface.
  */
 void RenderHydragonEditor();
+
+// Add function declaration for icon font initialization
+void InitializeIconFont(HdEditorWindowData* windowData);
 } // namespace hdImgui
 

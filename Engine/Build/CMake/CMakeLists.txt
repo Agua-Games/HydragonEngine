@@ -181,6 +181,11 @@ add_subdirectory(${VOLK_DIR} volk EXCLUDE_FROM_ALL)
 # fmt is a modern formatting library for C++. It provides a safe alternative to printf and sprintf.
 add_subdirectory(${SOURCE_DIR}/ThirdParty/fmt fmt EXCLUDE_FROM_ALL)
 
+# =====================================================================
+# IconFontCppHeaders
+# =====================================================================
+include_directories(${SOURCE_DIR}/ThirdParty/IconFontCppHeaders)
+
 # end of third-party libraries ---------------------------------------------------------------------------
 
 # ==================================================================================================
@@ -245,7 +250,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # ======================================================================================
 # Include directories from third-party libraries to target executable
 # ======================================================================================
-target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_DIR}/backends)
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${IMGUI_DIR}/backends)
 
 # Explicitly add the imgui backend headers you want to include, so that we won't include backends
 # we're replacing, like imgui_impl_vulkan.h
@@ -253,6 +259,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${IMGUI_DIR}/backends/imgui_impl_glfw.h
     #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp    # removed in favor of our own Core/Graphics/Vulkan/VulkanBackend
 )
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${THIRD-PARTY_SOURCE_DIR}/IconFontCppHeaders)
 
 # ======================================================================================
 # Include engine directories (Core, Devtools, Editor) to target executable

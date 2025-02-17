@@ -38,20 +38,24 @@ public:
      */
     static std::string GetFontPath(const std::string& fontName);
     
-    // =========== UI Resources Handling ===========
-    /**
-     * @brief Load fonts
-     */
+    // Add new method for icon font loading
+    static std::string GetIconFontPath(const std::string& iconFontName);
+    
+    // Modified to handle both regular fonts and icon fonts
     void LoadFonts();
+    ImFont* GetDefaultFont() const { return m_defaultFont; }
+    ImFont* GetIconFont() const { return m_iconFont; }
 
 private:
     // Private constructor to prevent instantiation
-    ResourceManager() {}
+    ResourceManager() : m_defaultFont(nullptr), m_iconFont(nullptr) {}
 
     // ResourceManager is a singleton, so delete copy constructor and assignment operator
     ResourceManager(const ResourceManager&) = delete;
     ResourceManager& operator=(const ResourceManager&) = delete;
     // default member initializers
     // ...
+    ImFont* m_defaultFont;
+    ImFont* m_iconFont;
 };
 }

@@ -12,6 +12,7 @@
 #include <imgui.h>
 
 #include "hdImgui.h"
+#include "ResourceManager.h"
 #include "MainMenuBar.h"
 #include "TopToolbar.h"
 #include "LeftToolbar.h"
@@ -65,49 +66,15 @@
 #include "DebugEditor.h"
 
 namespace hdImgui {
-// === Input variables ===
+
+// Static instance of window data
+static HdEditorWindowData g_EditorWindowData;
 // Static variables for sleep/idle functionality
-
 static std::chrono::steady_clock::time_point s_lastInteractionTime;
+// rendering vars
 
-// === Rendering Variables, structs ===
-HdEditorWindowData hdEditorWindowData;
 
-#if 0
 // =========== Initialization ===========
-void Initialize(GLFWwindow* window) {
-    // === GLFW ===
-    // Initialize ImGui context.
-    // Temporary implementation.
-    // *TODO: set up a proper ImGui context (window and rendering backend).
-    // I will do it later, as soon as I replace imgui's off-the-shelf Vulkan backend
-    // with a custom one, tailored for Hydragon, modern pipeline, Compute shaders etc.
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-    // Initialize glfw - window and input handling, for Vulkan backend.
-    ImGui_ImplGlfw_InitForVulkan(window, true);
-    // Set up GLFW key callback
-    glfwSetKeyCallback(window, KeyCallback);
-    glfwSetMouseButtonCallback(window, MouseButtonCallback);
-
-    // === ImGui ===
-    // Set default ImGui style (or your custom default)
-    StyleColorsHydragonDark();
-    // Load default fonts
-    LoadFonts();
-
-    // === Idle sleep ===
-    // Initialize last interaction time - used for idle sleep
-    s_lastInteractionTime = std::chrono::steady_clock::now();
-    
-    // === Windows, sub-editors ===
-    // Initialize each ImGui window (Editor windows, sub-editors, etc.)
-    InitializeWindows();
-}
-#endif
-
 void InitializeWindows(){
     #if 0
     hdEditor::Initialize();
@@ -126,7 +93,6 @@ void InitializeWindows(){
     hdPropertyEditor::Initialize();
     hdSetttingsEditor::Initialize();
     #endif
-    
 }
 // =========== Styling ===========
 void StyleColorsHydragonDark(){
@@ -313,128 +279,132 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
 // =========== Rendering ===================
 #endif
-void RenderHydragonEditor() {
-    // Store data for each window
-    static HdEditorWindowData hdEditorWindowData;
+void InitializeIconFont(HdEditorWindowData* windowData) {
+    if (!windowData) return;
+    
+    auto& resourceManager = hd::ResourceManager::GetInstance();
+    windowData->iconFont = resourceManager.GetIconFont();
+}
 
-    // === Docking ===
-    // Enable docking universally for imgui windows
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    // Create the main DockSpace
+bool Initialize(GLFWwindow* window) {
+    if (!window) return false;
+
+    #if 0
+    // Initialize ImGui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    // Initialize ImGui GLFW and Vulkan implementation
+    ImGui_ImplGlfw_InitForVulkan(window, true);
+    #endif
+
+    // Initialize icon font
+    auto& resourceManager = hd::ResourceManager::GetInstance();
+    g_EditorWindowData.iconFont = resourceManager.GetIconFont();
+
+    // Set default style
+    StyleColorsHydragonDark();
+
+    // === Idle sleep ===
+    // Initialize last interaction time - used for idle sleep
+    s_lastInteractionTime = std::chrono::steady_clock::now();
+    
+    // === Windows, sub-editors ===
+    // Initialize each ImGui window (Editor windows, sub-editors, etc.)
+    InitializeWindows();
+
+    return true;
+}
+
+void RenderHydragonEditor() {
+    // Create docking space
     ImGui::DockSpaceOverViewport(ImGui::GetID("MainDockSpace"));
 
-    // === Render Windows ===  
-    if (hdEditorWindowData.isMainMenuBarWindowOpen) { hdImgui::ShowMainMenuBar(&hdEditorWindowData.isMainMenuBarWindowOpen, &hdEditorWindowData); }
-    // Top Toolbar
-    if (hdEditorWindowData.isTopToolbarWindowOpen) { hdImgui::ShowTopToolbar(&hdEditorWindowData.isTopToolbarWindowOpen, &hdEditorWindowData); }
-    // Left toolbar
-    if (hdEditorWindowData.isLeftToolbarWindowOpen) { hdImgui::ShowLeftToolbar(&hdEditorWindowData.isLeftToolbarWindowOpen, &hdEditorWindowData); }
-    // Right toolbar
-    if (hdEditorWindowData.isRightToolbarWindowOpen) { hdImgui::ShowRightToolbar(&hdEditorWindowData.isRightToolbarWindowOpen, &hdEditorWindowData); }
-    // Bottom toolbar
-    if (hdEditorWindowData.isBottomToolbarWindowOpen) { hdImgui::ShowBottomToolbar(&hdEditorWindowData.isBottomToolbarWindowOpen, &hdEditorWindowData); }
-    // SceneGraph Editor
-    if (hdEditorWindowData.isSceneGraphWindowOpen) { hdImgui::ShowSceneGraphEditor(&hdEditorWindowData.isSceneGraphWindowOpen, &hdEditorWindowData); }
-    // NodeGraph Editor
-    if (hdEditorWindowData.isNodeGraphWindowOpen) { hdImgui::ShowNodeGraphEditor(&hdEditorWindowData.isNodeGraphWindowOpen, &hdEditorWindowData); }
-    // Script Editor
-    if (hdEditorWindowData.isScriptWindowOpen) { hdImgui::ShowScriptEditor(&hdEditorWindowData.isScriptWindowOpen, &hdEditorWindowData); }
-    // Scripts Palette=
-    if (hdEditorWindowData.isScriptsPaletteWindowOpen) { hdImgui::ShowScriptsPalette(&hdEditorWindowData.isScriptsPaletteWindowOpen, &hdEditorWindowData); }
-    // Commands Palette
-    if (hdEditorWindowData.isCommandsPaletteWindowOpen) { hdImgui::ShowCommandsPalette(&hdEditorWindowData.isCommandsPaletteWindowOpen, &hdEditorWindowData); }
-    // Console Editor
-    if (hdEditorWindowData.isConsoleWindowOpen) { hdImgui::ShowConsole(&hdEditorWindowData.isConsoleWindowOpen, &hdEditorWindowData); }
-    // Agents Editor
-    if (hdEditorWindowData.isAgentsWindowOpen) { hdImgui::ShowAgentsEditor(&hdEditorWindowData.isAgentsWindowOpen, &hdEditorWindowData); }
-    // Viewport 3D
-    if (hdEditorWindowData.isViewport3DWindowOpen) { hdImgui::ShowViewport3D(&hdEditorWindowData.isViewport3DWindowOpen, &hdEditorWindowData); }
-    // Viewport 3D Tools
-    if (hdEditorWindowData.isViewport3DToolsWindowOpen) { hdImgui::ShowViewport3DTools(&hdEditorWindowData.isViewport3DToolsWindowOpen, &hdEditorWindowData); }
-    // Viewport 2D
-    if (hdEditorWindowData.isViewport2DWindowOpen) { hdImgui::ShowViewport2D(&hdEditorWindowData.isViewport2DWindowOpen, &hdEditorWindowData); }
-    // Viewport 2D Tools
-    // Most of the settings below should actually be in a separate floating, dockable tab, like "Viewport 2D Settings". Preferrably with a
-    // semi-transparent background, to be automatically called as an overlay when the user is in the Viewport 2D tab. With each category
-    // under separate headers (like "Brush Settings", "Grid Settings", etc). Or maybe even each category under separate semi-transparent tabs,
-    // to be used as overlays, collapsed by default.
-    if (hdEditorWindowData.isViewport2DToolsWindowOpen) { hdImgui::ShowViewport2DTools(&hdEditorWindowData.isViewport2DToolsWindowOpen, &hdEditorWindowData); }
-    // Properties Editor
-    if (hdEditorWindowData.isPropertiesWindowOpen) { hdImgui::ShowPropertyEditor(&hdEditorWindowData.isPropertiesWindowOpen, &hdEditorWindowData); }
+    // Render all windows
+    if (g_EditorWindowData.isMainMenuBarWindowOpen) {
+        ShowMainMenuBar(&g_EditorWindowData.isMainMenuBarWindowOpen, &g_EditorWindowData);
+    }
+    if (g_EditorWindowData.isFileExplorerWindowOpen) {
+        ShowFileExplorer(&g_EditorWindowData.isFileExplorerWindowOpen, &g_EditorWindowData);
+    }
+    // ... rest of the window rendering ...
+    if (g_EditorWindowData.isPropertiesWindowOpen) { hdImgui::ShowPropertyEditor(&g_EditorWindowData.isPropertiesWindowOpen, &g_EditorWindowData); }
     // Asset Manager
-    if (hdEditorWindowData.isAssetManagerWindowOpen) { hdImgui::ShowAssetManager(&hdEditorWindowData.isAssetManagerWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isAssetManagerWindowOpen) { hdImgui::ShowAssetManager(&g_EditorWindowData.isAssetManagerWindowOpen, &g_EditorWindowData); }
     // Lighting Editor
-    if (hdEditorWindowData.isLightingWindowOpen) { hdImgui::ShowLightingEditor(&hdEditorWindowData.isLightingWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isLightingWindowOpen) { hdImgui::ShowLightingEditor(&g_EditorWindowData.isLightingWindowOpen, &g_EditorWindowData); }
     // Physics Editor
-    if (hdEditorWindowData.isPhysicsWindowOpen) { hdImgui::ShowPhysicsEditor(&hdEditorWindowData.isPhysicsWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isPhysicsWindowOpen) { hdImgui::ShowPhysicsEditor(&g_EditorWindowData.isPhysicsWindowOpen, &g_EditorWindowData); }
     // Bottom status bar
-    if (hdEditorWindowData.isBottomStatusBarWindowOpen) { hdImgui::ShowBottomStatusBar(&hdEditorWindowData.isBottomStatusBarWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isBottomStatusBarWindowOpen) { hdImgui::ShowBottomStatusBar(&g_EditorWindowData.isBottomStatusBarWindowOpen, &g_EditorWindowData); }
     // File Explorer
-    if (hdEditorWindowData.isFileExplorerWindowOpen) { hdImgui::ShowFileExplorer(&hdEditorWindowData.isFileExplorerWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isFileExplorerWindowOpen) { hdImgui::ShowFileExplorer(&g_EditorWindowData.isFileExplorerWindowOpen, &g_EditorWindowData); }
     // Pattern Orchestrator
-    if (hdEditorWindowData.isPatternOrchestratorWindowOpen) { hdImgui::ShowPatternOrchestrator(&hdEditorWindowData.isPatternOrchestratorWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isPatternOrchestratorWindowOpen) { hdImgui::ShowPatternOrchestrator(&g_EditorWindowData.isPatternOrchestratorWindowOpen, &g_EditorWindowData); }
     // Profiler
-    if (hdEditorWindowData.isProfilerWindowOpen) { hdImgui::ShowProfiler(&hdEditorWindowData.isProfilerWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isProfilerWindowOpen) { hdImgui::ShowProfiler(&g_EditorWindowData.isProfilerWindowOpen, &g_EditorWindowData); }
     // Streaming Editor
-    if (hdEditorWindowData.isStreamingWindowOpen) { hdImgui::ShowStreamingEditor(&hdEditorWindowData.isStreamingWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isStreamingWindowOpen) { hdImgui::ShowStreamingEditor(&g_EditorWindowData.isStreamingWindowOpen, &g_EditorWindowData); }
     // Image Editor
     // Used to display and edit textures, texture settings, edit UVs, packed textures, apply adjustments,
     // configure procedurals, use AI-assisted texture generation etc.
-    if (hdEditorWindowData.isImageWindowOpen) { hdImgui::ShowImageTools(&hdEditorWindowData.isImageWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isImageWindowOpen) { hdImgui::ShowImageTools(&g_EditorWindowData.isImageWindowOpen, &g_EditorWindowData); }
     // Audio Editor
-    if (hdEditorWindowData.isAudioWindowOpen) { hdImgui::ShowAudioEditor(&hdEditorWindowData.isAudioWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isAudioWindowOpen) { hdImgui::ShowAudioEditor(&g_EditorWindowData.isAudioWindowOpen, &g_EditorWindowData); }
     // Montage Editor
     // Timeline with tracks, blending, transitions, etc. Used to compose animations, cutscenes, video clips, 
     // audio clips, images and other time varying media.
     // Whereas DCC apps usually rely on a simple timeline by default, Hydragon uses a more advanced montage editor,
     // with two visualization modes: collapsed and expanded (defaults to expanded).
-    if (hdEditorWindowData.isMontageWindowOpen) { hdImgui::ShowMontageEditor(&hdEditorWindowData.isMontageWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isMontageWindowOpen) { hdImgui::ShowMontageEditor(&g_EditorWindowData.isMontageWindowOpen, &g_EditorWindowData); }
     // Text Editor
-    if (hdEditorWindowData.isTextWindowOpen) { hdImgui::ShowTextEditor(&hdEditorWindowData.isTextWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isTextWindowOpen) { hdImgui::ShowTextEditor(&g_EditorWindowData.isTextWindowOpen, &g_EditorWindowData); }
     // Font Editor
-    if (hdEditorWindowData.isFontWindowOpen) { hdImgui::ShowFontEditor(&hdEditorWindowData.isFontWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isFontWindowOpen) { hdImgui::ShowFontEditor(&g_EditorWindowData.isFontWindowOpen, &g_EditorWindowData); }
     // Plugin Editor
-    if (hdEditorWindowData.isPluginWindowOpen) { hdImgui::ShowPluginEditor(&hdEditorWindowData.isPluginWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isPluginWindowOpen) { hdImgui::ShowPluginEditor(&g_EditorWindowData.isPluginWindowOpen, &g_EditorWindowData); }
     // Extensions Editor
-    if (hdEditorWindowData.isExtensionsWindowOpen) { hdImgui::ShowExtensionsEditor(&hdEditorWindowData.isExtensionsWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isExtensionsWindowOpen) { hdImgui::ShowExtensionsEditor(&g_EditorWindowData.isExtensionsWindowOpen, &g_EditorWindowData); }
     // Macros Editor
-    if (hdEditorWindowData.isMacrosWindowOpen) { hdImgui::ShowMacrosEditor(&hdEditorWindowData.isMacrosWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isMacrosWindowOpen) { hdImgui::ShowMacrosEditor(&g_EditorWindowData.isMacrosWindowOpen, &g_EditorWindowData); }
     // Drama Editor
-    if (hdEditorWindowData.isDramaWindowOpen) { hdImgui::ShowDramaEditor(&hdEditorWindowData.isDramaWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isDramaWindowOpen) { hdImgui::ShowDramaEditor(&g_EditorWindowData.isDramaWindowOpen, &g_EditorWindowData); }
     // Chimera Pipeline Editor
-    if (hdEditorWindowData.isChimeraPipelineWindowOpen) { hdImgui::ShowChimeraPipelineEditor(&hdEditorWindowData.isChimeraPipelineWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isChimeraPipelineWindowOpen) { hdImgui::ShowChimeraPipelineEditor(&g_EditorWindowData.isChimeraPipelineWindowOpen, &g_EditorWindowData); }
     // UI Editor
-    if (hdEditorWindowData.isUIEditorWindowOpen) { hdImgui::ShowUIEditor(&hdEditorWindowData.isUIEditorWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isUIEditorWindowOpen) { hdImgui::ShowUIEditor(&g_EditorWindowData.isUIEditorWindowOpen, &g_EditorWindowData); }
     // Networking Editor
-    if (hdEditorWindowData.isNetworkingWindowOpen) { hdImgui::ShowNetworkingEditor(&hdEditorWindowData.isNetworkingWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isNetworkingWindowOpen) { hdImgui::ShowNetworkingEditor(&g_EditorWindowData.isNetworkingWindowOpen, &g_EditorWindowData); }
     // Performance Scalability Editor
-    if (hdEditorWindowData.isPerformanceScalabilityWindowOpen) { hdImgui::ShowPerformanceScalabilityEditor(&hdEditorWindowData.isPerformanceScalabilityWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isPerformanceScalabilityWindowOpen) { hdImgui::ShowPerformanceScalabilityEditor(&g_EditorWindowData.isPerformanceScalabilityWindowOpen, &g_EditorWindowData); }
     // Reflection Editor
-    if (hdEditorWindowData.isReflectionWindowOpen) { hdImgui::ShowReflectionEditor(&hdEditorWindowData.isReflectionWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isReflectionWindowOpen) { hdImgui::ShowReflectionEditor(&g_EditorWindowData.isReflectionWindowOpen, &g_EditorWindowData); }
     // Collaboration Editor
-    if (hdEditorWindowData.isCollaborationWindowOpen) { hdImgui::ShowCollaborationEditor(&hdEditorWindowData.isCollaborationWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isCollaborationWindowOpen) { hdImgui::ShowCollaborationEditor(&g_EditorWindowData.isCollaborationWindowOpen, &g_EditorWindowData); }
     // Community Editor
-    if (hdEditorWindowData.isCommunityWindowOpen) { hdImgui::ShowCommunityEditor(&hdEditorWindowData.isCommunityWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isCommunityWindowOpen) { hdImgui::ShowCommunityEditor(&g_EditorWindowData.isCommunityWindowOpen, &g_EditorWindowData); }
     // Monetization Editor
-    if (hdEditorWindowData.isMonetizationWindowOpen) { hdImgui::ShowMonetizationEditor(&hdEditorWindowData.isMonetizationWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isMonetizationWindowOpen) { hdImgui::ShowMonetizationEditor(&g_EditorWindowData.isMonetizationWindowOpen, &g_EditorWindowData); }
     // Project Insights Editor
-    if (hdEditorWindowData.isProjectInsightsWindowOpen) { hdImgui::ShowProjectInsightsEditor(&hdEditorWindowData.isProjectInsightsWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isProjectInsightsWindowOpen) { hdImgui::ShowProjectInsightsEditor(&g_EditorWindowData.isProjectInsightsWindowOpen, &g_EditorWindowData); }
     // Input Editor
-    if (hdEditorWindowData.isInputWindowOpen) { hdImgui::ShowInputEditor(&hdEditorWindowData.isInputWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isInputWindowOpen) { hdImgui::ShowInputEditor(&g_EditorWindowData.isInputWindowOpen, &g_EditorWindowData); }
     // Properties Matrix Editor
-    if (hdEditorWindowData.isPropertiesMatrixWindowOpen) { hdImgui::ShowPropertiesMatrixEditor(&hdEditorWindowData.isPropertiesMatrixWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isPropertiesMatrixWindowOpen) { hdImgui::ShowPropertiesMatrixEditor(&g_EditorWindowData.isPropertiesMatrixWindowOpen, &g_EditorWindowData); }
     // Localization Editor
-    if (hdEditorWindowData.isLocalizationWindowOpen) { hdImgui::ShowLocalizationEditor(&hdEditorWindowData.isLocalizationWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isLocalizationWindowOpen) { hdImgui::ShowLocalizationEditor(&g_EditorWindowData.isLocalizationWindowOpen, &g_EditorWindowData); }
     // Settings Editor
-    if (hdEditorWindowData.isSettingsWindowOpen) { hdImgui::ShowSettingsEditor(&hdEditorWindowData.isSettingsWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isSettingsWindowOpen) { hdImgui::ShowSettingsEditor(&g_EditorWindowData.isSettingsWindowOpen, &g_EditorWindowData); }
     // Mesh Editor
-    if (hdEditorWindowData.isMeshWindowOpen) { hdImgui::ShowMeshEditor(&hdEditorWindowData.isMeshWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isMeshWindowOpen) { hdImgui::ShowMeshEditor(&g_EditorWindowData.isMeshWindowOpen, &g_EditorWindowData); }
     // Volume Editor
-    if (hdEditorWindowData.isVolumeWindowOpen) { hdImgui::ShowVolumeEditor(&hdEditorWindowData.isVolumeWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isVolumeWindowOpen) { hdImgui::ShowVolumeEditor(&g_EditorWindowData.isVolumeWindowOpen, &g_EditorWindowData); }
     // Preset Editor
-        if (hdEditorWindowData.isPresetsWindowOpen) { hdImgui::ShowPresetEditor(&hdEditorWindowData.isPresetsWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isPresetsWindowOpen) { hdImgui::ShowPresetEditor(&g_EditorWindowData.isPresetsWindowOpen, &g_EditorWindowData); }
     // Debug Editor
-        if (hdEditorWindowData.isDebugWindowOpen) { hdImgui::ShowDebugEditor(&hdEditorWindowData.isDebugWindowOpen, &hdEditorWindowData); }
+    if (g_EditorWindowData.isDebugWindowOpen) { hdImgui::ShowDebugEditor(&g_EditorWindowData.isDebugWindowOpen, &g_EditorWindowData); }
 
     // === Temporary, for referencing the components' names in imgui code files ===
     ImGui::ShowDemoWindow();

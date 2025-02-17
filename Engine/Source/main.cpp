@@ -349,17 +349,6 @@ static void FramePresent(ImGui_ImplVulkanH_Window* wd)
     wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->SemaphoreCount; // Now we can use the next set of semaphores
 }
 
-// ========== Hydragon Code ==========
-// Leave it here until we replace this imgui example main.cpp file with our own, reworked, synthetic code, more
-// structured, etc.
-
-// === Initialize Resources Manager ===
-// Get the singleton instance of ResourceManager
-hd::ResourceManager& resourceManager = hd::ResourceManager::GetInstance();
-
-// Call GetEngineRootPath() to get the engine root path
-fs::path rootPath = resourceManager.GetEngineRootPath();
-
 // end of Hydragon Code ==============
 
 // Main code
@@ -458,6 +447,21 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     bool show_another_window = false;
     bool show_Hydragon_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    // ========== Hydragon Code ==========
+    // Leave it here until we replace this imgui example main.cpp file with our own, reworked, synthetic code, more
+    // structured, etc.
+
+    // === Initialize Resources Manager ===
+    // Get the singleton instance of ResourceManager
+    hd::ResourceManager& resourceManager = hd::ResourceManager::GetInstance();
+
+    // Call GetEngineRootPath() to get the engine root path
+    fs::path rootPath = resourceManager.GetEngineRootPath();
+    struct hdImgui::HdEditorWindowData hdEditorWindowData;
+    hdImgui::Initialize(window);
+    
+    // end of Hydragon Code ==============
 
     // Main loop
     while (!glfwWindowShouldClose(window))

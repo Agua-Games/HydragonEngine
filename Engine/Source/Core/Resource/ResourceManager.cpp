@@ -13,6 +13,7 @@
 #endif
 
 #include "ResourceManager.h"
+#include "IconsFontAwesome6.h"
 
 //namespace fs = std::filesystem;
 namespace hd {
@@ -60,21 +61,45 @@ std::string ResourceManager::GetFontPath(const std::string& fontName) {
     return (engineRoot / "Assets" / "Fonts" / fontName).string();
 }
 
-// =========== UI Resources Handling ===========
-void LoadFonts() {
-    // Get ImGuiIO (imgui's Input Output system)
+std::string ResourceManager::GetIconFontPath(const std::string& iconFontName) {
+    fs::path engineRoot = ResourceManager::GetInstance().GetEngineRootPath();
+    return (engineRoot / "Assets" / "Fonts" / "Icons" / iconFontName).string();
+}
+
+void ResourceManager::LoadFonts() {
     ImGuiIO& io = ImGui::GetIO();
 
-    // *If we decide to have more than one font or font icon, we should put the commands below inside of a for loop.
+    // Use ImGui's default font as a base
+    m_defaultFont = io.Fonts->AddFontDefault();
+    if (!m_defaultFont) {
+        throw std::runtime_error("Failed to load default ImGui font");
+    }
+
+    // Load icon font - using the filename defined in IconsFontAwesome6.h
+    std::string iconFontPath = GetIconFontPath(FONT_ICON_FILE_NAME_FAR);  // This will use "fa-regular-400.ttf"
     
-    // Get the path to each font using the resource manager
-    std::string fontPath = ResourceManager::GetFontPath("font.ttf");
+    // Font Awesome icon range
+    static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    
+    // Merge icons into the default font
+    ImFontConfig icons_config;
+    icons_config.MergeMode = true;
+    icons_config.PixelSnapH = true;
+    icons_config.GlyphMinAdvanceX = 16.0f; // Make icons monospaced
+    
+    m_iconFont = io.Fonts->AddFontFromFileTTF(
+        iconFontPath.c_str(),
+        16.0f,
+        &icons_config,
+        icons_ranges
+    );
+    
+    if (!m_iconFont) {
+        throw std::runtime_error("Failed to load icon font: " + iconFontPath);
+    }
 
-    // Get the path to each font ICON using the resource manager
-    std::string fontIconPath = ResourceManager::GetFontPath("font.ttf");
-
-    // Load the font
-    io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 16.0f);
+    // Build font atlas
+    io.Fonts->Build();
 }
 }
 

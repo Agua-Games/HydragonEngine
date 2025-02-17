@@ -3,7 +3,8 @@
  * Licensed under the Agua Games License 1.0
  */
 #pragma once
-#include <imgui.h>  // Include ImGui's header
+#include <imgui.h>
+#include <string>
 
 #include "hdImgui.h"
 

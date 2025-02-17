@@ -75,7 +75,29 @@
 			"future": "cpp",
 			"mutex": "cpp",
 			"stop_token": "cpp",
-			"thread": "cpp"
+			"thread": "cpp",
+			"array": "cpp",
+			"bitset": "cpp",
+			"cfenv": "cpp",
+			"cinttypes": "cpp",
+			"complex": "cpp",
+			"coroutine": "cpp",
+			"cstdarg": "cpp",
+			"deque": "cpp",
+			"expected": "cpp",
+			"fstream": "cpp",
+			"map": "cpp",
+			"numeric": "cpp",
+			"queue": "cpp",
+			"ranges": "cpp",
+			"set": "cpp",
+			"shared_mutex": "cpp",
+			"source_location": "cpp",
+			"span": "cpp",
+			"stack": "cpp",
+			"typeindex": "cpp",
+			"variant": "cpp",
+			"xtree": "cpp"
 		}
 	}
 }
