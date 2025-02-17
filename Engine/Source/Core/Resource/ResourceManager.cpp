@@ -69,29 +69,31 @@ std::string ResourceManager::GetIconFontPath(const std::string& iconFontName) {
 void ResourceManager::LoadFonts() {
     ImGuiIO& io = ImGui::GetIO();
 
-    // Use ImGui's default font as a base
+    // Load default font
     m_defaultFont = io.Fonts->AddFontDefault();
     if (!m_defaultFont) {
         throw std::runtime_error("Failed to load default ImGui font");
     }
 
-    // Load icon font - using the filename defined in IconsFontAwesome6.h
+    // Load Font Awesome icon font
     std::string iconFontPath = GetIconFontPath(FONT_ICON_FILE_NAME_FAR);  // This will use "fa-regular-400.ttf"
     
-    // Font Awesome icon range
+    // Icon font configuration
+    ImFontConfig icons_config;
+    icons_config.MergeMode = true;           // Merge icons into the previous font
+    icons_config.PixelSnapH = true;          // Align icons to pixel grid
+    icons_config.GlyphMinAdvanceX = 16.0f;   // Make icons monospaced
+    icons_config.GlyphOffset = ImVec2(0, 2); // Fine-tune icon position
+    
+    // Define icon range (from IconsFontAwesome6.h)
     static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     
-    // Merge icons into the default font
-    ImFontConfig icons_config;
-    icons_config.MergeMode = true;
-    icons_config.PixelSnapH = true;
-    icons_config.GlyphMinAdvanceX = 16.0f; // Make icons monospaced
-    
+    // Load the icon font
     m_iconFont = io.Fonts->AddFontFromFileTTF(
         iconFontPath.c_str(),
-        16.0f,
-        &icons_config,
-        icons_ranges
+        16.0f,              // Font size
+        &icons_config,      // Font config
+        icons_ranges        // Icon ranges
     );
     
     if (!m_iconFont) {
