@@ -19,6 +19,7 @@ struct HdEditorWindowData
     // after ImGui context and ResourceManager are available
     ImFont* iconFont = nullptr;
     ImFont* defaultFont = nullptr;
+    ImVec2 iconDefaultSize = ImVec2(35.0f, 35.0f);
 
     // Editor sleep and auto-sleep feature
     bool isSleeping = false;

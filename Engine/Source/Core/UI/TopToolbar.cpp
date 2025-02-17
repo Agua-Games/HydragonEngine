@@ -6,8 +6,12 @@
 #include <imgui.h>  // Include ImGui's header
 #include <string>
 
+#include "IconsFontAwesome6.h"
+#include "IconsMaterialSymbols.h"
+
 #include "TopToolbar.h"
 #include "hdImgui.h"
+#include "ResourceManager.h"
 
 namespace hdImgui {
 // === Layout variables ===
@@ -26,10 +30,11 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
     window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar; // Hide tab when docked
     ImGui::SetNextWindowClass(&window_class);
 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // Compact padding for toolbar
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0)); // Compact padding for toolbar
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));  // Small spacing between items
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 0));  // Small spacing between items
+    ImVec2 cursorPos = ImGui::GetCursorScreenPos();
 
-    
     // Define min & max size constraints
     ImVec2 min_size(200, 30);  // Minimum width & height
     ImVec2 max_size(FLT_MAX, toolbarMaxHeight); // Max width is unlimited, height is fixed
@@ -37,52 +42,41 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
 
     if (ImGui::Begin("Top Toolbar", p_open, ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
-        // Temporary to test. Remove after installing icons
-        ImGui::Button("Test1");
-        ImGui::SameLine();
-        ImGui::Button("Test2");
-        ImGui::SameLine();
-        ImGui::Button("Test3");
-        ImGui::SameLine();
-        ImGui::Button("Test4");
-        ImGui::SameLine();
-        ImGui::Button("Test5");
 
-        #if 0
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);             // Eliminate button rounding
+        ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);     // Get the default button color
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 0.3f));     // Make button transparent
+
+        ImGui::SetCursorScreenPos(ImGui::GetWindowPos());           // Reset cursor position to window origin (its top-left corner)
+
         // SECTION: SceneGraph (New, Open, Save)
         {
-            if (ImGui::Button(ICON_FA_FILE "##NewScene")) { /* Handle New Scene */ }
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_FA_FOLDER_OPEN "##OpenScene")) { /* Handle Open Scene */ }
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_FA_SAVE "##SaveScene")) { /* Handle Save Scene */ }
-            ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            if (ImGui::Button(ICON_MS_TRANSFORM "##NewScene", windowData->iconDefaultSize)) { /* Handle New Scene */ } ImGui::SameLine();
+            if (ImGui::Button(ICON_MS_LIGHTBULB "##OpenScene", windowData->iconDefaultSize)) { /* Handle Open Scene */ } ImGui::SameLine();
+            if (ImGui::Button(ICON_MS_TOOLS_WRENCH "##SaveScene", windowData->iconDefaultSize)) { /* Handle Save Scene */ } ImGui::SameLine();
+            ImGui::Dummy(ImVec2(5,0)); ImGui::SameLine();  
         }
-    
         // SECTION: Undo, Redo
         {
-            if (ImGui::Button(ICON_FA_UNDO "##Undo")) { /* Handle Undo */ }
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_FA_REDO "##Redo")) { /* Handle Redo */ }
-            ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            if (ImGui::Button(ICON_MS_UNDO "##Undo", windowData->iconDefaultSize)) { /* Handle Undo */ } ImGui::SameLine();  
+            if (ImGui::Button(ICON_MS_REDO "##Redo", windowData->iconDefaultSize)) { /* Handle Redo */ } ImGui::SameLine();     
         }
     
         // SECTION: Transform Gizmos (Translate, Rotate, Scale, Multi-Transform, Custom Gizmo)
         {
-            if (ImGui::Button(ICON_FA_ARROWS_ALT "##Translate")) { /* Handle Translate */ }
+            if (ImGui::Button(ICON_MS_MOVE "##Translate", windowData->iconDefaultSize)) { /* Handle Translate */ }
             ImGui::SameLine();
-            if (ImGui::Button(ICON_FA_SYNC "##Rotate")) { /* Handle Rotate */ }
+            if (ImGui::Button(ICON_MS_ROTATE_RIGHT "##Rotate", windowData->iconDefaultSize)) { /* Handle Rotate */ }
             ImGui::SameLine();
-            if (ImGui::Button(ICON_FA_EXPAND "##Scale")) { /* Handle Scale */ }
+            if (ImGui::Button(ICON_MS_SCALE "##Scale", windowData->iconDefaultSize)) { /* Handle Scale */ }
             ImGui::SameLine();
-            if (ImGui::Button(ICON_FA_RANDOM "##MultiTransform")) { /* Handle Multi-Transform */ }
+            if (ImGui::Button(ICON_MS_MULTIMODAL_HAND_EYE "##MultiTransform", windowData->iconDefaultSize)) { /* Handle Multi-Transform */ }
             ImGui::SameLine();
-            if (ImGui::Button(ICON_FA_COG "##CustomGizmo")) { /* Handle Custom Gizmo */ }
+            if (ImGui::Button(ICON_MS_DASHBOARD_CUSTOMIZE "##CustomGizmo", windowData->iconDefaultSize)) { /* Handle Custom Gizmo */ }
             ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
         }
+        #if 0
     
         // SECTION: Local/Global Orientation, Pivot Options
         {
@@ -94,7 +88,7 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             ImGui::SameLine();
             if (ImGui::Button(ICON_FA_ALIGN_CENTER "##Center")) { /* Handle Object Center */ }
             ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
         }
     
         // SECTION: Selectable Category Toggles (Combo Box + Icons)
@@ -121,7 +115,7 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
                 if (ImGui::Button(buttonLabel.c_str())) { /* Handle Primitive Selection */ }
                 ImGui::SameLine();
             }
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
         }
     
         // SECTION: Snapping (Translate, Rotate)
@@ -139,7 +133,7 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             ImGui::SameLine();
             if (ImGui::Button(ICON_FA_CORNER "##SnapCorner")) { /* Handle Snap to Corner */ }
             ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
     
             // Rotate Snapping
             static const char* snapAngles[] = { "1°", "5°", "10°", "15°", "20°", "25°" };
@@ -158,7 +152,7 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
                 ImGui::EndCombo();
             }
             ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
         }
     
         // SECTION: Symmetry Types
@@ -179,7 +173,7 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
                 ImGui::EndCombo();
             }
             ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
         }
     
         // SECTION: Commands Palette
@@ -190,7 +184,7 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
                 // Match typed words to existing commands
             }
             ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
         }
     
         // SECTION: NodeGraph (New, Open, Save)
@@ -201,7 +195,7 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             ImGui::SameLine();
             if (ImGui::Button(ICON_FA_SAVE "##SaveGraph")) { /* Handle Save Graph */ }
             ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
         }
     
         // SECTION: Search Field for Scenegraph or Leaf
@@ -212,7 +206,7 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
                 // Handle wildcard search (e.g., "*_car.usd")
             }
             ImGui::SameLine();
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
         }
     
         // SECTION: Commonly Used Editors
@@ -235,7 +229,7 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
                 if (ImGui::Button(icon)) { /* Handle Editor Selection */ }
                 ImGui::SameLine();
             }
-            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); // Separator
+            ImGui::Separator();
         }
     
         // SECTION: Layout Presets
@@ -259,8 +253,10 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
         }
         #endif
         // Restore default style vars
-        ImGui::PopStyleVar(2); // Pop FramePadding and ItemSpacing
+        ImGui::PopStyleVar(4); // Pop WindowPadding, FramePadding, ItemSpacing, and FrameRounding (for buttons).
+        ImGui::PopStyleColor(1); // Pop Button color)
     }
     ImGui::End(); // End the toolbar window
 }
+
 } //  namespace hdImgui

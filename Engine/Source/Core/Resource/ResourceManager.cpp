@@ -14,6 +14,7 @@
 
 #include "ResourceManager.h"
 #include "IconsFontAwesome6.h"
+#include "IconsMaterialSymbols.h"
 
 namespace hd {
 ResourceManager& ResourceManager::GetInstance() {
@@ -76,7 +77,7 @@ void ResourceManager::LoadFonts() {
     ImGuiIO& io = ImGui::GetIO();
 
     // Load font
-    m_defaultFont = io.Fonts->AddFontFromFileTTF("D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Assets\\Fonts\\Roboto-Regular.ttf", 16.0f);
+    m_defaultFont = io.Fonts->AddFontFromFileTTF("D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Assets\\Fonts\\Roboto-Regular.ttf", 15.0f);
     //m_defaultFont = io.Fonts->AddFontFromFileTTF(GetFontPath("Roboto-Regular.ttf").c_str(), 16.0f);
     if (!m_defaultFont) {
         throw std::runtime_error("Failed to load default ImGui font");
@@ -88,19 +89,21 @@ void ResourceManager::LoadFonts() {
     // Debug print
     printf("Loading icon font from: %s\n", iconFontPath.c_str());
     
-    // Icon font configuration
+    // Configure and merge the icon font - FontAwesome
+    static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     ImFontConfig icons_config;
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
-    icons_config.GlyphMinAdvanceX = 16.0f;
-    icons_config.GlyphOffset = ImVec2(0, 2);
+    icons_config.GlyphMinAdvanceX = 0.0f;
+    icons_config.GlyphMaxAdvanceX = 0.0f;
+    icons_config.GlyphOffset = ImVec2(0, 12.0f);
     
-    static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-    
-    // Load the icon font
+    // Load the icon font - FontAwesome
     m_iconFont = io.Fonts->AddFontFromFileTTF(
-        iconFontPath.c_str(),
-        16.0f,
+        //iconFontPath.c_str(),
+        //"D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Assets\\Fonts\\Icons\\fa-6-regular-solid-900.ttf",
+        "D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Assets\\Fonts\\Icons\\ms-sharp-filled-regular.ttf",
+        38.0f,
         &icons_config,
         icons_ranges
     );
