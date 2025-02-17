@@ -203,7 +203,28 @@ void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData)
     {
         // Left panel (Places)
         ImGui::BeginChild("Places", ImVec2(placesWidth, 0), true);
-        ImGui::Text("Places Panel");
+        if (windowData->iconFont) {
+            ImGui::PushFont(windowData->iconFont);
+            
+            // Common places with icons
+            if (ImGui::Selectable(ICON_FA_HOUSE " Home")) {
+                // Handle home click
+            }
+            if (ImGui::Selectable(ICON_FA_DESKTOP " Desktop")) {
+                // Handle desktop click
+            }
+            if (ImGui::Selectable(ICON_FA_FOLDER " Documents")) {
+                // Handle documents click
+            }
+            if (ImGui::Selectable(ICON_FA_IMAGE " Pictures")) {
+                // Handle pictures click
+            }
+            if (ImGui::Selectable(ICON_FA_DOWNLOAD " Downloads")) {
+                // Handle downloads click
+            }
+            
+            ImGui::PopFont();
+        }
         ImGui::EndChild();
 
         ImGui::SameLine();
@@ -211,21 +232,58 @@ void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData)
         // Right side (containing file list and preview)
         ImGui::BeginChild("RightSide");
         {
-            // Toolbar
+            // Toolbar with icons
+            if (windowData->iconFont) {
+                ImGui::PushFont(windowData->iconFont);
+                
+                // Navigation buttons
+                if (ImGui::Button(ICON_FA_ARROW_LEFT)) { /* Back */ }
+                ImGui::SameLine();
+                if (ImGui::Button(ICON_FA_ARROW_RIGHT)) { /* Forward */ }
+                ImGui::SameLine();
+                if (ImGui::Button(ICON_FA_ARROW_UP)) { /* Up one level */ }
+                ImGui::SameLine();
+                if (ImGui::Button(ICON_FA_ROTATE)) { /* Refresh */ }
+                
+                ImGui::PopFont();
+            }
+
+            ImGui::SameLine();
             ImGui::Text("Current Path: %s", currentPath);
-            ImGui::Text("Search: %s", searchBuffer);
+            
+            if (windowData->iconFont) {
+                ImGui::PushFont(windowData->iconFont);
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(200);
+                ImGui::InputTextWithHint("##search", ICON_FA_MAGNIFYING_GLASS " Search", searchBuffer, sizeof(searchBuffer));
+                ImGui::PopFont();
+            }
 
             // File list and preview area
             float contentWidth = ImGui::GetContentRegionAvail().x;
             float fileListWidth = contentWidth - previewPanelWidth - ImGui::GetStyle().ItemSpacing.x;
 
             ImGui::BeginChild("FileList", ImVec2(fileListWidth, 0), true);
-            ImGui::Text("File List Here");
+            if (windowData->iconFont) {
+                ImGui::PushFont(windowData->iconFont);
+                // Example items (replace with actual file listing later)
+                ImGui::Selectable(ICON_FA_FOLDER " Folder 1");
+                ImGui::Selectable(ICON_FA_FOLDER " Folder 2");
+                ImGui::Selectable(ICON_FA_FILE_CODE " script.cpp");
+                ImGui::Selectable(ICON_FA_FILE_IMAGE " image.png");
+                ImGui::Selectable(ICON_FA_FILE_PDF " document.pdf");
+                ImGui::PopFont();
+            }
             ImGui::EndChild();
 
             ImGui::SameLine();
 
             ImGui::BeginChild("Preview", ImVec2(0, 0), true);
+            if (windowData->iconFont) {
+                ImGui::PushFont(windowData->iconFont);
+                ImGui::Text(ICON_FA_FILE_LINES " File Info");
+                ImGui::PopFont();
+            }
             ImGui::Text("Preview Panel");
             ImGui::EndChild();
         }
@@ -235,7 +293,11 @@ void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData)
 
     // Settings panel at bottom
     ImGui::BeginChild("Settings", ImVec2(0, 0), true);
-    ImGui::Text("Settings Panel");
+    if (windowData->iconFont) {
+        ImGui::PushFont(windowData->iconFont);
+        ImGui::Text(ICON_FA_GEAR " Settings");
+        ImGui::PopFont();
+    }
     ImGui::EndChild();
 
     ImGui::End();
