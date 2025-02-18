@@ -70,52 +70,107 @@ void ShowConsole(bool* p_open, HdEditorWindowData* windowData)
             ImGui::EndMenuBar();
         }
 
-        // Search bar and controls
+        // Toolbar with proper spacing and organization
         {
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 4));  // Increased spacing between items
             
-            // Left side: Search and filters
+            // Search bar (left-most element)
             ImGui::BeginGroup();
             {
                 s_filter.Draw(ICON_MS_SEARCH " Filter", 180.0f);
-                
-                ImGui::SameLine();
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.45f, 0.75f, 0.45f, 0.40f));
-                ImGui::Button(ICON_MS_INFO);
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Show Info Messages");
-                ImGui::PopStyleColor();
-                
-                ImGui::SameLine();
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.85f, 0.85f, 0.45f, 0.40f));
-                ImGui::Button(ICON_MS_WARNING);
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Show Warnings");
-                ImGui::PopStyleColor();
-                
-                ImGui::SameLine();
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.85f, 0.45f, 0.45f, 0.40f));
-                ImGui::Button(ICON_MS_ERROR);
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Show Errors");
-                ImGui::PopStyleColor();
             }
             ImGui::EndGroup();
             
-            // Right side: Actions
-            ImGui::SameLine(ImGui::GetWindowWidth() - 160);
+            ImGui::SameLine(0, 20); // Add spacing after search
+
+            // Message type filters
             ImGui::BeginGroup();
             {
-                if (ImGui::Button(ICON_MS_CLEAR_ALL " Clear"))
+                // Info button
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.45f, 0.75f, 0.45f, 0.40f));
+                if (ImGui::Button(ICON_MS_INFO "##Info", ImVec2(26, 26)))
+                    windowData->showInfoMessages = !windowData->showInfoMessages;
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Info Messages");
+                ImGui::PopStyleColor();
+
+                ImGui::SameLine();
+                
+                // Warning button
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.85f, 0.85f, 0.45f, 0.40f));
+                if (ImGui::Button(ICON_MS_WARNING "##Warning", ImVec2(26, 26)))
+                    windowData->showWarnings = !windowData->showWarnings;
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Warnings");
+                ImGui::PopStyleColor();
+
+                ImGui::SameLine();
+                
+                // Error button
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.85f, 0.45f, 0.45f, 0.40f));
+                if (ImGui::Button(ICON_MS_ERROR "##Error", ImVec2(26, 26)))
+                    windowData->showErrors = !windowData->showErrors;
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Errors");
+                ImGui::PopStyleColor();
+
+                ImGui::SameLine();
+                
+                // Debug button
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.45f, 0.65f, 0.85f, 0.40f));
+                if (ImGui::Button(ICON_MS_BUG_REPORT "##Debug", ImVec2(26, 26)))
+                    windowData->showDebugMessages = !windowData->showDebugMessages;
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Debug Messages");
+                ImGui::PopStyleColor();
+            }
+            ImGui::EndGroup();
+
+            ImGui::SameLine(0, 20); // Add spacing before view options
+
+            // View options
+            ImGui::BeginGroup();
+            {
+                if (ImGui::Button(ICON_MS_TIMER "##Timestamps", ImVec2(26, 26)))
+                    windowData->showConsoleTimestamps = !windowData->showConsoleTimestamps;
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Timestamps");
+
+                ImGui::SameLine();
+                
+                if (ImGui::Button(ICON_MS_CATEGORY "##Categories", ImVec2(26, 26)))
+                    windowData->showConsoleCategories = !windowData->showConsoleCategories;
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Categories");
+
+                ImGui::SameLine();
+                
+                if (ImGui::Button(ICON_MS_SCROLLABLE_HEADER "##AutoScroll", ImVec2(26, 26)))
+                    s_autoScroll = !s_autoScroll;
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Auto-scroll");
+            }
+            ImGui::EndGroup();
+
+            // Right-aligned actions
+            float windowWidth = ImGui::GetContentRegionAvail().x;  // Changed from GetWindowContentRegionWidth()
+            float rightAlignPosition = windowWidth - 120; // Reserve space for right-aligned buttons
+            ImGui::SameLine(rightAlignPosition);
+
+            // Action buttons
+            ImGui::BeginGroup();
+            {
+                if (ImGui::Button(ICON_MS_CLEAR_ALL "##Clear", ImVec2(26, 26)))
                 {
                     // TODO: Clear console items
                 }
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Clear Console");
+
                 ImGui::SameLine();
-                if (ImGui::Button(ICON_MS_SAVE " Export"))
+                
+                if (ImGui::Button(ICON_MS_SAVE "##Export", ImVec2(26, 26)))
                 {
                     // TODO: Export console to file
                 }
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Export Log");
             }
             ImGui::EndGroup();
-            
-            ImGui::PopStyleVar();
+
+            ImGui::PopStyleVar(2);
         }
 
         ImGui::Separator();
@@ -171,16 +226,32 @@ void ShowConsole(bool* p_open, HdEditorWindowData* windowData)
             ImGui::EndChild();
         }
 
-        // Command input
+        // Command input with increased width
         {
             ImGui::Separator();
             bool reclaimFocus = false;
             
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
-            ImGui::PushItemWidth(-1);
+            // Style settings for input
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 8));  // Increased padding
+            
+            // Calculate input field width (using most of the available width)
+            float windowWidth = ImGui::GetContentRegionAvail().x;
+            float margins = 40.0f; // 20px margin on each side
+            float inputWidth = windowWidth - margins;
+            
+            // Center the input field
+            float centerPos = margins * 0.5f;
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + centerPos);
+            
+            ImGui::PushItemWidth(inputWidth);
+            
+            // Add command prompt symbol
+            ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), ICON_MS_CHEVRON_RIGHT);
+            ImGui::SameLine();
             
             if (ImGui::InputText("##ConsoleInput", s_inputBuffer, IM_ARRAYSIZE(s_inputBuffer),
-                               ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | 
+                               ImGuiInputTextFlags_EnterReturnsTrue | 
+                               ImGuiInputTextFlags_CallbackCompletion | 
                                ImGuiInputTextFlags_CallbackHistory))
             {
                 char* input_end = s_inputBuffer + strlen(s_inputBuffer);
@@ -203,7 +274,7 @@ void ShowConsole(bool* p_open, HdEditorWindowData* windowData)
             // Auto-focus on window apparition
             ImGui::SetItemDefaultFocus();
             if (reclaimFocus)
-                ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+                ImGui::SetKeyboardFocusHere(-1);
         }
     }
     ImGui::End();
