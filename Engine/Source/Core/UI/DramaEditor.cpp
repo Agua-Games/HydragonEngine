@@ -2,8 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  */
-#pragma once
-#include <imgui.h>  // Include ImGui's header
+#include <imgui.h>
 #include <string>
 
 #include "DramaEditor.h"
@@ -38,20 +37,21 @@ static void ShowDramaBrowser()
 
 static void ShowMainWorkspace()
 {
-    ImGui::Text("Main Workspace");
-    // Placeholder until Phase 3
+    ImGui::BeginChild("MainWorkspace", ImVec2(0, 0), true);
+    // TODO: Integrate with NodeGraphEditor
+    ImGui::EndChild();
 }
 
 static void ShowPropertiesPanel()
 {
     ImGui::Text("Properties Panel");
-    // Placeholder until Phase 7
+    // Placeholder until Phase 2
 }
 
 static void ShowTimeline()
 {
     ImGui::Text("Timeline");
-    // Placeholder until Phase 6
+    // Placeholder until Phase 2
 }
 
 namespace hdImgui {
