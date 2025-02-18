@@ -20,7 +20,7 @@ static void ShowTrackView(HdEditorWindowData* windowData, bool isCollapsed);
 static void ShowPropertyPanel(HdEditorWindowData* windowData);
 
 struct MontageTrack {
-    std::string name;
+    std::string name;  // Using std::string since imgui_stdlib.h is available
     int type;
     bool isVisible = true;
     bool isLocked = false;
@@ -77,7 +77,17 @@ static void ShowMontageToolbar(HdEditorWindowData* windowData)
     if (ImGui::Button(ICON_MS_CONTENT_CUT "##Split", buttonSize)) {}
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Split");
     
-    // Add spacing between tools and time controls
+    // Add spacing between tools and fold/expand toggle
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(10, 0));
+    ImGui::SameLine();
+    
+    // Fold/Expand toggle
+    if (ImGui::Button(state.isCollapsedView ? ICON_MS_UNFOLD_MORE : ICON_MS_UNFOLD_LESS "##FoldExpand", buttonSize))
+        state.isCollapsedView = !state.isCollapsedView;
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip(state.isCollapsedView ? "Expand View" : "Collapse View");
+    
+    // Add spacing between fold toggle and time controls
     ImGui::SameLine();
     ImGui::Dummy(ImVec2(10, 0));
     ImGui::SameLine();
@@ -115,9 +125,9 @@ static void ShowMontageToolbar(HdEditorWindowData* windowData)
     ImGui::Dummy(ImVec2(10, 0));
     ImGui::SameLine();
     
-    // Timeline with scrub - now taller to match button height and filling remaining width
-    float remainingWidth = ImGui::GetContentRegionAvail().x - 75.0f; // Reserve space for time input
-    float timelineHeight = buttonSize.y;  // Match button height
+    // Timeline with scrub
+    float remainingWidth = ImGui::GetContentRegionAvail().x - 75.0f;
+    float timelineHeight = buttonSize.y;
     
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, (timelineHeight - ImGui::GetFrameHeight()) * 0.5f));
     ImGui::PushItemWidth(remainingWidth);
@@ -138,29 +148,70 @@ static void ShowMontageToolbar(HdEditorWindowData* windowData)
 
 static void ShowTrackView(HdEditorWindowData* windowData, bool isCollapsed)
 {
-    ImGui::Text("Track View - Coming Soon");
-    ImGui::Separator();
+    const float trackHeight = 24.0f;
+    const float headerWidth = 200.0f;
+    const ImVec2 buttonSize(20, 20);
     
-    // Placeholder for tracks list
+    // Track headers (names and controls)
+    ImGui::BeginChild("TrackHeaders", ImVec2(headerWidth, 0), true);
     for (size_t i = 0; i < state.tracks.size(); i++)
     {
         ImGui::PushID(static_cast<int>(i));
         
-        if (ImGui::Selectable(state.tracks[i].name.c_str(), state.selectedTrack == static_cast<int>(i)))
-        {
-            state.selectedTrack = static_cast<int>(i);
-        }
+        MontageTrack& track = state.tracks[i];
+        bool isSelected = state.selectedTrack == static_cast<int>(i);
+        
+        ImGui::BeginGroup();
+        // Track name - using std::string with imgui_stdlib.h
+        ImGui::SetNextItemWidth(100);
+        ImGui::InputText("##name", &track.name);
+        
+        ImGui::SameLine();
+        // Track controls
+        if (ImGui::Button(track.isSolo ? ICON_MS_VOLUME_UP : ICON_MS_VOLUME_OFF "##solo", buttonSize))
+            track.isSolo = !track.isSolo;
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Solo");
+        
+        ImGui::SameLine();
+        if (ImGui::Button(track.isMuted ? ICON_MS_VOLUME_MUTE : ICON_MS_VOLUME_UP "##mute", buttonSize))
+            track.isMuted = !track.isMuted;
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Mute");
+        
+        ImGui::SameLine();
+        if (ImGui::Button(track.isLocked ? ICON_MS_LOCK : ICON_MS_LOCK_OPEN "##lock", buttonSize))
+            track.isLocked = !track.isLocked;
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Lock");
+        
+        ImGui::EndGroup();
         
         ImGui::PopID();
+        ImGui::Dummy(ImVec2(0, 4)); // Spacing between tracks
     }
+    ImGui::EndChild();
     
-    // Add track button
-    if (ImGui::Button("Add Track"))
+    ImGui::SameLine();
+    
+    // Track timelines
+    ImGui::BeginChild("TrackTimelines", ImVec2(0, 0), true);
+    float timelineWidth = ImGui::GetContentRegionAvail().x;
+    
+    for (size_t i = 0; i < state.tracks.size(); i++)
     {
-        MontageTrack newTrack;
-        newTrack.name = "Track " + std::to_string(state.tracks.size() + 1);
-        state.tracks.push_back(newTrack);
+        ImGui::PushID(static_cast<int>(i));
+        
+        // Track timeline bar
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+        
+        ImGui::Button("##timeline", ImVec2(timelineWidth, trackHeight));
+        
+        ImGui::PopStyleColor(3);
+        ImGui::PopID();
+        
+        ImGui::Dummy(ImVec2(0, 4)); // Spacing between tracks
     }
+    ImGui::EndChild();
 }
 
 void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData) 
@@ -168,14 +219,18 @@ void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
     
-    if (!ImGui::Begin("Montage Editor##MainWindow", p_open, ImGuiWindowFlags_MenuBar))
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
+    if (state.isCollapsedView)
+        windowFlags |= ImGuiWindowFlags_MenuBar;
+    
+    if (!ImGui::Begin("Montage Editor##MainWindow", p_open, windowFlags))
     {
         ImGui::End();
         return;
     }
 
-    // Menu Bar
-    if (ImGui::BeginMenuBar())
+    // Menu Bar (only in expanded mode)
+    if (!state.isCollapsedView && ImGui::BeginMenuBar())
     {
         if (ImGui::BeginMenu("File"))
         {
@@ -203,7 +258,6 @@ void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData)
         {
             ImGui::MenuItem("Waveform", nullptr, &state.showWaveform);
             ImGui::MenuItem("Snap to Grid", nullptr, &state.snapToGrid);
-            ImGui::MenuItem("Collapsed View", nullptr, &state.isCollapsedView);
             ImGui::EndMenu();
         }
         
@@ -213,15 +267,24 @@ void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData)
     // Main content
     ImGui::PushID("MontageContent");
     {
-        ImGui::BeginChild("MontageMainContent", ImVec2(0, 0), false);
+        ShowMontageToolbar(windowData);
         
-        ShowMontageToolbar(windowData);  // Now includes time controls
+        // Add some example tracks if none exist
+        if (state.tracks.empty())
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                MontageTrack track;
+                track.name = "Track " + std::to_string(i + 1);
+                state.tracks.push_back(track);
+            }
+        }
         
-        ImGui::BeginChild("TrackViewArea", ImVec2(0, 0), true);
-        ShowTrackView(windowData, state.isCollapsedView);
-        ImGui::EndChild();
-        
-        ImGui::EndChild();
+        if (!state.isCollapsedView)
+        {
+            ImGui::Spacing();
+            ShowTrackView(windowData, state.isCollapsedView);
+        }
     }
     ImGui::PopID();
 

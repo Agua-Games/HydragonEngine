@@ -31,13 +31,13 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 223,
+				"line" : 224,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 320,
+				"line" : 321,
 				"parent" : 0
 			},
 			{
@@ -61,25 +61,25 @@
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 246,
+				"line" : 247,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 253,
+				"line" : 254,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 296,
+				"line" : 297,
 				"parent" : 0
 			},
 			{
 				"command" : 4,
 				"file" : 0,
-				"line" : 258,
+				"line" : 259,
 				"parent" : 0
 			}
 		]
@@ -501,7 +501,8 @@
 				58,
 				59,
 				60,
-				61
+				61,
+				62
 			]
 		}
 	],
@@ -625,14 +626,15 @@
 				58,
 				59,
 				60,
-				61
+				61,
+				62
 			]
 		},
 		{
 			"name" : "Header Files",
 			"sourceIndexes" : 
 			[
-				62
+				63
 			]
 		}
 	],
@@ -1008,6 +1010,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/imgui/backends/imgui_impl_glfw.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/imgui/misc/cpp/imgui_stdlib.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
