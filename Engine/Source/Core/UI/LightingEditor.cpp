@@ -14,8 +14,100 @@ void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData)
     if (!p_open) return;
     
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (ImGui::Begin("Lighting Editor", p_open))
+    if (ImGui::Begin("Lighting Editor", p_open, ImGuiWindowFlags_MenuBar))
     {
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("New Light Setup", "Ctrl+N")) {}
+                if (ImGui::MenuItem("Import Light Setup...", "Ctrl+O")) {}
+                if (ImGui::MenuItem("Save Setup", "Ctrl+S")) {}
+                if (ImGui::MenuItem("Save Setup As...", "Ctrl+Shift+S")) {}
+                ImGui::Separator();
+                if (ImGui::BeginMenu("Recent Light Setups"))
+                {
+                    ImGui::MenuItem("indoor_lighting.hdlight");
+                    ImGui::MenuItem("outdoor_day.hdlight");
+                    ImGui::MenuItem("night_scene.hdlight");
+                    ImGui::EndMenu();
+                }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Export Light Data...")) {}
+                if (ImGui::MenuItem("Import From HDR...")) {}
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Edit"))
+            {
+                if (ImGui::MenuItem("Undo", "Ctrl+Z")) {}
+                if (ImGui::MenuItem("Redo", "Ctrl+Y")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Cut", "Ctrl+X")) {}
+                if (ImGui::MenuItem("Copy", "Ctrl+C")) {}
+                if (ImGui::MenuItem("Paste", "Ctrl+V")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Select All Lights", "Ctrl+A")) {}
+                if (ImGui::MenuItem("Select By Type")) {}
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Create"))
+            {
+                if (ImGui::MenuItem("Ambient Light")) {}
+                if (ImGui::MenuItem("Directional Light")) {}
+                if (ImGui::MenuItem("Point Light")) {}
+                if (ImGui::MenuItem("Spot Light")) {}
+                if (ImGui::MenuItem("Area Light")) {}
+                if (ImGui::MenuItem("Volume Light")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Light Group")) {}
+                if (ImGui::MenuItem("Light Probe")) {}
+                if (ImGui::MenuItem("Reflection Probe")) {}
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Tools"))
+            {
+                if (ImGui::MenuItem("Light Painter")) {}
+                if (ImGui::MenuItem("Auto Light Placement")) {}
+                if (ImGui::MenuItem("Light Optimizer")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Bake Lighting", "Ctrl+B")) {}
+                if (ImGui::MenuItem("Bake Settings...")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Generate Light Probes")) {}
+                if (ImGui::MenuItem("Update All Probes")) {}
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("View"))
+            {
+                if (ImGui::MenuItem("Show Light Gizmos", "Ctrl+G")) {}
+                if (ImGui::MenuItem("Show Light Volumes")) {}
+                if (ImGui::MenuItem("Show Shadow Cascades")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Lighting Only View")) {}
+                if (ImGui::MenuItem("Shadow Only View")) {}
+                if (ImGui::MenuItem("Light Complexity View")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Reset Layout")) {}
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Analysis"))
+            {
+                if (ImGui::MenuItem("Light Overlap Check")) {}
+                if (ImGui::MenuItem("Shadow Quality Analysis")) {}
+                if (ImGui::MenuItem("Performance Profiler")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Generate Light Report")) {}
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMenuBar();
+        }
+
         // Top toolbar
         if (ImGui::BeginChild("Toolbar", ImVec2(-1, 30), true))
         {
