@@ -5,6 +5,8 @@
 #include <imgui.h>
 #include <string>
 
+#include "IconsMaterialSymbols.h"
+
 #include "DramaEditor.h"
 #include "hdImgui.h"
 #include "NodeGraphEditor.h"
@@ -32,6 +34,23 @@ struct DramaEditorState {
     bool showTensionCurve = true;
     bool showStateSpace = false;
     bool showPreview = false;
+    
+    // Scripting related states
+    bool showScriptPanel = false;
+    int activeScriptTab = 0;  // 0: Visual, 1: Code
+    std::string selectedScriptLanguage = "Blueprint";  // Default to visual scripting
+    
+    // State System UI states
+    bool showStateSpacePanel = false;
+    bool showStateDebugger = false;
+    float stateSpaceZoom = 1.0f;
+    ImVec2 stateSpaceOffset = ImVec2(0, 0);
+    
+    // Timeline integration states
+    bool showTimelinePanel = true;
+    float dramaTime = 0.0f;        // Current time in drama sequence
+    bool isTimelineSynced = true;  // Sync with MontageEditor
+    int activeMontageId = -1;      // Currently linked montage
 };
 
 // Static state instance
@@ -190,6 +209,184 @@ static void ShowTimeline()
     // Placeholder until Phase 2
 }
 
+static void ShowScriptPanel()
+{
+    if (!state || !state->showScriptPanel) return;
+    
+    ImGui::Begin("Node Script", &state->showScriptPanel);
+    
+    // Language selector
+    const char* languages[] = { "Blueprint", "C++", "Python", "Lua" };
+    if (ImGui::BeginCombo("Language", state->selectedScriptLanguage.c_str()))
+    {
+        for (const char* lang : languages)
+        {
+            if (ImGui::Selectable(lang, state->selectedScriptLanguage == lang))
+            {
+                state->selectedScriptLanguage = lang;
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    // Script/Visual tabs
+    ImGui::BeginTabBar("ScriptingTabs");
+    if (ImGui::BeginTabItem("Visual"))
+    {
+        ImGui::Text("Visual Script Editor");
+        // Placeholder for visual scripting interface
+        // Will interface with NodeGraphEditor later
+        ImGui::EndTabItem();
+    }
+    if (ImGui::BeginTabItem("Code"))
+    {
+        ImGui::Text("Code Editor");
+        // Placeholder for code editor interface
+        // Will interface with ScriptEditor later
+        ImGui::EndTabItem();
+    }
+    ImGui::EndTabBar();
+
+    ImGui::End();
+}
+
+static void ShowStateSpacePanel()
+{
+    if (!state || !state->showStateSpacePanel) return;
+    
+    ImGui::Begin("State Space", &state->showStateSpacePanel);
+    
+    // Toolbar
+    if (ImGui::BeginChild("StateSpaceToolbar", ImVec2(0, 30), true))
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 0));
+        if (ImGui::Button("Reset View")) {
+            state->stateSpaceZoom = 1.0f;
+            state->stateSpaceOffset = ImVec2(0, 0);
+        }
+        ImGui::SameLine();
+        ImGui::Button("Fit View");
+        ImGui::SameLine();
+        ImGui::Button("Center Selected");
+        ImGui::SameLine();
+        ImGui::Checkbox("Show Labels", &state->showDebug);
+        ImGui::PopStyleVar();
+    }
+    ImGui::EndChild();
+
+    // Main view
+    if (ImGui::BeginChild("StateSpaceView", ImVec2(0, 0), true))
+    {
+        ImGui::Text("State Space View - Will be populated by node system");
+        // Placeholder for actual state space visualization
+        // Will be connected to NodeGraphEditor's node system
+    }
+    ImGui::EndChild();
+    
+    ImGui::End();
+}
+
+static void ShowStateDebugger()
+{
+    if (!state || !state->showStateDebugger) return;
+    
+    ImGui::Begin("State Debugger", &state->showStateDebugger);
+    
+    if (ImGui::BeginTabBar("StateDebuggerTabs"))
+    {
+        if (ImGui::BeginTabItem("Current State"))
+        {
+            ImGui::Text("Active States:");
+            ImGui::Separator();
+            // Placeholder for active states list
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("History"))
+        {
+            ImGui::Text("State Transitions:");
+            ImGui::Separator();
+            // Placeholder for state transition history
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Variables"))
+        {
+            ImGui::Text("State Variables:");
+            ImGui::Separator();
+            // Placeholder for state variables watch
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
+    
+    ImGui::End();
+}
+
+static void ShowTimelinePanel(hdImgui::HdEditorWindowData* windowData)
+{
+    if (!state || !state->showTimelinePanel) return;
+    
+    ImGui::Begin("Drama Timeline", &state->showTimelinePanel);
+    
+    // Toolbar with montage linking controls
+    if (ImGui::BeginChild("TimelineToolbar", ImVec2(0, 30), true))
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 0));
+        
+        // Montage linking
+        if (ImGui::Button(ICON_MS_LINK "##LinkMontage"))
+        {
+            // TODO: Hook - Open montage selector
+        }
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Link to Montage");
+            
+        ImGui::SameLine();
+        ImGui::Text("Active Montage: %d", state->activeMontageId);
+        
+        ImGui::SameLine();
+        ImGui::Checkbox("Sync", &state->isTimelineSynced);
+        
+        ImGui::PopStyleVar();
+    }
+    ImGui::EndChild();
+
+    // Timeline overview
+    if (ImGui::BeginChild("TimelineOverview", ImVec2(0, 100), true))
+    {
+        // Display current drama time and markers
+        ImGui::Text("Drama Time: %.2f", state->dramaTime);
+        
+        // Placeholder for drama event markers
+        ImGui::Text("Drama Events Timeline - Will sync with MontageEditor");
+    }
+    ImGui::EndChild();
+    
+    ImGui::End();
+}
+
+struct DramaMontageSync {
+    static void OnMontageTimeChanged(float newTime) {
+        if (state && state->isTimelineSynced) {
+            state->dramaTime = newTime;
+            // TODO: Hook - Update drama state based on time
+        }
+    }
+    
+    static void OnDramaTimeChanged(float newTime) {
+        if (state && state->isTimelineSynced) {
+            // TODO: Hook - Call MontageEditor's time update
+            // windowData->montageEditor->SetTime(newTime);
+        }
+    }
+    
+    static void OnMontageLinked(int montageId) {
+        if (state) {
+            state->activeMontageId = montageId;
+            // TODO: Hook - Setup drama-montage relationship
+        }
+    }
+};
+
 namespace hdImgui {
 void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
@@ -244,8 +441,12 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
         {
             ImGui::MenuItem("Drama Browser", nullptr, &state->showBrowser);
             ImGui::MenuItem("Properties Panel", nullptr, &state->showProperties);
-            ImGui::MenuItem("Timeline", nullptr, &state->showTimeline);
+            ImGui::MenuItem("Timeline Overview##MainTimeline", nullptr, &state->showTimeline);
             ImGui::MenuItem("Debug Overlay", nullptr, &state->showDebug);
+            ImGui::MenuItem("Script Panel", nullptr, &state->showScriptPanel);
+            ImGui::MenuItem("State Space", nullptr, &state->showStateSpacePanel);
+            ImGui::MenuItem("State Debugger", nullptr, &state->showStateDebugger);
+            ImGui::MenuItem("Drama Timeline##DockPanel", nullptr, &state->showTimelinePanel);
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
@@ -287,6 +488,25 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
         ImGui::BeginChild("Timeline", ImVec2(0, 0), true);
         ShowTimeline();
         ImGui::EndChild();
+    }
+
+    if (state->showScriptPanel)
+    {
+        ShowScriptPanel();
+    }
+
+    if (state->showStateSpacePanel)
+    {
+        ShowStateSpacePanel();
+    }
+    if (state->showStateDebugger)
+    {
+        ShowStateDebugger();
+    }
+
+    if (state->showTimelinePanel)
+    {
+        ShowTimelinePanel(windowData);
     }
 
     ImGui::End();
