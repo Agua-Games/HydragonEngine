@@ -33,7 +33,7 @@ void ShowCommandsPalette(bool* p_open, HdEditorWindowData* windowData)
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
 
-    if (ImGui::Begin("Commands", p_open, ImGuiWindowFlags_NoCollapse))
+    if (ImGui::Begin("Commands##Palette", p_open, ImGuiWindowFlags_NoCollapse))
     {
         // Search bar with focus on window open
         if (!s_isSearchFocused) {
@@ -55,40 +55,42 @@ void ShowCommandsPalette(bool* p_open, HdEditorWindowData* windowData)
 
         // Category filters
         ImGui::BeginGroup();
-        if (ImGui::Button(ICON_MS_ALL_INBOX " All##filter", ImVec2(80, 0))) {}
+        if (ImGui::Button(ICON_MS_ALL_INBOX " All##filter_all", ImVec2(80, 0))) {}
         ImGui::SameLine();
-        if (ImGui::Button(ICON_MS_FILTER " File##filter", ImVec2(80, 0))) {}
+        if (ImGui::Button(ICON_MS_FILE_OPEN " File##filter_file", ImVec2(80, 0))) {}
         ImGui::SameLine();
-        if (ImGui::Button(ICON_MS_EDIT " Edit##filter", ImVec2(80, 0))) {}
+        if (ImGui::Button(ICON_MS_EDIT " Edit##filter_edit", ImVec2(80, 0))) {}
         ImGui::SameLine();
-        if (ImGui::Button(ICON_MS_VIEW_IN_AR " View##filter", ImVec2(80, 0))) {}
+        if (ImGui::Button(ICON_MS_VIEW_IN_AR " View##filter_view", ImVec2(80, 0))) {}
         ImGui::SameLine();
-        if (ImGui::Button(ICON_MS_SETTINGS " Tools##filter", ImVec2(80, 0))) {}
+        if (ImGui::Button(ICON_MS_SETTINGS " Tools##filter_tools", ImVec2(80, 0))) {}
         ImGui::EndGroup();
 
         ImGui::Separator();
 
         // Commands list with categories
-        if (ImGui::BeginChild("CommandsList", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())))
+        if (ImGui::BeginChild("##CommandsList", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())))
         {
             // Example commands (in real implementation, these would be filtered based on search)
             const char* categories[] = { "File", "Edit", "View", "Tools" };
             
-            for (const char* category : categories)
+            for (int catIdx = 0; catIdx < IM_ARRAYSIZE(categories); catIdx++)
             {
-                if (ImGui::CollapsingHeader(category, ImGuiTreeNodeFlags_DefaultOpen))
+                const char* category = categories[catIdx];
+                if (ImGui::CollapsingHeader(category))
                 {
+                    ImGui::PushID(catIdx);  // Push ID for this category's items
                     ImGui::Indent();
                     
                     // Example command items
-                    if (ImGui::Selectable("New Project##cmd", s_selectedIndex == 0))
+                    if (ImGui::Selectable("New Project", s_selectedIndex == 0))
                     {
                         s_selectedIndex = 0;
                     }
                     ImGui::SameLine(ImGui::GetWindowWidth() - 100);
                     ImGui::TextDisabled("Ctrl+N");
 
-                    if (ImGui::Selectable("Open Project##cmd", s_selectedIndex == 1))
+                    if (ImGui::Selectable("Open Project", s_selectedIndex == 1))
                     {
                         s_selectedIndex = 1;
                     }
@@ -96,6 +98,7 @@ void ShowCommandsPalette(bool* p_open, HdEditorWindowData* windowData)
                     ImGui::TextDisabled("Ctrl+O");
                     
                     ImGui::Unindent();
+                    ImGui::PopID();  // Pop ID for this category's items
                 }
             }
         }
