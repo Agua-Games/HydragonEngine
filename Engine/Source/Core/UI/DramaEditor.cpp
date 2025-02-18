@@ -4,6 +4,7 @@
  */
 #include <imgui.h>
 #include <string>
+#include <vector>
 #include "DramaEditor.h"
 #include "hdImgui.h"
 #include "IconsMaterialSymbols.h"
@@ -35,6 +36,26 @@ struct DramaEditorState {
     // Trajectory Integration
     float trajectoryPoints[100] = {0};
     int trajectoryPointCount = 0;
+    
+    // Drama-Math Mapping
+    struct DramaMathMapping {
+        const char* dramaElement;
+        const char* mathConcept;
+    };
+    
+    std::vector<DramaMathMapping> defaultMappings = {
+        {"Introduction", "Initial Vector Configuration"},
+        {"Rising Action", "Force Integration & Dynamics"},
+        {"Climax", "Peak Tensor Transformation"},
+        {"Falling Action", "Gradient Descent"},
+        {"Resolution", "Final State Resolution"},
+        {"Character Arc", "Agent Trajectory Integration"},
+        {"Conflict", "Vector Field Opposition"},
+        {"Theme", "Invariant Tensor Property"},
+        {"Subplot", "Parallel Trajectory"}
+    };
+    
+    int selectedMappingIndices[5] = {0, 0, 0, 0, 0};  // Store selected indices for each dropdown
 };
 
 static DramaEditorState* state = nullptr;
@@ -159,10 +180,67 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
             // Split view
             ImGui::Columns(2, "DramaColumns", true);
             
-            // Left column: Sequence List
+            // Left column: Sequence List with Mathematical Mappings
             if (state->showSequenceList)
             {
                 ImGui::BeginChild("SequenceList", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+                
+                ImGui::Text("Narrative-Mathematical Mappings");
+                ImGui::Separator();
+                
+                // Drama-Math Mapping Section
+                ImGui::BeginGroup();
+                {
+                    const char* narrativeElements[] = {
+                        "Introduction", "Rising Action", "Climax", "Resolution", "Character Arc"
+                    };
+                    
+                    const char* mathConcepts[] = {
+                        "Initial Vector Configuration",
+                        "Force Integration & Dynamics",
+                        "Peak Tensor Transformation",
+                        "Final State Resolution",
+                        "Agent Trajectory Integration",
+                        "Vector Field Opposition",
+                        "Invariant Tensor Property",
+                        "Parallel Trajectory"
+                    };
+
+                    for (int i = 0; i < IM_ARRAYSIZE(narrativeElements); i++)
+                    {
+                        ImGui::PushID(i);
+                        
+                        // Narrative Element Label
+                        ImGui::TextUnformatted(narrativeElements[i]);
+                        
+                        // Mathematical Mapping Combo
+                        ImGui::SetNextItemWidth(-1);
+                        std::string comboLabel = "##MathMapping" + std::to_string(i);
+                        if (ImGui::BeginCombo(comboLabel.c_str(), mathConcepts[state->selectedMappingIndices[i]]))
+                        {
+                            for (int j = 0; j < IM_ARRAYSIZE(mathConcepts); j++)
+                            {
+                                bool isSelected = (state->selectedMappingIndices[i] == j);
+                                if (ImGui::Selectable(mathConcepts[j], isSelected))
+                                {
+                                    state->selectedMappingIndices[i] = j;
+                                    state->isModified = true;
+                                }
+                                if (isSelected)
+                                    ImGui::SetItemDefaultFocus();
+                            }
+                            ImGui::EndCombo();
+                        }
+                        
+                        ImGui::Spacing();
+                        ImGui::PopID();
+                    }
+                }
+                ImGui::EndGroup();
+                
+                ImGui::Separator();
+                
+                // Original sequence list
                 ImGui::Text("Sequences");
                 ImGui::Separator();
                 
@@ -181,26 +259,31 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
             
             ImGui::NextColumn();
             
-            // Right column: Event List
+            // Right column: Mathematical Analysis
             if (state->showEventList)
             {
                 ImGui::BeginChild("EventList");
-                ImGui::Text("Events");
+                ImGui::Text("Mathematical Analysis");
                 ImGui::Separator();
                 
-                // Example events
                 if (state->selectedSequence >= 0)
                 {
-                    const char* events[] = { "Character Enter", "Dialogue", "Action", "Exit" };
-                    for (int i = 0; i < IM_ARRAYSIZE(events); i++)
-                    {
-                        bool isSelected = state->selectedEvent == i;
-                        if (ImGui::Selectable(events[i], isSelected))
-                        {
-                            state->selectedEvent = i;
-                        }
-                    }
+                    // Show mathematical properties for selected sequence
+                    ImGui::Text("Vector Properties");
+                    ImGui::SliderFloat("Magnitude", &state->tensionCurve, 0.0f, 1.0f, "%.2f");
+                    ImGui::SliderFloat("Direction", &state->characterBias, -1.0f, 1.0f, "%.2f");
+                    
+                    ImGui::Separator();
+                    ImGui::Text("Tensor Analysis");
+                    ImGui::SliderFloat("Principal Component", &state->destinyForce, -1.0f, 1.0f, "%.2f");
+                    ImGui::SliderFloat("Secondary Component", &state->harmonicBalance, 0.0f, 1.0f, "%.2f");
+                    
+                    ImGui::Separator();
+                    ImGui::Text("Trajectory Integration");
+                    ImGui::PlotLines("##LocalTrajectory", state->trajectoryPoints, 
+                        state->trajectoryPointCount, 0, "Local Arc", -1.0f, 1.0f, ImVec2(-1, 80));
                 }
+                
                 ImGui::EndChild();
             }
             
