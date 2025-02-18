@@ -109,21 +109,90 @@ void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData)
         }
 
         // Top toolbar
-        if (ImGui::BeginChild("Toolbar", ImVec2(-1, 30), true))
         {
-            if (ImGui::Button(ICON_MS_ADD)) {}
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_MS_CONTENT_COPY)) {}
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_MS_DELETE)) {}
-            ImGui::SameLine();
-            ImGui::Separator();
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_MS_SAVE)) {}
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_MS_FOLDER_OPEN)) {}
+            const float toolbarHeight = 30.0f;
+
+            // Style settings for toolbar
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+            
+            if (ImGui::BeginChild("LightingToolbar", ImVec2(-1, toolbarHeight), true, 
+                ImGuiWindowFlags_NoScrollbar | 
+                ImGuiWindowFlags_NoScrollWithMouse))
+            {
+                // Style for buttons
+                ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+                ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 0.3f));
+
+                // Ensure buttons start from the very top-left corner
+                ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
+
+                // Light Creation Tools
+                {
+                    if (ImGui::Button(ICON_MS_ADD "##AddLight", windowData->iconDefaultSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add Light");
+                    ImGui::SameLine();
+
+                    if (ImGui::Button(ICON_MS_CONTENT_COPY "##DuplicateLight", windowData->iconDefaultSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Duplicate Light");
+                    ImGui::SameLine();
+
+                    if (ImGui::Button(ICON_MS_DELETE "##DeleteLight", windowData->iconDefaultSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete Light");
+                    ImGui::SameLine();
+
+                    ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();
+                }
+
+                // File Operations
+                {
+                    if (ImGui::Button(ICON_MS_SAVE "##SaveLights", windowData->iconDefaultSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Save Light Setup");
+                    ImGui::SameLine();
+
+                    if (ImGui::Button(ICON_MS_FOLDER_OPEN "##OpenLights", windowData->iconDefaultSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Open Light Setup");
+                    ImGui::SameLine();
+
+                    ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();
+                }
+
+                // Light Presets
+                {
+                    if (ImGui::Button(ICON_MS_LIGHTBULB "##LightPresets", windowData->iconDefaultSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Light Presets");
+                    if (ImGui::BeginPopupContextItem("LightPresets"))
+                    {
+                        if (ImGui::MenuItem("Indoor - Bright")) {}
+                        if (ImGui::MenuItem("Indoor - Moody")) {}
+                        if (ImGui::MenuItem("Outdoor - Sunny")) {}
+                        if (ImGui::MenuItem("Outdoor - Overcast")) {}
+                        if (ImGui::MenuItem("Night - Moonlit")) {}
+                        if (ImGui::MenuItem("Night - Urban")) {}
+                        ImGui::EndPopup();
+                    }
+                    ImGui::SameLine();
+
+                    ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();
+                }
+
+                // Baking Tools
+                {
+                    if (ImGui::Button(ICON_MS_REFRESH "##BakeLighting", windowData->iconDefaultSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Bake Lighting");
+                    ImGui::SameLine();
+
+                    if (ImGui::Button(ICON_MS_SETTINGS "##BakeSettings", windowData->iconDefaultSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Bake Settings");
+                }
+
+                ImGui::PopStyleColor();
+                ImGui::PopStyleVar(4); // Pop all pushed styles
+            }
+            ImGui::EndChild();
         }
-        ImGui::EndChild();
 
         // Main content area
         if (ImGui::BeginChild("MainContent", ImVec2(-1, -1)))
@@ -252,7 +321,6 @@ void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData)
                     }
                     if (ImGui::BeginTabItem("Linking"))
                     {
-                        // Split view for linking
                         ImGui::BeginChild("LinkingSplitView", ImVec2(-1, -1), false);
                         {
                             // Left side: Light/Group selection
@@ -266,8 +334,8 @@ void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData)
                                 }
                                 if (ImGui::TreeNode("Light Groups"))
                                 {
-                                    ImGui::Selectable("Interior Group");
-                                    ImGui::Selectable("Exterior Group");
+                                    ImGui::Selectable("Interior");
+                                    ImGui::Selectable("Exterior");
                                     ImGui::TreePop();
                                 }
                             }
@@ -275,44 +343,47 @@ void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData)
 
                             ImGui::SameLine();
 
-                            // Right side: Scene/Asset linking
+                            // Right side: Link properties
                             ImGui::BeginChild("LinkingRight", ImVec2(0, -1), true);
                             {
-                                // Tabs for different link targets
-                                if (ImGui::BeginTabBar("LinkTargets"))
-                                {
-                                    if (ImGui::BeginTabItem("SceneGraph"))
-                                    {
-                                        if (ImGui::TreeNode("Scene"))
-                                        {
-                                            ImGui::Selectable("Building_01");
-                                            if (ImGui::TreeNode("Interior"))
-                                            {
-                                                ImGui::Selectable("Room_01");
-                                                ImGui::Selectable("Room_02");
-                                                ImGui::TreePop();
-                                            }
-                                            ImGui::TreePop();
-                                        }
-                                        ImGui::EndTabItem();
-                                    }
-                                    if (ImGui::BeginTabItem("Assets"))
-                                    {
-                                        if (ImGui::TreeNode("Models"))
-                                        {
-                                            ImGui::Selectable("Character_01");
-                                            ImGui::Selectable("Vehicle_01");
-                                            ImGui::TreePop();
-                                        }
-                                        ImGui::EndTabItem();
-                                    }
-                                    ImGui::EndTabBar();
-                                }
+                                ImGui::Text("Link Properties");
+                                ImGui::Separator();
+                                ImGui::Checkbox("Inherit Intensity", &windowData->tempBool);
+                                ImGui::Checkbox("Inherit Color", &windowData->tempBool);
+                                ImGui::Checkbox("Inherit Shadows", &windowData->tempBool);
+                                ImGui::DragFloat("Intensity Multiplier", &windowData->tempFloat, 0.01f, 0.0f, 2.0f);
                             }
                             ImGui::EndChild();
                         }
                         ImGui::EndChild();
-                        
+                        ImGui::EndTabItem();
+                    }
+                    if (ImGui::BeginTabItem("Settings"))
+                    {
+                        ImGui::BeginChild("SettingsView", ImVec2(-1, -1), true);
+                        {
+                            if (ImGui::CollapsingHeader("Global Illumination"))
+                            {
+                                ImGui::Checkbox("Enable Global Illumination", &windowData->tempBool);
+                                ImGui::DragFloat("Indirect Intensity", &windowData->tempFloat, 0.01f, 0.0f, 2.0f);
+                                ImGui::DragFloat("Bounce Count", &windowData->tempFloat, 1.0f, 1.0f, 10.0f);
+                            }
+
+                            if (ImGui::CollapsingHeader("Shadow Settings"))
+                            {
+                                ImGui::Checkbox("Enable Cascaded Shadows", &windowData->tempBool);
+                                ImGui::DragFloat("Shadow Distance", &windowData->tempFloat, 1.0f, 0.0f, 1000.0f);
+                                ImGui::DragInt("Shadow Resolution", (int*)&windowData->tempFloat, 256, 512, 4096);
+                            }
+
+                            if (ImGui::CollapsingHeader("Performance"))
+                            {
+                                ImGui::Checkbox("Enable Light Culling", &windowData->tempBool);
+                                ImGui::DragFloat("Light Fade Distance", &windowData->tempFloat, 1.0f, 0.0f, 1000.0f);
+                                ImGui::DragInt("Max Active Lights", (int*)&windowData->tempFloat, 1, 1, 1000);
+                            }
+                        }
+                        ImGui::EndChild();
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
