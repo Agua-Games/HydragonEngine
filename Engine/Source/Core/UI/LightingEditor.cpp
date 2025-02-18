@@ -18,14 +18,52 @@ void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData)
     {
         // Left panel (fixed width)
         ImGui::BeginChild("LeftPanel", ImVec2(320.0f, 0), true);
-        ImGui::Text("Lights List");
+        {
+            // Simple table with headers
+            if (ImGui::BeginTable("LightsTable", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+            {
+                ImGui::TableSetupColumn("Name");
+                ImGui::TableSetupColumn("Vis", ImGuiTableColumnFlags_WidthFixed, 26.0f);
+                ImGui::TableSetupColumn("Shd", ImGuiTableColumnFlags_WidthFixed, 26.0f);
+                ImGui::TableSetupColumn("Int", ImGuiTableColumnFlags_WidthFixed, 40.0f);
+                ImGui::TableHeadersRow();
+                
+                // Simple row as placeholder
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Main Light");
+                ImGui::TableNextColumn();
+                ImGui::Text("V");
+                ImGui::TableNextColumn();
+                ImGui::Text("S");
+                ImGui::TableNextColumn();
+                ImGui::Text("100%%");
+
+                ImGui::EndTable();
+            }
+        }
         ImGui::EndChild();
 
         ImGui::SameLine();
 
         // Right panel (fills remaining space)
         ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
-        ImGui::Text("Light Properties");
+        {
+            if (ImGui::BeginTabBar("LightingTabs"))
+            {
+                if (ImGui::BeginTabItem("Properties"))
+                {
+                    ImGui::Text("Light Properties Content");
+                    ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem("Groups"))
+                {
+                    ImGui::Text("Light Groups Content");
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+            }
+        }
         ImGui::EndChild();
     }
     ImGui::End();
