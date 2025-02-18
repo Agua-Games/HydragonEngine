@@ -68,7 +68,7 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
 
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
-    std::string windowTitle = "Drama Editor";
+    std::string windowTitle = "Drama";
     if (!state->currentDramaName.empty()) {
         windowTitle += " - " + state->currentDramaName;
         if (state->isModified) windowTitle += "*";

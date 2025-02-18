@@ -19,7 +19,7 @@ void ShowChimeraPipelineEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
     // Create window and check if it's visible
-    bool window_visible = ImGui::Begin("Chimera Pipeline Editor", p_open, ImGuiWindowFlags_MenuBar);
+    bool window_visible = ImGui::Begin("Chimera Pipeline", p_open, ImGuiWindowFlags_MenuBar);
     if (!window_visible)
     {
         ImGui::End();

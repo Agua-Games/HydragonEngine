@@ -27,72 +27,69 @@ static void RenderGraphCanvas();
 
 void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
-    if (!p_open || !*p_open)
-        return;
-
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-
-    if (ImGui::Begin("NodeGraph", p_open, ImGuiWindowFlags_MenuBar))
+    ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
+    
+    if (!ImGui::Begin("Node Graph", p_open, ImGuiWindowFlags_MenuBar))
     {
-        // Menu Bar [remains the same...]
-        
-        // Top Toolbar - now with proper parameters
-        RenderTopToolbar(p_open, windowData);
-        
-        // Main Content Area
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-        
-        // Calculate widths
-        float availableWidth = ImGui::GetContentRegionAvail().x;
-        float rightSidebarWidth = 40.0f; // Fixed width for right sidebar
-        float mainContentWidth = availableWidth;
-        
-        if (graphState.showNodeLibrary)
-        {
-            mainContentWidth -= (graphState.nodeLibraryWidth + 4.0f); // 4.0f for resizer
-        }
-        if (graphState.showRightSidebar)
-        {
-            mainContentWidth -= (rightSidebarWidth + 4.0f); // 4.0f for spacing
-        }
-
-        // Node Library Panel (Left Side)
-        if (graphState.showNodeLibrary)
-        {
-            ImGui::BeginChild("NodeLibrary", ImVec2(graphState.nodeLibraryWidth, 0), true);
-            ShowNodeLibrary();
-            ImGui::EndChild();
-            
-            // Resizer
-            ImGui::SameLine();
-            ImGui::Button("##NodeLibraryResizer", ImVec2(4, -1));
-            if (ImGui::IsItemActive())
-            {
-                graphState.nodeLibraryWidth += ImGui::GetIO().MouseDelta.x;
-                graphState.nodeLibraryWidth = ImClamp(graphState.nodeLibraryWidth, 150.0f, 400.0f);
-            }
-            ImGui::SameLine();
-        }
-
-        // Graph Canvas (Center)
-        ImGui::BeginChild("GraphCanvas", ImVec2(mainContentWidth, -24), true);
-        RenderGraphCanvas();
-        ImGui::EndChild();
-        
-        // Right Sidebar
-        if (graphState.showRightSidebar)
-        {
-            ImGui::SameLine(0, 4.0f);
-            RenderRightSidebar();
-        }
-        
-        // Status Bar
-        RenderStatusBar();
-        
-        // Mini Map Overlay [remains the same...]
-        
-        ImGui::PopStyleVar();
+        ImGui::End();
+        return;
     }
+
+    // Menu Bar
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("New Graph")) {}
+            if (ImGui::MenuItem("Open Graph")) {}
+            if (ImGui::MenuItem("Save Graph")) {}
+            if (ImGui::MenuItem("Save As...")) {}
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Edit"))
+        {
+            if (ImGui::MenuItem("Undo", "Ctrl+Z")) {}
+            if (ImGui::MenuItem("Redo", "Ctrl+Y")) {}
+            ImGui::Separator();
+            if (ImGui::MenuItem("Cut", "Ctrl+X")) {}
+            if (ImGui::MenuItem("Copy", "Ctrl+C")) {}
+            if (ImGui::MenuItem("Paste", "Ctrl+V")) {}
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("View"))
+        {
+            if (ImGui::MenuItem("Reset View")) {}
+            if (ImGui::MenuItem("Frame All")) {}
+            if (ImGui::MenuItem("Frame Selected")) {}
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+
+    // Top Toolbar
+    RenderTopToolbar(p_open, windowData);
+
+    // Main Content Area
+    ImGui::BeginChild("NodeGraphContent", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave space for status bar
+    
+    // Left panel for node library
+    ImGui::BeginChild("NodeLibrary", ImVec2(200, 0), true);
+    ShowNodeLibrary();
+    ImGui::EndChild();
+    
+    ImGui::SameLine();
+    
+    // Main graph canvas
+    ImGui::BeginChild("GraphCanvas", ImVec2(0, 0), true);
+    RenderGraphCanvas();
+    ImGui::EndChild();
+
+    ImGui::EndChild();
+    
+    // Status Bar
+    RenderStatusBar();
+
     ImGui::End();
 }
 
