@@ -134,35 +134,40 @@ void ShowAssetManager(bool* p_open, HdEditorWindowData* windowData)
             int columns = (int)(panelWidth / cellSize);
             if (columns < 1) columns = 1;
 
-            if (ImGui::BeginChild("AssetGrid"))
+            // Begin the child window for scrolling
+            ImGui::BeginChild("AssetGridScrollRegion", ImVec2(0, 0), false);
             {
-                // Example assets with rounded thumbnails
-                for (int i = 0; i < 20; i++)
+                if (ImGui::BeginChild("AssetGrid"))  // This BeginChild() is missing its End()
                 {
-                    ImGui::BeginGroup();
-                    
-                    // Thumbnail with rounded corners
-                    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
-                    ImGui::PushID(i); // Push unique ID based on index
-                    ImGui::Button(GetAssetTypeIcon(i), ImVec2(thumbnailSize, thumbnailSize));
-                    ImGui::PopID();
-                    ImGui::PopStyleVar();
-                    
-                    // Asset name
-                    char name[32];
-                    snprintf(name, sizeof(name), "Asset %d##asset_%d", i, i);  // Add unique ID to label
-                    float textWidth = ImGui::CalcTextSize(name).x;
-                    float textX = (thumbnailSize - textWidth) * 0.5f;
-                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + textX);
-                    ImGui::Text("%s", name);
-                    
-                    ImGui::EndGroup();
-                    
-                    if ((i + 1) % columns != 0)
-                        ImGui::SameLine();
+                    // Example assets with rounded thumbnails
+                    for (int i = 0; i < 20; i++)
+                    {
+                        ImGui::BeginGroup();
+                        
+                        // Thumbnail with rounded corners
+                        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 8.0f);
+                        ImGui::PushID(i);
+                        ImGui::Button(GetAssetTypeIcon(i), ImVec2(thumbnailSize, thumbnailSize));
+                        ImGui::PopID();
+                        ImGui::PopStyleVar();
+                        
+                        // Asset name
+                        char name[32];
+                        snprintf(name, sizeof(name), "Asset %d##asset_%d", i, i);
+                        float textWidth = ImGui::CalcTextSize(name).x;
+                        float textX = (thumbnailSize - textWidth) * 0.5f;
+                        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + textX);
+                        ImGui::Text("%s", name);
+                        
+                        ImGui::EndGroup();
+                        
+                        if ((i + 1) % columns != 0)
+                            ImGui::SameLine();
+                    }
                 }
-                ImGui::EndChild();
+                ImGui::EndChild();  // End "AssetGrid"
             }
+            ImGui::EndChild();  // End "AssetGridScrollRegion"
         }
 
         ImGui::Columns(1);
