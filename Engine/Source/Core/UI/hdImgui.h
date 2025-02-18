@@ -124,6 +124,10 @@ struct HdEditorWindowData
     bool isVolumeWindowOpen = true;
     bool isPresetsWindowOpen = true;
     bool isDebugWindowOpen = true;
+
+    // UI-only temporary states
+    bool tempBool = false;  // Temporary boolean for UI prototyping
+    float tempFloat = 0.0f; // Temporary float for UI prototyping
 };
 
 // =========== Initialization ===========
