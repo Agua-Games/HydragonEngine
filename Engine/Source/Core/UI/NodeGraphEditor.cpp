@@ -246,6 +246,9 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
 
     const float toolbarHeight = 30.0f; // Fixed height for toolbar
 
+    // Remove window rounding for the toolbar
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+
     // Create a child window with fixed height for the toolbar
     ImGui::BeginChild("NodeGraphToolbar", ImVec2(-1, toolbarHeight), true, 
         ImGuiWindowFlags_NoScrollbar | 
@@ -261,7 +264,8 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
     ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 0.3f));
     
-    ImGui::SetCursorScreenPos(ImGui::GetCursorScreenPos());
+    // Ensure buttons start from the very top-left corner
+    ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
 
     // Left section - Transform tools
     {
@@ -318,6 +322,7 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
     ImGui::PopStyleColor();
     ImGui::PopStyleVar(4);
     ImGui::EndChild();
+    ImGui::PopStyleVar(); // Pop WindowRounding
 }
 
 static void RenderRightSidebar() 
