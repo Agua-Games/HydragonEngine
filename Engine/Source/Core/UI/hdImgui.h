@@ -24,6 +24,14 @@ struct HdEditorWindowData
     // Editor sleep and auto-sleep feature
     bool isSleeping = false;
 
+    // Scripting, debugging, profiling useful info
+    bool showConsoleCategories = true;
+    bool showConsoleTimestamps = true;
+    bool showInfoMessages = true;
+    bool showWarnings = true;
+    bool showErrors = true;
+    bool showDebugMessages = true;
+
     // State - Track the open/closed state of each window
     bool isMainMenuBarWindowOpen = true;
     bool isTopToolbarWindowOpen = true;
