@@ -218,17 +218,30 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
                 // Top Toolbar
                 ImGui::BeginChild("EditorToolbar", ImVec2(-1, 30), false);
                 {
-                    if (ImGui::Button("Save")) {}
+                    ImVec2 buttonSize = windowData->iconDefaultSize;
+
+                    if (ImGui::Button(ICON_MS_SAVE "##Save", buttonSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Save (Ctrl+S)");
                     ImGui::SameLine();
-                    if (ImGui::Button("Undo")) {}
+
+                    if (ImGui::Button(ICON_MS_UNDO "##Undo", buttonSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Undo (Ctrl+Z)");
                     ImGui::SameLine();
-                    if (ImGui::Button("Redo")) {}
+
+                    if (ImGui::Button(ICON_MS_REDO "##Redo", buttonSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Redo (Ctrl+Y)");
                     ImGui::SameLine();
-                    if (ImGui::Button("Find")) {}
+
+                    if (ImGui::Button(ICON_MS_SEARCH "##Find", buttonSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Find (Ctrl+F)");
                     ImGui::SameLine();
-                    if (ImGui::Button("Replace")) {}
+
+                    if (ImGui::Button(ICON_MS_FIND_REPLACE "##Replace", buttonSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Replace (Ctrl+H)");
                     ImGui::SameLine();
-                    if (ImGui::Button("AI Assistant")) {}
+
+                    if (ImGui::Button(ICON_MS_PSYCHOLOGY "##AIAssistant", buttonSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("AI Assistant (Ctrl+Space)");
                 }
                 ImGui::EndChild();
 
@@ -240,15 +253,54 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
                         // Python script tab
                         if (ImGui::BeginTabItem("math_helpers.py"))
                         {
-                            static char pythonText[4096] = 
-                                "def calculate_trajectory(velocity, angle):\n"
-                                "    # Calculate projectile trajectory\n"
-                                "    pass\n\n"
-                                "def interpolate_bezier(p0, p1, p2, t):\n"
-                                "    # Bezier curve interpolation\n"
-                                "    pass";
-                            ImGui::InputTextMultiline("##source_python", pythonText, IM_ARRAYSIZE(pythonText), 
-                                ImVec2(-1, -1), ImGuiInputTextFlags_AllowTabInput);
+                            const float lineNumbersWidth = 30.0f; // Width of line numbers column
+                            ImGui::BeginChild("LineNumbers", ImVec2(lineNumbersWidth, -1), false);
+                            {
+                                // Match the style of the main text area
+                                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); // Grayed out color
+
+                                // Calculate visible lines based on current scroll position
+                                float lineHeight = ImGui::GetTextLineHeight();
+                                int visibleLines = (int)(ImGui::GetWindowHeight() / lineHeight);
+                                float scrollY = ImGui::GetScrollY();
+                                int startLine = (int)(scrollY / lineHeight);
+
+                                // Draw line numbers
+                                for (int i = 0; i <= visibleLines; i++)
+                                {
+                                    int lineNo = startLine + i + 1;
+                                    ImGui::Text("%3d", lineNo);
+                                }
+
+                                ImGui::PopStyleColor();
+                                ImGui::PopStyleVar();
+                            }
+                            ImGui::EndChild();
+                            ImGui::SameLine(0, 0); // No spacing between line numbers and text
+
+                            // Main text area
+                            ImGui::BeginChild("TextArea", ImVec2(-1, -1), false);
+                            {
+                                static char pythonText[4096] = 
+                                    "def calculate_trajectory(velocity, angle):\n"
+                                    "    # Calculate projectile trajectory\n"
+                                    "    pass\n\n"
+                                    "def interpolate_bezier(p0, p1, p2, t):\n"
+                                    "    # Bezier curve interpolation\n"
+                                    "    pass";
+                                
+                                // Sync scroll position between line numbers and text
+                                if (ImGui::IsWindowFocused())
+                                {
+                                    float scroll = ImGui::GetScrollY();
+                                    ImGui::SetScrollY(scroll);
+                                }
+
+                                ImGui::InputTextMultiline("##source_python", pythonText, IM_ARRAYSIZE(pythonText), 
+                                    ImVec2(-1, -1), ImGuiInputTextFlags_AllowTabInput);
+                            }
+                            ImGui::EndChild();
                             ImGui::EndTabItem();
                         }
 
