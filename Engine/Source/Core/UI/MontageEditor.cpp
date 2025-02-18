@@ -220,7 +220,7 @@ void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
     
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
-    if (state.isCollapsedView)
+    if (!state.isCollapsedView)  // Changed condition: show menu bar when NOT collapsed
         windowFlags |= ImGuiWindowFlags_MenuBar;
     
     if (!ImGui::Begin("Montage Editor##MainWindow", p_open, windowFlags))
@@ -230,7 +230,7 @@ void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData)
     }
 
     // Menu Bar (only in expanded mode)
-    if (!state.isCollapsedView && ImGui::BeginMenuBar())
+    if (!state.isCollapsedView && ImGui::BeginMenuBar())  // This condition is correct
     {
         if (ImGui::BeginMenu("File"))
         {
