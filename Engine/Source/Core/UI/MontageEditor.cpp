@@ -149,7 +149,9 @@ static void ShowMontageToolbar(HdEditorWindowData* windowData)
 static void ShowTrackView(HdEditorWindowData* windowData, bool isCollapsed)
 {
     const float trackHeight = 24.0f;
-    const float headerWidth = 200.0f;
+    static float headerWidth = 200.0f;  // Now static to preserve width between frames
+    const float minHeaderWidth = 150.0f;  // Minimum width
+    const float maxHeaderWidth = 400.0f;  // Maximum width
     const ImVec2 buttonSize(20, 20);
     
     // Track headers (names and controls)
@@ -188,6 +190,27 @@ static void ShowTrackView(HdEditorWindowData* windowData, bool isCollapsed)
         ImGui::Dummy(ImVec2(0, 4)); // Spacing between tracks
     }
     ImGui::EndChild();
+
+    ImGui::SameLine();
+
+    // Splitter
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 0.3f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.7f, 0.7f, 0.4f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.9f, 0.9f, 0.5f));
+    ImGui::Button("##Splitter", ImVec2(8.0f, -1));
+    ImGui::PopStyleColor(3);
+
+    if (ImGui::IsItemActive())
+    {
+        float deltaX = ImGui::GetIO().MouseDelta.x;
+        headerWidth += deltaX;
+        if (headerWidth < minHeaderWidth) headerWidth = minHeaderWidth;
+        if (headerWidth > maxHeaderWidth) headerWidth = maxHeaderWidth;
+    }
+    else if (ImGui::IsItemHovered())
+    {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+    }
     
     ImGui::SameLine();
     
