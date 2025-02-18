@@ -3,10 +3,9 @@
  * Licensed under the Agua Games License 1.0
  */
 #pragma once
-#include <imgui.h>  // Include ImGui's header
-
+#include <imgui.h>
 #include "hdImgui.h"
 
 namespace hdImgui {
-void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData);
+    void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData);
 } // namespace hdImgui
