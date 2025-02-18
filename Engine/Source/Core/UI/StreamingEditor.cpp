@@ -4,12 +4,11 @@
  */
 #include <imgui.h>
 #include <string>
-
-#include "IconsMaterialSymbols.h"
-
+#include <vector>
+#include <algorithm>  // for std::count_if
 #include "StreamingEditor.h"
 #include "hdImgui.h"
-
+#include "IconsMaterialSymbols.h"
 
 namespace hdImgui {
 
@@ -27,7 +26,7 @@ struct StreamingControlState {
     };
     SceneStreamingSettings activeSceneSettings;
 
-    // New monitoring state
+    // Existing monitoring state
     struct MonitoringData {
         float memoryUsage = 0.0f;
         float peakMemoryUsage = 0.0f;
@@ -38,15 +37,35 @@ struct StreamingControlState {
         float latencyHistory[HISTORY_LENGTH] = {};
         int historyIndex = 0;
     } monitoring;
+
+    // New priority management state
+    struct StreamingRequest {
+        std::string name;
+        int priority;
+        float size;
+        std::string status;
+        bool selected;
+    };
+    std::vector<StreamingRequest> activeRequests = {
+        {"Terrain_LOD0", 2, 256.0f, "In Progress", false},
+        {"Character_HD", 1, 128.0f, "Queued", false},
+        {"Props_Block_A", 0, 64.0f, "Pending", false}
+    };
+    bool showCompleted = false;
+    int selectedPriority = 1;
 };
 
 static StreamingControlState s_streamingState;
 
 void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
+    // Define priorities array at function scope so it's available throughout
+    const char* priorities[] = { "Low", "Medium", "High" };
+
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Streaming", p_open, ImGuiWindowFlags_MenuBar))
     {
+        // Existing menu bar
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -59,7 +78,7 @@ void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData)
             ImGui::EndMenuBar();
         }
 
-        // Main Controls
+        // Main Controls (existing)
         {
             ImGui::BeginChild("MainControls", ImVec2(0, 60), true);
             {
@@ -72,7 +91,7 @@ void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData)
             ImGui::EndChild();
         }
 
-        // Global Settings
+        // Global Settings (existing)
         if (ImGui::CollapsingHeader("Global Streaming Settings", ImGuiTreeNodeFlags_DefaultOpen))
         {
             ImGui::BeginChild("GlobalSettings", ImVec2(0, 140), true);
@@ -94,7 +113,7 @@ void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData)
             ImGui::EndChild();
         }
 
-        // Per-scene Settings
+        // Per-scene Settings (existing)
         if (ImGui::CollapsingHeader("Per-scene Configuration", ImGuiTreeNodeFlags_DefaultOpen))
         {
             ImGui::BeginChild("SceneSettings", ImVec2(0, 160), true);
@@ -174,9 +193,100 @@ void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData)
             }
             ImGui::EndChild();
         }
+
+        // New Priority Management Section
+        if (ImGui::CollapsingHeader("Priority Management", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            ImGui::BeginChild("PrioritySection", ImVec2(0, 300), true);
+            {
+                // Control Bar
+                {
+                    ImGui::BeginGroup();
+                    ImGui::SetNextItemWidth(120);
+                    ImGui::Combo("Set Priority", &s_streamingState.selectedPriority, priorities, IM_ARRAYSIZE(priorities));
+                    
+                    ImGui::SameLine();
+                    if (ImGui::Button("Apply Priority")) {
+                        // Apply selected priority to selected requests
+                    }
+                    
+                    ImGui::SameLine();
+                    if (ImGui::Button("Cancel Selected")) {
+                        // Cancel selected streaming requests
+                    }
+                    
+                    ImGui::SameLine();
+                    ImGui::Checkbox("Show Completed", &s_streamingState.showCompleted);
+                    ImGui::EndGroup();
+                }
+
+                ImGui::Separator();
+
+                // Requests Table
+                {
+                    if (ImGui::BeginTable("StreamingRequests", 5, 
+                        ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable))
+                    {
+                        // Headers
+                        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 30.0f);
+                        ImGui::TableSetupColumn("Asset", ImGuiTableColumnFlags_WidthStretch);
+                        ImGui::TableSetupColumn("Priority", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+                        ImGui::TableSetupColumn("Size (MB)", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+                        ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+                        ImGui::TableHeadersRow();
+
+                        // Rows
+                        for (auto& request : s_streamingState.activeRequests)
+                        {
+                            ImGui::TableNextRow();
+                            
+                            // Checkbox column
+                            ImGui::TableNextColumn();
+                            ImGui::PushID(&request);
+                            ImGui::Checkbox("##select", &request.selected);
+                            ImGui::PopID();
+
+                            // Asset name
+                            ImGui::TableNextColumn();
+                            ImGui::TextUnformatted(request.name.c_str());
+
+                            // Priority
+                            ImGui::TableNextColumn();
+                            ImGui::TextUnformatted(priorities[request.priority]);
+
+                            // Size
+                            ImGui::TableNextColumn();
+                            ImGui::Text("%.1f", request.size);
+
+                            // Status
+                            ImGui::TableNextColumn();
+                            if (request.status == "In Progress") {
+                                ImGui::TextColored(ImVec4(0.2f, 0.7f, 0.2f, 1.0f), "%s", request.status.c_str());
+                            } else if (request.status == "Queued") {
+                                ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.1f, 1.0f), "%s", request.status.c_str());
+                            } else {
+                                ImGui::TextUnformatted(request.status.c_str());
+                            }
+                        }
+                        ImGui::EndTable();
+                    }
+                }
+
+                // Status Bar
+                {
+                    ImGui::Separator();
+                    ImGui::Text("Active Requests: %zu", s_streamingState.activeRequests.size());
+                    ImGui::SameLine(200);
+                    ImGui::Text("Selected: %zu", 
+                        std::count_if(s_streamingState.activeRequests.begin(), 
+                                    s_streamingState.activeRequests.end(),
+                                    [](const auto& req) { return req.selected; }));
+                }
+            }
+            ImGui::EndChild();
+        }
     }
     ImGui::End();
 }
 
 } // namespace hdImgui
-
