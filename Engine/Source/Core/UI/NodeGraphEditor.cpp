@@ -3,6 +3,7 @@
  * Licensed under the Agua Games License 1.0
  */
 #include "NodeGraphEditor.h"
+#include "NodeGraphState.h"
 #include "hdImgui.h"
 #include "IconsMaterialSymbols.h"
 #include <imgui_internal.h>
@@ -10,39 +11,19 @@
 
 namespace hdImgui {
 
-// Node graph state
-struct NodeGraphState {
-    float zoomLevel = 1.0f;
-    ImVec2 panOffset = ImVec2(0.0f, 0.0f);
-    bool isDragging = false;
-    bool isConnecting = false;
-    int selectedNode = -1;
-    ImVec2 lastMousePos;
-    bool showMiniMap = true;
-    bool showNodeLibrary = true;
-    float nodeLibraryWidth = 250.0f;
-    bool showRightSidebar = true;
-    int nodeCount = 0;
-    int connectionCount = 0;
-    float graphMemoryUsage = 0.0f;    // MB
-    int warningCount = 0;
-    int errorCount = 0;
-    float fps = 0.0f;
-    bool isGraphDirty = false;
-};
+// Remove the NodeGraphState struct definition as it's now in the header
 
 static NodeGraphState graphState;
 
 // Forward declare internal helper functions
+static void ShowNodeLibrary();
 static void RenderNodeLibraryContent();
 static void RenderGraphCanvasContent();
 static void RenderMiniMapContent();
-
-// Forward declarations
 static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData);
 static void RenderRightSidebar();
 static void RenderStatusBar();
-static void RenderGraphCanvas(); // Assuming this exists in your codebase
+static void RenderGraphCanvas();
 
 void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
@@ -115,9 +96,8 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-void ShowNodeLibrary() 
+static void ShowNodeLibrary() 
 {
-    // Search bar
     static char searchBuffer[64] = "";
     ImGui::PushItemWidth(-1);
     ImGui::InputTextWithHint("##Search", ICON_MS_SEARCH " Search Nodes...", searchBuffer, IM_ARRAYSIZE(searchBuffer));

@@ -3,19 +3,10 @@
  * Licensed under the Agua Games License 1.0
  */
 #pragma once
-
-#include <imgui.h>
-
-struct HdEditorWindowData;
+#include "NodeGraphState.h"
+#include "hdImgui.h"
 
 namespace hdImgui {
-
-// Forward declarations of internal functions
-void ShowNodeLibrary();
-void RenderGraphCanvas();
-void RenderMiniMap();
-
-// Main entry point for the Node Graph Editor
-void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData);
-
-} // namespace hdImgui
+    struct HdEditorWindowData;
+    void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData);
+}
