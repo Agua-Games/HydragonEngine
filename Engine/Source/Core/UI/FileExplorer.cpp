@@ -28,7 +28,9 @@ namespace {
     static std::string draggedFilePath;
     static float previewPanelWidth = 300.0f;
     static float placesWidth = 150.0f;
-    static float settingsPanelHeight = 200.0f;
+    static float settingsPanelHeight = 180.0f;  // Reduced from 200.0f
+    static const float minSettingsPanelHeight = 100.0f;  // Minimum height
+    static const float maxSettingsPanelHeight = 400.0f;  // Maximum height
     
     // Quick access locations
     struct QuickAccessEntry {
@@ -189,13 +191,7 @@ void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData)
 {
     if (!p_open || !windowData) return;
 
-    // Debug print
-    static bool first_run = true;
-    if (first_run) {
-        printf("FileExplorer: windowData->iconFont = %p\n", windowData->iconFont);
-        first_run = false;
-    }
-
+    // Set initial window size if not already set
     ImGui::SetNextWindowSize(ImVec2(1000, 600), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
 
@@ -205,8 +201,19 @@ void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData)
         return;
     }
 
-    // Main layout
-    ImGui::BeginChild("MainLayout", ImVec2(0, -settingsPanelHeight));
+    // Calculate initial settings panel height on first run
+    static bool first_run = true;
+    if (first_run) {
+        ImVec2 windowSize = ImGui::GetWindowSize();
+        settingsPanelHeight = windowSize.y * 0.3f; // Set to 30% of window height
+        first_run = false;
+    }
+
+    // Main layout (modify to account for splitter)
+    float availableHeight = ImGui::GetContentRegionAvail().y;
+    float mainLayoutHeight = availableHeight - settingsPanelHeight - 8.0f; // 8.0f for splitter
+
+    ImGui::BeginChild("MainLayout", ImVec2(0, mainLayoutHeight));
     {
         // Left panel (Places)
         ImGui::BeginChild("Places", ImVec2(placesWidth, 0), true);
@@ -298,8 +305,29 @@ void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData)
     }
     ImGui::EndChild(); // MainLayout
 
+    // Splitter
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 0.3f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.7f, 0.7f, 0.4f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.9f, 0.9f, 0.5f));
+    
+    ImGui::Button("##VSplitter", ImVec2(-1, 8.0f));
+    
+    ImGui::PopStyleColor(3);
+
+    if (ImGui::IsItemActive())
+    {
+        float deltaY = ImGui::GetIO().MouseDelta.y;
+        settingsPanelHeight -= deltaY;
+        if (settingsPanelHeight < minSettingsPanelHeight) settingsPanelHeight = minSettingsPanelHeight;
+        if (settingsPanelHeight > maxSettingsPanelHeight) settingsPanelHeight = maxSettingsPanelHeight;
+    }
+    else if (ImGui::IsItemHovered())
+    {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+    }
+
     // Settings panel at bottom
-    ImGui::BeginChild("Settings", ImVec2(0, 0), true);
+    ImGui::BeginChild("Settings", ImVec2(0, settingsPanelHeight), true);
     if (windowData->iconFont) {
         ImGui::PushFont(windowData->iconFont);
         ImGui::Text(ICON_FA_GEAR " Settings");
