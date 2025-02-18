@@ -41,7 +41,6 @@
 #include "ImageTools.h"
 #include "AudioEditor.h"
 #include "MontageEditor.h"
-#include "TextEditor.h"
 #include "FontEditor.h"
 #include "PluginEditor.h"
 #include "ExtensionsEditor.h"
@@ -392,8 +391,6 @@ void RenderHydragonEditor(HdEditorWindowData* windowData) {
     // Whereas DCC apps usually rely on a simple timeline by default, Hydragon uses a more advanced montage editor,
     // with two visualization modes: collapsed and expanded (defaults to expanded).
     if (windowData->isMontageWindowOpen) { hdImgui::ShowMontageEditor(&windowData->isMontageWindowOpen, windowData); }
-    // Text Editor
-    if (windowData->isTextWindowOpen) { hdImgui::ShowTextEditor(&windowData->isTextWindowOpen, windowData); }
     // Font Editor
     if (windowData->isFontWindowOpen) { hdImgui::ShowFontEditor(&windowData->isFontWindowOpen, windowData); }
     // Plugin Editor

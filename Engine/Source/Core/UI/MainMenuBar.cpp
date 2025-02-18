@@ -659,7 +659,6 @@ void ShowMainMenuBar(bool* p_open, HdEditorWindowData* windowData) {
             ImGui::Separator();
             if (ImGui::MenuItem("UI Editor", "Ctrl+Shift+U")) { windowData->isUIEditorWindowOpen = true; }
             if (ImGui::MenuItem("Font Editor", "Ctrl+Shift+F")) { windowData->isFontWindowOpen = true; }
-            if (ImGui::MenuItem("Text Editor", "Ctrl+Shift+X")) { windowData->isTextWindowOpen = true; }
             ImGui::Separator();
             if (ImGui::MenuItem("Scripts Palette", "Ctrl+Shift+P")) { windowData->isScriptsPaletteWindowOpen = true; }
             if (ImGui::MenuItem("Command Palette", "Ctrl+Shift+P")) { windowData->isCommandsPaletteWindowOpen = true; }

@@ -501,8 +501,7 @@
 				58,
 				59,
 				60,
-				61,
-				62
+				61
 			]
 		}
 	],
@@ -626,15 +625,14 @@
 				58,
 				59,
 				60,
-				61,
-				62
+				61
 			]
 		},
 		{
 			"name" : "Header Files",
 			"sourceIndexes" : 
 			[
-				63
+				62
 			]
 		}
 	],
@@ -914,12 +912,6 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/StreamingEditor.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/TextEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
