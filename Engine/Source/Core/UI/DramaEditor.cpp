@@ -51,6 +51,12 @@ struct DramaEditorState {
     float dramaTime = 0.0f;        // Current time in drama sequence
     bool isTimelineSynced = true;  // Sync with MontageEditor
     int activeMontageId = -1;      // Currently linked montage
+    
+    // Tension System states
+    bool showTensionPanel = false;
+    float currentTension = 0.0f;
+    bool showTensionGraph = true;
+    bool autoAdjustTension = false;
 };
 
 // Static state instance
@@ -364,6 +370,85 @@ static void ShowTimelinePanel(hdImgui::HdEditorWindowData* windowData)
     ImGui::End();
 }
 
+static void ShowTensionPanel()
+{
+    if (!state || !state->showTensionPanel) return;
+    
+    ImGui::Begin("Drama Tension", &state->showTensionPanel);
+    
+    // Tension controls toolbar
+    if (ImGui::BeginChild("TensionToolbar", ImVec2(0, 30), true))
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 0));
+        
+        ImGui::Checkbox("Auto-Adjust", &state->autoAdjustTension);
+        ImGui::SameLine();
+        
+        ImGui::Button(ICON_MS_RESET_TV "##ResetTension");
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Reset Tension");
+            
+        ImGui::SameLine();
+        ImGui::Checkbox("Show Graph", &state->showTensionGraph);
+        
+        ImGui::PopStyleVar();
+    }
+    ImGui::EndChild();
+
+    // Current tension slider
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+    ImGui::VSliderFloat("##TensionLevel", ImVec2(30, 150), &state->currentTension, 0.0f, 1.0f, "");
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("Tension: %.2f", state->currentTension);
+    ImGui::PopStyleColor(3);
+    
+    ImGui::SameLine();
+
+    // Tension graph and events
+    if (state->showTensionGraph)
+    {
+        if (ImGui::BeginChild("TensionGraph", ImVec2(0, 150), true))
+        {
+            ImGui::Text("Tension Graph - Will show tension curve over time");
+            // Placeholder for tension curve visualization
+            // Will be connected to drama events and state system
+        }
+        ImGui::EndChild();
+    }
+
+    // Tension events list
+    if (ImGui::BeginChild("TensionEvents", ImVec2(0, 0), true))
+    {
+        ImGui::Text("Tension Events");
+        ImGui::Separator();
+        
+        if (ImGui::BeginTable("TensionEventsTable", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+        {
+            ImGui::TableSetupColumn("Time");
+            ImGui::TableSetupColumn("Event");
+            ImGui::TableSetupColumn("Impact");
+            ImGui::TableHeadersRow();
+            
+            // Placeholder for tension events list
+            // Will be populated from drama events system
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("0:00");
+            ImGui::TableNextColumn();
+            ImGui::Text("Start");
+            ImGui::TableNextColumn();
+            ImGui::Text("+0.2");
+            
+            ImGui::EndTable();
+        }
+    }
+    ImGui::EndChild();
+    
+    ImGui::End();
+}
+
 struct DramaMontageSync {
     static void OnMontageTimeChanged(float newTime) {
         if (state && state->isTimelineSynced) {
@@ -447,6 +532,7 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
             ImGui::MenuItem("State Space", nullptr, &state->showStateSpacePanel);
             ImGui::MenuItem("State Debugger", nullptr, &state->showStateDebugger);
             ImGui::MenuItem("Drama Timeline##DockPanel", nullptr, &state->showTimelinePanel);
+            ImGui::MenuItem("Tension System##TensionPanel", nullptr, &state->showTensionPanel);
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
@@ -507,6 +593,11 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
     if (state->showTimelinePanel)
     {
         ShowTimelinePanel(windowData);
+    }
+
+    if (state->showTensionPanel)
+    {
+        ShowTensionPanel();
     }
 
     ImGui::End();
