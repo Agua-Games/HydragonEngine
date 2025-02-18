@@ -58,14 +58,37 @@ static void ShowTimeControls(HdEditorWindowData* windowData)
 {
     ImGui::BeginGroup();
     
+    // Style adjustments for consistent button appearance
+    ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 0.3f));
+    
     // Play controls
-    if (ImGui::Button(state.isPlaying ? ICON_MS_PAUSE : ICON_MS_PLAY_ARROW))
+    if (ImGui::Button(ICON_MS_SKIP_PREVIOUS "##StepBack", windowData->iconDefaultSize)) {}
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Step Backward");
+    ImGui::SameLine();
+    
+    if (ImGui::Button(state.isPlaying ? ICON_MS_PAUSE : ICON_MS_PLAY_ARROW "##PlayPause", windowData->iconDefaultSize))
         state.isPlaying = !state.isPlaying;
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip(state.isPlaying ? "Pause" : "Play");
     ImGui::SameLine();
-    if (ImGui::Button(ICON_MS_STOP))
+    
+    if (ImGui::Button(ICON_MS_SKIP_NEXT "##StepForward", windowData->iconDefaultSize)) {}
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Step Forward");
+    ImGui::SameLine();
+    
+    if (ImGui::Button(ICON_MS_STOP "##Stop", windowData->iconDefaultSize))
         state.isPlaying = false;
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Stop");
     ImGui::SameLine();
-    ImGui::Checkbox("Loop", &state.isLooping);
+    
+    ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();  // Add spacing
+    
+    if (ImGui::Button(ICON_MS_LOOP "##Loop", windowData->iconDefaultSize))
+        state.isLooping = !state.isLooping;
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Loop");
+    ImGui::SameLine();
+    
+    ImGui::Dummy(ImVec2(10, 0)); ImGui::SameLine();  // Add more spacing before timeline
     
     // Time slider
     ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 100);
@@ -80,6 +103,7 @@ static void ShowTimeControls(HdEditorWindowData* windowData)
         state.currentTime = std::clamp(state.currentTime, state.startTime, state.endTime);
     }
     
+    ImGui::PopStyleColor();  // Pop button color style
     ImGui::EndGroup();
 }
 
