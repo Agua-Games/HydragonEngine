@@ -20,8 +20,21 @@ struct DramaEditorState {
     int selectedSequence = -1;
     int selectedEvent = -1;
     char searchBuffer[256] = "";
+    
+    // Drama Tensor States
     float tensionCurve = 0.5f;
+    float characterBias = 0.0f;
+    float destinyForce = 0.0f;
+    float conflictIntensity = 0.5f;
+    float harmonicBalance = 0.5f;
+    float chaosField = 0.0f;
+    float trajectoryMomentum = 0.0f;
+    
     int activeTab = 0;
+    
+    // Trajectory Integration
+    float trajectoryPoints[100] = {0};
+    int trajectoryPointCount = 0;
 };
 
 static DramaEditorState* state = nullptr;
@@ -89,18 +102,47 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
         ImGui::EndMenuBar();
     }
 
-    // Toolbar
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
-    if (ImGui::Button(ICON_MS_ADD_BOX " New Sequence")) { state->isModified = true; }
-    ImGui::SameLine();
-    if (ImGui::Button(ICON_MS_ADD_CIRCLE " New Event")) { state->isModified = true; }
-    ImGui::SameLine();
-    ImGui::Separator();
-    ImGui::SameLine();
-    if (ImGui::Button(ICON_MS_PREVIEW " Preview")) {}
-    ImGui::SameLine();
-    if (ImGui::Button(ICON_MS_PLAY_ARROW " Test")) {}
-    ImGui::PopStyleVar();
+    // Toolbar with proper spacing
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6, 3));
+    
+    ImVec2 buttonSize(32, 32);
+    float toolbarHeight = 40;
+    
+    ImGui::BeginChild("##Toolbar", ImVec2(-1, toolbarHeight), false);
+    {
+        if (ImGui::Button(ICON_MS_ADD_BOX "##NewSequence", buttonSize)) { state->isModified = true; }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("New Sequence");
+        
+        ImGui::SameLine();
+        if (ImGui::Button(ICON_MS_ADD_CIRCLE "##NewEvent", buttonSize)) { state->isModified = true; }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("New Event");
+        
+        ImGui::SameLine();
+        ImGui::Dummy(ImVec2(10, 0));
+        ImGui::SameLine();
+        
+        if (ImGui::Button(ICON_MS_PREVIEW "##Preview", buttonSize)) {}
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Preview Drama");
+        
+        ImGui::SameLine();
+        if (ImGui::Button(ICON_MS_PLAY_ARROW "##Test", buttonSize)) {}
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Test Drama Flow");
+        
+        ImGui::SameLine();
+        ImGui::Dummy(ImVec2(10, 0));
+        ImGui::SameLine();
+        
+        if (ImGui::Button(ICON_MS_ANALYTICS "##DramaTensor", buttonSize)) {}
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Drama Tensor Analysis");
+        
+        ImGui::SameLine();
+        if (ImGui::Button(ICON_MS_TIMELINE "##Trajectory", buttonSize)) {}
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Character Trajectory");
+    }
+    ImGui::EndChild();
+    
+    ImGui::PopStyleVar(2);
 
     // Search bar
     ImGui::SetNextItemWidth(-1);
@@ -166,16 +208,40 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
             ImGui::EndTabItem();
         }
 
-        if (ImGui::BeginTabItem(ICON_MS_ANALYTICS " Drama Curve"))
+        if (ImGui::BeginTabItem(ICON_MS_ANALYTICS " Drama Tensors"))
         {
             state->activeTab = 1;
             
-            ImGui::Text("Tension/Interest Curve");
-            ImGui::SliderFloat("##TensionCurve", &state->tensionCurve, 0.0f, 1.0f, "%.2f");
+            ImGui::BeginChild("DramaTensors", ImVec2(0, 0), true);
             
-            // Simple curve visualization
-            ImGui::PlotLines("##CurvePlot", &state->tensionCurve, 1, 0, nullptr, 
-                0.0f, 1.0f, ImVec2(-1, 80));
+            // Drama Tensor Analysis
+            ImGui::Text("Drama Tensor Analysis");
+            ImGui::Separator();
+            
+            // Character Trajectory
+            ImGui::Text("Character Trajectory Integration");
+            ImGui::PlotLines("##TrajectoryPlot", state->trajectoryPoints, 
+                state->trajectoryPointCount, 0, "Character Arc", -1.0f, 1.0f, ImVec2(-1, 80));
+            
+            // Tension Forces
+            ImGui::Text("Dramatic Forces");
+            ImGui::SliderFloat("Tension", &state->tensionCurve, 0.0f, 1.0f, "%.2f");
+            ImGui::SliderFloat("Character Bias", &state->characterBias, -1.0f, 1.0f, "%.2f");
+            ImGui::SliderFloat("Destiny Force", &state->destinyForce, -1.0f, 1.0f, "%.2f");
+            
+            ImGui::Separator();
+            
+            // Conflict and Harmony
+            ImGui::Text("Conflict Dynamics");
+            ImGui::SliderFloat("Conflict Intensity", &state->conflictIntensity, 0.0f, 1.0f, "%.2f");
+            ImGui::SliderFloat("Harmonic Balance", &state->harmonicBalance, 0.0f, 1.0f, "%.2f");
+            ImGui::SliderFloat("Chaos Field", &state->chaosField, 0.0f, 1.0f, "%.2f");
+            
+            // Momentum and Flow
+            ImGui::Text("Narrative Momentum");
+            ImGui::SliderFloat("Trajectory Momentum", &state->trajectoryMomentum, -1.0f, 1.0f, "%.2f");
+            
+            ImGui::EndChild();
             
             ImGui::EndTabItem();
         }
@@ -186,8 +252,12 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
     // Status bar
     ImGui::Separator();
     ImGui::Text("Status: %s", state->isModified ? "Modified" : "Saved");
+    ImGui::SameLine();
+    ImGui::Text("| Tension: %.2f", state->tensionCurve);
+    ImGui::SameLine();
+    ImGui::Text("| Momentum: %.2f", state->trajectoryMomentum);
     ImGui::SameLine(ImGui::GetWindowWidth() - 120);
-    ImGui::Text("Events: %d", 4); // Example count
+    ImGui::Text("Events: %d", 4);
 
     ImGui::End();
 
