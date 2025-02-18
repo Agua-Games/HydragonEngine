@@ -54,57 +54,86 @@ struct MontageState {
 
 static MontageState state;
 
-static void ShowTimeControls(HdEditorWindowData* windowData)
+static void ShowMontageToolbar(HdEditorWindowData* windowData)
 {
-    ImGui::BeginGroup();
+    // Style settings for a compact toolbar
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
     
-    // Style adjustments for consistent button appearance
+    // Left section - Track operations
+    ImVec2 buttonSize = windowData->iconDefaultSize;
+    
+    if (ImGui::Button(ICON_MS_ADD "##NewTrack", buttonSize)) {}
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("New Track");
+    
+    ImGui::SameLine();
+    if (ImGui::Button(ICON_MS_DELETE "##DeleteTrack", buttonSize)) {}
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete Track");
+    
+    ImGui::SameLine();
+    ImGui::Separator();
+    ImGui::SameLine();
+    
+    if (ImGui::Button(ICON_MS_CONTENT_CUT "##Split", buttonSize)) {}
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Split");
+    
+    // Add spacing between tools and time controls
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(10, 0));
+    ImGui::SameLine();
+    
+    // Time Controls
     ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 0.3f));
     
-    // Play controls
-    if (ImGui::Button(ICON_MS_SKIP_PREVIOUS "##StepBack", windowData->iconDefaultSize)) {}
+    if (ImGui::Button(ICON_MS_SKIP_PREVIOUS "##StepBack", buttonSize)) {}
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Step Backward");
     ImGui::SameLine();
     
-    if (ImGui::Button(state.isPlaying ? ICON_MS_PAUSE : ICON_MS_PLAY_ARROW "##PlayPause", windowData->iconDefaultSize))
+    if (ImGui::Button(state.isPlaying ? ICON_MS_PAUSE : ICON_MS_PLAY_ARROW "##PlayPause", buttonSize))
         state.isPlaying = !state.isPlaying;
     if (ImGui::IsItemHovered()) ImGui::SetTooltip(state.isPlaying ? "Pause" : "Play");
     ImGui::SameLine();
     
-    if (ImGui::Button(ICON_MS_SKIP_NEXT "##StepForward", windowData->iconDefaultSize)) {}
+    if (ImGui::Button(ICON_MS_SKIP_NEXT "##StepForward", buttonSize)) {}
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Step Forward");
     ImGui::SameLine();
     
-    if (ImGui::Button(ICON_MS_STOP "##Stop", windowData->iconDefaultSize))
+    if (ImGui::Button(ICON_MS_STOP "##Stop", buttonSize))
         state.isPlaying = false;
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Stop");
     ImGui::SameLine();
     
-    ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();  // Add spacing
+    ImGui::Dummy(ImVec2(5, 0)); 
+    ImGui::SameLine();
     
-    if (ImGui::Button(ICON_MS_LOOP "##Loop", windowData->iconDefaultSize))
+    if (ImGui::Button(ICON_MS_LOOP "##Loop", buttonSize))
         state.isLooping = !state.isLooping;
     if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Loop");
+    
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(10, 0));
     ImGui::SameLine();
     
-    ImGui::Dummy(ImVec2(10, 0)); ImGui::SameLine();  // Add more spacing before timeline
+    // Timeline with scrub - now taller to match button height and filling remaining width
+    float remainingWidth = ImGui::GetContentRegionAvail().x - 75.0f; // Reserve space for time input
+    float timelineHeight = buttonSize.y;  // Match button height
     
-    // Time slider
-    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x - 100);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, (timelineHeight - ImGui::GetFrameHeight()) * 0.5f));
+    ImGui::PushItemWidth(remainingWidth);
     ImGui::SliderFloat("##timeline", &state.currentTime, state.startTime, state.endTime, "%.2f");
     ImGui::PopItemWidth();
+    ImGui::PopStyleVar();
     
-    // Time input fields
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(100);
-    if (ImGui::InputFloat("Time", &state.currentTime, 1.0f, 10.0f, "%.2f"))
+    ImGui::SetNextItemWidth(70);
+    if (ImGui::InputFloat("##Time", &state.currentTime, 1.0f, 10.0f, "%.2f"))
     {
         state.currentTime = std::clamp(state.currentTime, state.startTime, state.endTime);
     }
     
-    ImGui::PopStyleColor();  // Pop button color style
-    ImGui::EndGroup();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar(2);
 }
 
 static void ShowTrackView(HdEditorWindowData* windowData, bool isCollapsed)
@@ -132,31 +161,6 @@ static void ShowTrackView(HdEditorWindowData* windowData, bool isCollapsed)
         newTrack.name = "Track " + std::to_string(state.tracks.size() + 1);
         state.tracks.push_back(newTrack);
     }
-}
-
-static void ShowMontageToolbar(HdEditorWindowData* windowData)
-{
-    // Style settings for a compact toolbar
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
-    
-    ImVec2 buttonSize = windowData->iconDefaultSize;
-    
-    if (ImGui::Button(ICON_MS_ADD "##NewTrack", buttonSize)) {}
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("New Track");
-    
-    ImGui::SameLine();
-    if (ImGui::Button(ICON_MS_DELETE "##DeleteTrack", buttonSize)) {}
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete Track");
-    
-    ImGui::SameLine();
-    ImGui::Separator();
-    ImGui::SameLine();
-    
-    if (ImGui::Button(ICON_MS_CONTENT_CUT "##Split", buttonSize)) {}
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Split");
-    
-    ImGui::PopStyleVar(2);
 }
 
 void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData) 
@@ -211,8 +215,7 @@ void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData)
     {
         ImGui::BeginChild("MontageMainContent", ImVec2(0, 0), false);
         
-        ShowMontageToolbar(windowData);
-        ShowTimeControls(windowData);
+        ShowMontageToolbar(windowData);  // Now includes time controls
         
         ImGui::BeginChild("TrackViewArea", ImVec2(0, 0), true);
         ShowTrackView(windowData, state.isCollapsedView);
