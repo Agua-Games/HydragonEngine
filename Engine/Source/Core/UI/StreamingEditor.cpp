@@ -5,27 +5,39 @@
 #include <imgui.h>
 #include <string>
 
+#include "IconsMaterialSymbols.h"
+
 #include "StreamingEditor.h"
 #include "hdImgui.h"
-#include "IconsMaterialSymbols.h"
+
 
 namespace hdImgui {
 
-// Static state for the editor
 struct StreamingControlState {
-    // Global Settings
+    // Existing settings
     float memoryBudgetMB = 1024.0f;
     float distanceThreshold = 1000.0f;
     int maxConcurrentOperations = 4;
     
-    // Per-scene Settings
     struct SceneStreamingSettings {
         bool enabled = true;
-        int priority = 1;  // 0: Low, 1: Medium, 2: High
+        int priority = 1;
         float lodTransitionTime = 0.5f;
         float streamingRadius = 500.0f;
     };
     SceneStreamingSettings activeSceneSettings;
+
+    // New monitoring state
+    struct MonitoringData {
+        float memoryUsage = 0.0f;
+        float peakMemoryUsage = 0.0f;
+        int activeOperations = 0;
+        float streamingLatency = 0.0f;
+        static const int HISTORY_LENGTH = 100;
+        float memoryHistory[HISTORY_LENGTH] = {};
+        float latencyHistory[HISTORY_LENGTH] = {};
+        int historyIndex = 0;
+    } monitoring;
 };
 
 static StreamingControlState s_streamingState;
@@ -105,6 +117,60 @@ void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData)
                 if (ImGui::Button("Apply Scene Settings")) {}
                 ImGui::SameLine();
                 if (ImGui::Button("Reset Scene Settings")) {}
+            }
+            ImGui::EndChild();
+        }
+
+        // New Monitoring Section
+        if (ImGui::CollapsingHeader("Streaming Monitoring", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            ImGui::BeginChild("MonitoringSection", ImVec2(0, 280), true);
+            {
+                // Memory Usage
+                {
+                    ImGui::BeginGroup();
+                    float progress = s_streamingState.monitoring.memoryUsage / s_streamingState.memoryBudgetMB;
+                    ImGui::ProgressBar(progress, ImVec2(-1, 0), 
+                        std::to_string((int)s_streamingState.monitoring.memoryUsage).c_str());
+                    ImGui::Text("Memory Usage: %.1f MB / %.1f MB", 
+                        s_streamingState.monitoring.memoryUsage, 
+                        s_streamingState.memoryBudgetMB);
+                    ImGui::Text("Peak Memory: %.1f MB", s_streamingState.monitoring.peakMemoryUsage);
+                    ImGui::EndGroup();
+                }
+
+                ImGui::Separator();
+
+                // Performance Metrics
+                {
+                    ImGui::BeginGroup();
+                    ImGui::Text("Active Operations: %d / %d", 
+                        s_streamingState.monitoring.activeOperations,
+                        s_streamingState.maxConcurrentOperations);
+                    ImGui::Text("Streaming Latency: %.2f ms", s_streamingState.monitoring.streamingLatency);
+                    ImGui::EndGroup();
+                }
+
+                ImGui::Separator();
+
+                // Graphs
+                {
+                    ImGui::Text("Memory Usage History");
+                    ImGui::PlotLines("##MemoryHistory", 
+                        s_streamingState.monitoring.memoryHistory,
+                        StreamingControlState::MonitoringData::HISTORY_LENGTH, 
+                        s_streamingState.monitoring.historyIndex,
+                        nullptr, 0.0f, s_streamingState.memoryBudgetMB, 
+                        ImVec2(-1, 60));
+
+                    ImGui::Text("Latency History");
+                    ImGui::PlotLines("##LatencyHistory", 
+                        s_streamingState.monitoring.latencyHistory,
+                        StreamingControlState::MonitoringData::HISTORY_LENGTH, 
+                        s_streamingState.monitoring.historyIndex,
+                        nullptr, 0.0f, 100.0f, 
+                        ImVec2(-1, 60));
+                }
             }
             ImGui::EndChild();
         }
