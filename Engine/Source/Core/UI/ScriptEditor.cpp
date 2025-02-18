@@ -87,15 +87,20 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
         // Calculate dimensions
         float availableWidth = ImGui::GetContentRegionAvail().x;
         float leftSidebarWidth = 45.0f;  // Fixed width for left sidebar
-        float scriptTreeWidth = 200.0f;  // Fixed width for script tree
-        float mainContentWidth = availableWidth - leftSidebarWidth - scriptTreeWidth;
+        static float scriptTreeWidth = 200.0f;  // Now resizable
+        const float minTreeWidth = 150.0f;
+        const float maxTreeWidth = 400.0f;
+        float mainContentWidth = availableWidth - leftSidebarWidth - scriptTreeWidth - 4.0f; // 4.0f for resizer
+
+        // Remove borders for child windows
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.0f);
 
         // Main horizontal layout
         ImGui::BeginChild("ScriptEditorContent", ImVec2(0, 0), false, 
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         {
-            // Left Sidebar
-            ImGui::BeginChild("ScriptLeftSidebar", ImVec2(leftSidebarWidth, -1), true);
+            // Left Toolbar Sidebar
+            ImGui::BeginChild("ScriptLeftSidebar", ImVec2(leftSidebarWidth, -1), false);
             {
                 // Style settings for a compact vertical toolbar
                 ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
@@ -133,7 +138,7 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
             ImGui::SameLine();
 
             // Script Navigation Tree
-            ImGui::BeginChild("ScriptTree", ImVec2(scriptTreeWidth, -1), true);
+            ImGui::BeginChild("ScriptTree", ImVec2(scriptTreeWidth, -1), false);
             {
                 // Search bar for scripts
                 static char searchScripts[64] = "";
@@ -148,25 +153,38 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
                     // Game Logic folder
                     if (ImGui::TreeNode("Game Logic"))
                     {
-                        ImGui::TreeNodeEx("player_controller.cpp", ImGuiTreeNodeFlags_Leaf);
-                        ImGui::TreeNodeEx("game_manager.cpp", ImGuiTreeNodeFlags_Leaf);
-                        ImGui::TreeNode("AI");
+                        if (ImGui::TreeNodeEx("player_controller.cpp", ImGuiTreeNodeFlags_Leaf))
+                            ImGui::TreePop();
+                        if (ImGui::TreeNodeEx("game_manager.cpp", ImGuiTreeNodeFlags_Leaf))
+                            ImGui::TreePop();
+                        if (ImGui::TreeNode("AI"))
+                        {
+                            if (ImGui::TreeNodeEx("ai_controller.cpp", ImGuiTreeNodeFlags_Leaf))
+                                ImGui::TreePop();
+                            if (ImGui::TreeNodeEx("behavior_tree.py", ImGuiTreeNodeFlags_Leaf))
+                                ImGui::TreePop();
+                            ImGui::TreePop();
+                        }
                         ImGui::TreePop();
                     }
 
                     // Utils folder
                     if (ImGui::TreeNode("Utils"))
                     {
-                        ImGui::TreeNodeEx("math_helpers.py", ImGuiTreeNodeFlags_Leaf);
-                        ImGui::TreeNodeEx("debug_tools.py", ImGuiTreeNodeFlags_Leaf);
+                        if (ImGui::TreeNodeEx("math_helpers.py", ImGuiTreeNodeFlags_Leaf))
+                            ImGui::TreePop();
+                        if (ImGui::TreeNodeEx("debug_tools.py", ImGuiTreeNodeFlags_Leaf))
+                            ImGui::TreePop();
                         ImGui::TreePop();
                     }
 
                     // Systems folder
                     if (ImGui::TreeNode("Systems"))
                     {
-                        ImGui::TreeNodeEx("inventory_system.cpp", ImGuiTreeNodeFlags_Leaf);
-                        ImGui::TreeNodeEx("quest_system.py", ImGuiTreeNodeFlags_Leaf);
+                        if (ImGui::TreeNodeEx("inventory_system.cpp", ImGuiTreeNodeFlags_Leaf))
+                            ImGui::TreePop();
+                        if (ImGui::TreeNodeEx("quest_system.py", ImGuiTreeNodeFlags_Leaf))
+                            ImGui::TreePop();
                         ImGui::TreePop();
                     }
 
@@ -177,11 +195,28 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
             
             ImGui::SameLine();
 
+            // Resizer
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 0.3f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.7f, 0.7f, 0.4f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.9f, 0.9f, 0.5f));
+            ImGui::Button("##Resizer", ImVec2(4.0f, -1));
+            if (ImGui::IsItemActive())
+            {
+                scriptTreeWidth += ImGui::GetIO().MouseDelta.x;
+                if (scriptTreeWidth < minTreeWidth) scriptTreeWidth = minTreeWidth;
+                if (scriptTreeWidth > maxTreeWidth) scriptTreeWidth = maxTreeWidth;
+            }
+            if (ImGui::IsItemHovered())
+                ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+            ImGui::PopStyleColor(3);
+            
+            ImGui::SameLine();
+
             // Main Editor Area
-            ImGui::BeginChild("ScriptEditorMain", ImVec2(mainContentWidth, -1), true);
+            ImGui::BeginChild("ScriptEditorMain", ImVec2(mainContentWidth, -1), false);
             {
                 // Top Toolbar
-                ImGui::BeginChild("EditorToolbar", ImVec2(-1, 30), true);
+                ImGui::BeginChild("EditorToolbar", ImVec2(-1, 30), false);
                 {
                     if (ImGui::Button("Save")) {}
                     ImGui::SameLine();
@@ -254,7 +289,7 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
                 ImGui::EndChild();
 
                 // Status Bar at bottom
-                ImGui::BeginChild("StatusBar", ImVec2(-1, 20), true);
+                ImGui::BeginChild("StatusBar", ImVec2(-1, 20), false);
                 {
                     ImGui::Text("Ln 1, Col 1");
                     ImGui::SameLine();
@@ -267,6 +302,8 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
             ImGui::EndChild();
         }
         ImGui::EndChild();
+
+        ImGui::PopStyleVar(); // Pop the border size style
     }
     ImGui::End();
 }
