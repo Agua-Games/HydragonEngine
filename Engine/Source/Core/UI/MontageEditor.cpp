@@ -96,15 +96,12 @@ void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData)
         ImGui::EndMenuBar();
     }
 
-    // Toolbar
+    // Toolbar with integrated time controls
     ShowMontageToolbar(windowData);
 
     // Main content area
     ImGui::BeginChild("MontageContent", ImVec2(0, 0), false);
     {
-        // Time controls and transport
-        ShowTimeControls(windowData);
-
         // Split view: Track View and Node Graph
         float nodeGraphHeight = state.showNodeGraph ? ImGui::GetContentRegionAvail().y * 0.4f : 0;
         
@@ -130,7 +127,6 @@ static void ShowMontageToolbar(HdEditorWindowData* windowData)
 {
     const float toolbarHeight = 30.0f;
     
-    // Set toolbar styling
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
@@ -138,16 +134,16 @@ static void ShowMontageToolbar(HdEditorWindowData* windowData)
     if (ImGui::BeginChild("MontageToolbar", ImVec2(-1, toolbarHeight), true, 
         ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
     {
-        // Button styling
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
         ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 0.3f));
 
-        // Ensure buttons start from the left edge
-        ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
-        
-        // Track Management Section
+        // Left side - Editor tools
         {
+            float startX = ImGui::GetWindowPos().x + 4.0f;
+            ImGui::SetCursorScreenPos(ImVec2(startX, ImGui::GetWindowPos().y + 2.0f));
+
+            // Track Management Section
             if (ImGui::Button(ICON_MS_ADD "##New", windowData->iconDefaultSize)) {}
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add Track");
             ImGui::SameLine();
@@ -161,10 +157,8 @@ static void ShowMontageToolbar(HdEditorWindowData* windowData)
             ImGui::SameLine();
             
             ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();
-        }
 
-        // View Controls Section
-        {
+            // View Controls Section
             if (ImGui::Button(ICON_MS_TIMELINE "##ToggleView", windowData->iconDefaultSize)) 
                 state.isCollapsedView = !state.isCollapsedView;
             if (ImGui::IsItemHovered()) 
@@ -178,21 +172,59 @@ static void ShowMontageToolbar(HdEditorWindowData* windowData)
             ImGui::SameLine();
 
             ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();
-        }
 
-        // Grid and Snapping Section
-        {
+            // Grid and Snapping Section
             if (ImGui::Button(ICON_MS_GRID_ON "##ToggleGrid", windowData->iconDefaultSize))
                 state.snapToGrid = !state.snapToGrid;
             if (ImGui::IsItemHovered())
                 ImGui::SetTooltip(state.snapToGrid ? "Disable Grid Snap" : "Enable Grid Snap");
+        }
+
+        // Center - Time Controls
+        {
+            float windowWidth = ImGui::GetWindowWidth();
+            float controlsWidth = 200.0f; // Adjust based on your needs
+            float startX = ImGui::GetWindowPos().x + (windowWidth - controlsWidth) * 0.5f;
+            
+            ImGui::SetCursorScreenPos(ImVec2(startX, ImGui::GetWindowPos().y + 2.0f));
+            
+            // Transport controls with consistent styling
+            if (ImGui::Button(ICON_MS_SKIP_PREVIOUS "##First", windowData->iconDefaultSize)) 
+                state.currentTime = state.startTime;
+            if (ImGui::IsItemHovered()) 
+                ImGui::SetTooltip("Jump to Start");
+            
             ImGui::SameLine();
+            if (ImGui::Button(state.isPlaying ? ICON_MS_PAUSE : ICON_MS_PLAY_ARROW "##Play", windowData->iconDefaultSize))
+                state.isPlaying = !state.isPlaying;
+            if (ImGui::IsItemHovered()) 
+                ImGui::SetTooltip(state.isPlaying ? "Pause" : "Play");
+            
+            ImGui::SameLine();
+            if (ImGui::Button(ICON_MS_SKIP_NEXT "##Last", windowData->iconDefaultSize))
+                state.currentTime = state.endTime;
+            if (ImGui::IsItemHovered()) 
+                ImGui::SetTooltip("Jump to End");
+            
+            ImGui::SameLine();
+            ImGui::Dummy(ImVec2(10, 0));
+            ImGui::SameLine();
+            
+            // Loop toggle
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+            ImGui::Checkbox("Loop", &state.isLooping);
+            ImGui::PopStyleVar();
         }
 
         ImGui::PopStyleColor();
-        ImGui::PopStyleVar(4); // Pop all style variables
+        ImGui::PopStyleVar(4);
     }
     ImGui::EndChild();
+
+    // Time slider below toolbar
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+    ImGui::SliderFloat("##Timeline", &state.currentTime, state.startTime, state.endTime);
+    ImGui::PopItemWidth();
 }
 
 static void ShowTimeControls(HdEditorWindowData* windowData)
