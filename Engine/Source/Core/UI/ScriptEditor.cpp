@@ -6,6 +6,8 @@
 #include "imgui.h"
 #include <string>
 
+#include "IconsMaterialSymbols.h"
+
 #include "ScriptEditor.h"
 #include "hdImgui.h"
 
@@ -17,184 +19,255 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
 
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
-    bool window_visible = ImGui::Begin("Script Editor", p_open, 
-        ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar);
-    
-    if (!window_visible)
+    if (ImGui::Begin("Script Editor", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::End();
-        return;
-    }
-
-    // Menu Bar
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
+        // Menu Bar
+        if (ImGui::BeginMenuBar())
         {
-            if (ImGui::MenuItem("New Script", "Ctrl+N")) {}
-            if (ImGui::MenuItem("Import Script", "Ctrl+O")) {}
-            if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-            if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {}
-            ImGui::Separator();
-            if (ImGui::BeginMenu("Recent Files"))
+            if (ImGui::BeginMenu("File"))
             {
-                ImGui::MenuItem("player_controller.cpp");
-                ImGui::MenuItem("ai_behavior.py");
-                ImGui::MenuItem("game_rules.cpp");
+                if (ImGui::MenuItem("New Script", "Ctrl+N")) {}
+                if (ImGui::MenuItem("Import Script", "Ctrl+O")) {}
+                if (ImGui::MenuItem("Save", "Ctrl+S")) {}
+                if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {}
+                ImGui::Separator();
+                if (ImGui::BeginMenu("Recent Files"))
+                {
+                    ImGui::MenuItem("player_controller.cpp");
+                    ImGui::MenuItem("ai_behavior.py");
+                    ImGui::MenuItem("game_rules.cpp");
+                    ImGui::EndMenu();
+                }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Send to External IDE", "Ctrl+E")) {}
+                if (ImGui::MenuItem("Update Files from Ext. IDE", "Ctrl+R")) {}
                 ImGui::EndMenu();
             }
-            ImGui::Separator();
-            if (ImGui::MenuItem("Send to External IDE", "Ctrl+E")) {}
-            if (ImGui::MenuItem("Update Files from Ext. IDE", "Ctrl+R")) {}
-            ImGui::EndMenu();
-        }
 
-        if (ImGui::BeginMenu("Edit"))
-        {
-            if (ImGui::MenuItem("Undo", "Ctrl+Z")) {}
-            if (ImGui::MenuItem("Redo", "Ctrl+Y")) {}
-            ImGui::Separator();
-            if (ImGui::MenuItem("Cut", "Ctrl+X")) {}
-            if (ImGui::MenuItem("Copy", "Ctrl+C")) {}
-            if (ImGui::MenuItem("Paste", "Ctrl+V")) {}
-            ImGui::Separator();
-            if (ImGui::MenuItem("Copy from Node", "Ctrl+Shift+C")) {}
-            if (ImGui::MenuItem("Paste to Node", "Ctrl+Shift+V")) {}
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("View"))
-        {
-            if (ImGui::MenuItem("Toggle Line Numbers", "Ctrl+L")) {}
-            if (ImGui::MenuItem("Toggle Minimap", "Ctrl+M")) {}
-            if (ImGui::MenuItem("Toggle Error List", "Ctrl+E")) {}
-            ImGui::Separator();
-            if (ImGui::MenuItem("Increase Font Size", "Ctrl++")) {}
-            if (ImGui::MenuItem("Decrease Font Size", "Ctrl+-")) {}
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Script"))
-        {
-            if (ImGui::MenuItem("Compile", "F7")) {}
-            if (ImGui::MenuItem("Run", "F5")) {}
-            if (ImGui::MenuItem("Debug", "F9")) {}
-            ImGui::Separator();
-            if (ImGui::MenuItem("Record Macro")) {}
-            if (ImGui::MenuItem("Play Macro")) {}
-            ImGui::Separator();
-            if (ImGui::MenuItem("Ask AI Assistant", "Ctrl+Space")) {}
-            ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
-    }
-
-    // Toolbar
-    ImGui::BeginChild("Toolbar", ImVec2(0, 30), true);
-    {
-        if (ImGui::Button("Compile")) {}
-        ImGui::SameLine();
-        if (ImGui::Button("Run")) {}
-        ImGui::SameLine();
-        if (ImGui::Button("Debug")) {}
-        ImGui::SameLine();
-        ImGui::Separator();
-        ImGui::SameLine();
-        if (ImGui::Button("Find")) {}
-        ImGui::SameLine();
-        if (ImGui::Button("Replace")) {}
-        ImGui::SameLine();
-        ImGui::Separator();
-        ImGui::SameLine();
-        if (ImGui::Button("AI Assistant")) {}
-    }
-    ImGui::EndChild();
-
-    // Main Content Area with Tabs
-    static char editorBuffer[4096] = ""; // This should be replaced with a proper text editor implementation
-    
-    if (ImGui::BeginTabBar("ScriptTabs", ImGuiTabBarFlags_Reorderable))
-    {
-        // C++ Tab
-        if (ImGui::BeginTabItem("player_controller.cpp"))
-        {
-            // Left Panel - Script Explorer
-            ImGui::BeginChild("ScriptExplorer", ImVec2(200, 0), true);
+            if (ImGui::BeginMenu("Edit"))
             {
-                ImGui::Text("Script Explorer");
+                if (ImGui::MenuItem("Undo", "Ctrl+Z")) {}
+                if (ImGui::MenuItem("Redo", "Ctrl+Y")) {}
                 ImGui::Separator();
+                if (ImGui::MenuItem("Cut", "Ctrl+X")) {}
+                if (ImGui::MenuItem("Copy", "Ctrl+C")) {}
+                if (ImGui::MenuItem("Paste", "Ctrl+V")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Copy from Node", "Ctrl+Shift+C")) {}
+                if (ImGui::MenuItem("Paste to Node", "Ctrl+Shift+V")) {}
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("View"))
+            {
+                if (ImGui::MenuItem("Toggle Line Numbers", "Ctrl+L")) {}
+                if (ImGui::MenuItem("Toggle Minimap", "Ctrl+M")) {}
+                if (ImGui::MenuItem("Toggle Error List", "Ctrl+E")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Increase Font Size", "Ctrl++")) {}
+                if (ImGui::MenuItem("Decrease Font Size", "Ctrl+-")) {}
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Script"))
+            {
+                if (ImGui::MenuItem("Compile", "F7")) {}
+                if (ImGui::MenuItem("Run", "F5")) {}
+                if (ImGui::MenuItem("Debug", "F9")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Record Macro")) {}
+                if (ImGui::MenuItem("Play Macro")) {}
+                ImGui::Separator();
+                if (ImGui::MenuItem("Ask AI Assistant", "Ctrl+Space")) {}
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
+
+        // Calculate dimensions
+        float availableWidth = ImGui::GetContentRegionAvail().x;
+        float leftSidebarWidth = 45.0f;  // Fixed width for left sidebar
+        float scriptTreeWidth = 200.0f;  // Fixed width for script tree
+        float mainContentWidth = availableWidth - leftSidebarWidth - scriptTreeWidth;
+
+        // Main horizontal layout
+        ImGui::BeginChild("ScriptEditorContent", ImVec2(0, 0), false, 
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        {
+            // Left Sidebar
+            ImGui::BeginChild("ScriptLeftSidebar", ImVec2(leftSidebarWidth, -1), true);
+            {
+                // Style settings for a compact vertical toolbar
+                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 2));
                 
-                if (ImGui::TreeNode("Source"))
+                ImVec2 buttonSize = windowData->iconDefaultSize;
+
+                // Code Navigation Tools
+                if (ImGui::Button(ICON_MS_SEARCH "##FindInFiles", buttonSize)) { /* Handle Find in Files */ }
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Find in Files (Ctrl+Shift+F)");
+
+                if (ImGui::Button(ICON_MS_ACCOUNT_TREE "##CodeOutline", buttonSize)) { /* Handle Code Outline */ }
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Code Outline");
+
+                ImGui::Separator();
+
+                // Code Analysis Tools
+                if (ImGui::Button(ICON_MS_BUG_REPORT "##Debug", buttonSize)) { /* Handle Debug */ }
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Debug (F5)");
+
+                if (ImGui::Button(ICON_MS_PSYCHOLOGY "##AIAssist", buttonSize)) { /* Handle AI Assistant */ }
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("AI Assistant (Ctrl+Space)");
+
+                ImGui::Separator();
+
+                // Code Generation Tools
+                if (ImGui::Button(ICON_MS_AUTO_FIX "##CodeGen", buttonSize)) { /* Handle Code Generation */ }
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Generate Code");
+
+                ImGui::PopStyleVar(3);
+            }
+            ImGui::EndChild();
+            
+            ImGui::SameLine();
+
+            // Script Navigation Tree
+            ImGui::BeginChild("ScriptTree", ImVec2(scriptTreeWidth, -1), true);
+            {
+                // Search bar for scripts
+                static char searchScripts[64] = "";
+                ImGui::PushItemWidth(-1);
+                ImGui::InputTextWithHint("##SearchScripts", ICON_MS_SEARCH " Search Scripts...", searchScripts, IM_ARRAYSIZE(searchScripts));
+                ImGui::PopItemWidth();
+                ImGui::Separator();
+
+                // Script Tree
+                if (ImGui::TreeNodeEx("Scripts", ImGuiTreeNodeFlags_DefaultOpen))
                 {
-                    ImGui::Selectable("player_controller.cpp");
-                    ImGui::Selectable("game_rules.cpp");
-                    ImGui::TreePop();
-                }
-                
-                if (ImGui::TreeNode("Headers"))
-                {
-                    ImGui::Selectable("player_controller.h");
-                    ImGui::Selectable("game_rules.h");
+                    // Game Logic folder
+                    if (ImGui::TreeNode("Game Logic"))
+                    {
+                        ImGui::TreeNodeEx("player_controller.cpp", ImGuiTreeNodeFlags_Leaf);
+                        ImGui::TreeNodeEx("game_manager.cpp", ImGuiTreeNodeFlags_Leaf);
+                        ImGui::TreeNode("AI");
+                        ImGui::TreePop();
+                    }
+
+                    // Utils folder
+                    if (ImGui::TreeNode("Utils"))
+                    {
+                        ImGui::TreeNodeEx("math_helpers.py", ImGuiTreeNodeFlags_Leaf);
+                        ImGui::TreeNodeEx("debug_tools.py", ImGuiTreeNodeFlags_Leaf);
+                        ImGui::TreePop();
+                    }
+
+                    // Systems folder
+                    if (ImGui::TreeNode("Systems"))
+                    {
+                        ImGui::TreeNodeEx("inventory_system.cpp", ImGuiTreeNodeFlags_Leaf);
+                        ImGui::TreeNodeEx("quest_system.py", ImGuiTreeNodeFlags_Leaf);
+                        ImGui::TreePop();
+                    }
+
                     ImGui::TreePop();
                 }
             }
             ImGui::EndChild();
-
+            
             ImGui::SameLine();
 
             // Main Editor Area
-            ImGui::BeginChild("EditorArea", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
+            ImGui::BeginChild("ScriptEditorMain", ImVec2(mainContentWidth, -1), true);
             {
-                static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput;
-                ImGui::InputTextMultiline("##source", editorBuffer, IM_ARRAYSIZE(editorBuffer), 
-                    ImVec2(-1.0f, -1.0f), flags);
+                // Top Toolbar
+                ImGui::BeginChild("EditorToolbar", ImVec2(-1, 30), true);
+                {
+                    if (ImGui::Button("Save")) {}
+                    ImGui::SameLine();
+                    if (ImGui::Button("Undo")) {}
+                    ImGui::SameLine();
+                    if (ImGui::Button("Redo")) {}
+                    ImGui::SameLine();
+                    if (ImGui::Button("Find")) {}
+                    ImGui::SameLine();
+                    if (ImGui::Button("Replace")) {}
+                    ImGui::SameLine();
+                    if (ImGui::Button("AI Assistant")) {}
+                }
+                ImGui::EndChild();
+
+                // Editor Content Area (Tab bar and text editor)
+                ImGui::BeginChild("EditorContent", ImVec2(-1, -20)); // -20 for status bar
+                {
+                    if (ImGui::BeginTabBar("ScriptTabs", ImGuiTabBarFlags_Reorderable))
+                    {
+                        // Python script tab
+                        if (ImGui::BeginTabItem("math_helpers.py"))
+                        {
+                            static char pythonText[4096] = 
+                                "def calculate_trajectory(velocity, angle):\n"
+                                "    # Calculate projectile trajectory\n"
+                                "    pass\n\n"
+                                "def interpolate_bezier(p0, p1, p2, t):\n"
+                                "    # Bezier curve interpolation\n"
+                                "    pass";
+                            ImGui::InputTextMultiline("##source_python", pythonText, IM_ARRAYSIZE(pythonText), 
+                                ImVec2(-1, -1), ImGuiInputTextFlags_AllowTabInput);
+                            ImGui::EndTabItem();
+                        }
+
+                        // C++ script tabs
+                        if (ImGui::BeginTabItem("player_controller.cpp"))
+                        {
+                            static char cppText1[4096] = 
+                                "#include \"PlayerController.h\"\n\n"
+                                "void PlayerController::Update(float deltaTime)\n"
+                                "{\n"
+                                "    // Handle player input\n"
+                                "    HandleMovement(deltaTime);\n"
+                                "    HandleActions();\n"
+                                "}";
+                            ImGui::InputTextMultiline("##source_cpp1", cppText1, IM_ARRAYSIZE(cppText1), 
+                                ImVec2(-1, -1), ImGuiInputTextFlags_AllowTabInput);
+                            ImGui::EndTabItem();
+                        }
+
+                        if (ImGui::BeginTabItem("inventory_system.cpp"))
+                        {
+                            static char cppText2[4096] = 
+                                "#include \"InventorySystem.h\"\n\n"
+                                "bool InventorySystem::AddItem(const Item& item)\n"
+                                "{\n"
+                                "    // Check inventory space\n"
+                                "    // Add item logic\n"
+                                "    return true;\n"
+                                "}";
+                            ImGui::InputTextMultiline("##source_cpp2", cppText2, IM_ARRAYSIZE(cppText2), 
+                                ImVec2(-1, -1), ImGuiInputTextFlags_AllowTabInput);
+                            ImGui::EndTabItem();
+                        }
+
+                        ImGui::EndTabBar();
+                    }
+                }
+                ImGui::EndChild();
+
+                // Status Bar at bottom
+                ImGui::BeginChild("StatusBar", ImVec2(-1, 20), true);
+                {
+                    ImGui::Text("Ln 1, Col 1");
+                    ImGui::SameLine();
+                    ImGui::Text("UTF-8");
+                    ImGui::SameLine();
+                    ImGui::Text("Python"); // Will change based on active tab
+                }
+                ImGui::EndChild();
             }
             ImGui::EndChild();
-
-            ImGui::EndTabItem();
         }
-
-        // Python Tab
-        if (ImGui::BeginTabItem("ai_behavior.py"))
-        {
-            ImGui::BeginChild("EditorArea");
-            static char pythonBuffer[4096] = "";
-            static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput;
-            ImGui::InputTextMultiline("##source", pythonBuffer, IM_ARRAYSIZE(pythonBuffer), 
-                ImVec2(-1.0f, -1.0f), flags);
-            ImGui::EndChild();
-            ImGui::EndTabItem();
-        }
-
-        // Add New Tab Button
-        if (ImGui::TabItemButton("+", ImGuiTabItemFlags_Trailing | ImGuiTabItemFlags_NoTooltip))
-        {
-            ImGui::OpenPopup("NewScriptPopup");
-        }
-
-        if (ImGui::BeginPopup("NewScriptPopup"))
-        {
-            if (ImGui::MenuItem("New C++ Script")) {}
-            if (ImGui::MenuItem("New Python Script")) {}
-            ImGui::EndPopup();
-        }
-
-        ImGui::EndTabBar();
+        ImGui::EndChild();
     }
-
-    // Bottom Status Bar
-    ImGui::BeginChild("StatusBar", ImVec2(0, 20), true);
-    {
-        ImGui::Text("Line: 1 Col: 1");
-        ImGui::SameLine(150);
-        ImGui::Text("UTF-8");
-        ImGui::SameLine(300);
-        ImGui::Text("C++");
-        ImGui::SameLine(ImGui::GetWindowWidth() - 100);
-        ImGui::Text("Ready");
-    }
-    ImGui::EndChild();
-
     ImGui::End();
 }
 } // namespace hdImgui

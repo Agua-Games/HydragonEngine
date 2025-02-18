@@ -264,7 +264,7 @@ void ShowConsole(bool* p_open, HdEditorWindowData* windowData)
                     // TODO: Add to history
                 }
                 
-                strcpy(s_inputBuffer, "");
+                strcpy_s(s_inputBuffer, "");
                 reclaimFocus = true;
             }
             

@@ -16,7 +16,7 @@ void ShowNetworkingEditor(bool* p_open, HdEditorWindowData* windowData)
     static float bandwidthHistory[100] = {};
     static float latencyHistory[100] = {};
     static int values_offset = 0;
-    static float refresh_time = 0.0f;
+    static double refresh_time = 0.0f;
 
     // Update network statistics every 16ms (roughly 60fps)
     if (ImGui::GetTime() > refresh_time + 0.016f)
