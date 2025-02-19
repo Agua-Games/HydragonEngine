@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <algorithm>  // for std::clamp
 #include "UIEditor.h"
 #include "hdImgui.h"
 #include "IconsMaterialSymbols.h"
@@ -162,6 +163,12 @@ void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData)
         return;
     }
 
+    // Store panel widths in static variables
+    static float widgetLibraryWidth = 200.0f;
+    static float propertiesWidth = 200.0f;
+    const float minPanelWidth = 150.0f;
+    const float maxPanelWidth = 400.0f;
+
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
@@ -202,37 +209,53 @@ void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData)
         ImGui::EndMenuBar();
     }
 
-    // Toolbar
+    // Toolbar - Improved layout based on TopToolbar.cpp
     {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 4));
         
-        ImGui::BeginGroup();
+        ImGui::BeginChild("UIEditorToolbar", ImVec2(-1, 40), false);
         {
-            ImVec2 buttonSize(32, 32);
+            const float toolbarHeight = 32.0f;
+            const ImVec2 buttonSize(32, toolbarHeight);
+            const float groupSpacing = 20.0f;
             
-            if (ImGui::Button(ICON_MS_ADD_BOX "##New", buttonSize)) {}
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("New Widget");
-            
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_MS_CONTENT_COPY "##Duplicate", buttonSize)) {}
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Duplicate");
-            
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_MS_DELETE "##Delete", buttonSize)) {}
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete");
-            
-            ImGui::SameLine(0, 20);
-            
-            for (const auto& widget : state.quickWidgets) {
-                if (ImGui::Button((widget.icon + std::string("##") + widget.name).c_str(), buttonSize)) {}
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip(widget.name);
+            // Left-aligned buttons group
+            ImGui::BeginGroup();
+            {
+                if (ImGui::Button(ICON_MS_ADD_BOX "##New", buttonSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("New Widget");
+                
                 ImGui::SameLine();
+                if (ImGui::Button(ICON_MS_CONTENT_COPY "##Duplicate", buttonSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Duplicate");
+                
+                ImGui::SameLine();
+                if (ImGui::Button(ICON_MS_DELETE "##Delete", buttonSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete");
             }
+            ImGui::EndGroup();
+            
+            ImGui::SameLine(0, groupSpacing);
+            
+            // Quick widgets group
+            ImGui::BeginGroup();
+            {
+                for (size_t i = 0; i < state.quickWidgets.size(); ++i) {
+                    const auto& widget = state.quickWidgets[i];
+                    if (ImGui::Button((widget.icon + std::string("##") + widget.name).c_str(), buttonSize)) {}
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip(widget.name);
+                    
+                    if (i < state.quickWidgets.size() - 1)
+                        ImGui::SameLine();
+                }
+            }
+            ImGui::EndGroup();
         }
-        ImGui::EndGroup();
+        ImGui::EndChild();
         
-        ImGui::PopStyleVar(2);
+        ImGui::PopStyleVar(3);
         ImGui::Separator();
     }
 
@@ -240,30 +263,56 @@ void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::BeginChild("UIEditorContent", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
     {
         // Left panel - Widget Library
-        ImGui::BeginChild("WidgetLibrary", ImVec2(200, 0), true);
+        ImGui::BeginChild("WidgetLibrary", ImVec2(widgetLibraryWidth, 0), true);
         ShowWidgetLibrary();
         ImGui::EndChild();
+
+        ImGui::SameLine();
         
+        // Left panel resizer
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 0.3f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.7f, 0.7f, 0.4f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.9f, 0.9f, 0.5f));
+        ImGui::Button("##WidgetLibraryResizer", ImVec2(4.0f, -1));
+        if (ImGui::IsItemActive())
+        {
+            widgetLibraryWidth += ImGui::GetIO().MouseDelta.x;
+            widgetLibraryWidth = std::clamp(widgetLibraryWidth, minPanelWidth, maxPanelWidth);
+        }
+        if (ImGui::IsItemHovered())
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        ImGui::PopStyleColor(3);
+
         ImGui::SameLine();
         
         // Center panel - UI Preview
-        ImGui::BeginChild("UIPreviewArea", ImVec2(-200, 0), true);
+        float previewWidth = ImGui::GetContentRegionAvail().x - propertiesWidth - 4.0f;
+        ImGui::BeginChild("UIPreviewArea", ImVec2(previewWidth, 0), true);
         {
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+            // Preview toolbar
+            ImGui::BeginChild("PreviewToolbar", ImVec2(-1, 40), false);
+            {
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+                ImGui::SetCursorPosY(4.0f); // Align buttons vertically
+                
+                if (ImGui::Button(ICON_MS_PREVIEW "##Preview")) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Preview");
+                
+                ImGui::SameLine();
+                if (ImGui::Button(ICON_MS_REFRESH "##Refresh")) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Refresh Preview");
+                
+                ImGui::SameLine();
+                ImGui::SetCursorPosY(12.0f); // Align text vertically
+                ImGui::Text("UI Preview");
+                
+                ImGui::PopStyleVar();
+            }
+            ImGui::EndChild();
             
-            if (ImGui::Button(ICON_MS_PREVIEW "##Preview")) {}
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Preview");
-            
-            ImGui::SameLine();
-            if (ImGui::Button(ICON_MS_REFRESH "##Refresh")) {}
-            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Refresh Preview");
-            
-            ImGui::SameLine();
-            ImGui::Text("UI Preview");
-            
-            ImGui::PopStyleVar();
             ImGui::Separator();
 
+            // Preview content
             ImGui::BeginChild("PreviewContent", ImVec2(0, 0), true);
             ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), 
                 "UI Preview Area\n\n"
@@ -272,11 +321,27 @@ void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData)
             ImGui::EndChild();
         }
         ImGui::EndChild();
+
+        ImGui::SameLine();
         
+        // Properties panel resizer
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 0.3f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.7f, 0.7f, 0.4f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.9f, 0.9f, 0.5f));
+        ImGui::Button("##PropertiesResizer", ImVec2(4.0f, -1));
+        if (ImGui::IsItemActive())
+        {
+            propertiesWidth -= ImGui::GetIO().MouseDelta.x;
+            propertiesWidth = std::clamp(propertiesWidth, minPanelWidth, maxPanelWidth);
+        }
+        if (ImGui::IsItemHovered())
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        ImGui::PopStyleColor(3);
+
         ImGui::SameLine();
         
         // Right panel - Properties
-        ImGui::BeginChild("Properties", ImVec2(200, 0), true);
+        ImGui::BeginChild("Properties", ImVec2(propertiesWidth, 0), true);
         ShowProperties();
         ImGui::EndChild();
     }
