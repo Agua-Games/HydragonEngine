@@ -52,7 +52,7 @@ void ShowReflectionEditor(bool* p_open, HdEditorWindowData* windowData)
     static ReflectionState state{};
     
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (!ImGui::Begin("Reflection Manager", p_open, ImGuiWindowFlags_MenuBar))
+    if (!ImGui::Begin("Reflection", p_open, ImGuiWindowFlags_MenuBar))
     {
         ImGui::End();
         return;

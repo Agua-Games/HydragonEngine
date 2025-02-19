@@ -52,7 +52,7 @@ void ShowLocalizationEditor(bool* p_open, HdEditorWindowData* windowData)
     static LocalizationState state{};
     
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (!ImGui::Begin("Localization Manager", p_open, ImGuiWindowFlags_MenuBar))
+    if (!ImGui::Begin("Localization", p_open, ImGuiWindowFlags_MenuBar))
     {
         ImGui::End();
         return;
