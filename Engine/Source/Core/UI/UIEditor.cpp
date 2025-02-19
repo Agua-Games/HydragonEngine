@@ -289,26 +289,91 @@ void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData)
         float previewWidth = ImGui::GetContentRegionAvail().x - propertiesWidth - 4.0f;
         ImGui::BeginChild("UIPreviewArea", ImVec2(previewWidth, 0), true);
         {
-            // Preview toolbar
-            ImGui::BeginChild("PreviewToolbar", ImVec2(-1, 40), false);
+            // Preview toolbar - using TopToolbar.cpp styling
+            const float toolbarHeight = 30.0f;
+            
+            // Match TopToolbar's style settings
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+            
+            ImGui::BeginChild("PreviewToolbar", ImVec2(-1, toolbarHeight), true, 
+                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+            
+            // Style for buttons
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+            ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 0.3f));
+            
+            // Set cursor position to window origin
+            ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
+            
+            // Preview Controls Section
             {
-                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
-                ImGui::SetCursorPosY(4.0f); // Align buttons vertically
-                
-                if (ImGui::Button(ICON_MS_PREVIEW "##Preview")) {}
+                if (ImGui::Button(ICON_MS_PREVIEW "##Preview", windowData->iconDefaultSize)) {}
                 if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Preview");
-                
                 ImGui::SameLine();
-                if (ImGui::Button(ICON_MS_REFRESH "##Refresh")) {}
+                
+                if (ImGui::Button(ICON_MS_REFRESH "##Refresh", windowData->iconDefaultSize)) {}
                 if (ImGui::IsItemHovered()) ImGui::SetTooltip("Refresh Preview");
-                
                 ImGui::SameLine();
-                ImGui::SetCursorPosY(12.0f); // Align text vertically
-                ImGui::Text("UI Preview");
                 
-                ImGui::PopStyleVar();
+                if (ImGui::Button(ICON_MS_GRID_ON "##ToggleGrid", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid");
+                ImGui::SameLine();
+                
+                ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();
             }
-            ImGui::EndChild();
+            
+            // View Controls Section
+            {
+                if (ImGui::Button(ICON_MS_ZOOM_IN "##ZoomIn", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Zoom In");
+                ImGui::SameLine();
+                
+                if (ImGui::Button(ICON_MS_ZOOM_OUT "##ZoomOut", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Zoom Out");
+                ImGui::SameLine();
+                
+                if (ImGui::Button(ICON_MS_FIT_SCREEN "##FitToScreen", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Fit to Screen");
+                ImGui::SameLine();
+                
+                ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();
+            }
+            
+            // Alignment Section
+            {
+                if (ImGui::Button(ICON_MS_ALIGN_HORIZONTAL_LEFT "##AlignLeft", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Left");
+                ImGui::SameLine();
+                
+                if (ImGui::Button(ICON_MS_ALIGN_HORIZONTAL_CENTER "##AlignCenter", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Center");
+                ImGui::SameLine();
+                
+                if (ImGui::Button(ICON_MS_ALIGN_HORIZONTAL_RIGHT "##AlignRight", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Right");
+                ImGui::SameLine();
+                
+                ImGui::Dummy(ImVec2(5, 0)); ImGui::SameLine();
+                
+                if (ImGui::Button(ICON_MS_ALIGN_VERTICAL_TOP "##AlignTop", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Top");
+                ImGui::SameLine();
+                
+                if (ImGui::Button(ICON_MS_ALIGN_VERTICAL_CENTER "##AlignMiddle", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Middle");
+                ImGui::SameLine();
+                
+                if (ImGui::Button(ICON_MS_ALIGN_VERTICAL_BOTTOM "##AlignBottom", windowData->iconDefaultSize)) {}
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Bottom");
+            }
+            
+            ImGui::PopStyleColor();
+            ImGui::PopStyleVar(4); // Pop all style variables
+            
+            ImGui::EndChild(); // End PreviewToolbar
             
             ImGui::Separator();
 
