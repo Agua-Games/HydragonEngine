@@ -18,7 +18,7 @@ void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData)
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
-    if (!ImGui::Begin("Font Editor", p_open, ImGuiWindowFlags_MenuBar))
+    if (!ImGui::Begin("Font", p_open, ImGuiWindowFlags_MenuBar))
     {
         ImGui::End();
         return;

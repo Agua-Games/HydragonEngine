@@ -14,7 +14,7 @@ static MeshToolSettings g_meshToolSettings;
 void ShowMeshEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (ImGui::Begin("Mesh Editor", p_open, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Mesh", p_open, ImGuiWindowFlags_MenuBar))
     {
         if (ImGui::BeginMenuBar())
         {

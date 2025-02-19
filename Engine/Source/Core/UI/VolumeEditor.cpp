@@ -14,7 +14,7 @@ static VolumeToolSettings g_volumeToolSettings;
 void ShowVolumeEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (ImGui::Begin("Volume Editor", p_open, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Volume", p_open, ImGuiWindowFlags_MenuBar))
     {
         if (ImGui::BeginMenuBar())
         {

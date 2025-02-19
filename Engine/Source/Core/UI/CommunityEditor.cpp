@@ -52,7 +52,7 @@ void ShowCommunityEditor(bool* p_open, HdEditorWindowData* windowData)
     static CommunityState state{};
     
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (!ImGui::Begin("Community Manager", p_open, ImGuiWindowFlags_MenuBar))
+    if (!ImGui::Begin("Community", p_open, ImGuiWindowFlags_MenuBar))
     {
         ImGui::End();
         return;

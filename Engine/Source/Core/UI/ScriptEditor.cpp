@@ -19,7 +19,7 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
 
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
-    if (ImGui::Begin("Script Editor", nullptr, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Script", nullptr, ImGuiWindowFlags_MenuBar))
     {
         // Menu Bar
         if (ImGui::BeginMenuBar())

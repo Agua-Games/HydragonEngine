@@ -144,7 +144,7 @@ static void ShowInputMappingTable()
 void ShowInputEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (!ImGui::Begin("Input Editor", p_open, ImGuiWindowFlags_MenuBar))
+    if (!ImGui::Begin("Input", p_open, ImGuiWindowFlags_MenuBar))
     {
         ImGui::End();
         return;

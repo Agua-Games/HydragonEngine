@@ -13,7 +13,7 @@ namespace hdImgui {
 void ShowPresetEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (ImGui::Begin("Preset Editor", p_open, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Presets", p_open, ImGuiWindowFlags_MenuBar))
     {
         ImGui::Button("Import Presets File");
         ImGui::Button("New Presets File");

@@ -81,7 +81,7 @@ void ShowPluginEditor(bool* p_open, HdEditorWindowData* windowData)
     const float maxLeftPanelWidth = 400.0f;
 
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (!ImGui::Begin("Plugin Editor", p_open, ImGuiWindowFlags_MenuBar))
+    if (!ImGui::Begin("Plugin", p_open, ImGuiWindowFlags_MenuBar))
     {
         ImGui::End();
         return;

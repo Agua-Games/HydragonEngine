@@ -172,7 +172,7 @@ void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
-    if (!ImGui::Begin("UI Editor", p_open, ImGuiWindowFlags_MenuBar))
+    if (!ImGui::Begin("UI", p_open, ImGuiWindowFlags_MenuBar))
     {
         ImGui::End();
         return;

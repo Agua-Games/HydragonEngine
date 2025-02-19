@@ -19,7 +19,7 @@ void ShowPerformanceScalabilityEditor(bool* p_open, HdEditorWindowData* windowDa
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
     
-    if (ImGui::Begin("Performance Scalability", p_open, 
+    if (ImGui::Begin("Performance", p_open, 
         ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse))
     {
         // Menu Bar

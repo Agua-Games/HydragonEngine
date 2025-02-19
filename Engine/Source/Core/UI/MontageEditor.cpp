@@ -246,7 +246,7 @@ void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData)
     if (!state.isCollapsedView)  // Changed condition: show menu bar when NOT collapsed
         windowFlags |= ImGuiWindowFlags_MenuBar;
     
-    if (!ImGui::Begin("Montage Editor##MainWindow", p_open, windowFlags))
+    if (!ImGui::Begin("Montage##MainWindow", p_open, windowFlags))
     {
         ImGui::End();
         return;
