@@ -13,7 +13,7 @@
 						5
 					],
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.10"
@@ -33,7 +33,7 @@
 						3
 					],
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-glfw-Release-d21c6e1fbe401d7fd0e6.json",
+					"jsonFile" : "directory-glfw-Debug-adae8ea5fec22ca36159.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -49,7 +49,7 @@
 				{
 					"build" : "glfw/src",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-glfw.src-Release-febe85c45d20cfa9936d.json",
+					"jsonFile" : "directory-glfw.src-Debug-b06f1e4015d4a87b3e9d.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -65,7 +65,7 @@
 				},
 				{
 					"build" : "glfw/docs",
-					"jsonFile" : "directory-glfw.docs-Release-cff94060160c431f1ce9.json",
+					"jsonFile" : "directory-glfw.docs-Debug-cff94060160c431f1ce9.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -76,7 +76,7 @@
 				},
 				{
 					"build" : "volk",
-					"jsonFile" : "directory-volk-Release-bc76d9b4cf19543f8eed.json",
+					"jsonFile" : "directory-volk-Debug-bc76d9b4cf19543f8eed.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.5"
@@ -92,7 +92,7 @@
 				{
 					"build" : "fmt",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-fmt-Release-95c65b81602b2235e174.json",
+					"jsonFile" : "directory-fmt-Debug-fd7070b9d4c1aed3ce56.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.8"
@@ -106,7 +106,7 @@
 					]
 				}
 			],
-			"name" : "Release",
+			"name" : "Debug",
 			"projects" : 
 			[
 				{
@@ -172,42 +172,42 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Hydragon::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Hydragon-Release-543ff9369526d111df84.json",
+					"jsonFile" : "target-Hydragon-Debug-45b0152e923cbe27ba05.json",
 					"name" : "Hydragon",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 5,
 					"id" : "fmt::@b8b4cdcf357fa61d5575",
-					"jsonFile" : "target-fmt-Release-73efc01540eb83480263.json",
+					"jsonFile" : "target-fmt-Debug-160ece8aedb4ab41ff17.json",
 					"name" : "fmt",
 					"projectIndex" : 3
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "glfw::@12507ebf64a5258d241e",
-					"jsonFile" : "target-glfw-Release-796a8245161459271180.json",
+					"jsonFile" : "target-glfw-Debug-05da7521d5134302d13a.json",
 					"name" : "glfw",
 					"projectIndex" : 1
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "uninstall::@eb154563b92743f6cbb3",
-					"jsonFile" : "target-uninstall-Release-98bc700d5ee729c79339.json",
+					"jsonFile" : "target-uninstall-Debug-b3f59b5921de1ba63038.json",
 					"name" : "uninstall",
 					"projectIndex" : 1
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "update_mappings::@12507ebf64a5258d241e",
-					"jsonFile" : "target-update_mappings-Release-ccdd24f042cabc249ec6.json",
+					"jsonFile" : "target-update_mappings-Debug-614d718ac15a3419fe3a.json",
 					"name" : "update_mappings",
 					"projectIndex" : 1
 				},
 				{
 					"directoryIndex" : 4,
 					"id" : "volk::@6cea0f9166f4f52e9473",
-					"jsonFile" : "target-volk-Release-0ada29fb442a401745bc.json",
+					"jsonFile" : "target-volk-Debug-516ed644be1123cb3434.json",
 					"name" : "volk",
 					"projectIndex" : 2
 				}
@@ -217,7 +217,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release",
+		"build" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-debug",
 		"source" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake"
 	},
 	"version" : 

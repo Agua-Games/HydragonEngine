@@ -252,7 +252,6 @@ void ShowMainMenuBar(bool* p_open, HdEditorWindowData* windowData) {
                 if (ImGui::MenuItem("Pipe")){}
                 if (ImGui::MenuItem("Helix")){}
                 if (ImGui::MenuItem("Gear")){}
-                if (ImGui::MenuItem("Gear")){}
                 ImGui::Separator();
                 if (ImGui::MenuItem("Open Proc Mesh Library")) {}
                 ImGui::EndMenu();
@@ -637,6 +636,7 @@ void ShowMainMenuBar(bool* p_open, HdEditorWindowData* windowData) {
             if (ImGui::MenuItem("Chimera Pipeline", "Ctrl+Shift+C")) { windowData->isChimeraPipelineWindowOpen = true; }
             ImGui::Separator();
             if (ImGui::MenuItem("Agents", "Ctrl+Shift+A")) { windowData->isAgentsWindowOpen = true; }        
+            if (ImGui::MenuItem("AITask", "Ctrl+Shift+A")) { windowData->isAITaskWindowOpen = true; }        
             ImGui::Separator();  
             if (ImGui::MenuItem("Properties", "Ctrl+Shift+P")) { windowData->isPropertiesWindowOpen = true; }       
             if (ImGui::MenuItem("Settings", "Ctrl+Shift+P")) { windowData->isSettingsWindowOpen = true; }

@@ -39,7 +39,7 @@
 				}
 			],
 			"type" : "STRING",
-			"value" : "Debug"
+			"value" : "Release"
 		},
 		{
 			"name" : "CMAKE_CACHEFILE_DIR",
@@ -51,7 +51,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "d:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-debug"
+			"value" : "d:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -519,7 +519,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-debug/CMakeFiles/pkgRedirects"
+			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -1499,7 +1499,7 @@
 				}
 			],
 			"type" : "BOOL",
-			"value" : "OFF"
+			"value" : "ON"
 		},
 		{
 			"name" : "FETCHCONTENT_BASE_DIR",
@@ -1511,7 +1511,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-debug/_deps"
+			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/_deps"
 		},
 		{
 			"name" : "FETCHCONTENT_FULLY_DISCONNECTED",
@@ -1583,7 +1583,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-debug/fmt"
+			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/fmt"
 		},
 		{
 			"name" : "FMT_CMAKE_DIR",
@@ -1811,7 +1811,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-debug/glfw"
+			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/glfw"
 		},
 		{
 			"name" : "GLFW_BUILD_DOCS",
@@ -1955,7 +1955,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-debug"
+			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release"
 		},
 		{
 			"name" : "Hydragon_IS_TOP_LEVEL",
@@ -2139,7 +2139,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-debug/volk"
+			"value" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/volk"
 		},
 		{
 			"name" : "volk_IS_TOP_LEVEL",

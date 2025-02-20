@@ -11,7 +11,7 @@
  * @brief Namespace for ImGui integration functions.
  */
 namespace hdImgui {
-struct HdEditorWindowData 
+struct HdEditorWindowData
 {
     // Layout
     float globalWindowBgAlpha = 0.35f;
@@ -124,6 +124,7 @@ struct HdEditorWindowData
     bool isVolumeWindowOpen = true;
     bool isPresetsWindowOpen = true;
     bool isDebugWindowOpen = true;
+    bool isAITaskWindowOpen = true;
 
     // UI-only temporary states
     bool tempBool = false;  // Temporary boolean for UI prototyping

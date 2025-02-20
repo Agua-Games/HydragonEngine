@@ -112,8 +112,9 @@ void ShowChimeraPipelineEditor(bool* p_open, HdEditorWindowData* windowData)
                 
                 if (ImGui::CollapsingHeader("Outputs"))
                 {
-                    ImGui::Selectable("FBX Exporter");
                     ImGui::Selectable("USD Exporter");
+                    ImGui::Selectable("GLB Exporter");
+                    ImGui::Selectable("FBX Exporter");
                     ImGui::Selectable("Alembic Cache");
                 }
             }

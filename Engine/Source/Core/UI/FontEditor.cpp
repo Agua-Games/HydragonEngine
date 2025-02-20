@@ -16,9 +16,13 @@
 namespace hdImgui {
 void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
-    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+    if (!p_open || !*p_open)
+        return;
     
-    if (!ImGui::Begin("Font", p_open, ImGuiWindowFlags_MenuBar))
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
+
+    bool window_visible = ImGui::Begin("Font", p_open, ImGuiWindowFlags_MenuBar);
+    if (!window_visible)
     {
         ImGui::End();
         return;
@@ -76,6 +80,7 @@ void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData)
     float fontListHeight = 200.0f; // Fixed height for font list
     float propertiesHeight = availHeight - fontListHeight - ImGui::GetStyle().ItemSpacing.y;
 
+
     // Font List (fixed height)
     ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Installed Fonts");
     ImGui::BeginChild("FontList", ImVec2(0, fontListHeight), true);
@@ -91,8 +96,9 @@ void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Properties");
     ImGui::BeginChild("Properties", ImVec2(0, propertiesHeight), true);
     {
+        static char fontNameBuffer[256] = "";  // Add this static buffer
         ImGui::Text("Font Name:");
-        ImGui::InputText("##name", nullptr, 0);
+        ImGui::InputText("##name", fontNameBuffer, IM_ARRAYSIZE(fontNameBuffer));
         
         ImGui::Text("Size:");
         static float fontSize = 16.0f;
@@ -140,7 +146,7 @@ void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData)
 
     // Right Panel - Font Categories and Quick Access
     ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
-    
+
     // Tabs for different font categories
     if (ImGui::BeginTabBar("FontCategories"))
     {
@@ -160,8 +166,7 @@ void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData)
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
-    }
-    
+    }  
     ImGui::EndChild();  // End RightPanel
 
     ImGui::End();  // End Font Editor window

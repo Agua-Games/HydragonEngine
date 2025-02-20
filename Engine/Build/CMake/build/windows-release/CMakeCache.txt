@@ -272,7 +272,7 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 DOXYGEN_EXECUTABLE:FILEPATH=DOXYGEN_EXECUTABLE-NOTFOUND
 
 //Enable debug logging
-ENABLE_DEBUG_LOGGING:BOOL=OFF
+ENABLE_DEBUG_LOGGING:BOOL=ON
 
 //Directory under which to collect all populated content
 FETCHCONTENT_BASE_DIR:PATH=D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/_deps
@@ -284,15 +284,8 @@ FETCHCONTENT_FULLY_DISCONNECTED:BOOL=OFF
 //Enables QUIET option for all content population
 FETCHCONTENT_QUIET:BOOL=ON
 
-//When not empty, overrides where to find pre-populated content
-// for volk
-FETCHCONTENT_SOURCE_DIR_VOLK:PATH=
-
 //Enables UPDATE_DISCONNECTED behavior for all content population
 FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
-
-//Enables UPDATE_DISCONNECTED behavior just for population of volk
-FETCHCONTENT_UPDATES_DISCONNECTED_VOLK:BOOL=OFF
 
 //Value Computed by CMake
 FMT_BINARY_DIR:STATIC=D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/fmt
@@ -358,9 +351,6 @@ FMT_UNICODE:BOOL=ON
 
 //Halt the compilation with an error on compiler warnings.
 FMT_WERROR:BOOL=OFF
-
-//Git command line client
-GIT_EXECUTABLE:FILEPATH=C:/Program Files/Git/cmd/git.exe
 
 //Value Computed by CMake
 GLFW_BINARY_DIR:STATIC=D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/glfw
@@ -432,9 +422,6 @@ Vulkan_INCLUDE_DIR:PATH=C:/VulkanSDK/1.4.304.0/Include
 
 //Path to a library.
 Vulkan_LIBRARY:FILEPATH=C:/VulkanSDK/1.4.304.0/Lib/vulkan-1.lib
-
-//The directory containing a CMake configuration file for fmt.
-fmt_DIR:PATH=fmt_DIR-NOTFOUND
 
 //Value Computed by CMake
 volk_BINARY_DIR:STATIC=D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/volk
@@ -632,8 +619,6 @@ DOXYGEN_EXECUTABLE-ADVANCED:INTERNAL=1
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding Vulkan
 FIND_PACKAGE_MESSAGE_DETAILS_Vulkan:INTERNAL=[C:/VulkanSDK/1.4.304.0/Lib/vulkan-1.lib][C:/VulkanSDK/1.4.304.0/Include][cfound components: glslc glslangValidator ][v1.4.304()]
-//ADVANCED property for variable: GIT_EXECUTABLE
-GIT_EXECUTABLE-ADVANCED:INTERNAL=1
 //GLFW pkg-config Libs.private
 GLFW_PKG_CONFIG_LIBS_PRIVATE:INTERNAL=-lgdi32
 //GLFW pkg-config Requires.private
@@ -648,6 +633,4 @@ Vulkan_INCLUDE_DIR-ADVANCED:INTERNAL=1
 Vulkan_LIBRARY-ADVANCED:INTERNAL=1
 //CMAKE_INSTALL_PREFIX during last run
 _GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Engine/Install
-//Redirected by FetchContent
-volk_DIR:INTERNAL=D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/build/windows-release/CMakeFiles/pkgRedirects
 

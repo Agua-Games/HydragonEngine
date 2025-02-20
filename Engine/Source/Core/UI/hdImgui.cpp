@@ -63,6 +63,7 @@
 #include "VolumeEditor.h"
 #include "PresetEditor.h"
 #include "DebugEditor.h"
+#include "AITaskEditor.h"
 
 namespace hdImgui {
 
@@ -71,7 +72,6 @@ static HdEditorWindowData hdEditorWindowData;
 // Static variables for sleep/idle functionality
 static std::chrono::steady_clock::time_point s_lastInteractionTime;
 // rendering vars
-
 
 // =========== Initialization ===========
 void InitializeWindows(){
@@ -433,6 +433,8 @@ void RenderHydragonEditor(HdEditorWindowData* windowData) {
     if (windowData->isPresetsWindowOpen) { hdImgui::ShowPresetEditor(&windowData->isPresetsWindowOpen, windowData); }
     // Debug Editor
     if (windowData->isDebugWindowOpen) { hdImgui::ShowDebugEditor(&windowData->isDebugWindowOpen, windowData); }
+    // AI Task Editor
+    if (windowData->isAITaskWindowOpen) { hdImgui::ShowAITaskEditor(&windowData->isAITaskWindowOpen, windowData); }
 
     // === Temporary, for referencing the components' names in imgui code files ===
     ImGui::ShowDemoWindow();
