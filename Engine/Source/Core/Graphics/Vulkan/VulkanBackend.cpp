@@ -1,3 +1,4 @@
+#if 0
 // dear imgui: Renderer Backend for Vulkan
 // This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
 
@@ -84,11 +85,13 @@
 //  2016-10-18: Vulkan: Add location decorators & change to use structs as in/out in glsl, update embedded spv (produced with glslangValidator -x). Null the released resources.
 //  2016-08-27: Vulkan: Fix Vulkan example for use when a depth buffer is active.
 
+#include <stdio.h>
+#include <iostream>
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
 //#include "imgui_impl_vulkan.h"
+
 #include "VulkanBackend.h"
-#include <stdio.h>
 #ifndef IM_MAX
 #define IM_MAX(A, B)    (((A) >= (B)) ? (A) : (B))
 #endif
@@ -2006,6 +2009,22 @@ void ImGui_ImplVulkan_ShutdownMultiViewportSupport()
     ImGui::DestroyPlatformWindows();
 }
 
-//-----------------------------------------------------------------------------
-
 #endif // #ifndef IMGUI_DISABLE
+#endif
+/// =========================== end of Legacy Vulkan Backend, by ImGui ============================
+//#include "VulkanBackend.h"
+#include "VulkanBackend_Legacy.h"
+
+namespace hd {
+ 
+VulkanBackend::~VulkanBackend() {
+    if (initialized) {
+        try {
+            Shutdown();
+        } catch (const std::exception& e) {
+            std::cerr << "Error during shutdown: " << e.what() << std::endl;
+        }
+    }
+}
+
+} // namespace hd

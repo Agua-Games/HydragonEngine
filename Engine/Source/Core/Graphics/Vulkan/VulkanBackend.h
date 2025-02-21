@@ -1,32 +1,26 @@
-// dear imgui: Renderer Backend for Vulkan
-// This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
-
-// Implemented features:
-//  [!] Renderer: User texture binding. Use 'VkDescriptorSet' as ImTextureID. Call ImGui_ImplVulkan_AddTexture() to register one. Read the FAQ about ImTextureID! See https://github.com/ocornut/imgui/pull/914 for discussions.
-//  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
-//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
-//  [x] Renderer: Multi-viewport / platform windows. With issues (flickering when creating a new viewport).
-
-// The aim of imgui_impl_vulkan.h/.cpp is to be usable in your engine without any modification.
-// IF YOU FEEL YOU NEED TO MAKE ANY CHANGE TO THIS CODE, please share them and your feedback at https://github.com/ocornut/imgui/
-
-// You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
-// Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
-// Learn about Dear ImGui:
-// - FAQ                  https://dearimgui.com/faq
-// - Getting Started      https://dearimgui.com/getting-started
-// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
-// - Introduction, links and more at the top of imgui.cpp
-
-// Important note to the reader who wish to integrate imgui_impl_vulkan.cpp/.h in their own engine/app.
-// - Common ImGui_ImplVulkan_XXX functions and structures are used to interface with imgui_impl_vulkan.cpp/.h.
-//   You will use those if you want to use this rendering backend in your engine/app.
-// - Helper ImGui_ImplVulkanH_XXX functions and structures are only used by this example (main.cpp) and by
-//   the backend itself (imgui_impl_vulkan.cpp), but should PROBABLY NOT be used by your own engine/app code.
-// Read comments in imgui_impl_vulkan.h.
-
+/*
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ *
+ * Vulkan backend for the engine.
+ * Wraps Vulkan handles and provides access to them.
+ * 
+ * TODO:
+ *  - Flesh out the class (VulkanBackend) and its methods, structs (before it, also inside of hd namespace)
+ *  - Do the above without removing the existing imgui_impl_vulkan code in VulkanBackend.cpp. To gradually replace it with our own implementation.
+ *  - Add logging - make use of Vulkan's validation layers
+ *  - Add support for customizing the implementation of imgui_impl_vulkan.cpp
+ */
 #pragma once
-#ifndef IMGUI_DISABLE
+#include <mutex>
+#include <vector>
+#include <string>
+#include <iostream>
+#include <optional>
+#include <vulkan/vulkan.h>
+
+#include "imgui.h"
+#include "vk_mem_alloc.h"
 
 // 1. First, ensure NO_PROTOTYPES is defined
 //#ifndef VK_NO_PROTOTYPES
@@ -42,13 +36,11 @@
 // 4. Include Volk before anything else
 //#include "volk.h"
 
-// 5. Now include ImGui headers
-#include "imgui.h"
-#include "vk_mem_alloc.h"
-
 // Current version of the backend use 1 descriptor for the font atlas + as many as additional calls done to ImGui_ImplVulkan_AddTexture().
 // It is expected that as early as Q1 2025 the backend will use a few more descriptors. Use this value + number of desired calls to ImGui_ImplVulkan_AddTexture().
 #define IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE   (1)     // Minimum per atlas
+
+// =========================== Legacy Vulkan Backend, by ImGui ============================
 
 // Initialization data, for ImGui_ImplVulkan_Init()
 // [Please zero-clear before use!]
@@ -124,26 +116,6 @@ struct ImGui_ImplVulkan_RenderState
 };
 
 //-------------------------------------------------------------------------
-// Internal / Miscellaneous Vulkan Helpers
-//-------------------------------------------------------------------------
-// Used by example's main.cpp. Used by multi-viewport features. PROBABLY NOT used by your own engine/app.
-//
-// You probably do NOT need to use or care about those functions.
-// Those functions only exist because:
-//   1) they facilitate the readability and maintenance of the multiple main.cpp examples files.
-//   2) the multi-viewport / platform window implementation needs them internally.
-// Generally we avoid exposing any kind of superfluous high-level helpers in the backends,
-// but it is too much code to duplicate everywhere so we exceptionally expose them.
-//
-// Your engine/app will likely _already_ have code to setup all that stuff (swap chain,
-// render pass, frame buffers, etc.). You may read this code if you are curious, but
-// it is recommended you use you own custom tailored code to do equivalent work.
-//
-// We don't provide a strong guarantee that we won't change those functions API.
-//
-// The ImGui_ImplVulkanH_XXX functions should NOT interact with any of the state used
-// by the regular ImGui_ImplVulkan_XXX functions).
-//-------------------------------------------------------------------------
 
 struct ImGui_ImplVulkanH_Frame;
 struct ImGui_ImplVulkanH_Window;
@@ -205,81 +177,443 @@ struct ImGui_ImplVulkanH_Window
     }
 };
 
-#endif // #ifndef IMGUI_DISABLE
+// ============================ Hydragon's Vulkan Backend ============================
 
 namespace hd {
 
-class VulkanBackend {
+/**
+ * @brief Defines the required Vulkan features, extensions, and validation layers needed
+ * by the application. Used during device selection and initialization to ensure
+ * the selected device meets all application requirements.
+ */
+struct DeviceRequirements
+{
+    std::vector<const char*> requiredExtensions;
+    std::vector<const char*> validationLayers;
+    VkPhysicalDeviceFeatures requiredFeatures;
+};
+
+/**
+ * @brief Represents the indices of queue families required for graphics and presentation operations.
+ * Used to determine if the selected physical device supports the required queue families.
+ */
+struct QueueFamilyIndices
+{       
+    std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
+    bool isComplete() const { return graphicsFamily.has_value() && presentFamily.has_value(); }
+};
+
+/**
+ * @brief Contains details about the swap chain support provided by a physical device.
+ * Used to determine if the selected physical device supports the required swap chain features.
+ */
+struct SwapChainSupportDetails
+{
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+
+/**
+ * @brief Initialization information for the Vulkan backend.
+ * Contains all the necessary handles and settings required for initializing the Vulkan backend.
+ */
+struct InitInfo
+{
+    VkInstance                      Instance;
+    VkPhysicalDevice                PhysicalDevice;
+    VkDevice                        Device;
+    uint32_t                        QueueFamily;
+    VkQueue                         Queue;
+    VkDescriptorPool                DescriptorPool;               // See requirements in note above; ignored if using DescriptorPoolSize > 0
+    VkRenderPass                    RenderPass;                   // Ignored if using dynamic rendering
+    uint32_t                        MinImageCount;                // >= 2
+    uint32_t                        ImageCount;                   // >= MinImageCount
+    VkSampleCountFlagBits           MSAASamples;                  // 0 defaults to VK_SAMPLE_COUNT_1_BIT
+
+    // (Optional)
+    VkPipelineCache                 PipelineCache;
+    uint32_t                        Subpass;
+
+    // (Optional) Set to create internal descriptor pool instead of using DescriptorPool
+    uint32_t                        DescriptorPoolSize;
+
+    // (Optional) Dynamic Rendering
+    // Need to explicitly enable VK_KHR_dynamic_rendering extension to use this, even for Vulkan 1.3.
+    bool                            UseDynamicRendering;
+
+    // Dynamic Rendering is used by default in Hydragon's Vulkan backend
+    VkPipelineRenderingCreateInfoKHR PipelineRenderingCreateInfo;
+
+
+    // (Optional) Allocation, Debugging
+    const VkAllocationCallbacks*    Allocator;          // TODO: Replace with VMA allocator, below. Need to check the syntax, all commands needed.
+    // VMA allocator instance
+    VmaAllocator                    VmaAllocator;
+    void                            (*CheckVkResultFn)(VkResult err);
+    VkDeviceSize                    MinAllocationSize;      // Minimum allocation size. Set to 1024*1024 to satisfy zealous best practices validation layer and waste a little memory.
+};
+
+/**
+ * @brief Manages a pool of command buffers for a specific queue family.
+ * Provides efficient allocation and management of command buffers used for recording and submitting Vulkan commands.
+ */
+struct CommandBufferPool
+{
+    VkCommandPool pool;
+    std::vector<VkCommandBuffer> buffers;
+};
+
+/**
+ * @brief Represents a buffer resource and its associated allocation.
+ * Used for managing memory and resources for Vulkan buffers.
+ */
+struct BufferResource 
+{
+    VkBuffer buffer;
+    VmaAllocation allocation;
+    VkDeviceSize size;
+    VkBufferUsageFlags usage;
+};
+
+/**
+ * @brief Represents a shader module and its associated stage and entry point.
+ * Used for managing shader resources and their compilation.
+ */
+struct ShaderModule 
+{
+    VkShaderModule module;
+    VkShaderStageFlagBits stage;
+    std::string entryPoint;
+};
+
+/**
+ * @brief Represents synchronization primitives used for managing command buffer execution and resource access.
+ * Used for ensuring proper synchronization between command buffers and resources.
+ */
+struct SyncPrimitives 
+{
+    std::vector<VkSemaphore> frameAvailable;
+    std::vector<VkSemaphore> renderFinished;
+    std::vector<VkFence> inFlightFences;
+};
+
+/**
+ * @brief Represents a descriptor set layout and its associated bindings.
+ * Used for creating and managing descriptor sets for shader resources.
+ */
+struct DescriptorSetLayout 
+{        
+    VkDescriptorSetLayout layout;
+    std::vector<VkDescriptorSetLayoutBinding> bindings;
+    uint32_t setNumber;
+};
+
+/**
+ * @brief Stores the state required for rendering ImGui draw data.
+ * Contains the command buffer and pipeline used for rendering.
+ */
+struct RenderState
+{
+    VkCommandBuffer     CommandBuffer;
+    VkPipeline          Pipeline;
+    VkPipelineLayout    PipelineLayout;
+};
+
+/**
+ * @brief Contains information about the pipeline state.
+ * Used for creating and managing graphics pipelines.
+ */
+struct PipelineStateInfo 
+{
+    VkPipelineLayout layout;
+    VkPipelineCache cache;
+    VkPipelineCreateFlags flags;
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+};
+
+/**
+ * @brief Represents a single frame of the application.
+ * Contains the command buffer, fence, backbuffer, backbuffer view, and framebuffer for rendering.
+ */
+struct Frame
+{
+    VkCommandPool       CommandPool;
+    VkCommandBuffer     CommandBuffer;
+    VkFence             Fence;
+    VkImage             Backbuffer;
+    VkImageView         BackbufferView;
+    VkFramebuffer       Framebuffer;
+};
+
+/**
+ * @brief Represents the semaphores used for synchronization between frames.
+ * Contains the image acquired semaphore and the render complete semaphore.
+ */
+struct FrameSemaphores
+{
+    VkSemaphore         ImageAcquiredSemaphore;
+    VkSemaphore         RenderCompleteSemaphore;
+};
+
+/**
+ * @brief Represents a window and its associated Vulkan resources.
+ * Contains the swapchain, surface, surface format, present mode, render pass, and frame data.
+ */
+struct Window
+{
+    int                         Width;
+    int                         Height;
+    VkSwapchainKHR              Swapchain;
+    VkSurfaceKHR                Surface;
+    VkSurfaceFormatKHR          SurfaceFormat;
+    VkPresentModeKHR            PresentMode;
+    VkRenderPass                RenderPass;
+    bool                        UseDynamicRendering;
+    bool                        ClearEnable;
+    VkClearValue                ClearValue;
+    uint32_t                    FrameIndex;             // Current frame being rendered to (0 <= FrameIndex < FrameInFlightCount)
+    uint32_t                    ImageCount;             // Number of simultaneous in-flight frames (returned by vkGetSwapchainImagesKHR, usually derived from min_image_count)
+    uint32_t                    SemaphoreCount;         // Number of simultaneous in-flight frames + 1, to be able to use it in vkAcquireNextImageKHR
+    uint32_t                    SemaphoreIndex;         // Current set of swapchain wait semaphores we're using (needs to be distinct from per frame data)
+    ImVector<Frame>             Frames;
+    ImVector<FrameSemaphores>   FrameSemaphores;
+
+    Window()
+    {
+        memset((void*)this, 0, sizeof(*this));
+        PresentMode = (VkPresentModeKHR)~0;     // Ensure we get an error if user doesn't set this.
+        ClearEnable = true;
+    }
+};
+ 
+/**
+ * @brief The main Vulkan backend class.
+ * Provides the core functionality for rendering ImGui draw data and the engine's graphics using Vulkan.
+ */
+class VulkanBackend {           // Main Backend Class
 public:
+    // === Singleton & Lifecycle ===
+    /**
+     * @brief Get the singleton instance of the VulkanBackend class.
+     * @return The singleton instance.
+     */
     static VulkanBackend& GetInstance() {
         static VulkanBackend instance;
         return instance;
     }
-
-    // Core functionality - mirrors ImGui_ImplVulkan_* functions
-    bool Init(ImGui_ImplVulkan_InitInfo* info) { return ImGui_ImplVulkan_Init(info); }
-    void Shutdown() { ImGui_ImplVulkan_Shutdown(); }
-    void NewFrame() { ImGui_ImplVulkan_NewFrame(); }
-    void RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE) {
-        ImGui_ImplVulkan_RenderDrawData(draw_data, command_buffer, pipeline);
-    }
-    bool CreateFontsTexture() { return ImGui_ImplVulkan_CreateFontsTexture(); }
-    void DestroyFontsTexture() { ImGui_ImplVulkan_DestroyFontsTexture(); }
-    void SetMinImageCount(uint32_t min_image_count) { ImGui_ImplVulkan_SetMinImageCount(min_image_count); }
-
-    // Texture management
-    VkDescriptorSet AddTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout) {
-        return ImGui_ImplVulkan_AddTexture(sampler, image_view, image_layout);
-    }
-    void RemoveTexture(VkDescriptorSet descriptor_set) { ImGui_ImplVulkan_RemoveTexture(descriptor_set); }
-
-    // Function loading
-    bool LoadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data = nullptr) {
-        return ImGui_ImplVulkan_LoadFunctions(loader_func, user_data);
-    }
-
-    // Window helpers - mirrors ImGui_ImplVulkanH_* functions
-    void CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, 
-                             ImGui_ImplVulkanH_Window* wd, uint32_t queue_family, const VkAllocationCallbacks* allocator,
-                             int w, int h, uint32_t min_image_count) {
-        ImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, wd, queue_family, 
-                                              allocator, w, h, min_image_count);
-    }
     
-    void DestroyWindow(VkInstance instance, VkDevice device, ImGui_ImplVulkanH_Window* wd,
-                       const VkAllocationCallbacks* allocator) {
-        ImGui_ImplVulkanH_DestroyWindow(instance, device, wd, allocator);
-    }
+    /**
+     * @brief Initialize the Vulkan backend with the provided initialization information.
+     * @param info The initialization information.
+     * @return True if initialization is successful, false otherwise.
+     */
+    bool Initialize(const InitInfo& info) { }   // In imgui the signature is bool Init(ImGui_ImplVulkan_InitInfo* info)
 
+    /**
+     * @brief Shutdown the Vulkan backend.
+     */
+    void Shutdown() { }
+
+    /**
+     * @brief Check if the Vulkan backend is initialized.
+     * @return True if initialized, false otherwise.
+     */
+    bool IsInitialized() const noexcept { return initialized; }
+
+    // === Error handling ===
+    /**
+     * @brief Get the last error encountered by the Vulkan backend.
+     * @return The last error encountered.
+     */
+    VkResult GetLastError() const noexcept { return lastError; }
+
+    // === Device & Queue management ===
+    /**
+     * @brief Select the physical device for the Vulkan backend.
+     * @param instance The Vulkan instance.
+     * @return The selected physical device.
+     */
+    VkPhysicalDevice SelectPhysicalDevice(VkInstance instance) {}
+
+    /**
+     * @brief Get the Vulkan device handle.
+     * @return The Vulkan device handle.
+     */
+    VkDevice GetDevice() const noexcept { return device; }
+    
+    /**
+     * @brief Select the queue family index for the Vulkan backend.
+     * @param physical_device The physical device.
+     * @return The selected queue family index.
+     */
+    uint32_t SelectQueueFamilyIndex(VkPhysicalDevice physical_device) { }
+
+    // === Command & Frame management ===
+    /**
+     * @brief Begin single-time command buffer recording.
+     * @return The command buffer for recording.
+     */
+    VkCommandBuffer BeginSingleTimeCommands() { }
+
+    /**
+     * @brief End single-time command buffer recording and submit it.
+     * @param command_buffer The command buffer to end and submit.
+     */
+    void EndSingleTimeCommands(VkCommandBuffer command_buffer) { }
+    
+    /**
+     * @brief Begin a new frame for rendering.
+     */
+    void BeginFrame() { }                         // In imgui the signature is void NewFrame()
+    
+    /**
+     * @brief End the current frame and present the rendered content.
+     */
+    void EndFrame() { }                           // Not present in imgui's example code
+    
+    /**
+     * @brief Render the ImGui draw data using the provided command buffer and pipeline.
+     * @param draw_data The ImGui draw data.
+     * @param command_buffer The command buffer to use for rendering.
+     * @param pipeline The pipeline to use for rendering.
+     */
+    void RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE) {}
+    void CreateBuffer(VkBufferUsageFlags usage, VkDeviceSize size, VkBuffer* buffer, VmaAllocation* allocation) { }
+    void DestroyBuffer(VkBuffer buffer, VmaAllocation allocation) { }
+
+    // === Resource management - Textures, Fonts, Shaders, etc ===
+    /**
+     * @brief Add a texture to the Vulkan backend.
+     * @param sampler The sampler to use for the texture.
+     * @param image_view The image view of the texture.
+     * @param image_layout The image layout of the texture.
+     * @return The descriptor set representing the added texture.
+     */
+    VkDescriptorSet AddTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout) {}
+    
+    /**
+     * @brief Remove a texture from the Vulkan backend.
+     * @param descriptor_set The descriptor set representing the texture to remove.
+     */
+    void RemoveTexture(VkDescriptorSet descriptor_set) { }
+    
+    /**
+     * @brief Create the font texture for ImGui.
+     * @return True if font texture creation is successful, false otherwise.
+     */
+    bool CreateFontsTexture() { }   // Should we handle it here or in ResourceManager?
+    
+    /**
+     * @brief Destroy the font texture for ImGui.
+     */
+    void DestroyFontsTexture() { }
+
+    // === Window and surface management ===
+    /**
+     * @brief Create or resize a window and its associated Vulkan resources.
+     * @param instance The Vulkan instance.
+     * @param physical_device The physical device.
+     * @param device The Vulkan device.
+     * @param wd The window data structure to create or resize.
+     * @param queue_family The queue family index.
+     * @param allocator The allocation callbacks.
+     * @param w The width of the window.
+     * @param h The height of the window.
+     * @param min_image_count The minimum number of images in the swapchain.
+     */
+    void CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, 
+        Window* wd, uint32_t queue_family, const VkAllocationCallbacks* allocator,
+        int w, int h, uint32_t min_image_count) {}
+
+    /**
+     * @brief Destroy a window and its associated Vulkan resources.
+     * @param instance The Vulkan instance.
+     * @param device The Vulkan device.
+     * @param wd The window data structure to destroy.
+     * @param allocator The allocation callbacks.
+     */
+        void DestroyWindow(VkInstance instance, VkDevice device, Window* wd,
+    const VkAllocationCallbacks* allocator) {}
+
+    /**
+     * @brief Select a surface format for the given physical device and surface.
+     * @param physical_device The physical device.
+     * @param surface The surface.
+     * @param request_formats The requested formats.
+     * @param request_formats_count The number of requested formats.
+     * @param request_color_space The requested color space.
+     * @return The selected surface format.
+     */
     VkSurfaceFormatKHR SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
-                                          const VkFormat* request_formats, int request_formats_count,
-                                          VkColorSpaceKHR request_color_space) {
-        return ImGui_ImplVulkanH_SelectSurfaceFormat(physical_device, surface, request_formats,
-                                                    request_formats_count, request_color_space);
-    }
+        const VkFormat* request_formats, int request_formats_count,
+        VkColorSpaceKHR request_color_space) {}
 
-    VkPresentModeKHR SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
-                                      const VkPresentModeKHR* request_modes, int request_modes_count) {
-        return ImGui_ImplVulkanH_SelectPresentMode(physical_device, surface, request_modes, request_modes_count);
-    }
+    /**
+     * @brief Select a present mode for the given physical device and surface.
+     * @param physical_device The physical device.
+     * @param surface The surface.
+     * @param request_modes The requested present modes.
+     * @param request_modes_count The number of requested present modes.
+     * @return The selected present mode.
+     */
+        VkPresentModeKHR SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
+        const VkPresentModeKHR* request_modes, int request_modes_count) {}
 
-    VkPhysicalDevice SelectPhysicalDevice(VkInstance instance) {
-        return ImGui_ImplVulkanH_SelectPhysicalDevice(instance);
-    }
+    // === Configuration ===
+    /**
+     * @brief Set the minimum image count for the swapchain.
+     * @param min_image_count The minimum image count.
+     */
+    void SetMinImageCount(uint32_t min_image_count) { }
+    
+    /**
+     * @brief Enable or disable dynamic rendering.
+     * @param enable True to enable dynamic rendering, false to disable.
+     */
+    void SetDynamicRendering(bool enable) noexcept { }
+    
+    /**
+     * @brief Load Vulkan functions using a custom function loader.
+     * @param loader_func The function loader.
+     * @param user_data The user data to pass to the function loader.
+     * @return True if function loading is successful, false otherwise.
+     */
+    bool LoadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data = nullptr) {}
 
-    uint32_t SelectQueueFamilyIndex(VkPhysicalDevice physical_device) {
-        return ImGui_ImplVulkanH_SelectQueueFamilyIndex(physical_device);
-    }
+    /**
+     * @brief Get the minimum image count from the given present mode.
+     * @param present_mode The present mode.
+     * @return The minimum image count.
+     */
+    int GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode) { }
 
-    int GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode) {
-        return ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(present_mode);
-    }
+    ~VulkanBackend();
 
 private:
-    VulkanBackend() = default;
-    ~VulkanBackend() = default;
+    // 1. Core Data
+    VkDevice device = VK_NULL_HANDLE;
+    VmaAllocator allocator = VK_NULL_HANDLE;
+    bool initialized = false;
+    VkResult lastError = VK_SUCCESS;
+
+    // Resource Management
+    std::vector<BufferResource> managedBuffers;
+    std::mutex renderMutex;                     // Mutex for thread-safe rendering operations
+
+    // Private Methods
+    bool validateDevice() const noexcept;
+    void setLastError(VkResult error) noexcept { lastError = error; }
+    void CreateCommandPools();
+    void SetupDescriptorPool();
+
+    // 3. Singleton Implementation
+    VulkanBackend() noexcept;
     VulkanBackend(const VulkanBackend&) = delete;
     VulkanBackend& operator=(const VulkanBackend&) = delete;
+    VulkanBackend(VulkanBackend&&) = delete;
+    VulkanBackend& operator=(VulkanBackend&&) = delete;  
 };
 
 } // namespace hd

@@ -10,6 +10,35 @@ So be aware that you won't succeed if you try to compile the engine now as it is
 
 HydragonEngine is an open-source game engine licensed under the **Non-Commercial Use License** for non-commercial use. For commercial use, separate licenses are required depending on gross revenues.
 
+## Purpose
+
+HydragonEngine is designed to provide a powerful and flexible game engine for developers. It is built with a focus on modularity, extensibility, and ease of use, allowing developers to create high-quality games and applications with minimal effort.
+
+## Building
+
+HydragonEngine is built using CMake. To build the engine, follow these steps:
+
+1. Clone the repository.
+2. Create a build directory.
+3. Run CMake to generate the build files.
+4. Build the project using the generated build files.
+
+For detailed instructions on building HydragonEngine, please refer to the [Building Guide](./Engine/Docs/BuildingGuide.md).
+
+## Basic Usage
+
+## CMake Support
+
+- Compiling requires C++17.
+
+## Documentation
+
+For detailed documentation on HydragonEngine, please refer to the [User Guide](./Engine/Docs/UserGuide.md).
+
+## Contributing
+
+We welcome contributions to HydragonEngine! Please refer to the [Contributing Guide](./CONTRIBUTING.md) for more information on how to contribute.
+
 ## Licensing
 
 - **Non-Commercial Use**: This software is free to use, modify, and distribute under the terms of the [Non-Commercial Use License](./NON_COMMERCIAL_LICENSE.md).
