@@ -206,3 +206,80 @@ struct ImGui_ImplVulkanH_Window
 };
 
 #endif // #ifndef IMGUI_DISABLE
+
+namespace hd {
+
+class VulkanBackend {
+public:
+    static VulkanBackend& GetInstance() {
+        static VulkanBackend instance;
+        return instance;
+    }
+
+    // Core functionality - mirrors ImGui_ImplVulkan_* functions
+    bool Init(ImGui_ImplVulkan_InitInfo* info) { return ImGui_ImplVulkan_Init(info); }
+    void Shutdown() { ImGui_ImplVulkan_Shutdown(); }
+    void NewFrame() { ImGui_ImplVulkan_NewFrame(); }
+    void RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE) {
+        ImGui_ImplVulkan_RenderDrawData(draw_data, command_buffer, pipeline);
+    }
+    bool CreateFontsTexture() { return ImGui_ImplVulkan_CreateFontsTexture(); }
+    void DestroyFontsTexture() { ImGui_ImplVulkan_DestroyFontsTexture(); }
+    void SetMinImageCount(uint32_t min_image_count) { ImGui_ImplVulkan_SetMinImageCount(min_image_count); }
+
+    // Texture management
+    VkDescriptorSet AddTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout) {
+        return ImGui_ImplVulkan_AddTexture(sampler, image_view, image_layout);
+    }
+    void RemoveTexture(VkDescriptorSet descriptor_set) { ImGui_ImplVulkan_RemoveTexture(descriptor_set); }
+
+    // Function loading
+    bool LoadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data = nullptr) {
+        return ImGui_ImplVulkan_LoadFunctions(loader_func, user_data);
+    }
+
+    // Window helpers - mirrors ImGui_ImplVulkanH_* functions
+    void CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, 
+                             ImGui_ImplVulkanH_Window* wd, uint32_t queue_family, const VkAllocationCallbacks* allocator,
+                             int w, int h, uint32_t min_image_count) {
+        ImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, wd, queue_family, 
+                                              allocator, w, h, min_image_count);
+    }
+    
+    void DestroyWindow(VkInstance instance, VkDevice device, ImGui_ImplVulkanH_Window* wd,
+                       const VkAllocationCallbacks* allocator) {
+        ImGui_ImplVulkanH_DestroyWindow(instance, device, wd, allocator);
+    }
+
+    VkSurfaceFormatKHR SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
+                                          const VkFormat* request_formats, int request_formats_count,
+                                          VkColorSpaceKHR request_color_space) {
+        return ImGui_ImplVulkanH_SelectSurfaceFormat(physical_device, surface, request_formats,
+                                                    request_formats_count, request_color_space);
+    }
+
+    VkPresentModeKHR SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
+                                      const VkPresentModeKHR* request_modes, int request_modes_count) {
+        return ImGui_ImplVulkanH_SelectPresentMode(physical_device, surface, request_modes, request_modes_count);
+    }
+
+    VkPhysicalDevice SelectPhysicalDevice(VkInstance instance) {
+        return ImGui_ImplVulkanH_SelectPhysicalDevice(instance);
+    }
+
+    uint32_t SelectQueueFamilyIndex(VkPhysicalDevice physical_device) {
+        return ImGui_ImplVulkanH_SelectQueueFamilyIndex(physical_device);
+    }
+
+    int GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode) {
+        return ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(present_mode);
+    }
+
+private:
+    VulkanBackend() = default;
+    ~VulkanBackend() = default;
+    VulkanBackend(const VulkanBackend&) = delete;
+    VulkanBackend& operator=(const VulkanBackend&) = delete;
+};
+
+} // namespace hd
