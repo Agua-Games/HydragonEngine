@@ -63,16 +63,16 @@ public:
         auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
         
         // Get input values
-        auto atmosphereState = GetInputValue<AtmosphereState>("AtmosphereState");
-        auto windVector = GetInputValue<glm::vec3>("WindVector");
-        auto coverage = GetInputValue<float>("Coverage");
-        auto types = GetInputValue<CloudTypeDistribution>("Types");
-        auto evolution = GetInputValue<float>("Evolution");
-        auto turbulence = GetInputValue<TurbulenceParams>("Turbulence");
-        auto temperature = GetInputValue<float>("Temperature");
-        auto humidity = GetInputValue<float>("Humidity");
-        auto pressure = GetInputValue<float>("Pressure");
-        auto noiseParams = GetInputValue<NoiseParameters>("NoiseParams");
+        auto atmosphereState = GetPortValue<AtmosphereState>("AtmosphereState");
+        auto windVector = GetPortValue<glm::vec3>("WindVector");
+        auto coverage = GetPortValue<float>("Coverage");
+        auto types = GetPortValue<CloudTypeDistribution>("Types");
+        auto evolution = GetPortValue<float>("Evolution");
+        auto turbulence = GetPortValue<TurbulenceParams>("Turbulence");
+        auto temperature = GetPortValue<float>("Temperature");
+        auto humidity = GetPortValue<float>("Humidity");
+        auto pressure = GetPortValue<float>("Pressure");
+        auto noiseParams = GetPortValue<NoiseParameters>("NoiseParams");
 
         // Update procedural pattern
         ProceduralCloudParams params;
@@ -99,12 +99,37 @@ public:
         auto densityField = GenerateDensityField(cloudData);
 
         // Set outputs
-        SetOutputValue("VolumetricData", volumetricData);
-        SetOutputValue("ShadowData", shadowData);
-        SetOutputValue("LightingData", lightingData);
-        SetOutputValue("Precipitation", precipitationData);
-        SetOutputValue("DensityField", densityField);
-        SetOutputValue("ProceduralState", cloudData);
+        SetPortValue("VolumetricData", volumetricData);
+        SetPortValue("ShadowData", shadowData);
+        SetPortValue("LightingData", lightingData);
+        SetPortValue("Precipitation", precipitationData);
+        SetPortValue("DensityField", densityField);
+        SetPortValue("ProceduralState", cloudData);
+    }
+
+    std::vector<std::string> GetInputPorts() const override {
+        return GetNodeInfo().Inputs;
+    }
+
+    std::vector<std::string> GetOutputPorts() const override {
+        return GetNodeInfo().Outputs;
+    }
+
+    void OnResume() override {}
+    void OnPause() override {}
+    void OnDirty() override {
+        MarkDirty();
+    }
+
+    uint64_t ComputeCacheKey() const override {
+        // Combine all input values into a hash
+        std::size_t seed = 0;
+        HashCombine(seed, GetPortValue<AtmosphereState>("AtmosphereState"));
+        HashCombine(seed, GetPortValue<glm::vec3>("WindVector"));
+        HashCombine(seed, GetPortValue<float>("Coverage"));
+        HashCombine(seed, GetPortValue<CloudTypeDistribution>("Types"));
+        HashCombine(seed, GetPortValue<float>("Evolution"));
+        return seed;
     }
 
 private:

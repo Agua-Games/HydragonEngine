@@ -11,35 +11,39 @@
 
 namespace hd {
 
-struct HD_ProcPrecipitationInfo : public HD_NodeInfo {
-    HD_ProcPrecipitationInfo() {
+struct HD_PrecipitationInfo : public HD_NodeInfo {
+    HD_PrecipitationInfo() {
         NodeType = "Weather/Precipitation";
         
         Inputs = {
-            "CloudData",        // From CloudNode
-            "Temperature",      // For rain/snow decision
-            "Intensity",       // Precipitation amount
-            "WindInfluence",   // Wind effect
-            "CollisionMask"    // Scene collision
+            "AtmosphereState",     // From AtmosphereNode
+            "CloudData",           // From CloudNode
+            "WindVector",          // Wind direction/speed
+            "Intensity",           // Precipitation intensity
+            "Temperature",         // For determining rain/snow
+            "ParticleParams",      // Particle system settings
+            "CollisionMask"        // World collision data
         };
         
         Outputs = {
-            "ParticleEmitters", // Rain/snow particles
-            "SurfaceEffects",   // Surface impacts
-            "AccumulationData", // Snow accumulation
-            "WetnessData"      // Surface wetness
+            "ParticleData",        // Precipitation particles
+            "SurfaceEffects",      // Surface interaction effects
+            "AudioData",           // Precipitation sound data
+            "WetnessMap",          // Surface wetness information
+            "AccumulationData"     // Snow/water accumulation
         };
 
         IsSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
+        IsStreamable = true;
     }
 };
 
-class HD_ProcPrecipitationNode : public HD_Node<ParticleEmitterData, SurfaceEffectData, AccumulationData, WetnessData> {
+class HD_ProcPrecipitationNode : public HD_Node<ParticleData, SurfaceEffects, AudioData, AccumulationData> {
 public:
-    explicit HD_ProcPrecipitationNode(const HD_ProcPrecipitationInfo& info = HD_ProcPrecipitationInfo())
-        : HD_Node(info), PrecipInfo(info) {
+    explicit HD_ProcPrecipitationNode(const HD_PrecipitationInfo& info = HD_PrecipitationInfo())
+        : HD_Node(info) {
         auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
         precipPatternId = orchestrator.RegisterPattern(CreateDefaultPrecipitationPattern());
     }
@@ -52,82 +56,80 @@ public:
     }
 
     void ProcessNodeGraph() override {
+        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+
         // Get input values
-        auto cloudData = GetInputValue<CloudData>("CloudData");
-        float temperature = GetInputValue<float>("Temperature");
-        float intensity = GetInputValue<float>("Intensity");
-        auto windInfluence = GetInputValue<WindData>("WindInfluence");
-        auto collisionMask = GetInputValue<CollisionData>("CollisionMask");
+        auto atmosphereState = GetPortValue<AtmosphereState>("AtmosphereState");
+        auto cloudData = GetPortValue<CloudData>("CloudData");
+        auto windVector = GetPortValue<glm::vec3>("WindVector");
+        auto intensity = GetPortValue<float>("Intensity");
+        auto temperature = GetPortValue<float>("Temperature");
+        auto particleParams = GetPortValue<ParticleParameters>("ParticleParams");
+        auto collisionMask = GetPortValue<CollisionData>("CollisionMask");
 
-        // Determine precipitation type based on temperature
-        PrecipitationType precipType = (temperature <= 0.0f) ? PrecipitationType::Snow 
-                                                           : PrecipitationType::Rain;
+        // Update procedural pattern
+        ProceduralStructureParams patternParams;
+        patternParams.intensity = intensity;
+        patternParams.temperature = temperature;
+        patternParams.windInfluence = glm::length(windVector);
+        
+        precipPatternId = orchestrator.CreateMaterialPattern(patternParams);
+        auto precipPattern = orchestrator.GetProceduralPattern(precipPatternId);
 
-        // Generate precipitation data
-        auto emitters = GenerateParticleEmitters(precipType, intensity, windInfluence);
-        auto surfaceEffects = GenerateSurfaceEffects(precipType, intensity, collisionMask);
-        auto accumulation = ComputeAccumulation(precipType, intensity, temperature);
-        auto wetness = ComputeWetness(precipType, intensity, temperature);
+        // Process precipitation using pattern data
+        auto particleData = GenerateParticleData(cloudData, precipPattern, particleParams);
+        auto surfaceEffects = ProcessSurfaceEffects(particleData, collisionMask);
+        auto audioData = GenerateAudioData(particleData, surfaceEffects);
+        auto wetnessMap = UpdateWetnessMap(surfaceEffects, temperature);
+        auto accumulationData = ProcessAccumulation(particleData, temperature);
 
-        // Set output values
-        SetOutputValue("ParticleEmitters", emitters);
-        SetOutputValue("SurfaceEffects", surfaceEffects);
-        SetOutputValue("AccumulationData", accumulation);
-        SetOutputValue("WetnessData", wetness);
+        // Set outputs
+        SetPortValue("ParticleData", particleData);
+        SetPortValue("SurfaceEffects", surfaceEffects);
+        SetPortValue("AudioData", audioData);
+        SetPortValue("WetnessMap", wetnessMap);
+        SetPortValue("AccumulationData", accumulationData);
     }
 
     std::vector<std::string> GetInputPorts() const override {
-        return PrecipInfo.Inputs;
+        return GetNodeInfo().Inputs;
     }
 
     std::vector<std::string> GetOutputPorts() const override {
-        return PrecipInfo.Outputs;
+        return GetNodeInfo().Outputs;
     }
 
-    void DrawInNodeGraph() override {
-        ImGui::BeginGroup();
-        ImGui::Text("Precipitation Node");
-        
-        // Draw input ports
-        DrawInputPort("CloudData", "Clouds");
-        DrawInputPort("Temperature", "Temp");
-        DrawInputPort("Intensity", "Intensity");
-        DrawInputPort("WindInfluence", "Wind");
-        
-        // Draw output ports
-        DrawOutputPort("ParticleEmitters", "Particles");
-        DrawOutputPort("SurfaceEffects", "Effects");
-        DrawOutputPort("AccumulationData", "Accumulation");
-        
-        ImGui::EndGroup();
+    void OnResume() override {}
+    void OnPause() override {}
+    void OnDirty() override {
+        MarkDirty();
+    }
+
+    uint64_t ComputeCacheKey() const override {
+        std::size_t seed = 0;
+        HashCombine(seed, GetPortValue<AtmosphereState>("AtmosphereState"));
+        HashCombine(seed, GetPortValue<CloudData>("CloudData"));
+        HashCombine(seed, GetPortValue<float>("Intensity"));
+        HashCombine(seed, GetPortValue<float>("Temperature"));
+        HashCombine(seed, precipPatternId);
+        return seed;
     }
 
 private:
-    HD_ProcPrecipitationInfo PrecipInfo;
     std::string precipPatternId;
 
-    enum class PrecipitationType {
-        Rain,
-        Snow
-    };
+    std::unique_ptr<IPattern> CreateDefaultPrecipitationPattern() {
+        return std::make_unique<ProceduralPattern>(
+            ProceduralPatternType::VolumeTexture,
+            ProceduralStructureParams{}
+        );
+    }
 
-    ParticleEmitterData GenerateParticleEmitters(PrecipitationType type, 
-                                                float intensity, 
-                                                const WindData& wind);
-
-    SurfaceEffectData GenerateSurfaceEffects(PrecipitationType type, 
-                                            float intensity,
-                                            const CollisionData& collision);
-
-    AccumulationData ComputeAccumulation(PrecipitationType type,
-                                       float intensity,
-                                       float temperature);
-
-    WetnessData ComputeWetness(PrecipitationType type,
-                              float intensity,
-                              float temperature);
-
-    ProceduralPattern CreateDefaultPrecipitationPattern() const;
+    ParticleData GenerateParticleData(const CloudData& clouds, const ProceduralPatternData& pattern, const ParticleParameters& params);
+    SurfaceEffects ProcessSurfaceEffects(const ParticleData& particles, const CollisionData& collision);
+    AudioData GenerateAudioData(const ParticleData& particles, const SurfaceEffects& effects);
+    WetnessMap UpdateWetnessMap(const SurfaceEffects& effects, float temperature);
+    AccumulationData ProcessAccumulation(const ParticleData& particles, float temperature);
 };
 
 } // namespace hd
