@@ -97,7 +97,9 @@
 			"stack": "cpp",
 			"typeindex": "cpp",
 			"variant": "cpp",
-			"xtree": "cpp"
+			"xtree": "cpp",
+			"resumable": "cpp",
+			"unordered_set": "cpp"
 		}
 	}
 }

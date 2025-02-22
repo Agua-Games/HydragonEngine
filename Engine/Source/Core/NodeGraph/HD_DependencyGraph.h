@@ -45,6 +45,18 @@ public:
     void MarkCompilationBoundary(const std::vector<HD_Node*>& subgraphNodes, 
                                 const std::string& cacheIdentifier) {
         std::unique_lock lock(graphMutex);
+        
+        // Validate subgraph boundary
+        for (auto* node : subgraphNodes) {
+            // Check if all required inputs are available within the subgraph
+            for (const auto& input : node->GetInputPorts()) {
+                if (!node->IsPortValid(input)) {
+                    throw std::runtime_error("Invalid port in subgraph boundary: " + 
+                                           node->GetName() + ":" + input);
+                }
+            }
+        }
+
         CompilationBoundary boundary;
         boundary.nodes = subgraphNodes;
         boundary.identifier = cacheIdentifier;
