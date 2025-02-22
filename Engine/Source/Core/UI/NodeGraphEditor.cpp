@@ -25,6 +25,10 @@ static void RenderRightSidebar();
 static void RenderStatusBar();
 static void RenderGraphCanvas();
 
+// Forward declarations
+static void RenderExampleNode(const char* title, ImVec2 pos);
+static bool IsInputConnected(const char* inputName);
+
 void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
@@ -143,51 +147,95 @@ void RenderGraphCanvas()
 
 static void RenderGraphCanvasContent() 
 {
-    // Canvas setup
+    // Canvas setup and grid
     ImVec2 canvasPos = ImGui::GetCursorScreenPos();
     ImVec2 canvasSize = ImGui::GetContentRegionAvail();
     ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-    // Background grid
-    const float GRID_STEP = 64.0f * graphState.zoomLevel;
-    for (float x = fmodf(graphState.panOffset.x, GRID_STEP); x < canvasSize.x; x += GRID_STEP)
-    {
-        drawList->AddLine(
-            ImVec2(canvasPos.x + x, canvasPos.y),
-            ImVec2(canvasPos.x + x, canvasPos.y + canvasSize.y),
-            IM_COL32(50, 50, 50, 100)
-        );
-    }
-    for (float y = fmodf(graphState.panOffset.y, GRID_STEP); y < canvasSize.y; y += GRID_STEP)
-    {
-        drawList->AddLine(
-            ImVec2(canvasPos.x, canvasPos.y + y),
-            ImVec2(canvasPos.x + canvasSize.x, canvasPos.y + y),
-            IM_COL32(50, 50, 50, 100)
-        );
-    }
+    // Style setup for nodes
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
+    
+    // Example Nodes
+    RenderExampleNode("Transform Node", ImVec2(100, 100));
+    RenderExampleNode("Material Node", ImVec2(400, 150));
+    RenderExampleNode("Output Node", ImVec2(700, 200));
 
-    // Handle input
-    if (ImGui::IsWindowHovered())
-    {
-        // Pan
-        if (ImGui::IsMouseDragging(ImGuiMouseButton_Middle))
-        {
-            graphState.panOffset.x += ImGui::GetIO().MouseDelta.x;
-            graphState.panOffset.y += ImGui::GetIO().MouseDelta.y;
+    ImGui::PopStyleVar(3);
+}
+
+static void RenderExampleNode(const char* title, ImVec2 pos)
+{
+    ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(250, 200), ImGuiCond_FirstUseEver);
+    
+    ImGuiWindowFlags nodeFlags = 
+        ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoScrollWithMouse;
+
+    // Node window
+    if (ImGui::Begin(title, nullptr, nodeFlags)) {
+        // Title bar with expand/collapse button
+        ImGui::BeginGroup();
+        ImGui::Text("%s", title);
+        ImGui::SameLine(ImGui::GetWindowWidth() - 25);
+        if (ImGui::Button(ICON_MS_UNFOLD_MORE "##expand")) {
+            // Toggle expanded state
+        }
+        ImGui::EndGroup();
+        ImGui::Separator();
+
+        // Inputs section
+        if (ImGui::CollapsingHeader("Inputs", ImGuiTreeNodeFlags_DefaultOpen)) {
+            // Example input with widget
+            ImGui::Text("Speed");
+            if (!IsInputConnected("Speed")) {  // Placeholder function
+                ImGui::SameLine();
+                ImGui::PushItemWidth(-1);
+                float speed = 2.0f;
+                if (ImGui::SliderFloat("##Speed", &speed, 0.0f, 10.0f)) {
+                    // Handle value change
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Speed of the transformation\nType: float [0.0 - 10.0]");
+                }
+                ImGui::PopItemWidth();
+            }
+
+            // Example connected input
+            ImGui::Text("Position");
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("World position\nType: Vector3");
+            }
         }
 
-        // Zoom
-        float wheel = ImGui::GetIO().MouseWheel;
-        if (wheel != 0.0f)
-        {
-            const float zoomSpeed = 0.1f;
-            graphState.zoomLevel += wheel * zoomSpeed;
-            graphState.zoomLevel = ImClamp(graphState.zoomLevel, 0.1f, 2.0f);
+        // Outputs section
+        if (ImGui::CollapsingHeader("Outputs", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::Text("Result");
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("Transformed result\nType: Matrix4x4");
+            }
         }
-    }
 
-    // TODO: Render actual nodes and connections here
+        // Bottom toolbar
+        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 30);
+        ImGui::Separator();
+        ImGui::Button(ICON_MS_SETTINGS "##settings");
+        ImGui::SameLine();
+        ImGui::Button(ICON_MS_LINK "##connect");
+        ImGui::SameLine();
+        ImGui::Button(ICON_MS_DELETE "##delete");
+    }
+    ImGui::End();
+}
+
+// Placeholder function - to be implemented properly later
+static bool IsInputConnected(const char* inputName) 
+{
+    return false;  // For now, always show widgets
 }
 
 void RenderMiniMap() 
