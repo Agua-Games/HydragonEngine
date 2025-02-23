@@ -11,9 +11,27 @@
 
 namespace hdImgui {
 
-// Remove the NodeGraphState struct definition as it's now in the header
+static NodeGraphState graphState;  // Instance of our state struct
 
-static NodeGraphState graphState;
+struct ViewportState {
+    ImVec2 viewPosition = ImVec2(0.0f, 0.0f);  // Camera position in world space
+    float zoom = 1.0f;  // For future use
+} viewport;     // Our viewport state
+
+static ImVec2 WorldToScreen(const ImVec2& worldPos, const ImVec2& canvasOrigin) {
+    // 1. Transform from world space to view space (subtract camera position)
+    ImVec2 viewSpace = ImVec2(
+        worldPos.x - viewport.viewPosition.x,
+        worldPos.y - viewport.viewPosition.y
+    );
+    
+    // 2. Transform to screen space (add canvas origin)
+    return ImVec2(
+        canvasOrigin.x + viewSpace.x,
+        canvasOrigin.y + viewSpace.y
+    );
+}
+
 static bool showConnectionPoints = true;  // Controls visibility of connection squares
 
 // Forward declare internal helper functions
@@ -148,10 +166,41 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
 
 static void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
 {
-    // Canvas setup and grid
-    ImVec2 canvasPos = ImGui::GetCursorScreenPos();
+    ImVec2 canvasOrigin = ImGui::GetCursorScreenPos();
     ImVec2 canvasSize = ImGui::GetContentRegionAvail();
     ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    // Handle panning
+    if (ImGui::IsWindowHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Middle)) {
+        viewport.viewPosition.x -= ImGui::GetIO().MouseDelta.x;
+        viewport.viewPosition.y -= ImGui::GetIO().MouseDelta.y;
+    }
+
+    // Grid rendering
+    const float GRID_STEP = 64.0f;
+    const ImU32 GRID_COLOR = IM_COL32(200, 200, 200, 25);
+
+    // Calculate starting positions for grid lines
+    float startX = canvasOrigin.x - fmodf(viewport.viewPosition.x, GRID_STEP);
+    float startY = canvasOrigin.y - fmodf(viewport.viewPosition.y, GRID_STEP);
+
+    // Draw vertical grid lines
+    for (float x = startX; x < canvasOrigin.x + canvasSize.x; x += GRID_STEP) {
+        drawList->AddLine(
+            ImVec2(x, canvasOrigin.y),
+            ImVec2(x, canvasOrigin.y + canvasSize.y),
+            GRID_COLOR
+        );
+    }
+
+    // Draw horizontal grid lines
+    for (float y = startY; y < canvasOrigin.y + canvasSize.y; y += GRID_STEP) {
+        drawList->AddLine(
+            ImVec2(canvasOrigin.x, y),
+            ImVec2(canvasOrigin.x + canvasSize.x, y),
+            GRID_COLOR
+        );
+    }
 
     // Style setup for nodes
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
