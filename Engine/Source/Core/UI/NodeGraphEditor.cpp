@@ -67,8 +67,8 @@ static int g_NextPinId = 1;
 
 // Initialize imnodes in the namespace (before any function)
 static void InitializeImNodes() {
-    g_NodesContext = ImNodes::CreateContext();
-    ImNodes::StyleColorsDark();
+    //g_NodesContext = ImNodes::CreateContext();
+    //ImNodes::StyleColorsDark();
     ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
 }
 
@@ -215,17 +215,18 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
         ImGui::TextUnformatted("Transform Node");
         ImNodes::EndNodeTitleBar();
 
-        // Input pins
-        ImNodes::BeginInputAttribute(1);
+        // Input pins - set to filled squares
+        ImNodes::PushAttributeFlag(ImNodesAttributeFlags_None);
+        ImNodes::BeginInputAttribute(1, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
         ImGui::Text("Position");
         ImNodes::EndInputAttribute();
 
-        ImNodes::BeginInputAttribute(2);
+        ImNodes::BeginInputAttribute(2, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
         ImGui::Text("Rotation");
         ImNodes::EndInputAttribute();
 
-        // Output pin
-        ImNodes::BeginOutputAttribute(3);
+        // Output pin - set to filled square
+        ImNodes::BeginOutputAttribute(3, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
         ImGui::Indent(120);
         ImGui::Text("Output");
         ImNodes::EndOutputAttribute();
@@ -240,11 +241,11 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
         ImGui::TextUnformatted("Material Node");
         ImNodes::EndNodeTitleBar();
 
-        ImNodes::BeginInputAttribute(4);
+        ImNodes::BeginInputAttribute(4, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
         ImGui::Text("Color");
         ImNodes::EndInputAttribute();
 
-        ImNodes::BeginOutputAttribute(5);
+        ImNodes::BeginOutputAttribute(5, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
         ImGui::Indent(120);
         ImGui::Text("Output");
         ImNodes::EndOutputAttribute();

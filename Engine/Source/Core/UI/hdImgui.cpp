@@ -9,7 +9,9 @@
 #include <stdlib.h>         // abort
 #include <GLFW/glfw3.h>     // Include GLFW header for GLFWwindow
 #include <imgui_internal.h>  // For internal ImGui functions if needed
+#include <imgui_impl_glfw.h>
 #include <imgui.h>
+#include <imnodes.h>
 
 #include "hdImgui.h"
 #include "ResourceManager.h"
@@ -93,6 +95,56 @@ void InitializeWindows(){
     hdSetttingsEditor::Initialize();
     #endif
 }
+
+bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData) {
+    if (!window) return false;
+
+    #if 0
+    // Initialize ImGui
+    IMGUI_CHECKVERSION();
+    #endif
+    ImNodes::CreateContext();
+    #if 0
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    // Initialize ImGui GLFW and Vulkan implementation
+    ImGui_ImplGlfw_InitForVulkan(window, true);
+    #endif
+
+    // Initialize icon font
+    auto& resourceManager = hd::ResourceManager::GetInstance();
+    windowData->iconFont = resourceManager.GetIconFont();
+
+    // Set default style
+    StyleColorsHydragonDark();
+
+    // === Idle sleep ===
+    // Initialize last interaction time - used for idle sleep
+    s_lastInteractionTime = std::chrono::steady_clock::now();
+    
+    // === Windows, sub-editors ===
+    // Initialize each ImGui window (Editor windows, sub-editors, etc.)
+    InitializeWindows();
+
+    return true;
+}
+
+void Cleanup() {
+    // Destroy ImGui context
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    ImNodes::DestroyContext();
+}
+
+void InitializeIconFont(HdEditorWindowData* windowData) {
+    if (!windowData) return;
+    
+    auto& resourceManager = hd::ResourceManager::GetInstance();
+    windowData->iconFont = resourceManager.GetIconFont();
+}
+
 // =========== Styling ===========
 void StyleColorsHydragonDark(){
     // Start with ImGui's default dark style
@@ -100,6 +152,7 @@ void StyleColorsHydragonDark(){
 
     // Get a referenc to the style structure
     ImGuiStyle& style = ImGui::GetStyle();
+    ImNodesStyle& nodesStyle = ImNodes::GetStyle();     // imnodes imgui extension
 
     // Customize spacing and rounding
     style.WindowPadding = ImVec2(15.0f, 15.0f);  // Padding within windows
@@ -176,6 +229,29 @@ void StyleColorsHydragonDark(){
     style.Colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
     style.Colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     style.Colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+
+    // Customize spacing and rounding - imnodes
+    //nodesStyle.Flags = ImNodesStyleFlags_GridLines | ImNodesStyleFlags_NodeOutline | ImNodesStyleFlags_GridSnapping;
+    //nodesStyle.Flags = ImNodesStyleFlags_GridLines | ImNodesStyleFlags_NodeOutline;
+    nodesStyle.NodePadding = ImVec2(11.0f, 4.0f);
+    nodesStyle.NodeCornerRounding = 11.0f;
+    nodesStyle.PinOffset = 2.0f;
+    nodesStyle.PinQuadSideLength = 8.0f;
+
+    // Customize colors - imnodes
+    nodesStyle.Colors[ImNodesCol_TitleBar] = IM_COL32(86, 94, 108, 120);
+    nodesStyle.Colors[ImNodesCol_TitleBarHovered] = IM_COL32(120, 128, 142, 170);
+    nodesStyle.Colors[ImNodesCol_TitleBarSelected] = IM_COL32(120, 128, 142, 170);
+    nodesStyle.Colors[ImNodesCol_NodeBackground] = IM_COL32(54, 56, 56, 110);
+    nodesStyle.Colors[ImNodesCol_NodeBackgroundHovered] = IM_COL32(54, 56, 56, 110);
+    nodesStyle.Colors[ImNodesCol_NodeBackgroundSelected] = IM_COL32(54, 56, 56, 110);
+    nodesStyle.Colors[ImNodesCol_GridBackground] = IM_COL32(54, 56, 56, 255);
+    nodesStyle.Colors[ImNodesCol_Link] = IM_COL32(150, 150, 150, 150);
+    nodesStyle.Colors[ImNodesCol_LinkHovered] = IM_COL32(200, 200, 200, 180);
+    nodesStyle.Colors[ImNodesCol_LinkSelected] = IM_COL32(200, 200, 200, 180);
+    nodesStyle.Colors[ImNodesCol_Pin] = IM_COL32(150, 150, 150, 150);
+    nodesStyle.Colors[ImNodesCol_PinHovered] = IM_COL32(200, 200, 200, 180);
+    nodesStyle.Colors[ImNodesCol_GridLine] = IM_COL32(70, 72, 72, 180);
 }
 
 void StyleColorsHydragonLight() {
@@ -284,44 +360,6 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 }
 #endif
 // =========== Rendering ===================
-void InitializeIconFont(HdEditorWindowData* windowData) {
-    if (!windowData) return;
-    
-    auto& resourceManager = hd::ResourceManager::GetInstance();
-    windowData->iconFont = resourceManager.GetIconFont();
-}
-
-bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData) {
-    if (!window) return false;
-
-    #if 0
-    // Initialize ImGui
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-    // Initialize ImGui GLFW and Vulkan implementation
-    ImGui_ImplGlfw_InitForVulkan(window, true);
-    #endif
-
-    // Initialize icon font
-    auto& resourceManager = hd::ResourceManager::GetInstance();
-    windowData->iconFont = resourceManager.GetIconFont();
-
-    // Set default style
-    StyleColorsHydragonDark();
-
-    // === Idle sleep ===
-    // Initialize last interaction time - used for idle sleep
-    s_lastInteractionTime = std::chrono::steady_clock::now();
-    
-    // === Windows, sub-editors ===
-    // Initialize each ImGui window (Editor windows, sub-editors, etc.)
-    InitializeWindows();
-
-    return true;
-}
 void RenderHydragonEditor(HdEditorWindowData* windowData) {
     // Create docking space
     ImGui::DockSpaceOverViewport(ImGui::GetID("MainDockSpace"));

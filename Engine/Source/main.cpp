@@ -494,8 +494,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     err = vkDeviceWaitIdle(g_Device);
     check_vk_result(err);
     ImGui_ImplVulkan_Shutdown();    // Remove this later, after migrating backend: Shutdown will be called from backend
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();    // Maybe this will be moved to hdImgui::DestroyContext()
+    hdImgui::Cleanup();             // Wraps imgui_impl_glfw Shutdown cleanup for ImGui and ImNodes
 
     CleanupVulkanWindow();    // Remove this later, after migrating backend: Cleanup, DestroyWindow, Shutdown will be called from backend
     CleanupVulkan();          // Same comment as above

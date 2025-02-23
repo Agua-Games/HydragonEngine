@@ -135,12 +135,13 @@ struct HdEditorWindowData
     float tempFloat = 0.0f; // Temporary float for UI prototyping
 };
 
-// =========== Initialization ===========
+// =========== Initialization & Cleanup ============
 /** 
  * @brief Initializes hdImgui.
  * @param window The GLFW window to initialize ImGui for.
  */
 bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData);
+void Cleanup();
 
 // Add function declaration for icon font initialization
 void InitializeIconFont(HdEditorWindowData* windowData);
