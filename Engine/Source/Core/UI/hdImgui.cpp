@@ -236,7 +236,8 @@ void StyleColorsHydragonDark(){
     nodesStyle.NodePadding = ImVec2(11.0f, 4.0f);
     nodesStyle.NodeCornerRounding = 11.0f;
     nodesStyle.PinOffset = 2.0f;
-    nodesStyle.PinQuadSideLength = 8.0f;
+    nodesStyle.PinQuadSideLength = 8.3f;
+    nodesStyle.LinkThickness = 1.9f;
 
     // Customize colors - imnodes
     nodesStyle.Colors[ImNodesCol_TitleBar] = IM_COL32(86, 94, 108, 120);

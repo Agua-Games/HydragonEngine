@@ -121,6 +121,11 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
         }
         if (ImGui::BeginMenu("View"))
         {
+            static bool useStraightLinks = false;
+            if (ImGui::MenuItem("Straight Links", nullptr, &useStraightLinks)) {
+                ImNodesStyle& style = ImNodes::GetStyle();
+                style.LinkLineSegmentsPerLength = useStraightLinks ? 0.0f : 0.1f;
+            }
             if (ImGui::MenuItem("Reset View")) {}
             if (ImGui::MenuItem("Frame All")) {}
             if (ImGui::MenuItem("Frame Selected")) {}
@@ -465,6 +470,21 @@ static void RenderExampleNode(const char* title, ImVec2 initialWorldPos, HdEdito
         float windowWidth = ImGui::GetContentRegionAvail().x;
         float inputColumnWidth = windowWidth * (2.0f/3.0f);  // 2/3 of width for inputs
         float outputColumnWidth = windowWidth * (1.0f/3.0f); // 1/3 of width for outputs
+
+        // Add this at the top of the window
+        if (ImGui::BeginMenuBar()) {
+            if (ImGui::BeginMenu("View")) {
+                static bool useStraightLinks = false;
+                if (ImGui::MenuItem("Straight Links", nullptr, &useStraightLinks)) {
+                    ImNodesStyle& style = ImNodes::GetStyle();
+                    // When true, make links nearly straight by using many segments
+                    // When false, use fewer segments for more curved links
+                    style.LinkLineSegmentsPerLength = useStraightLinks ? 0.9f : 0.1f;
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
 
         // Left column (Inputs)
         ImGui::BeginGroup();
