@@ -56,6 +56,12 @@
 				"parent" : 2
 			},
 			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 166,
+				"parent" : 2
+			},
+			{
 				"command" : 2,
 				"file" : 0,
 				"line" : 34,
@@ -90,10 +96,14 @@
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/volk"
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/ThirdParty/imnodes"
 				},
 				{
 					"backtrace" : 6,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/volk"
+				},
+				{
+					"backtrace" : 7,
 					"path" : "C:/VulkanSDK/1.4.304.0/Include"
 				}
 			],

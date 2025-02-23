@@ -160,6 +160,12 @@ set(IMGUI_DIR ${THIRD-PARTY_SOURCE_DIR}/imgui)                                  
 include_directories(${IMGUI_DIR})
 
 # =====================================================================
+# Third-party libraries: imnodes
+# =====================================================================
+set(IMNODES_DIR ${THIRD-PARTY_SOURCE_DIR}/imnodes)
+include_directories(${IMNODES_DIR})
+
+# =====================================================================
 # Third-party libraries: Vulkan
 # =====================================================================
 # We were initially using Vulkan through the header in glfw/glad, but it is better to use the Vulkan SDK,
@@ -210,6 +216,7 @@ set(SRC_FILES_MANUAL
     ${IMGUI_DIR}/imgui_widgets.cpp
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
     ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
+    ${IMNODES_DIR}/imnodes.cpp
     #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp    # removed in favor of our own Core/Graphics/Vulkan/VulkanBackend.cpp
 )
 
@@ -262,6 +269,9 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${THIRD-PARTY_SOURCE_DIR}/IconFontCppHeaders)
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${IMNODES_DIR})
 
 # ======================================================================================
 # Include engine directories (Core, Devtools, Editor) to target executable
