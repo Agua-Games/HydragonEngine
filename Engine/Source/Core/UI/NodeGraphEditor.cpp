@@ -38,6 +38,7 @@ static ImVec2 WorldToScreen(const ImVec2& worldPos, const ImVec2& canvasOrigin) 
 }
 
 static bool showConnectionPoints = true;  // Controls visibility of connection squares
+static bool showGrid = true;  // Add this at file scope with other static variables
 
 // Forward declare internal helper functions
 static void ShowNodeLibrary();
@@ -290,6 +291,89 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
             g_Connections.end()
         );
     }
+
+    // Add node context menu
+    int nodeId;
+    if (ImNodes::IsNodeHovered(&nodeId) && ImGui::IsMouseClicked(1)) // Right click
+    {
+        ImGui::OpenPopup("NodeContextMenu");
+    }
+
+    // Render context menu
+    if (ImGui::BeginPopup("NodeContextMenu"))
+    {
+        if (ImGui::MenuItem("Delete Node")) {
+            // TODO: Implement node deletion
+            // You'll need to:
+            // 1. Remove the node from your data structure
+            // 2. Remove any connections to/from this node
+        }
+        
+        if (ImGui::MenuItem("Duplicate Node")) {
+            // TODO: Implement node duplication
+        }
+        
+        if (ImGui::MenuItem("Copy")) {
+            // TODO: Implement node copying
+        }
+        
+        ImGui::Separator();
+        
+        if (ImGui::BeginMenu("Add Input")) {
+            if (ImGui::MenuItem("Float")) {
+                // TODO: Add float input
+            }
+            if (ImGui::MenuItem("Vector3")) {
+                // TODO: Add vector3 input
+            }
+            if (ImGui::MenuItem("String")) {
+                // TODO: Add string input
+            }
+            ImGui::EndMenu();
+        }
+        
+        if (ImGui::BeginMenu("Add Output")) {
+            if (ImGui::MenuItem("Float")) {
+                // TODO: Add float output
+            }
+            if (ImGui::MenuItem("Vector3")) {
+                // TODO: Add vector3 output
+            }
+            if (ImGui::MenuItem("String")) {
+                // TODO: Add string output
+            }
+            ImGui::EndMenu();
+        }
+        
+        ImGui::EndPopup();
+    }
+
+    // Background context menu (when right-clicking on empty space)
+    if (ImGui::IsMouseClicked(1) && !ImGui::IsAnyItemHovered()) 
+    {
+        ImGui::OpenPopup("BackgroundContextMenu");
+    }
+
+    if (ImGui::BeginPopup("BackgroundContextMenu"))
+    {
+        if (ImGui::MenuItem("Add Transform Node")) {
+            // TODO: Create new transform node at mouse position
+        }
+        if (ImGui::MenuItem("Add Material Node")) {
+            // TODO: Create new material node at mouse position
+        }
+        if (ImGui::MenuItem("Add Math Node")) {
+            // TODO: Create new math node at mouse position
+        }
+        
+        ImGui::Separator();
+        
+        if (ImGui::MenuItem("Paste")) {
+            // TODO: Implement node pasting
+        }
+        
+        ImGui::EndPopup();
+    }
 }
 
 // Add this struct to store node data
@@ -518,7 +602,14 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Frame Selected (F)");
         ImGui::SameLine();
         
-        if (ImGui::Button(ICON_MS_GRID_ON "##Grid", windowData->iconDefaultSize)) {}
+        if (ImGui::Button(ICON_MS_GRID_ON "##Grid", windowData->iconDefaultSize)) {
+            showGrid = !showGrid;
+            ImNodesStyle& style = ImNodes::GetStyle();
+            if (showGrid)
+                style.Flags |= ImNodesStyleFlags_GridLines;
+            else
+                style.Flags &= ~ImNodesStyleFlags_GridLines;
+        }
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid");
         ImGui::SameLine();
         
