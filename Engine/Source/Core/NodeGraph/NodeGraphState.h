@@ -28,18 +28,6 @@ struct NodeGraphState {
     int errorCount = 0;
     float fps = 0.0f;
     bool isGraphDirty = false;
-
-    // Node registration
-    using NodeCreatorFunc = std::function<void()>;
-    std::unordered_map<std::string, NodeCreatorFunc> nodeTypes;
-
-    void RegisterNodeType(const std::string& type, NodeCreatorFunc creator) {
-        nodeTypes[type] = creator;
-    }
-
-    // Callbacks
-    std::function<bool(int, int)> onNodeConnect;
-    std::function<void(int)> onNodeSelected;
 };
 
 } // namespace hdImgui

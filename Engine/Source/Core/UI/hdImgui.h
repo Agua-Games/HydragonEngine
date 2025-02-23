@@ -6,6 +6,7 @@
 #include <string>
 #include <GLFW/glfw3.h>  // Include GLFW header for GLFWwindow
 #include <imgui.h>  // Include ImGui's header
+#include "NodeGraphState.h"  // Add this include
 
 /**
  * @brief Namespace for ImGui integration functions.
@@ -23,6 +24,9 @@ struct HdEditorWindowData
 
     // Editor sleep and auto-sleep feature
     bool isSleeping = false;
+
+    // Add NodeGraphState
+    NodeGraphState nodeGraphState;
 
     // Scripting, debugging, profiling useful info
     bool showConsoleCategories = true;

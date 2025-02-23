@@ -153,9 +153,6 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
     ImVec2 canvasSize = ImGui::GetContentRegionAvail();
     ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-    // Create a clipping rectangle for the canvas
-    drawList->PushClipRect(canvasPos, ImVec2(canvasPos.x + canvasSize.x, canvasPos.y + canvasSize.y), true);
-
     // Style setup for nodes
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);
@@ -174,7 +171,7 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
         ImGuiWindow* transformWindow = ImGui::FindWindowByName("Transform Node");
         if (transformWindow) {
             transformNodeOutputPos = ImVec2(
-                transformWindow->Pos.x + transformWindow->Size.x,  // Right edge of the window
+                transformWindow->Pos.x + 250,  // Node width
                 transformWindow->Pos.y + 30    // Approximate Y position of "Result" text
             );
         }
@@ -190,7 +187,7 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
                 materialWindow->Pos.y + 50    // Approximate Y position of "Position" text
             );
             materialNodeOutputPos = ImVec2(
-                materialWindow->Pos.x + materialWindow->Size.x,  // Right edge of the window
+                materialWindow->Pos.x + 250,  // Node width
                 materialWindow->Pos.y + 30    // Approximate Y position of "Result" text
             );
         }
@@ -209,82 +206,59 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
     }
 
     // Draw connections
-    const ImU32 lineColor = IM_COL32(100, 100, 100, 255);  // White with 0.3 alpha
+    const ImU32 lineColor = IM_COL32(127, 127, 127, 255);  // White with 0.3 alpha
     const float lineThickness = 2.0f;
     const float squareSize = 8.0f;  // Size of connection point squares
 
     // Draw connections with squares at endpoints
     if (transformNodeOutputPos.x != 0 && materialNodeInputPos.x != 0) {
-        // Adjust connection points for the squares
-        ImVec2 outputPoint = ImVec2(transformNodeOutputPos.x + squareSize/2, transformNodeOutputPos.y);
-        ImVec2 inputPoint = ImVec2(materialNodeInputPos.x - squareSize/2, materialNodeInputPos.y);
-        
-        drawList->AddLine(outputPoint, inputPoint, lineColor, lineThickness);
+        drawList->AddLine(transformNodeOutputPos, materialNodeInputPos, lineColor, lineThickness);
         
         if (showConnectionPoints) {
-            // Output square (shifted right)
+            // Output square
             drawList->AddRectFilled(
-                ImVec2(transformNodeOutputPos.x, transformNodeOutputPos.y - squareSize/2),
-                ImVec2(transformNodeOutputPos.x + squareSize, transformNodeOutputPos.y + squareSize/2),
+                ImVec2(transformNodeOutputPos.x - squareSize/2, transformNodeOutputPos.y - squareSize/2),
+                ImVec2(transformNodeOutputPos.x + squareSize/2, transformNodeOutputPos.y + squareSize/2),
                 lineColor
             );
             
-            // Input square (shifted left)
+            // Input square
             drawList->AddRectFilled(
-                ImVec2(materialNodeInputPos.x - squareSize, materialNodeInputPos.y - squareSize/2),
-                ImVec2(materialNodeInputPos.x, materialNodeInputPos.y + squareSize/2),
+                ImVec2(materialNodeInputPos.x - squareSize/2, materialNodeInputPos.y - squareSize/2),
+                ImVec2(materialNodeInputPos.x + squareSize/2, materialNodeInputPos.y + squareSize/2),
                 lineColor
             );
         }
     }
 
     if (materialNodeOutputPos.x != 0 && outputNodeInputPos.x != 0) {
-        // Adjust connection points for the squares
-        ImVec2 outputPoint = ImVec2(materialNodeOutputPos.x + squareSize/2, materialNodeOutputPos.y);
-        ImVec2 inputPoint = ImVec2(outputNodeInputPos.x - squareSize/2, outputNodeInputPos.y);
-        
-        drawList->AddLine(outputPoint, inputPoint, lineColor, lineThickness);
+        drawList->AddLine(materialNodeOutputPos, outputNodeInputPos, lineColor, lineThickness);
         
         if (showConnectionPoints) {
-            // Output square (shifted right)
+            // Output square
             drawList->AddRectFilled(
-                ImVec2(materialNodeOutputPos.x, materialNodeOutputPos.y - squareSize/2),
-                ImVec2(materialNodeOutputPos.x + squareSize, materialNodeOutputPos.y + squareSize/2),
+                ImVec2(materialNodeOutputPos.x - squareSize/2, materialNodeOutputPos.y - squareSize/2),
+                ImVec2(materialNodeOutputPos.x + squareSize/2, materialNodeOutputPos.y + squareSize/2),
                 lineColor
             );
             
-            // Input square (shifted left)
+            // Input square
             drawList->AddRectFilled(
-                ImVec2(outputNodeInputPos.x - squareSize, outputNodeInputPos.y - squareSize/2),
-                ImVec2(outputNodeInputPos.x, outputNodeInputPos.y + squareSize/2),
+                ImVec2(outputNodeInputPos.x - squareSize/2, outputNodeInputPos.y - squareSize/2),
+                ImVec2(outputNodeInputPos.x + squareSize/2, outputNodeInputPos.y + squareSize/2),
                 lineColor
             );
         }
     }
 
-    drawList->PopClipRect();
     ImGui::PopStyleVar(3);
 }
 
 static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData* windowData)
 {
-    // Add clipping constraints
-    ImVec2 canvasPos = ImGui::GetCursorScreenPos();
-    ImVec2 canvasSize = ImGui::GetContentRegionAvail();
-    
-    // Constrain position to canvas bounds
-    pos.x = ImClamp(pos.x, canvasPos.x, canvasPos.x + canvasSize.x - 250); // 250 is minimum window width
-    pos.y = ImClamp(pos.y, canvasPos.y, canvasPos.y + canvasSize.y - 200); // 200 is minimum window height
-    
     ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(250, 200), ImGuiCond_FirstUseEver);
     
-    // Add size constraints to keep node within canvas
-    ImGui::SetNextWindowSizeConstraints(
-        ImVec2(250, 200), // Minimum size
-        ImVec2(canvasPos.x + canvasSize.x - pos.x, canvasPos.y + canvasSize.y - pos.y) // Maximum size
-    );
-
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
     ImGuiWindowFlags nodeFlags = 
