@@ -18,15 +18,15 @@ static NodeGraphState graphState;
 // Forward declare internal helper functions
 static void ShowNodeLibrary();
 static void RenderNodeLibraryContent();
-static void RenderGraphCanvasContent();
+static void RenderGraphCanvasContent(HdEditorWindowData* windowData);
 static void RenderMiniMapContent();
 static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData);
 static void RenderRightSidebar();
 static void RenderStatusBar();
-static void RenderGraphCanvas();
+static void RenderGraphCanvas(HdEditorWindowData* windowData);
 
 // Forward declarations
-static void RenderExampleNode(const char* title, ImVec2 pos);
+static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData* windowData);
 static bool IsInputConnected(const char* inputName);
 
 void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData) 
@@ -86,7 +86,7 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
     
     // Main graph canvas
     ImGui::BeginChild("GraphCanvas", ImVec2(0, 0), true);
-    RenderGraphCanvas();
+    RenderGraphCanvas(windowData);
     ImGui::EndChild();
 
     ImGui::EndChild();
@@ -140,12 +140,12 @@ static void RenderNodeLibraryContent()
     }
 }
 
-void RenderGraphCanvas() 
+void RenderGraphCanvas(HdEditorWindowData* windowData) 
 {
-    RenderGraphCanvasContent();
+    RenderGraphCanvasContent(windowData);
 }
 
-static void RenderGraphCanvasContent() 
+static void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
 {
     // Canvas setup and grid
     ImVec2 canvasPos = ImGui::GetCursorScreenPos();
@@ -158,43 +158,48 @@ static void RenderGraphCanvasContent()
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
     
     // Example Nodes
-    RenderExampleNode("Transform Node", ImVec2(100, 100));
-    RenderExampleNode("Material Node", ImVec2(400, 150));
-    RenderExampleNode("Output Node", ImVec2(700, 200));
+    RenderExampleNode("Transform Node", ImVec2(100, 100), windowData);
+    RenderExampleNode("Material Node", ImVec2(400, 150), windowData);
+    RenderExampleNode("Output Node", ImVec2(700, 200), windowData);
 
     ImGui::PopStyleVar(3);
 }
 
-static void RenderExampleNode(const char* title, ImVec2 pos)
+static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData* windowData)
 {
     ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(250, 200), ImGuiCond_FirstUseEver);
+    
+    // Set window background transparency
+    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
     ImGuiWindowFlags nodeFlags = 
         ImGuiWindowFlags_NoSavedSettings |
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoScrollWithMouse;
+        ImGuiWindowFlags_NoScrollWithMouse |
+        ImGuiWindowFlags_NoDocking;
 
-    // Node window
+    // Center window title and make it slightly brighter
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5f, 0.5f));
+    ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+    
+    // Make widgets shorter in height
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 2));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 2));
+    
     if (ImGui::Begin(title, nullptr, nodeFlags)) {
-        // Title bar with expand/collapse button
-        ImGui::BeginGroup();
-        ImGui::Text("%s", title);
-        ImGui::SameLine(ImGui::GetWindowWidth() - 25);
-        if (ImGui::Button(ICON_MS_UNFOLD_MORE "##expand")) {
-            // Toggle expanded state
-        }
-        ImGui::EndGroup();
-        ImGui::Separator();
+        // Get window dimensions once
+        float windowWidth = ImGui::GetContentRegionAvail().x;
+        float columnWidth = windowWidth * 0.5f;
 
-        // Inputs section
-        if (ImGui::CollapsingHeader("Inputs", ImGuiTreeNodeFlags_DefaultOpen)) {
-            // Example input with widget
+        // Left column (Inputs)
+        ImGui::BeginGroup();
+        {
             ImGui::Text("Speed");
-            if (!IsInputConnected("Speed")) {  // Placeholder function
-                ImGui::SameLine();
-                ImGui::PushItemWidth(-1);
+            if (!IsInputConnected("Speed")) {
+                ImGui::PushItemWidth(columnWidth - 10);
                 float speed = 2.0f;
                 if (ImGui::SliderFloat("##Speed", &speed, 0.0f, 10.0f)) {
                     // Handle value change
@@ -205,31 +210,59 @@ static void RenderExampleNode(const char* title, ImVec2 pos)
                 ImGui::PopItemWidth();
             }
 
-            // Example connected input
             ImGui::Text("Position");
             if (ImGui::IsItemHovered()) {
                 ImGui::SetTooltip("World position\nType: Vector3");
             }
         }
+        ImGui::EndGroup();
 
-        // Outputs section
-        if (ImGui::CollapsingHeader("Outputs", ImGuiTreeNodeFlags_DefaultOpen)) {
+        // Right column (Outputs) - Reduced right padding
+        ImGui::SameLine(columnWidth);
+        ImGui::BeginGroup();
+        {
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth - ImGui::CalcTextSize("Result").x - 4); // Reduced right padding
             ImGui::Text("Result");
             if (ImGui::IsItemHovered()) {
                 ImGui::SetTooltip("Transformed result\nType: Matrix4x4");
             }
         }
+        ImGui::EndGroup();
 
-        // Bottom toolbar
-        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 30);
-        ImGui::Separator();
-        ImGui::Button(ICON_MS_SETTINGS "##settings");
+        // Bottom toolbar with centered tiny icons
+        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 20); // Reduced height
+        
+        // Center the toolbar buttons
+        float buttonsWidth = (8 * 3) + (8 * 2); // 3 buttons * 8px + 2 spaces * 8px
+        float startX = (windowWidth - buttonsWidth) * 0.5f;
+        ImGui::SetCursorPosX(startX);
+        
+        // Style for bottom toolbar buttons
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 1));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));
+        
+        // Tiny icons (8x8)
+        ImVec2 buttonSize(8, 8);
+        
+        if (ImGui::Button(ICON_MS_SETTINGS "##settings", buttonSize)) {}
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Node Settings");
+        
         ImGui::SameLine();
-        ImGui::Button(ICON_MS_LINK "##connect");
+        if (ImGui::Button(ICON_MS_DOCK "##dock", buttonSize)) {
+            nodeFlags ^= ImGuiWindowFlags_NoDocking;  // Toggle docking
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Docking");
+        
         ImGui::SameLine();
-        ImGui::Button(ICON_MS_DELETE "##delete");
+        if (ImGui::Button(ICON_MS_DELETE "##delete", buttonSize)) {}
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete Node");
+        
+        ImGui::PopStyleVar(2); // Pop bottom toolbar styles
     }
     ImGui::End();
+    
+    ImGui::PopStyleColor(2); // Pop title colors
+    ImGui::PopStyleVar(3); // Pop window title alignment and widget styles
 }
 
 // Placeholder function - to be implemented properly later
