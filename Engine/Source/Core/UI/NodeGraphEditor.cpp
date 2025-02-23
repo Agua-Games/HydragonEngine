@@ -2,12 +2,17 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  */
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+#include <imgui_internal.h>
+#include "IconsMaterialSymbols.h"
+#include "imnodes.h"
+
 #include "NodeGraphEditor.h"
 #include "NodeGraphState.h"
 #include "hdImgui.h"
-#include "IconsMaterialSymbols.h"
-#include <imgui_internal.h>
-#include <string>
 
 namespace hdImgui {
 
@@ -48,8 +53,41 @@ static void RenderGraphCanvas(HdEditorWindowData* windowData);
 static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData* windowData);
 static bool IsInputConnected(const char* inputName);
 
+struct NodeConnection {
+    int inputNodeId;
+    int outputNodeId;
+    int inputPinId;
+    int outputPinId;
+};
+
+static ImNodesContext* g_NodesContext = nullptr;
+static std::vector<NodeConnection> g_Connections;
+static int g_NextNodeId = 1;
+static int g_NextPinId = 1;
+
+// Initialize imnodes in the namespace (before any function)
+static void InitializeImNodes() {
+    g_NodesContext = ImNodes::CreateContext();
+    ImNodes::StyleColorsDark();
+    ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
+}
+
+// Cleanup function
+static void ShutdownImNodes() {
+    if (g_NodesContext) {
+        ImNodes::DestroyContext(g_NodesContext);
+        g_NodesContext = nullptr;
+    }
+}
+
 void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
+    static bool initialized = false;
+    if (!initialized) {
+        InitializeImNodes();
+        initialized = true;
+    }
+
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
     
@@ -166,121 +204,91 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
 
 static void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
 {
-    ImVec2 canvasOrigin = ImGui::GetCursorScreenPos();
-    ImVec2 canvasSize = ImGui::GetContentRegionAvail();
-    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    // Begin the node editor canvas
+    ImNodes::BeginNodeEditor();
 
-    // Push clip rect for the entire canvas area
-    drawList->PushClipRect(
-        canvasOrigin,
-        ImVec2(canvasOrigin.x + canvasSize.x, canvasOrigin.y + canvasSize.y),
-        true
-    );
+    // Example nodes (we'll expand this later)
+    {
+        ImNodes::BeginNode(1);
 
-    // Handle panning
-    if (ImGui::IsWindowHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Middle)) {
-        viewport.viewPosition.x -= ImGui::GetIO().MouseDelta.x;
-        viewport.viewPosition.y -= ImGui::GetIO().MouseDelta.y;
+        ImNodes::BeginNodeTitleBar();
+        ImGui::TextUnformatted("Transform Node");
+        ImNodes::EndNodeTitleBar();
+
+        // Input pins
+        ImNodes::BeginInputAttribute(1);
+        ImGui::Text("Position");
+        ImNodes::EndInputAttribute();
+
+        ImNodes::BeginInputAttribute(2);
+        ImGui::Text("Rotation");
+        ImNodes::EndInputAttribute();
+
+        // Output pin
+        ImNodes::BeginOutputAttribute(3);
+        ImGui::Indent(120);
+        ImGui::Text("Output");
+        ImNodes::EndOutputAttribute();
+
+        ImNodes::EndNode();
     }
 
-    // Grid rendering
-    const float GRID_STEP = 64.0f;
-    const ImU32 GRID_COLOR = IM_COL32(200, 200, 200, 25);
+    {
+        ImNodes::BeginNode(2);
 
-    // Calculate starting positions for grid lines
-    float startX = canvasOrigin.x - fmodf(viewport.viewPosition.x, GRID_STEP);
-    float startY = canvasOrigin.y - fmodf(viewport.viewPosition.y, GRID_STEP);
+        ImNodes::BeginNodeTitleBar();
+        ImGui::TextUnformatted("Material Node");
+        ImNodes::EndNodeTitleBar();
 
-    // Draw vertical grid lines
-    for (float x = startX; x < canvasOrigin.x + canvasSize.x; x += GRID_STEP) {
-        drawList->AddLine(
-            ImVec2(x, canvasOrigin.y),
-            ImVec2(x, canvasOrigin.y + canvasSize.y),
-            GRID_COLOR
+        ImNodes::BeginInputAttribute(4);
+        ImGui::Text("Color");
+        ImNodes::EndInputAttribute();
+
+        ImNodes::BeginOutputAttribute(5);
+        ImGui::Indent(120);
+        ImGui::Text("Output");
+        ImNodes::EndOutputAttribute();
+
+        ImNodes::EndNode();
+    }
+
+    // Render existing links
+    for (const NodeConnection& connection : g_Connections) {
+        ImNodes::Link(
+            connection.inputNodeId * 1000 + connection.outputNodeId,
+            connection.outputPinId,
+            connection.inputPinId
         );
     }
 
-    // Draw horizontal grid lines
-    for (float y = startY; y < canvasOrigin.y + canvasSize.y; y += GRID_STEP) {
-        drawList->AddLine(
-            ImVec2(canvasOrigin.x, y),
-            ImVec2(canvasOrigin.x + canvasSize.x, y),
-            GRID_COLOR
+    ImNodes::EndNodeEditor();
+
+    // Handle new connections
+    int startPinId, endPinId;
+    if (ImNodes::IsLinkCreated(&startPinId, &endPinId)) {
+        NodeConnection newConnection;
+        newConnection.outputPinId = startPinId;
+        newConnection.inputPinId = endPinId;
+        newConnection.outputNodeId = startPinId / 1000;
+        newConnection.inputNodeId = endPinId / 1000;
+        g_Connections.push_back(newConnection);
+    }
+
+    // Handle connection deletion
+    int linkId;
+    if (ImNodes::IsLinkDestroyed(&linkId)) {
+        // Remove the connection with the matching ID
+        g_Connections.erase(
+            std::remove_if(
+                g_Connections.begin(),
+                g_Connections.end(),
+                [linkId](const NodeConnection& conn) {
+                    return (conn.inputNodeId * 1000 + conn.outputNodeId) == linkId;
+                }
+            ),
+            g_Connections.end()
         );
     }
-
-    // Style setup for nodes
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
-    
-    // Example nodes with world space positions
-    RenderExampleNode("Transform Node", ImVec2(100, 100), windowData);
-    RenderExampleNode("Material Node", ImVec2(400, 150), windowData);
-    RenderExampleNode("Output Node", ImVec2(700, 200), windowData);
-
-    ImGui::PopStyleVar(3);
-
-    // Connection points and lines should also use WorldToScreen
-    if (showConnectionPoints) {
-        // Get node windows to calculate connection points
-        ImGuiWindow* transformWindow = ImGui::FindWindowByName("Transform Node");
-        ImGuiWindow* materialWindow = ImGui::FindWindowByName("Material Node");
-        ImGuiWindow* outputWindow = ImGui::FindWindowByName("Output Node");
-
-        if (transformWindow && materialWindow && outputWindow) {
-            // Calculate connection points in world space
-            ImVec2 transformNodeOutputPos = ImVec2(
-                transformWindow->Pos.x + 250,
-                transformWindow->Pos.y + 30
-            );
-
-            ImVec2 materialNodeInputPos = ImVec2(
-                materialWindow->Pos.x,
-                materialWindow->Pos.y + 50
-            );
-
-            ImVec2 materialNodeOutputPos = ImVec2(
-                materialWindow->Pos.x + 250,
-                materialWindow->Pos.y + 30
-            );
-
-            ImVec2 outputNodeInputPos = ImVec2(
-                outputWindow->Pos.x,
-                outputWindow->Pos.y + 50
-            );
-
-            // Draw connections using screen space positions
-            const ImU32 lineColor = IM_COL32(127, 127, 127, 255);
-            const float lineThickness = 2.0f;
-            const float squareSize = 8.0f;
-
-            ImDrawList* drawList = ImGui::GetWindowDrawList();
-            
-            // First connection
-            drawList->AddLine(transformNodeOutputPos, materialNodeInputPos, lineColor, lineThickness);
-            
-            // Second connection
-            drawList->AddLine(materialNodeOutputPos, outputNodeInputPos, lineColor, lineThickness);
-
-            // Draw connection squares for all points
-            auto DrawConnectionPoint = [drawList, lineColor, squareSize](const ImVec2& pos) {
-                drawList->AddRectFilled(
-                    ImVec2(pos.x - squareSize/2, pos.y - squareSize/2),
-                    ImVec2(pos.x + squareSize/2, pos.y + squareSize/2),
-                    lineColor
-                );
-            };
-
-            DrawConnectionPoint(transformNodeOutputPos);
-            DrawConnectionPoint(materialNodeInputPos);
-            DrawConnectionPoint(materialNodeOutputPos);
-            DrawConnectionPoint(outputNodeInputPos);
-        }
-    }
-
-    // Don't forget to pop the clip rect at the end
-    drawList->PopClipRect();
 }
 
 // Add this struct to store node data
