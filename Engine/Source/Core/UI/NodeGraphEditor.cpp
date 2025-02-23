@@ -170,6 +170,13 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
     ImVec2 canvasSize = ImGui::GetContentRegionAvail();
     ImDrawList* drawList = ImGui::GetWindowDrawList();
 
+    // Push clip rect for the entire canvas area
+    drawList->PushClipRect(
+        canvasOrigin,
+        ImVec2(canvasOrigin.x + canvasSize.x, canvasOrigin.y + canvasSize.y),
+        true
+    );
+
     // Handle panning
     if (ImGui::IsWindowHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Middle)) {
         viewport.viewPosition.x -= ImGui::GetIO().MouseDelta.x;
@@ -233,28 +240,47 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
                 materialWindow->Pos.y + 50
             );
 
+            ImVec2 materialNodeOutputPos = ImVec2(
+                materialWindow->Pos.x + 250,
+                materialWindow->Pos.y + 30
+            );
+
+            ImVec2 outputNodeInputPos = ImVec2(
+                outputWindow->Pos.x,
+                outputWindow->Pos.y + 50
+            );
+
             // Draw connections using screen space positions
             const ImU32 lineColor = IM_COL32(127, 127, 127, 255);
             const float lineThickness = 2.0f;
             const float squareSize = 8.0f;
 
             ImDrawList* drawList = ImGui::GetWindowDrawList();
+            
+            // First connection
             drawList->AddLine(transformNodeOutputPos, materialNodeInputPos, lineColor, lineThickness);
+            
+            // Second connection
+            drawList->AddLine(materialNodeOutputPos, outputNodeInputPos, lineColor, lineThickness);
 
-            // Draw connection squares
-            drawList->AddRectFilled(
-                ImVec2(transformNodeOutputPos.x - squareSize/2, transformNodeOutputPos.y - squareSize/2),
-                ImVec2(transformNodeOutputPos.x + squareSize/2, transformNodeOutputPos.y + squareSize/2),
-                lineColor
-            );
+            // Draw connection squares for all points
+            auto DrawConnectionPoint = [drawList, lineColor, squareSize](const ImVec2& pos) {
+                drawList->AddRectFilled(
+                    ImVec2(pos.x - squareSize/2, pos.y - squareSize/2),
+                    ImVec2(pos.x + squareSize/2, pos.y + squareSize/2),
+                    lineColor
+                );
+            };
 
-            drawList->AddRectFilled(
-                ImVec2(materialNodeInputPos.x - squareSize/2, materialNodeInputPos.y - squareSize/2),
-                ImVec2(materialNodeInputPos.x + squareSize/2, materialNodeInputPos.y + squareSize/2),
-                lineColor
-            );
+            DrawConnectionPoint(transformNodeOutputPos);
+            DrawConnectionPoint(materialNodeInputPos);
+            DrawConnectionPoint(materialNodeOutputPos);
+            DrawConnectionPoint(outputNodeInputPos);
         }
     }
+
+    // Don't forget to pop the clip rect at the end
+    drawList->PopClipRect();
 }
 
 // Add this struct to store node data
@@ -277,9 +303,27 @@ static void RenderExampleNode(const char* title, ImVec2 initialWorldPos, HdEdito
     // Transform current world position to screen space
     ImVec2 screenPos = WorldToScreen(nodeData.worldPos, ImGui::GetCursorScreenPos());
     
+    // Get canvas boundaries
+    ImVec2 canvasMin = ImGui::GetWindowPos();
+    ImVec2 canvasMax = ImVec2(canvasMin.x + ImGui::GetWindowSize().x, 
+                             canvasMin.y + ImGui::GetWindowSize().y);
+
+    // Skip rendering if the node is completely outside the canvas
+    ImVec2 nodeSize(250, 200); // Use actual node size
+    if (screenPos.x + nodeSize.x < canvasMin.x || 
+        screenPos.y + nodeSize.y < canvasMin.y ||
+        screenPos.x > canvasMax.x || 
+        screenPos.y > canvasMax.y)
+    {
+        return;
+    }
+
+    // Set the viewport to match the canvas area
+    ImGui::SetNextWindowViewport(ImGui::GetWindowViewport()->ID);
+    
     // Always set the window position to follow viewport
     ImGui::SetNextWindowPos(screenPos);
-    ImGui::SetNextWindowSize(ImVec2(250, 200), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(nodeSize, ImGuiCond_FirstUseEver);
     
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
@@ -288,7 +332,8 @@ static void RenderExampleNode(const char* title, ImVec2 initialWorldPos, HdEdito
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoScrollbar |
         ImGuiWindowFlags_NoScrollWithMouse |
-        ImGuiWindowFlags_NoDocking;
+        ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_NoFocusOnAppearing;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5f, 0.5f));
     ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.3f, 0.3f, 0.3f, 0.6f));
