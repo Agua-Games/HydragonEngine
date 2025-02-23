@@ -157,10 +157,60 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
     
-    // Example Nodes
-    RenderExampleNode("Transform Node", ImVec2(100, 100), windowData);
-    RenderExampleNode("Material Node", ImVec2(400, 150), windowData);
-    RenderExampleNode("Output Node", ImVec2(700, 200), windowData);
+    // Track positions for all connections
+    ImVec2 transformNodeOutputPos;
+    ImVec2 materialNodeInputPos;
+    ImVec2 materialNodeOutputPos;
+    ImVec2 outputNodeInputPos;
+    
+    // Render nodes and calculate connection points
+    {
+        ImVec2 transformNodePos = ImVec2(100, 100);
+        RenderExampleNode("Transform Node", transformNodePos, windowData);
+        ImGuiWindow* transformWindow = ImGui::FindWindowByName("Transform Node");
+        if (transformWindow) {
+            transformNodeOutputPos = ImVec2(
+                transformWindow->Pos.x + 250,  // Node width
+                transformWindow->Pos.y + 30    // Approximate Y position of "Result" text
+            );
+        }
+    }
+    
+    {
+        ImVec2 materialNodePos = ImVec2(400, 150);
+        RenderExampleNode("Material Node", materialNodePos, windowData);
+        ImGuiWindow* materialWindow = ImGui::FindWindowByName("Material Node");
+        if (materialWindow) {
+            materialNodeInputPos = ImVec2(
+                materialWindow->Pos.x,        // Left side of the node
+                materialWindow->Pos.y + 50    // Approximate Y position of "Position" text
+            );
+            materialNodeOutputPos = ImVec2(
+                materialWindow->Pos.x + 250,  // Node width
+                materialWindow->Pos.y + 30    // Approximate Y position of "Result" text
+            );
+        }
+    }
+    
+    {
+        ImVec2 outputNodePos = ImVec2(700, 200);
+        RenderExampleNode("Output Node", outputNodePos, windowData);
+        ImGuiWindow* outputWindow = ImGui::FindWindowByName("Output Node");
+        if (outputWindow) {
+            outputNodeInputPos = ImVec2(
+                outputWindow->Pos.x,        // Left side of the node
+                outputWindow->Pos.y + 50    // Approximate Y position of "Position" text
+            );
+        }
+    }
+
+    // Draw connections
+    const ImU32 lineColor = IM_COL32(255, 255, 255, 76);  // White with 0.3 alpha
+    const float lineThickness = 2.0f;
+
+    // Draw connections
+    drawList->AddLine(transformNodeOutputPos, materialNodeInputPos, lineColor, lineThickness);
+    drawList->AddLine(materialNodeOutputPos, outputNodeInputPos, lineColor, lineThickness);
 
     ImGui::PopStyleVar(3);
 }
@@ -170,7 +220,6 @@ static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData*
     ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(250, 200), ImGuiCond_FirstUseEver);
     
-    // Set window background transparency
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
     ImGuiWindowFlags nodeFlags = 
@@ -180,26 +229,25 @@ static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData*
         ImGuiWindowFlags_NoScrollWithMouse |
         ImGuiWindowFlags_NoDocking;
 
-    // Center window title and make it slightly brighter
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5f, 0.5f));
     ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.3f, 0.3f, 0.3f, 0.6f));
     ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.4f, 0.4f, 0.4f, 0.8f));
     
-    // Make widgets shorter in height
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 1.4f));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1.4f));
     
     if (ImGui::Begin(title, nullptr, nodeFlags)) {
-        // Get window dimensions once
         float windowWidth = ImGui::GetContentRegionAvail().x;
-        float columnWidth = windowWidth * 0.5f;
+        float inputColumnWidth = windowWidth * (2.0f/3.0f);  // 2/3 of width for inputs
+        float outputColumnWidth = windowWidth * (1.0f/3.0f); // 1/3 of width for outputs
 
         // Left column (Inputs)
         ImGui::BeginGroup();
         {
-            ImGui::Text("Speed");
+            // Speed input
+            ImGui::Text("Speed"); ImGui::SameLine();
             if (!IsInputConnected("Speed")) {
-                ImGui::PushItemWidth(columnWidth - 10);
+                ImGui::SetNextItemWidth(inputColumnWidth - ImGui::GetItemRectSize().x - ImGui::GetStyle().ItemSpacing.x - 10);
                 float speed = 2.0f;
                 if (ImGui::SliderFloat("##Speed", &speed, 0.0f, 10.0f)) {
                     // Handle value change
@@ -207,9 +255,9 @@ static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData*
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip("Speed of the transformation\nType: float [0.0 - 10.0]");
                 }
-                ImGui::PopItemWidth();
             }
 
+            // Position input
             ImGui::Text("Position");
             if (ImGui::IsItemHovered()) {
                 ImGui::SetTooltip("World position\nType: Vector3");
@@ -217,11 +265,11 @@ static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData*
         }
         ImGui::EndGroup();
 
-        // Right column (Outputs) - Reduced right padding
-        ImGui::SameLine(columnWidth);
+        // Right column (Outputs)
+        ImGui::SameLine(inputColumnWidth);
         ImGui::BeginGroup();
         {
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + columnWidth - ImGui::CalcTextSize("Result").x - 4); // Reduced right padding
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + outputColumnWidth - ImGui::CalcTextSize("Result").x - 4);
             ImGui::Text("Result");
             if (ImGui::IsItemHovered()) {
                 ImGui::SetTooltip("Transformed result\nType: Matrix4x4");
@@ -230,18 +278,15 @@ static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData*
         ImGui::EndGroup();
 
         // Bottom toolbar with centered tiny icons
-        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 20); // Reduced height
+        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 20);
         
-        // Center the toolbar buttons
-        float buttonsWidth = (8 * 3) + (8 * 2); // 3 buttons * 8px + 2 spaces * 8px
+        float buttonsWidth = (8 * 3) + (8 * 2);
         float startX = (windowWidth - buttonsWidth) * 0.5f;
         ImGui::SetCursorPosX(startX);
         
-        // Style for bottom toolbar buttons
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 1));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));
         
-        // Tiny icons (8x8)
         ImVec2 buttonSize(8, 8);
         
         if (ImGui::Button(ICON_MS_SETTINGS "##settings", buttonSize)) {}
@@ -249,7 +294,7 @@ static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData*
         
         ImGui::SameLine();
         if (ImGui::Button(ICON_MS_DOCK "##dock", buttonSize)) {
-            nodeFlags ^= ImGuiWindowFlags_NoDocking;  // Toggle docking
+            nodeFlags ^= ImGuiWindowFlags_NoDocking;
         }
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Docking");
         
@@ -257,12 +302,12 @@ static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData*
         if (ImGui::Button(ICON_MS_DELETE "##delete", buttonSize)) {}
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete Node");
         
-        ImGui::PopStyleVar(2); // Pop bottom toolbar styles
+        ImGui::PopStyleVar(2);
     }
     ImGui::End();
     
-    ImGui::PopStyleColor(2); // Pop title colors
-    ImGui::PopStyleVar(3); // Pop window title alignment and widget styles
+    ImGui::PopStyleColor(2);
+    ImGui::PopStyleVar(3);
 }
 
 // Placeholder function - to be implemented properly later
