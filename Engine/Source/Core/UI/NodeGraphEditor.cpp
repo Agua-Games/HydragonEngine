@@ -207,71 +207,47 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
     
-    // Track positions for all connections
-    ImVec2 transformNodeOutputPos;
-    ImVec2 materialNodeInputPos;
-    ImVec2 materialNodeOutputPos;
-    ImVec2 outputNodeInputPos;
-    
-    // Render nodes and calculate connection points
-    {
-        ImVec2 transformNodePos = ImVec2(100, 100);
-        RenderExampleNode("Transform Node", transformNodePos, windowData);
+    // Example nodes with world space positions
+    RenderExampleNode("Transform Node", ImVec2(100, 100), windowData);
+    RenderExampleNode("Material Node", ImVec2(400, 150), windowData);
+    RenderExampleNode("Output Node", ImVec2(700, 200), windowData);
+
+    ImGui::PopStyleVar(3);
+
+    // Connection points and lines should also use WorldToScreen
+    if (showConnectionPoints) {
+        // Get node windows to calculate connection points
         ImGuiWindow* transformWindow = ImGui::FindWindowByName("Transform Node");
-        if (transformWindow) {
-            transformNodeOutputPos = ImVec2(
-                transformWindow->Pos.x + 250,  // Node width
-                transformWindow->Pos.y + 30    // Approximate Y position of "Result" text
-            );
-        }
-    }
-    
-    {
-        ImVec2 materialNodePos = ImVec2(400, 150);
-        RenderExampleNode("Material Node", materialNodePos, windowData);
         ImGuiWindow* materialWindow = ImGui::FindWindowByName("Material Node");
-        if (materialWindow) {
-            materialNodeInputPos = ImVec2(
-                materialWindow->Pos.x,        // Left side of the node
-                materialWindow->Pos.y + 50    // Approximate Y position of "Position" text
-            );
-            materialNodeOutputPos = ImVec2(
-                materialWindow->Pos.x + 250,  // Node width
-                materialWindow->Pos.y + 30    // Approximate Y position of "Result" text
-            );
-        }
-    }
-    
-    {
-        ImVec2 outputNodePos = ImVec2(700, 200);
-        RenderExampleNode("Output Node", outputNodePos, windowData);
         ImGuiWindow* outputWindow = ImGui::FindWindowByName("Output Node");
-        if (outputWindow) {
-            outputNodeInputPos = ImVec2(
-                outputWindow->Pos.x,        // Left side of the node
-                outputWindow->Pos.y + 50    // Approximate Y position of "Position" text
+
+        if (transformWindow && materialWindow && outputWindow) {
+            // Calculate connection points in world space
+            ImVec2 transformNodeOutputPos = ImVec2(
+                transformWindow->Pos.x + 250,
+                transformWindow->Pos.y + 30
             );
-        }
-    }
 
-    // Draw connections
-    const ImU32 lineColor = IM_COL32(127, 127, 127, 255);  // White with 0.3 alpha
-    const float lineThickness = 2.0f;
-    const float squareSize = 8.0f;  // Size of connection point squares
+            ImVec2 materialNodeInputPos = ImVec2(
+                materialWindow->Pos.x,
+                materialWindow->Pos.y + 50
+            );
 
-    // Draw connections with squares at endpoints
-    if (transformNodeOutputPos.x != 0 && materialNodeInputPos.x != 0) {
-        drawList->AddLine(transformNodeOutputPos, materialNodeInputPos, lineColor, lineThickness);
-        
-        if (showConnectionPoints) {
-            // Output square
+            // Draw connections using screen space positions
+            const ImU32 lineColor = IM_COL32(127, 127, 127, 255);
+            const float lineThickness = 2.0f;
+            const float squareSize = 8.0f;
+
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            drawList->AddLine(transformNodeOutputPos, materialNodeInputPos, lineColor, lineThickness);
+
+            // Draw connection squares
             drawList->AddRectFilled(
                 ImVec2(transformNodeOutputPos.x - squareSize/2, transformNodeOutputPos.y - squareSize/2),
                 ImVec2(transformNodeOutputPos.x + squareSize/2, transformNodeOutputPos.y + squareSize/2),
                 lineColor
             );
-            
-            // Input square
+
             drawList->AddRectFilled(
                 ImVec2(materialNodeInputPos.x - squareSize/2, materialNodeInputPos.y - squareSize/2),
                 ImVec2(materialNodeInputPos.x + squareSize/2, materialNodeInputPos.y + squareSize/2),
@@ -279,33 +255,30 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
             );
         }
     }
-
-    if (materialNodeOutputPos.x != 0 && outputNodeInputPos.x != 0) {
-        drawList->AddLine(materialNodeOutputPos, outputNodeInputPos, lineColor, lineThickness);
-        
-        if (showConnectionPoints) {
-            // Output square
-            drawList->AddRectFilled(
-                ImVec2(materialNodeOutputPos.x - squareSize/2, materialNodeOutputPos.y - squareSize/2),
-                ImVec2(materialNodeOutputPos.x + squareSize/2, materialNodeOutputPos.y + squareSize/2),
-                lineColor
-            );
-            
-            // Input square
-            drawList->AddRectFilled(
-                ImVec2(outputNodeInputPos.x - squareSize/2, outputNodeInputPos.y - squareSize/2),
-                ImVec2(outputNodeInputPos.x + squareSize/2, outputNodeInputPos.y + squareSize/2),
-                lineColor
-            );
-        }
-    }
-
-    ImGui::PopStyleVar(3);
 }
 
-static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData* windowData)
+// Add this struct to store node data
+struct NodeData {
+    ImVec2 worldPos;
+    bool isDragging;
+};
+
+// Add this at file scope
+static std::unordered_map<std::string, NodeData> nodePositions;
+
+static void RenderExampleNode(const char* title, ImVec2 initialWorldPos, HdEditorWindowData* windowData)
 {
-    ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
+    // Get or create node data
+    auto& nodeData = nodePositions[title];
+    if (nodeData.worldPos.x == 0 && nodeData.worldPos.y == 0) {
+        nodeData.worldPos = initialWorldPos;
+    }
+
+    // Transform current world position to screen space
+    ImVec2 screenPos = WorldToScreen(nodeData.worldPos, ImGui::GetCursorScreenPos());
+    
+    // Always set the window position to follow viewport
+    ImGui::SetNextWindowPos(screenPos);
     ImGui::SetNextWindowSize(ImVec2(250, 200), ImGuiCond_FirstUseEver);
     
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
@@ -321,10 +294,36 @@ static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData*
     ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.3f, 0.3f, 0.3f, 0.6f));
     ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.4f, 0.4f, 0.4f, 0.8f));
     
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 1.4f));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1.4f));
+    bool nodeOpen = ImGui::Begin(title, nullptr, nodeFlags);
     
-    if (ImGui::Begin(title, nullptr, nodeFlags)) {
+    ImGui::PopStyleColor(2);
+    ImGui::PopStyleVar();
+
+    if (nodeOpen)
+    {
+        // Handle node dragging
+        if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        {
+            if (!nodeData.isDragging)
+            {
+                nodeData.isDragging = true;
+            }
+        }
+        
+        if (nodeData.isDragging)
+        {
+            if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+            {
+                // Update world position based on screen delta
+                nodeData.worldPos.x += ImGui::GetIO().MouseDelta.x;
+                nodeData.worldPos.y += ImGui::GetIO().MouseDelta.y;
+            }
+            else
+            {
+                nodeData.isDragging = false;
+            }
+        }
+
         float windowWidth = ImGui::GetContentRegionAvail().x;
         float inputColumnWidth = windowWidth * (2.0f/3.0f);  // 2/3 of width for inputs
         float outputColumnWidth = windowWidth * (1.0f/3.0f); // 1/3 of width for outputs
@@ -393,9 +392,6 @@ static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData*
         ImGui::PopStyleVar(2);
     }
     ImGui::End();
-    
-    ImGui::PopStyleColor(2);
-    ImGui::PopStyleVar(3);
 }
 
 // Placeholder function - to be implemented properly later
