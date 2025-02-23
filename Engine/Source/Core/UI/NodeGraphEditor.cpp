@@ -632,6 +632,19 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
         }
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid");
         ImGui::SameLine();
+
+        // Add Grid Snapping toggle
+        static bool snapToGrid = false;
+        if (ImGui::Button(ICON_MS_GRID_4X4 "##GridSnap", windowData->iconDefaultSize)) {
+            snapToGrid = !snapToGrid;
+            ImNodesStyle& style = ImNodes::GetStyle();
+            if (snapToGrid)
+                style.Flags |= ImNodesStyleFlags_GridSnapping;
+            else
+                style.Flags &= ~ImNodesStyleFlags_GridSnapping;
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid Snapping");
+        ImGui::SameLine();
         
         ImGui::Dummy(ImVec2(5,0)); ImGui::SameLine();
     }
