@@ -14,6 +14,7 @@ namespace hdImgui {
 // Remove the NodeGraphState struct definition as it's now in the header
 
 static NodeGraphState graphState;
+static bool showConnectionPoints = true;  // Controls visibility of connection squares
 
 // Forward declare internal helper functions
 static void ShowNodeLibrary();
@@ -205,12 +206,50 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
     }
 
     // Draw connections
-    const ImU32 lineColor = IM_COL32(255, 255, 255, 76);  // White with 0.3 alpha
+    const ImU32 lineColor = IM_COL32(127, 127, 127, 255);  // White with 0.3 alpha
     const float lineThickness = 2.0f;
+    const float squareSize = 8.0f;  // Size of connection point squares
 
-    // Draw connections
-    drawList->AddLine(transformNodeOutputPos, materialNodeInputPos, lineColor, lineThickness);
-    drawList->AddLine(materialNodeOutputPos, outputNodeInputPos, lineColor, lineThickness);
+    // Draw connections with squares at endpoints
+    if (transformNodeOutputPos.x != 0 && materialNodeInputPos.x != 0) {
+        drawList->AddLine(transformNodeOutputPos, materialNodeInputPos, lineColor, lineThickness);
+        
+        if (showConnectionPoints) {
+            // Output square
+            drawList->AddRectFilled(
+                ImVec2(transformNodeOutputPos.x - squareSize/2, transformNodeOutputPos.y - squareSize/2),
+                ImVec2(transformNodeOutputPos.x + squareSize/2, transformNodeOutputPos.y + squareSize/2),
+                lineColor
+            );
+            
+            // Input square
+            drawList->AddRectFilled(
+                ImVec2(materialNodeInputPos.x - squareSize/2, materialNodeInputPos.y - squareSize/2),
+                ImVec2(materialNodeInputPos.x + squareSize/2, materialNodeInputPos.y + squareSize/2),
+                lineColor
+            );
+        }
+    }
+
+    if (materialNodeOutputPos.x != 0 && outputNodeInputPos.x != 0) {
+        drawList->AddLine(materialNodeOutputPos, outputNodeInputPos, lineColor, lineThickness);
+        
+        if (showConnectionPoints) {
+            // Output square
+            drawList->AddRectFilled(
+                ImVec2(materialNodeOutputPos.x - squareSize/2, materialNodeOutputPos.y - squareSize/2),
+                ImVec2(materialNodeOutputPos.x + squareSize/2, materialNodeOutputPos.y + squareSize/2),
+                lineColor
+            );
+            
+            // Input square
+            drawList->AddRectFilled(
+                ImVec2(outputNodeInputPos.x - squareSize/2, outputNodeInputPos.y - squareSize/2),
+                ImVec2(outputNodeInputPos.x + squareSize/2, outputNodeInputPos.y + squareSize/2),
+                lineColor
+            );
+        }
+    }
 
     ImGui::PopStyleVar(3);
 }
