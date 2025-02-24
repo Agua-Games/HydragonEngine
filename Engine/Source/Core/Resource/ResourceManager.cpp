@@ -96,18 +96,18 @@ void ResourceManager::LoadFonts() {
     icons_config.PixelSnapH = true;
     icons_config.GlyphMinAdvanceX = 0.0f;
     icons_config.GlyphMaxAdvanceX = 0.0f;
-    icons_config.GlyphOffset = ImVec2(0, 12.0f);
+    icons_config.GlyphOffset = ImVec2(0, 8.0f);
     
     // Load the icon font - FontAwesome
     m_iconFont = io.Fonts->AddFontFromFileTTF(
         //iconFontPath.c_str(),
         //"D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Assets\\Fonts\\Icons\\fa-6-regular-solid-900.ttf",
         "D:\\AguaGames\\HydragonEngine\\alpha\\Engine\\Assets\\Fonts\\Icons\\ms-sharp-filled-regular.ttf",
-        32.0f,
+        30.0f,
         &icons_config,
         icons_ranges
     );
-    
+    // 12, 32
     #if 0
     if (!m_iconFont) {
         printf("Failed to load icon font!\n");

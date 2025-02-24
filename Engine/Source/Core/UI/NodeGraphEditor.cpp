@@ -41,7 +41,7 @@ static bool showConnectionPoints = true;  // Controls visibility of connection s
 static bool showGrid = true;  // Add this at file scope with other static variables
 
 // Forward declare internal helper functions
-static void ShowNodeLibrary();
+static void RenderNodeLibrary();
 static void RenderNodeLibraryContent();
 static void RenderGraphCanvasContent(HdEditorWindowData* windowData);
 static void RenderMiniMapContent();
@@ -89,17 +89,15 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
         initialized = true;
     }
 
+    // Remove window padding for the main window itself
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
-
-    // Window padding & rounding, to gain more area, cleaner design
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f); 
-    // Manage border from child windows
-    ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
     
     if (!ImGui::Begin("Node Graph", p_open, ImGuiWindowFlags_MenuBar))
     {
+        ImGui::PopStyleVar(); // Pop window padding
         ImGui::End();
         return;
     }
@@ -140,39 +138,72 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
         ImGui::EndMenuBar();
     }
 
+    // Remove spacing and rounding for main layout elements
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
     // Top Toolbar
     RenderTopToolbar(p_open, windowData);
 
-    // Main Content Area
-    ImGui::BeginChild("NodeGraphContent", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave space for status bar
+    // Main Content Area - removed spacing before status bar
+    ImGui::BeginChild("NodeGraphContent", ImVec2(0, -ImGui::GetFrameHeight())); 
     
-    // Left panel for node library
-    ImGui::BeginChild("NodeLibrary", ImVec2(200, 0), true);
-    ShowNodeLibrary();
+    // Add resizable splitter for Node Library
+    static float libraryWidth = 200.0f;
+    const float minLibraryWidth = 100.0f;
+    const float maxLibraryWidth = 400.0f;
+
+    // Left panel for node library - with inner padding
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+    ImGui::BeginChild("NodeLibrary", ImVec2(libraryWidth, 0), true);
+    RenderNodeLibrary();
     ImGui::EndChild();
+    ImGui::PopStyleVar();
+
+    // Add resizable splitter
+    ImGui::SameLine();
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 0.3f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.7f, 0.7f, 0.3f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.9f, 0.9f, 0.3f));
+    ImGui::Button("##splitter", ImVec2(4.0f, -1));
+    if (ImGui::IsItemActive())
+    {
+        libraryWidth += ImGui::GetIO().MouseDelta.x;
+        libraryWidth = std::clamp(libraryWidth, minLibraryWidth, maxLibraryWidth);
+    }
+    if (ImGui::IsItemHovered())
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+    ImGui::PopStyleColor(3);
     
     ImGui::SameLine();
     
     // Main graph canvas
     ImGui::BeginChild("GraphCanvas", ImVec2(0, 0), true);
     RenderGraphCanvas(windowData);
-    ImGui::EndChild();      // End GraphCanvas
+    ImGui::EndChild();
 
-    ImGui::EndChild();      // End NodeGraphContent
+    ImGui::EndChild(); // End NodeGraphContent
     
     // Status Bar
     RenderStatusBar();
 
-    ImGui::PopStyleVar(3);   // Pop WindowPadding, WindowRounding
+    // Pop the style modifications for main layout
+    ImGui::PopStyleVar(4); // Pop WindowPadding, WindowRounding, ChildRounding, ItemSpacing
 
-    ImGui::End();           // End Node Graph
+    ImGui::End(); // End Node Graph
 }
 
-static void ShowNodeLibrary() 
+static void RenderNodeLibrary() 
 {
-    // Add some padding to the library
+    // Add padding inside the library window
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
     
-
+    // Push styles for internal content (keeping rounded corners for elements inside)
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 3));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
+    
     // Search bar
     static char searchBuffer[64] = "";
     ImGui::PushItemWidth(-1);
@@ -182,6 +213,8 @@ static void ShowNodeLibrary()
 
     // Library content
     RenderNodeLibraryContent();
+    
+    ImGui::PopStyleVar(3);  // Pop all three style vars
 }
 
 static void RenderNodeLibraryContent() 
@@ -211,13 +244,18 @@ static void RenderNodeLibraryContent()
 
 void RenderGraphCanvas(HdEditorWindowData* windowData) 
 {
+    // Push styles for internal content
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
+
     RenderGraphCanvasContent(windowData);
+
+    ImGui::PopStyleVar(3);  // Pop the three style vars we pushed
 }
 
 static void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);   // Add border to the canvas
-
     // Begin the node editor canvas
     ImNodes::BeginNodeEditor();
 
@@ -601,10 +639,11 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
 
     const float toolbarHeight = 35.0f; // Fixed height for toolbar
 
-    // Remove window rounding for the toolbar
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    // Make toolbar have no rounding
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f); 
 
-    ImGui::SetNextWindowSizeConstraints(ImVec2(200, toolbarHeight), ImVec2(FLT_MAX, toolbarHeight));
+    // Remove window rounding for the toolbar
+    ImGui::SetNextWindowSizeConstraints(ImVec2(200, toolbarHeight), ImVec2(FLT_MAX, toolbarHeight));    // Force fixed height
 
     // Create a child window with fixed height for the toolbar
     ImGui::BeginChild("NodeGraphToolbar", ImVec2(-1, toolbarHeight), true, 
@@ -698,9 +737,8 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
     }
     
     ImGui::PopStyleColor();
-    ImGui::PopStyleVar(4);
+    ImGui::PopStyleVar(5);
     ImGui::EndChild();
-    ImGui::PopStyleVar(); // Pop WindowRounding
 }
 
 static void RenderRightSidebar() 
@@ -739,7 +777,7 @@ static void RenderRightSidebar()
 
 static void RenderStatusBar() 
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 3));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
     ImGui::BeginChild("StatusBar", ImVec2(0, 24), true);
     
     // Performance stats
