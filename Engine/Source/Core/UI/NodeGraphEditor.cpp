@@ -16,6 +16,64 @@
 
 namespace hdImgui {
 
+// Constants for zoom limits
+constexpr float MIN_ZOOM_LEVEL = 0.2f;  // 20% of original size
+constexpr float MAX_ZOOM_LEVEL = 1.0f;  // Original/current size
+constexpr float ZOOM_SPEED = 0.1f;      // Zoom change per scroll tick
+
+struct NodeScaleProcessor {
+    float currentZoom = MAX_ZOOM_LEVEL;
+    bool isZooming = false;
+    
+    // Base values at zoom 1.0 (current/default values)
+    struct BaseStyle {
+        float nodePaddingX = 11.0f;
+        float nodePaddingY = 4.0f;
+        float nodeCornerRounding = 11.0f;
+        float pinOffset = 2.0f;
+        float pinQuadSideLength = 8.3f;
+        float linkThickness = 1.9f;
+        float gridSpacing = 32.0f;
+        // Add other base values as needed
+    } baseStyle;
+
+    void ApplyScale(ImNodesStyle& style) {
+        if (!isZooming) return;  // Only recalculate during active zooming
+
+        float scaleFactor = CalculateScaleFactor(currentZoom);
+        
+        // Apply scaled values
+        style.NodePadding = ImVec2(
+            baseStyle.nodePaddingX * scaleFactor,
+            baseStyle.nodePaddingY * scaleFactor
+        );
+        style.NodeCornerRounding = baseStyle.nodeCornerRounding * scaleFactor;
+        style.PinOffset = baseStyle.pinOffset * scaleFactor;
+        style.PinQuadSideLength = baseStyle.pinQuadSideLength * scaleFactor;
+        style.LinkThickness = baseStyle.linkThickness * scaleFactor;
+        style.GridSpacing = baseStyle.gridSpacing * scaleFactor;
+        
+        isZooming = false;  // Reset flag after applying
+    }
+
+private:
+    float CalculateScaleFactor(float zoom) {
+        // Option 1: Linear scaling (basic)
+        // return zoom;
+
+        // Option 2: Smooth logarithmic scaling (better for precision)
+        float logBase = 2.0f;
+        float logScale = log(zoom + 1.0f) / log(logBase);
+        return std::max(logScale, MIN_ZOOM_LEVEL);
+
+        // Option 3: Custom curve (to be implemented based on testing)
+        // return CustomEaseFunction(zoom);
+    }
+};
+
+// Global instance
+static NodeScaleProcessor nodeScaleProcessor;
+
 static NodeGraphState graphState;  // Instance of our state struct
 
 struct ViewportState {
@@ -671,6 +729,14 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
         
         if (ImGui::Button(ICON_MS_CROP_FREE "##Frame", windowData->iconDefaultSize)) {}
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Frame Selected (F)");
+        ImGui::SameLine();
+        
+        // Add Reset View button
+        if (ImGui::Button(ICON_MS_RESTART_ALT "##ResetView", windowData->iconDefaultSize)) {
+            viewport.viewPosition = ImVec2(0.0f, 0.0f);
+            ImNodes::EditorContextResetPanning(ImVec2(0.0f, 0.0f));
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Reset View");
         ImGui::SameLine();
         
         // Add Grid toggle
