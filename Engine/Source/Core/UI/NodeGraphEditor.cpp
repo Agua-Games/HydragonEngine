@@ -91,6 +91,12 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
 
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
+
+    // Window padding & rounding, to gain more area, cleaner design
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f); 
+    // Manage border from child windows
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
     
     if (!ImGui::Begin("Node Graph", p_open, ImGuiWindowFlags_MenuBar))
     {
@@ -150,24 +156,31 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
     // Main graph canvas
     ImGui::BeginChild("GraphCanvas", ImVec2(0, 0), true);
     RenderGraphCanvas(windowData);
-    ImGui::EndChild();
+    ImGui::EndChild();      // End GraphCanvas
 
-    ImGui::EndChild();
+    ImGui::EndChild();      // End NodeGraphContent
     
     // Status Bar
     RenderStatusBar();
 
-    ImGui::End();
+    ImGui::PopStyleVar(3);   // Pop WindowPadding, WindowRounding
+
+    ImGui::End();           // End Node Graph
 }
 
 static void ShowNodeLibrary() 
 {
+    // Add some padding to the library
+    
+
+    // Search bar
     static char searchBuffer[64] = "";
     ImGui::PushItemWidth(-1);
     ImGui::InputTextWithHint("##Search", ICON_MS_SEARCH " Search Nodes...", searchBuffer, IM_ARRAYSIZE(searchBuffer));
     ImGui::PopItemWidth();
     ImGui::Separator();
 
+    // Library content
     RenderNodeLibraryContent();
 }
 
@@ -194,13 +207,6 @@ static void RenderNodeLibraryContent()
         ImGui::Selectable("Multiply");
         ImGui::Selectable("Vector3");
     }
-
-    if (ImGui::CollapsingHeader("Graphs", ImGuiTreeNodeFlags_DefaultOpen))
-    {
-        ImGui::Selectable("Sub Graph");
-        ImGui::Selectable("Graph Input");
-        ImGui::Selectable("Graph Output");
-    }
 }
 
 void RenderGraphCanvas(HdEditorWindowData* windowData) 
@@ -210,6 +216,8 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
 
 static void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
 {
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);   // Add border to the canvas
+
     // Begin the node editor canvas
     ImNodes::BeginNodeEditor();
 
@@ -379,6 +387,8 @@ static void RenderGraphCanvasContent(HdEditorWindowData* windowData)
         
         ImGui::EndPopup();
     }
+
+    ImGui::PopStyleVar();       // Pop ChildBorderSize
 }
 
 // Add this struct to store node data
@@ -589,15 +599,17 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
     if (!p_open || !*p_open)
         return;
 
-    const float toolbarHeight = 30.0f; // Fixed height for toolbar
+    const float toolbarHeight = 35.0f; // Fixed height for toolbar
 
     // Remove window rounding for the toolbar
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 
+    ImGui::SetNextWindowSizeConstraints(ImVec2(200, toolbarHeight), ImVec2(FLT_MAX, toolbarHeight));
+
     // Create a child window with fixed height for the toolbar
     ImGui::BeginChild("NodeGraphToolbar", ImVec2(-1, toolbarHeight), true, 
         ImGuiWindowFlags_NoScrollbar | 
-        ImGuiWindowFlags_NoScrollWithMouse);
+       ImGuiWindowFlags_NoScrollWithMouse);
 
     // Match TopToolbar's style settings
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -622,6 +634,7 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
         if (ImGui::IsItemHovered()) ImGui::SetTooltip("Frame Selected (F)");
         ImGui::SameLine();
         
+        // Add Grid toggle
         if (ImGui::Button(ICON_MS_GRID_ON "##Grid", windowData->iconDefaultSize)) {
             showGrid = !showGrid;
             ImNodesStyle& style = ImNodes::GetStyle();
