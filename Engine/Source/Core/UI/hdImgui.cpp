@@ -72,9 +72,10 @@ namespace nodeEd = ax::NodeEditor;
 namespace hdImgui {
 
 // Static instance of window data
-static HdEditorWindowData hdEditorWindowData;
-// Declare node editor context
-static nodeEd::EditorContext* nodeEditorContext = nullptr;
+HdEditorWindowData hdEditorWindowData;
+// Declare imgui-node-editor context
+nodeEd::EditorContext* nodeEditorContext = nullptr;
+nodeEd::Config config;
 // Static variables for sleep/idle functionality
 static std::chrono::steady_clock::time_point s_lastInteractionTime;
 // rendering vars
@@ -161,16 +162,10 @@ void InitializeIconFont(HdEditorWindowData* windowData) {
     windowData->iconFont = resourceManager.GetIconFont();
 }
 
-/**
- * @brief Initializes the imgui-node-editor context, load and setup configuration.
- * imgui-node-editor is a third-party extension, external to imgui's repo.
- * @param windowData Editor window data containing global settings
- */
 void InitializeImguiNodeEditor(HdEditorWindowData* windowData) {
     if (!windowData) return;
 
-    static nodeEd::EditorContext* nodeEditorContext = nullptr;
-    nodeEd::Config config;
+    //nodeEd::Config config;
     config.SettingsFile = "NodeEditorSettings.json"; // Optional: save layout to file
 
     // Make sure navigation is enabled
@@ -264,6 +259,11 @@ void StyleColorsHydragonDark(){
     style.Colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
     style.Colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     style.Colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+
+    // Customize spacing and rounding - imgui-node-editor
+    //nodesStyle.NodePadding = ImVec4(11.0f, 4.0f, 11.0f, 4.0f);
+    //nodesStyle.NodeRounding = 11.0f;
+    //nodesStyle.LinkStrength = 1.9f;
 
     // Customize spacing and rounding - imnodes
     //nodesStyle.Flags = ImNodesStyleFlags_GridLines | ImNodesStyleFlags_NodeOutline | ImNodesStyleFlags_GridSnapping;

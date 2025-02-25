@@ -22,7 +22,32 @@ static NodeGraphState graphState;  // Instance of our state struct
 struct ViewportState {
     ImVec2 viewPosition = ImVec2(0.0f, 0.0f);  // Camera position in world space
     float zoom = 1.0f;  // For future use
-} viewport;     // Our viewport state
+} viewport;
+
+struct NodeData {
+    ImVec2 worldPos;
+    bool isDragging;
+};
+
+struct NodeConnection {
+    nodeEd::PinId outputPinId;
+    nodeEd::PinId inputPinId;
+    nodeEd::NodeId outputNodeId;
+    nodeEd::NodeId inputNodeId;
+};
+
+struct LinkInfo
+{
+    nodeEd::LinkId Id;
+    nodeEd::PinId InputId;
+    nodeEd::PinId OutputId;
+};
+
+static bool g_FirstFrame = true;
+static ImVector<LinkInfo> g_Links;
+static int g_NextId = 1; // Used to generate unique IDs
+static bool showConnectionPoints = true;  // Controls visibility of connection squares
+static std::unordered_map<std::string, NodeData> nodePositions;
 
 static ImVec2 WorldToScreen(const ImVec2& worldPos, const ImVec2& canvasOrigin) {
     // 1. Transform from world space to view space (subtract camera position)
@@ -38,8 +63,6 @@ static ImVec2 WorldToScreen(const ImVec2& worldPos, const ImVec2& canvasOrigin) 
     );
 }
 
-static bool showConnectionPoints = true;  // Controls visibility of connection squares
-
 // Forward declare internal helper functions
 static void RenderNodeLibrary();
 static void RenderNodeLibraryContent();
@@ -53,25 +76,6 @@ static void RenderGraphCanvas(HdEditorWindowData* windowData);
 // Forward declarations
 static void RenderExampleNode();
 static bool IsInputConnected(const char* inputName);
-
-struct NodeConnection {
-    nodeEd::PinId outputPinId;
-    nodeEd::PinId inputPinId;
-    nodeEd::NodeId outputNodeId;
-    nodeEd::NodeId inputNodeId;
-};
-
-// At file scope, following basic-interaction-example.cpp (in ThirdParty/imgui-node-editor) structure
-struct LinkInfo
-{
-    nodeEd::LinkId Id;
-    nodeEd::PinId InputId;
-    nodeEd::PinId OutputId;
-};
-
-static bool g_FirstFrame = true;
-static ImVector<LinkInfo> g_Links;
-static int g_NextId = 1; // Used to generate unique IDs
 
 void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData) 
 {   
@@ -452,15 +456,6 @@ void RenderGraphCanvasContent(HdEditorWindowData* windowData)
 { 
 
 }
-
-// Add this struct to store node data
-struct NodeData {
-    ImVec2 worldPos;
-    bool isDragging;
-};
-
-// Add this at file scope
-static std::unordered_map<std::string, NodeData> nodePositions;
 
 static void RenderExampleNode()
 {

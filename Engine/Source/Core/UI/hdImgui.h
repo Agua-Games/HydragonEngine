@@ -148,13 +148,22 @@ struct HdEditorWindowData
 bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData);
 void Cleanup();
 
-// Add function declaration for ImGui initialization
+/**
+ * @brief Initializes ImGui.
+ * @param window The GLFW window to initialize ImGui for.
+ */
 void InitializeImgui(GLFWwindow* window);
 
-// Add function declaration for icon font initialization
+/**
+ * @brief Initializes the icon font.
+ */
 void InitializeIconFont(HdEditorWindowData* windowData);
 
-// Add function declaration for imgui-node-editor initialization
+/**
+ * @brief Initializes the imgui-node-editor context, load and setup configuration.
+ * imgui-node-editor is a third-party extension, external to imgui's repo.
+ * @param windowData Editor window data containing global settings
+ */
 void InitializeImguiNodeEditor(HdEditorWindowData* windowData);
 
 #if 0
