@@ -11,6 +11,7 @@
 namespace hdImgui {
 
 struct NodeGraphState {
+    bool snapToGrid = false;
     float zoomLevel = 1.0f;
     ImVec2 panOffset = ImVec2(0.0f, 0.0f);
     bool isDragging = false;

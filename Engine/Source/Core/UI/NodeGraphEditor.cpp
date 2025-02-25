@@ -540,23 +540,43 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Pan Tool (H)");
             ImGui::SameLine();
             
-            if (ImGui::Button(ICON_MS_CROP_FREE "##Frame", windowData->iconDefaultSize)) {}
+            // Frame Selected button
+            if (ImGui::Button(ICON_MS_CROP_FREE "##Frame", windowData->iconDefaultSize)) {
+                // Use NavigateToSelection to frame selected nodes
+                ed::NavigateToSelection(true); 
+            }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Frame Selected (F)");
             ImGui::SameLine();
             
-            // Add Reset View button
-            if (ImGui::Button(ICON_MS_RESTART_ALT "##ResetView", windowData->iconDefaultSize)) {}
+            // Reset View button
+            if (ImGui::Button(ICON_MS_RESTART_ALT "##ResetView", windowData->iconDefaultSize)) {
+                // Use NavigateToContent to reset view
+                ed::NavigateToContent();
+            }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Reset View");
             ImGui::SameLine();
             
-            // Add Grid toggle
-            if (ImGui::Button(ICON_MS_GRID_ON "##Grid", windowData->iconDefaultSize)) {}
+            // Add Grid toggle using opacity
+            static bool showGrid = true;
+            if (ImGui::Button(ICON_MS_GRID_ON "##Grid", windowData->iconDefaultSize)) {
+                showGrid = !showGrid;
+                // Toggle grid visibility by changing its opacity
+                windowData->nodeGraphEditor_GridOpacity = showGrid ? 1.0f : 0.0f;
+                
+                // Apply the grid opacity to the editor
+                ed::GetStyle().Colors[ed::StyleColor_Grid] = ImColor(1.0f, 1.0f, 1.0f, windowData->nodeGraphEditor_GridOpacity);
+            }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid");
             ImGui::SameLine();
 
             // Add Grid Snapping toggle
-            static bool snapToGrid = false;
-            if (ImGui::Button(ICON_MS_GRID_4X4 "##GridSnap", windowData->iconDefaultSize)) {}
+            if (ImGui::Button(ICON_MS_GRID_4X4 "##GridSnap", windowData->iconDefaultSize)) {
+                // Toggle grid snapping in the state - Hydragon UI state keeping
+                windowData->nodeGraphState.snapToGrid = !windowData->nodeGraphState.snapToGrid;
+                
+                // toggle grid snapping in imgui-node-editor code (this one is what actually toggles grid snapping.
+                //ed::Config::EnableGridSnap = !ed::GetConfig().EnableGridSnap;
+            }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid Snapping");
             ImGui::SameLine();
             
@@ -598,17 +618,13 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Quick Save (Ctrl+S)");
         }
         
-        // Make sure to pop all style modifications
+        // Pop all the style modifications
         ImGui::PopStyleColor();
-        ImGui::PopStyleVar(5); // Pop all 4 style vars we pushed
-        
-        ImGui::EndChild();
+        ImGui::PopStyleVar(4);
     }
-    else
-    {
-        // If BeginChild fails, still pop the style var we pushed before it
-        ImGui::PopStyleVar(); // Pop ChildRounding
-    }
+    ImGui::EndChild();
+    
+    ImGui::PopStyleVar(); // Pop ChildRounding
 }
 
 static void RenderRightSidebar() 
