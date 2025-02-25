@@ -81,23 +81,64 @@ static std::chrono::steady_clock::time_point s_lastInteractionTime;
 // rendering vars
 
 // =========== Initialization ===========
-void InitializeWindows(){
+void InitializeWindows(HdEditorWindowData* windowData){
     #if 0
     hdEditor::Initialize();
+    hdMainMenu::Initialize();
     hdTopToolbar::Initialize();
     hdLeftToolbar::Initialize();
     hdRightToolbar::Initialize();
     hdBottomToolbar::Initialize();
-    hdCommandsConsole::Initialize();
     hdScriptsPalette::Initialize();
-    hdViewport3D::Initialize();
-    hdViewport2D::Initialize();
-    hdImageEditor::Initialize();
-    hdSceneGraphEditor::Initialize();
+    hdCommandsPalette::Initialize();
+    hdConsoleEditor::Initialize();
     hdScriptEditor::Initialize();
+    hdViewport3D::Initialize();
+    hdViewport3DTools::Initialize();
+    hdViewport2D::Initialize();
+    hdViewport2DTools::Initialize();
+    hdImageTools::Initialize();
+    hdSceneGraphEditor::Initialize();
+    #endif
+    hdImgui::InitializeNodeGraphEditor(windowData);
+    #if 0
     hdMacroEditor::Initialize();
     hdPropertyEditor::Initialize();
+    hdAssetManager::Initialize();
+    hdChimeraPipelineEditor::Initialize();
+    hdAgentsEditor::Initialize();
+    hdLightingEditor::Initialize();
+    hdPhysicsEditor::Initialize();
+    hdBottomStatusBar::Initialize();
+    hdFileExplorer::Initialize();
+    hdPatternOrchestrator::Initialize();
+    hdProfiler::Initialize();
+    hdStreamingEditor::Initialize();
+    hdImageTools::Initialize();
+    hdAudioEditor::Initialize();
+    hdMontageEditor::Initialize();
+    hdFontEditor::Initialize();
+    hdPluginEditor::Initialize();
+    hdExtensionsEditor::Initialize();
+    hdMacrosEditor::Initialize();
+    hdDramaEditor::Initialize();
+    hdUIEditor::Initialize();
+    hdNetworkingEditor::Initialize();
+    hdPerformanceScalabilityEditor::Initialize();
+    hdReflectionEditor::Initialize();
+    hdCollaborationEditor::Initialize();
+    hdCommunityEditor::Initialize();
+    hdMonetizationEditor::Initialize();
+    hdProjectInsightsEditor::Initialize();
+    hdInputEditor::Initialize();
+    hdPropertiesMatrixEditor::Initialize();
+    hdLocalizationEditor::Initialize();
     hdSetttingsEditor::Initialize();
+    hdMeshEditor::Initialize();
+    hdVolumeEditor::Initialize();
+    hdPresetsEditor::Initialize();
+    hdDebugEditor::Initialize();
+    hdAITaskEditor::Initialize();
     #endif
 }
 
@@ -117,7 +158,7 @@ bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData) {
     
     // === Windows, sub-editors ===
     // Initialize each ImGui window (Editor windows, sub-editors, etc.)
-    InitializeWindows();
+    InitializeWindows(windowData);
 
     return true;
 }
@@ -418,7 +459,7 @@ void RenderHydragonEditor(HdEditorWindowData* windowData) {
     // Commands Palette
     if (windowData->isCommandsPaletteWindowOpen) { hdImgui::ShowCommandsPalette(&windowData->isCommandsPaletteWindowOpen, windowData); }
     // Console Editor
-    if (windowData->isConsoleWindowOpen) { hdImgui::ShowConsole(&windowData->isConsoleWindowOpen, windowData); }
+    if (windowData->isConsoleWindowOpen) { hdImgui::ShowConsoleEditor(&windowData->isConsoleWindowOpen, windowData); }
     // Script Editor
     if (windowData->isScriptWindowOpen) { hdImgui::ShowScriptEditor(&windowData->isScriptWindowOpen, windowData); }
     // Viewport 3D

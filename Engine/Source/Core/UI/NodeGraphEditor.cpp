@@ -1,6 +1,16 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * The Node Graph Editor uses imgui and the imgui-node-editor (extension) library.
+ * The implementation will be based on the example provided in the imgui-node-editor repository.
+ * TODO:
+ *  - Properly separate imgui-node-editor's initialization and destruction (move these to hdImgui) from render/update (implemented here).
+ *  - Cleanup and refactor the whole file, after each session of bringing code snippets from the examples.
+ *      - Get rid of unused structs, variables etc.
+ *      - Organize the code into logical sections and functions.
+ *      - Put the file into proper order, well-structured, cohesive.
+ *      - Gradually move it closer to the blueprints-example.cpp file, as this file has the most complete implementation.
  */
 #include <string>
 #include <vector>
@@ -23,6 +33,18 @@ struct ViewportState {
     ImVec2 viewPosition = ImVec2(0.0f, 0.0f);  // Camera position in world space
     float zoom = 1.0f;  // For future use
 } viewport;
+
+enum class PinType
+{
+    Flow,
+    Bool,
+    Int,
+    Float,
+    String,
+    Object,
+    Function,
+    Delegate,
+};
 
 struct NodeData {
     ImVec2 worldPos;
@@ -48,6 +70,11 @@ static ImVector<LinkInfo> g_Links;
 static int g_NextId = 1; // Used to generate unique IDs
 static bool showConnectionPoints = true;  // Controls visibility of connection squares
 static std::unordered_map<std::string, NodeData> nodePositions;
+
+void InitializeNodeGraphEditor(HdEditorWindowData* windowData) {
+    // Initialize node graph state
+    //graphState = NodeGraphState();
+}
 
 static ImVec2 WorldToScreen(const ImVec2& worldPos, const ImVec2& canvasOrigin) {
     // 1. Transform from world space to view space (subtract camera position)

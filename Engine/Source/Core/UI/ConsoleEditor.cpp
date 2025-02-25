@@ -26,7 +26,7 @@ static ImVec4 WARNING_COLOR = ImVec4(0.85f, 0.85f, 0.45f, 1.00f);
 static ImVec4 ERROR_COLOR   = ImVec4(0.85f, 0.45f, 0.45f, 1.00f);
 static ImVec4 DEBUG_COLOR   = ImVec4(0.45f, 0.65f, 0.85f, 1.00f);
 
-void ShowConsole(bool* p_open, HdEditorWindowData* windowData) 
+void ShowConsoleEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     

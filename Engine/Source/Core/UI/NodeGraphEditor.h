@@ -14,6 +14,8 @@ namespace hdImgui {
 
 struct HdEditorWindowData;
 
+void InitializeNodeGraphEditor(HdEditorWindowData* windowData);
+
 /**
  * Shows the node graph editor window.
  * @param p_open Pointer to boolean controlling window visibility
