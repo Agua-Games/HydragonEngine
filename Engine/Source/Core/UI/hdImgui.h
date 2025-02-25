@@ -148,8 +148,14 @@ struct HdEditorWindowData
 bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData);
 void Cleanup();
 
+// Add function declaration for ImGui initialization
+void InitializeImgui(GLFWwindow* window);
+
 // Add function declaration for icon font initialization
 void InitializeIconFont(HdEditorWindowData* windowData);
+
+// Add function declaration for imgui-node-editor initialization
+void InitializeImguiNodeEditor(HdEditorWindowData* windowData);
 
 #if 0
 void InitializeWindows();

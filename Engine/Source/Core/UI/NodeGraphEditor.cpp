@@ -9,7 +9,7 @@
 #include "IconsMaterialSymbols.h"
 #include <imgui.h>
 #include "imgui_node_editor.h"
-namespace ed = ax::NodeEditor;
+namespace nodeEd = ax::NodeEditor;
 
 #include "NodeGraphEditor.h"
 #include "NodeGraphState.h"
@@ -55,18 +55,18 @@ static void RenderExampleNode();
 static bool IsInputConnected(const char* inputName);
 
 struct NodeConnection {
-    ed::PinId outputPinId;
-    ed::PinId inputPinId;
-    ed::NodeId outputNodeId;
-    ed::NodeId inputNodeId;
+    nodeEd::PinId outputPinId;
+    nodeEd::PinId inputPinId;
+    nodeEd::NodeId outputNodeId;
+    nodeEd::NodeId inputNodeId;
 };
 
 // At file scope, following basic-interaction-example.cpp (in ThirdParty/imgui-node-editor) structure
 struct LinkInfo
 {
-    ed::LinkId Id;
-    ed::PinId InputId;
-    ed::PinId OutputId;
+    nodeEd::LinkId Id;
+    nodeEd::PinId InputId;
+    nodeEd::PinId OutputId;
 };
 
 static bool g_FirstFrame = true;
@@ -112,10 +112,10 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
         {
             if (ImGui::MenuItem("Straight Links")) {}
             if (ImGui::MenuItem("Reset Panning")) {
-                ed::NavigateToContent();
+                nodeEd::NavigateToContent();
             }
             if (ImGui::MenuItem("Reset Zoom")) {
-                ed::NavigateToContent();  // This will reset both panning and zoom
+                nodeEd::NavigateToContent();  // This will reset both panning and zoom
             }
             if (ImGui::MenuItem("Frame All")) {}
             if (ImGui::MenuItem("Frame Selected")) {}
@@ -162,7 +162,6 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
     if (ImGui::IsItemHovered())
         ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
     ImGui::PopStyleColor(3);
-    
     ImGui::SameLine();
     
     // Main graph canvas
@@ -171,7 +170,7 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::EndChild();
 
     ImGui::EndChild(); // End NodeGraphContent
-    
+
     // Status Bar
     RenderStatusBar();
 
@@ -185,11 +184,11 @@ static void RenderNodeLibrary()
 {
     // Add padding inside the library window
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-    
+
     // Push styles for internal content (keeping rounded corners for elements inside)
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 3));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
-    
+
     // Search bar
     static char searchBuffer[64] = "";
     ImGui::PushItemWidth(-1);
@@ -199,7 +198,7 @@ static void RenderNodeLibrary()
 
     // Library content
     RenderNodeLibraryContent();
-    
+
     // Make sure to pop all style vars
     ImGui::PopStyleVar(3);  // Pop all three style vars
 }
@@ -232,45 +231,45 @@ static void RenderNodeLibraryContent()
 void RenderGraphCanvas(HdEditorWindowData* windowData)
 {
     // Initialize editor context if not already done
-    static ed::EditorContext* g_Context = nullptr;
-    if (g_Context == nullptr)
+    static nodeEd::EditorContext* nodeEditorContext = nullptr;
+    if (nodeEditorContext == nullptr)
     {
-        ed::Config config;
+        nodeEd::Config config;
         config.SettingsFile = "NodeEditorSettings.json"; // Optional: save layout to file
         
         // Make sure navigation is enabled
         config.NavigateButtonIndex = ImGuiMouseButton_Middle;  // Middle mouse button for panning
         config.DragButtonIndex = ImGuiMouseButton_Left;        // Left mouse button for dragging nodes
         
-        g_Context = ed::CreateEditor(&config);
+        nodeEditorContext = nodeEd::CreateEditor(&config);
     }
 
     // Set current editor context
-    ed::SetCurrentEditor(g_Context);
+    nodeEd::SetCurrentEditor(nodeEditorContext);
     
     // Begin the node editor canvas
-    ed::Begin("Node Editor", ImVec2(0.0f, 0.0f));
+    nodeEd::Begin("Node Editor", ImVec2(0.0f, 0.0f));
     
     // === FIRST NODE ===
-    static ed::NodeId nodeId1 = 1;
-    static ed::PinId inputPinId1 = 2;
-    static ed::PinId outputPinId1 = 3;
+    static nodeEd::NodeId nodeId1 = 1;
+    static nodeEd::PinId inputPinId1 = 2;
+    static nodeEd::PinId outputPinId1 = 3;
     
     // === SECOND NODE ===
-    static ed::NodeId nodeId2 = 4;
-    static ed::PinId inputPinId2 = 5;
-    static ed::PinId outputPinId2 = 6;
+    static nodeEd::NodeId nodeId2 = 4;
+    static nodeEd::PinId inputPinId2 = 5;
+    static nodeEd::PinId outputPinId2 = 6;
     
     // Set node positions only once
     if (g_FirstFrame)
     {
-        ed::SetNodePosition(nodeId1, ImVec2(200, 200));
-        ed::SetNodePosition(nodeId2, ImVec2(500, 200));
+        nodeEd::SetNodePosition(nodeId1, ImVec2(200, 200));
+        nodeEd::SetNodePosition(nodeId2, ImVec2(500, 200));
         g_FirstFrame = false;
     }
     
     // Begin first node
-    ed::BeginNode(nodeId1);
+    nodeEd::BeginNode(nodeId1);
     
     // Node title
     ImGui::TextUnformatted("Node A");
@@ -279,22 +278,22 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     ImGui::Dummy(ImVec2(100, 10));
     
     // Input pin
-    ed::BeginPin(inputPinId1, ed::PinKind::Input);
+    nodeEd::BeginPin(inputPinId1, nodeEd::PinKind::Input);
     ImGui::TextUnformatted("-> Input");
-    ed::EndPin();
+    nodeEd::EndPin();
     
     ImGui::SameLine();
     
     // Output pin
-    ed::BeginPin(outputPinId1, ed::PinKind::Output);
+    nodeEd::BeginPin(outputPinId1, nodeEd::PinKind::Output);
     ImGui::TextUnformatted("Output ->");
-    ed::EndPin();
+    nodeEd::EndPin();
     
     // End first node
-    ed::EndNode();
+    nodeEd::EndNode();
     
     // Begin second node
-    ed::BeginNode(nodeId2);
+    nodeEd::BeginNode(nodeId2);
     
     // Node title
     ImGui::TextUnformatted("Node B");
@@ -303,31 +302,31 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     ImGui::Dummy(ImVec2(100, 10));
     
     // Input pin
-    ed::BeginPin(inputPinId2, ed::PinKind::Input);
+    nodeEd::BeginPin(inputPinId2, nodeEd::PinKind::Input);
     ImGui::TextUnformatted("-> Input");
-    ed::EndPin();
+    nodeEd::EndPin();
     
     ImGui::SameLine();
     
     // Output pin
-    ed::BeginPin(outputPinId2, ed::PinKind::Output);
+    nodeEd::BeginPin(outputPinId2, nodeEd::PinKind::Output);
     ImGui::TextUnformatted("Output ->");
-    ed::EndPin();
+    nodeEd::EndPin();
     
     // End second node
-    ed::EndNode();
+    nodeEd::EndNode();
     
     // Draw existing links
     for (auto& link : g_Links)
     {
-        ed::Link(link.Id, link.InputId, link.OutputId);
+        nodeEd::Link(link.Id, link.InputId, link.OutputId);
     }
     
     // Handle interactions for creating links
-    if (ed::BeginCreate())
+    if (nodeEd::BeginCreate())
     {
-        ed::PinId startPinId, endPinId;
-        if (ed::QueryNewLink(&startPinId, &endPinId))
+        nodeEd::PinId startPinId, endPinId;
+        if (nodeEd::QueryNewLink(&startPinId, &endPinId))
         {
             // Check if connection is valid (output to input)
             if (startPinId && endPinId)
@@ -337,7 +336,7 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
                 bool startPinIsInput = (startPinId == inputPinId1 || startPinId == inputPinId2);
                 bool endPinIsInput = (endPinId == inputPinId1 || endPinId == inputPinId2);
                 
-                ed::PinId inputPinId = 0, outputPinId = 0;
+                nodeEd::PinId inputPinId = 0, outputPinId = 0;
                 
                 if (startPinIsInput && !endPinIsInput)
                 {
@@ -352,7 +351,7 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
                 else
                 {
                     // Invalid connection (input to input or output to output)
-                    ed::RejectNewItem(ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+                    nodeEd::RejectNewItem(ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
                     ImGui::SetTooltip("Cannot connect pins of the same type!");
                     inputPinId = outputPinId = 0;
                 }
@@ -373,14 +372,14 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
                     if (connectionExists)
                     {
                         // Connection already exists
-                        ed::RejectNewItem(ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
+                        nodeEd::RejectNewItem(ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
                         ImGui::SetTooltip("Connection already exists!");
                     }
-                    else if (ed::AcceptNewItem())
+                    else if (nodeEd::AcceptNewItem())
                     {
                         // Add a new link
                         LinkInfo link;
-                        link.Id = ed::LinkId(g_NextId++);
+                        link.Id = nodeEd::LinkId(g_NextId++);
                         link.InputId = inputPinId;
                         link.OutputId = outputPinId;
                         g_Links.push_back(link);
@@ -388,17 +387,17 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
                 }
             }
         }
-        ed::EndCreate();
+        nodeEd::EndCreate();
     }
     
     // Handle node/link deletion
-    if (ed::BeginDelete())
+    if (nodeEd::BeginDelete())
     {
         // Handle link deletion
-        ed::LinkId linkId;
-        while (ed::QueryDeletedLink(&linkId))
+        nodeEd::LinkId linkId;
+        while (nodeEd::QueryDeletedLink(&linkId))
         {
-            if (ed::AcceptDeletedItem())
+            if (nodeEd::AcceptDeletedItem())
             {
                 // Remove the link with this ID
                 for (int i = 0; i < g_Links.size(); ++i)
@@ -413,10 +412,10 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
         }
         
         // Handle node deletion
-        ed::NodeId nodeId;
-        while (ed::QueryDeletedNode(&nodeId))
+        nodeEd::NodeId nodeId;
+        while (nodeEd::QueryDeletedNode(&nodeId))
         {
-            if (ed::AcceptDeletedItem())
+            if (nodeEd::AcceptDeletedItem())
             {
                 // In a real application, you would delete the node here
                 // For this example, we'll just log it
@@ -439,14 +438,14 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
             }
         }
         
-        ed::EndDelete();
+        nodeEd::EndDelete();
     }
     
     // End the node editor canvas
-    ed::End();
+    nodeEd::End();
     
     // Reset the current editor to nullptr (good practice)
-    ed::SetCurrentEditor(nullptr);
+    nodeEd::SetCurrentEditor(nullptr);
 }
 
 void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
@@ -543,7 +542,7 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             // Frame Selected button
             if (ImGui::Button(ICON_MS_CROP_FREE "##Frame", windowData->iconDefaultSize)) {
                 // Use NavigateToSelection to frame selected nodes
-                ed::NavigateToSelection(true); 
+                nodeEd::NavigateToSelection(true); 
             }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Frame Selected (F)");
             ImGui::SameLine();
@@ -551,7 +550,7 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             // Reset View button
             if (ImGui::Button(ICON_MS_RESTART_ALT "##ResetView", windowData->iconDefaultSize)) {
                 // Use NavigateToContent to reset view
-                ed::NavigateToContent();
+                nodeEd::NavigateToContent();
             }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Reset View");
             ImGui::SameLine();
@@ -564,7 +563,7 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
                 windowData->nodeGraphEditor_GridOpacity = showGrid ? 1.0f : 0.0f;
                 
                 // Apply the grid opacity to the editor
-                ed::GetStyle().Colors[ed::StyleColor_Grid] = ImColor(1.0f, 1.0f, 1.0f, windowData->nodeGraphEditor_GridOpacity);
+                nodeEd::GetStyle().Colors[nodeEd::StyleColor_Grid] = ImColor(1.0f, 1.0f, 1.0f, windowData->nodeGraphEditor_GridOpacity);
             }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid");
             ImGui::SameLine();
@@ -575,7 +574,7 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
                 windowData->nodeGraphState.snapToGrid = !windowData->nodeGraphState.snapToGrid;
                 
                 // toggle grid snapping in imgui-node-editor code (this one is what actually toggles grid snapping.
-                //ed::Config::EnableGridSnap = !ed::GetConfig().EnableGridSnap;
+                //nodeEd::Config::EnableGridSnap = !nodeEd::GetConfig().EnableGridSnap;
             }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid Snapping");
             ImGui::SameLine();

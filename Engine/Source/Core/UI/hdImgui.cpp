@@ -13,7 +13,7 @@
 #include <imgui.h>
 //#include <imnodes.h>
 #include "imgui_node_editor.h"
-namespace ed = ax::NodeEditor;
+namespace nodeEd = ax::NodeEditor;
 
 #include "hdImgui.h"
 #include "ResourceManager.h"
@@ -74,7 +74,7 @@ namespace hdImgui {
 // Static instance of window data
 static HdEditorWindowData hdEditorWindowData;
 // Declare node editor context
-static ed::EditorContext* g_NodeEditorContext = nullptr;
+static nodeEd::EditorContext* nodeEditorContext = nullptr;
 // Static variables for sleep/idle functionality
 static std::chrono::steady_clock::time_point s_lastInteractionTime;
 // rendering vars
@@ -103,27 +103,9 @@ void InitializeWindows(){
 bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData) {
     if (!window) return false;
 
-    #if 0
-    // Initialize ImGui
-    IMGUI_CHECKVERSION();
-    #endif
-    //ImNodes::CreateContext();
-    // Initialize node editor context
-    ed::Config config;
-    config.SettingsFile = "NodeEditor.json";
-    g_NodeEditorContext = ed::CreateEditor(&config);
-    #if 0
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-    // Initialize ImGui GLFW and Vulkan implementation
-    ImGui_ImplGlfw_InitForVulkan(window, true);
-    #endif
-
-    // Initialize icon font
-    auto& resourceManager = hd::ResourceManager::GetInstance();
-    windowData->iconFont = resourceManager.GetIconFont();
+    //InitializeImgui(window);                         // imgui is the main UI library
+    //InitializeImguiNodeEditor(windowData);           // imgui-node-editor is an imgui extension
+    InitializeIconFont(windowData);                  // Initialize icon font
 
     // Set default style
     StyleColorsHydragonDark();
@@ -140,24 +122,61 @@ bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData) {
 }
 
 void Cleanup() {
-    // Cleanup node editor context (before imgui).
+    // Cleanup imgui-node-editor context (before imgui).
     // Order of cleanup is always the reverse of initialization
-    if (g_NodeEditorContext) {
-        ed::DestroyEditor(g_NodeEditorContext);
-        g_NodeEditorContext = nullptr;
+    if (nodeEditorContext) {
+        nodeEd::DestroyEditor(nodeEditorContext);
+        nodeEditorContext = nullptr;
     }
 
     // Destroy ImGui context
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
     //ImNodes::DestroyContext();
+    }
+
+void InitializeImgui(GLFWwindow* window) {
+    if (!window) return;
+
+    // Initialize ImGui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+
+
+    // Initialize ImGui GLFW and Vulkan implementation
+    ImGui_ImplGlfw_InitForVulkan(window, true);
 }
 
 void InitializeIconFont(HdEditorWindowData* windowData) {
     if (!windowData) return;
-    
+
+    // Get the singleton instance of ResourceManager
     auto& resourceManager = hd::ResourceManager::GetInstance();
+    // Set the icon font pointer in the window data
     windowData->iconFont = resourceManager.GetIconFont();
+}
+
+/**
+ * @brief Initializes the imgui-node-editor context, load and setup configuration.
+ * imgui-node-editor is a third-party extension, external to imgui's repo.
+ * @param windowData Editor window data containing global settings
+ */
+void InitializeImguiNodeEditor(HdEditorWindowData* windowData) {
+    if (!windowData) return;
+
+    static nodeEd::EditorContext* nodeEditorContext = nullptr;
+    nodeEd::Config config;
+    config.SettingsFile = "NodeEditorSettings.json"; // Optional: save layout to file
+
+    // Make sure navigation is enabled
+    config.NavigateButtonIndex = ImGuiMouseButton_Middle;  // Middle mouse button for panning
+    config.DragButtonIndex = ImGuiMouseButton_Left;        // Left mouse button for dragging nodes
+    nodeEditorContext = nodeEd::CreateEditor(&config);
 }
 
 // =========== Styling ===========
@@ -168,7 +187,7 @@ void StyleColorsHydragonDark(){
     // Get a referenc to the style structure
     ImGuiStyle& style = ImGui::GetStyle();
     //ImNodesStyle& nodesStyle = ImNodes::GetStyle();     // imnodes imgui extension
-    ed::Style& nodesStyle = ed::GetStyle();
+    nodeEd::Style& nodesStyle = nodeEd::GetStyle();
 
     // Customize spacing and rounding
     style.WindowPadding = ImVec2(15.0f, 15.0f);  // Padding within windows
