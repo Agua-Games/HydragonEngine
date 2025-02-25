@@ -32,6 +32,9 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+# Imgui - Add global definitions for ImGui math operators
+add_compile_definitions(IMGUI_DEFINE_MATH_OPERATORS)
+
 # =====================================================================
 # Detect Platform
 # =====================================================================
@@ -165,6 +168,13 @@ include_directories(${IMGUI_DIR})
 set(IMNODES_DIR ${THIRD-PARTY_SOURCE_DIR}/imnodes)
 include_directories(${IMNODES_DIR})
 
+
+# =====================================================================
+# Third-party libraries: imgui-node-editor
+# =====================================================================
+set(IMGUI-NODE-EDITOR_DIR ${THIRD-PARTY_SOURCE_DIR}/imgui-node-editor)
+include_directories(${IMGUI-NODE-EDITOR_DIR})
+
 # =====================================================================
 # Third-party libraries: Vulkan
 # =====================================================================
@@ -217,6 +227,11 @@ set(SRC_FILES_MANUAL
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
     ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
     ${IMNODES_DIR}/imnodes.cpp
+    ${IMGUI-NODE-EDITOR_DIR}/crude_json.cpp
+    ${IMGUI-NODE-EDITOR_DIR}/imgui_canvas.cpp
+    ${IMGUI-NODE-EDITOR_DIR}/imgui_node_editor.cpp
+    ${IMGUI-NODE-EDITOR_DIR}/imgui_node_editor_api.cpp
+
     #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp    # removed in favor of our own Core/Graphics/Vulkan/VulkanBackend.cpp
 )
 
@@ -272,6 +287,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${IMNODES_DIR})
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${IMGUI-NODE-EDITOR_DIR})
 
 # ======================================================================================
 # Include engine directories (Core, Devtools, Editor) to target executable

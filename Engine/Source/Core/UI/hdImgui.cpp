@@ -11,7 +11,9 @@
 #include <imgui_internal.h>  // For internal ImGui functions if needed
 #include <imgui_impl_glfw.h>
 #include <imgui.h>
-#include <imnodes.h>
+//#include <imnodes.h>
+#include "imgui_node_editor.h"
+namespace ed = ax::NodeEditor;
 
 #include "hdImgui.h"
 #include "ResourceManager.h"
@@ -71,6 +73,8 @@ namespace hdImgui {
 
 // Static instance of window data
 static HdEditorWindowData hdEditorWindowData;
+// Declare node editor context
+static ed::EditorContext* g_NodeEditorContext = nullptr;
 // Static variables for sleep/idle functionality
 static std::chrono::steady_clock::time_point s_lastInteractionTime;
 // rendering vars
@@ -103,7 +107,11 @@ bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData) {
     // Initialize ImGui
     IMGUI_CHECKVERSION();
     #endif
-    ImNodes::CreateContext();
+    //ImNodes::CreateContext();
+    // Initialize node editor context
+    ed::Config config;
+    config.SettingsFile = "NodeEditor.json";
+    g_NodeEditorContext = ed::CreateEditor(&config);
     #if 0
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -132,10 +140,17 @@ bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData) {
 }
 
 void Cleanup() {
+    // Cleanup node editor context (before imgui).
+    // Order of cleanup is always the reverse of initialization
+    if (g_NodeEditorContext) {
+        ed::DestroyEditor(g_NodeEditorContext);
+        g_NodeEditorContext = nullptr;
+    }
+
     // Destroy ImGui context
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    ImNodes::DestroyContext();
+    //ImNodes::DestroyContext();
 }
 
 void InitializeIconFont(HdEditorWindowData* windowData) {
@@ -152,7 +167,8 @@ void StyleColorsHydragonDark(){
 
     // Get a referenc to the style structure
     ImGuiStyle& style = ImGui::GetStyle();
-    ImNodesStyle& nodesStyle = ImNodes::GetStyle();     // imnodes imgui extension
+    //ImNodesStyle& nodesStyle = ImNodes::GetStyle();     // imnodes imgui extension
+    ed::Style& nodesStyle = ed::GetStyle();
 
     // Customize spacing and rounding
     style.WindowPadding = ImVec2(15.0f, 15.0f);  // Padding within windows
@@ -233,6 +249,7 @@ void StyleColorsHydragonDark(){
     // Customize spacing and rounding - imnodes
     //nodesStyle.Flags = ImNodesStyleFlags_GridLines | ImNodesStyleFlags_NodeOutline | ImNodesStyleFlags_GridSnapping;
     //nodesStyle.Flags = ImNodesStyleFlags_GridLines | ImNodesStyleFlags_NodeOutline;
+    /*
     nodesStyle.NodePadding = ImVec2(11.0f, 4.0f);
     nodesStyle.NodeCornerRounding = 11.0f;
     nodesStyle.PinOffset = 2.0f;
@@ -253,6 +270,7 @@ void StyleColorsHydragonDark(){
     nodesStyle.Colors[ImNodesCol_Pin] = IM_COL32(150, 150, 150, 150);
     nodesStyle.Colors[ImNodesCol_PinHovered] = IM_COL32(200, 200, 200, 180);
     nodesStyle.Colors[ImNodesCol_GridLine] = IM_COL32(70, 72, 72, 180);
+    */
 }
 
 void StyleColorsHydragonLight() {

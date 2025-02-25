@@ -30,10 +30,10 @@ This document lists all third-party libraries used by Hydragon Engine and their 
   - Location: `Engine/Source/ThirdParty/volk`
   - Notes: Used for Vulkan loading and function resolution
 
-- **imnodes**: Node editor extension for Dear ImGui
-  - Version: Latest as of [date]
-  - Repository: https://github.com/Nelarius/imnodes
-  - Location: `Engine/Source/Core/NodeGraph/imnodes`
+- **imgui-node-editor**: Node editor extension for Dear ImGui
+  - Version: v0.9.3
+  - Repository: https://github.com/thedmd/imgui-node-editor.git
+  - Location: `Engine/Source/ThirdParty/imgui-node-editor`
   - License: MIT
   - Notes: Integrated directly (not as submodule) to allow engine-specific customizations
 

@@ -3,9 +3,13 @@
  * Licensed under the Agua Games License 1.0
  */
 #pragma once
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_node_editor.h"
+#include "imgui_node_editor_internal.h"  // Required for imgui-node-editor
 #include <string>
-#include <GLFW/glfw3.h>  // Include GLFW header for GLFWwindow
-#include <imgui.h>  // Include ImGui's header
+#include <GLFW/glfw3.h>  // Include GLFW header for GLFWwindow. Required also for imgui-node-editor
 #include "NodeGraphState.h"  // Add this include
 
 /**

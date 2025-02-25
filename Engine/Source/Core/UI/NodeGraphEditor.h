@@ -3,8 +3,11 @@
  * Licensed under the Agua Games License 1.0
  */
 #pragma once
-#include <string>
-#include "imgui.h"
+#include <string>                           // Required for imgui-node-editor
+#include <imgui.h>                          // Required for imgui-node-editor
+//#include "imgui_impl_glfw.h"
+//#include "imgui_impl_opengl3.h"
+#include "imgui_node_editor.h"
 
 namespace hdImgui {
 

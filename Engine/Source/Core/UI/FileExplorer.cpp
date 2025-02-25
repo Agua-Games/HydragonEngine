@@ -2,16 +2,15 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  */
-#include <imgui.h>
 #include <string>
 #include <vector>
 #include <filesystem>
 #include <algorithm>
-
 #include "fmt/core.h"
 #include "fmt/format.h"
 #include "IconsFontAwesome6.h"
 #include "IconsMaterialSymbols.h"
+#include <imgui.h>
 
 #include "FileExplorer.h"
 #include "hdImgui.h"

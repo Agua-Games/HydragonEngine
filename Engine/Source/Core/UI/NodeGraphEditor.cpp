@@ -6,73 +6,16 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
-#include <imgui_internal.h>
 #include "IconsMaterialSymbols.h"
-#include "imnodes.h"
+#include <imgui.h>
+#include "imgui_node_editor.h"
+namespace ed = ax::NodeEditor;
 
 #include "NodeGraphEditor.h"
 #include "NodeGraphState.h"
 #include "hdImgui.h"
 
 namespace hdImgui {
-
-// Constants for zoom limits
-constexpr float MIN_ZOOM_LEVEL = 0.2f;  // 20% of original size
-constexpr float MAX_ZOOM_LEVEL = 1.0f;  // Original/current size
-constexpr float ZOOM_SPEED = 0.1f;      // Zoom change per scroll tick
-
-struct NodeScaleProcessor {
-    float currentZoom = MAX_ZOOM_LEVEL;
-    bool isZooming = false;
-    
-    // Base values at zoom 1.0 (current/default values)
-    struct BaseStyle {
-        float nodePaddingX = 11.0f;
-        float nodePaddingY = 4.0f;
-        float nodeCornerRounding = 11.0f;
-        float pinOffset = 2.0f;
-        float pinQuadSideLength = 8.3f;
-        float linkThickness = 1.9f;
-        float gridSpacing = 32.0f;
-        // Add other base values as needed
-    } baseStyle;
-
-    void ApplyScale(ImNodesStyle& style) {
-        if (!isZooming) return;  // Only recalculate during active zooming
-
-        float scaleFactor = CalculateScaleFactor(currentZoom);
-        
-        // Apply scaled values
-        style.NodePadding = ImVec2(
-            baseStyle.nodePaddingX * scaleFactor,
-            baseStyle.nodePaddingY * scaleFactor
-        );
-        style.NodeCornerRounding = baseStyle.nodeCornerRounding * scaleFactor;
-        style.PinOffset = baseStyle.pinOffset * scaleFactor;
-        style.PinQuadSideLength = baseStyle.pinQuadSideLength * scaleFactor;
-        style.LinkThickness = baseStyle.linkThickness * scaleFactor;
-        style.GridSpacing = baseStyle.gridSpacing * scaleFactor;
-        
-        isZooming = false;  // Reset flag after applying
-    }
-
-private:
-    float CalculateScaleFactor(float zoom) {
-        // Option 1: Linear scaling (basic)
-        // return zoom;
-
-        // Option 2: Smooth logarithmic scaling (better for precision)
-        float logBase = 2.0f;
-        float logScale = log(zoom + 1.0f) / log(logBase);
-        return std::max(logScale, MIN_ZOOM_LEVEL);
-
-        // Option 3: Custom curve (to be implemented based on testing)
-        // return CustomEaseFunction(zoom);
-    }
-};
-
-// Global instance
-static NodeScaleProcessor nodeScaleProcessor;
 
 static NodeGraphState graphState;  // Instance of our state struct
 
@@ -96,7 +39,6 @@ static ImVec2 WorldToScreen(const ImVec2& worldPos, const ImVec2& canvasOrigin) 
 }
 
 static bool showConnectionPoints = true;  // Controls visibility of connection squares
-static bool showGrid = true;  // Add this at file scope with other static variables
 
 // Forward declare internal helper functions
 static void RenderNodeLibrary();
@@ -109,45 +51,30 @@ static void RenderStatusBar();
 static void RenderGraphCanvas(HdEditorWindowData* windowData);
 
 // Forward declarations
-static void RenderExampleNode(const char* title, ImVec2 pos, HdEditorWindowData* windowData);
+static void RenderExampleNode();
 static bool IsInputConnected(const char* inputName);
 
 struct NodeConnection {
-    int inputNodeId;
-    int outputNodeId;
-    int inputPinId;
-    int outputPinId;
+    ed::PinId outputPinId;
+    ed::PinId inputPinId;
+    ed::NodeId outputNodeId;
+    ed::NodeId inputNodeId;
 };
 
-static ImNodesContext* g_NodesContext = nullptr;
-static std::vector<NodeConnection> g_Connections;
-static int g_NextNodeId = 1;
-static int g_NextPinId = 1;
+// At file scope, following basic-interaction-example.cpp (in ThirdParty/imgui-node-editor) structure
+struct LinkInfo
+{
+    ed::LinkId Id;
+    ed::PinId InputId;
+    ed::PinId OutputId;
+};
 
-// Initialize imnodes in the namespace (before any function)
-static void InitializeImNodes() {
-    //g_NodesContext = ImNodes::CreateContext();
-    //ImNodes::StyleColorsDark();
-    ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
-}
-
-// Cleanup function
-static void ShutdownImNodes() {
-    if (g_NodesContext) {
-        ImNodes::DestroyContext(g_NodesContext);
-        g_NodesContext = nullptr;
-    }
-}
+static bool g_FirstFrame = true;
+static ImVector<LinkInfo> g_Links;
+static int g_NextId = 1; // Used to generate unique IDs
 
 void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData) 
-{
-    static bool initialized = false;
-    if (!initialized) {
-        InitializeImNodes();
-        initialized = true;
-    }
-
-    // Remove window padding for the main window itself
+{   
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
@@ -155,7 +82,7 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
     
     if (!ImGui::Begin("Node Graph", p_open, ImGuiWindowFlags_MenuBar))
     {
-        ImGui::PopStyleVar(); // Pop window padding
+        ImGui::PopStyleVar();
         ImGui::End();
         return;
     }
@@ -183,12 +110,13 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
         }
         if (ImGui::BeginMenu("View"))
         {
-            static bool useStraightLinks = false;
-            if (ImGui::MenuItem("Straight Links", nullptr, &useStraightLinks)) {
-                ImNodesStyle& style = ImNodes::GetStyle();
-                style.LinkLineSegmentsPerLength = useStraightLinks ? 0.0f : 0.1f;
+            if (ImGui::MenuItem("Straight Links")) {}
+            if (ImGui::MenuItem("Reset Panning")) {
+                ed::NavigateToContent();
             }
-            if (ImGui::MenuItem("Reset View")) {}
+            if (ImGui::MenuItem("Reset Zoom")) {
+                ed::NavigateToContent();  // This will reset both panning and zoom
+            }
             if (ImGui::MenuItem("Frame All")) {}
             if (ImGui::MenuItem("Frame Selected")) {}
             ImGui::EndMenu();
@@ -248,7 +176,7 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
     RenderStatusBar();
 
     // Pop the style modifications for main layout
-    ImGui::PopStyleVar(4); // Pop WindowPadding, WindowRounding, ChildRounding, ItemSpacing
+    ImGui::PopStyleVar(5); // Pop WindowPadding, WindowRounding, ChildRounding, ItemSpacing
 
     ImGui::End(); // End Node Graph
 }
@@ -272,6 +200,7 @@ static void RenderNodeLibrary()
     // Library content
     RenderNodeLibraryContent();
     
+    // Make sure to pop all style vars
     ImGui::PopStyleVar(3);  // Pop all three style vars
 }
 
@@ -300,191 +229,229 @@ static void RenderNodeLibraryContent()
     }
 }
 
-void RenderGraphCanvas(HdEditorWindowData* windowData) 
+void RenderGraphCanvas(HdEditorWindowData* windowData)
 {
-    // Push styles for internal content
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
+    // Initialize editor context if not already done
+    static ed::EditorContext* g_Context = nullptr;
+    if (g_Context == nullptr)
+    {
+        ed::Config config;
+        config.SettingsFile = "NodeEditorSettings.json"; // Optional: save layout to file
+        
+        // Make sure navigation is enabled
+        config.NavigateButtonIndex = ImGuiMouseButton_Middle;  // Middle mouse button for panning
+        config.DragButtonIndex = ImGuiMouseButton_Left;        // Left mouse button for dragging nodes
+        
+        g_Context = ed::CreateEditor(&config);
+    }
 
-    RenderGraphCanvasContent(windowData);
-
-    ImGui::PopStyleVar(3);  // Pop the three style vars we pushed
+    // Set current editor context
+    ed::SetCurrentEditor(g_Context);
+    
+    // Begin the node editor canvas
+    ed::Begin("Node Editor", ImVec2(0.0f, 0.0f));
+    
+    // === FIRST NODE ===
+    static ed::NodeId nodeId1 = 1;
+    static ed::PinId inputPinId1 = 2;
+    static ed::PinId outputPinId1 = 3;
+    
+    // === SECOND NODE ===
+    static ed::NodeId nodeId2 = 4;
+    static ed::PinId inputPinId2 = 5;
+    static ed::PinId outputPinId2 = 6;
+    
+    // Set node positions only once
+    if (g_FirstFrame)
+    {
+        ed::SetNodePosition(nodeId1, ImVec2(200, 200));
+        ed::SetNodePosition(nodeId2, ImVec2(500, 200));
+        g_FirstFrame = false;
+    }
+    
+    // Begin first node
+    ed::BeginNode(nodeId1);
+    
+    // Node title
+    ImGui::TextUnformatted("Node A");
+    
+    // Add some content to make the node bigger and easier to grab
+    ImGui::Dummy(ImVec2(100, 10));
+    
+    // Input pin
+    ed::BeginPin(inputPinId1, ed::PinKind::Input);
+    ImGui::TextUnformatted("-> Input");
+    ed::EndPin();
+    
+    ImGui::SameLine();
+    
+    // Output pin
+    ed::BeginPin(outputPinId1, ed::PinKind::Output);
+    ImGui::TextUnformatted("Output ->");
+    ed::EndPin();
+    
+    // End first node
+    ed::EndNode();
+    
+    // Begin second node
+    ed::BeginNode(nodeId2);
+    
+    // Node title
+    ImGui::TextUnformatted("Node B");
+    
+    // Add some content to make the node bigger and easier to grab
+    ImGui::Dummy(ImVec2(100, 10));
+    
+    // Input pin
+    ed::BeginPin(inputPinId2, ed::PinKind::Input);
+    ImGui::TextUnformatted("-> Input");
+    ed::EndPin();
+    
+    ImGui::SameLine();
+    
+    // Output pin
+    ed::BeginPin(outputPinId2, ed::PinKind::Output);
+    ImGui::TextUnformatted("Output ->");
+    ed::EndPin();
+    
+    // End second node
+    ed::EndNode();
+    
+    // Draw existing links
+    for (auto& link : g_Links)
+    {
+        ed::Link(link.Id, link.InputId, link.OutputId);
+    }
+    
+    // Handle interactions for creating links
+    if (ed::BeginCreate())
+    {
+        ed::PinId startPinId, endPinId;
+        if (ed::QueryNewLink(&startPinId, &endPinId))
+        {
+            // Check if connection is valid (output to input)
+            if (startPinId && endPinId)
+            {
+                // Since we can't directly query pin kind, we'll use our knowledge of how we set up the pins
+                // We know that pins 2 and 5 are inputs, and pins 3 and 6 are outputs
+                bool startPinIsInput = (startPinId == inputPinId1 || startPinId == inputPinId2);
+                bool endPinIsInput = (endPinId == inputPinId1 || endPinId == inputPinId2);
+                
+                ed::PinId inputPinId = 0, outputPinId = 0;
+                
+                if (startPinIsInput && !endPinIsInput)
+                {
+                    inputPinId = startPinId;
+                    outputPinId = endPinId;
+                }
+                else if (!startPinIsInput && endPinIsInput)
+                {
+                    inputPinId = endPinId;
+                    outputPinId = startPinId;
+                }
+                else
+                {
+                    // Invalid connection (input to input or output to output)
+                    ed::RejectNewItem(ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+                    ImGui::SetTooltip("Cannot connect pins of the same type!");
+                    inputPinId = outputPinId = 0;
+                }
+                
+                if (inputPinId && outputPinId)
+                {
+                    // Check if this connection already exists
+                    bool connectionExists = false;
+                    for (auto& link : g_Links)
+                    {
+                        if (link.InputId == inputPinId && link.OutputId == outputPinId)
+                        {
+                            connectionExists = true;
+                            break;
+                        }
+                    }
+                    
+                    if (connectionExists)
+                    {
+                        // Connection already exists
+                        ed::RejectNewItem(ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
+                        ImGui::SetTooltip("Connection already exists!");
+                    }
+                    else if (ed::AcceptNewItem())
+                    {
+                        // Add a new link
+                        LinkInfo link;
+                        link.Id = ed::LinkId(g_NextId++);
+                        link.InputId = inputPinId;
+                        link.OutputId = outputPinId;
+                        g_Links.push_back(link);
+                    }
+                }
+            }
+        }
+        ed::EndCreate();
+    }
+    
+    // Handle node/link deletion
+    if (ed::BeginDelete())
+    {
+        // Handle link deletion
+        ed::LinkId linkId;
+        while (ed::QueryDeletedLink(&linkId))
+        {
+            if (ed::AcceptDeletedItem())
+            {
+                // Remove the link with this ID
+                for (int i = 0; i < g_Links.size(); ++i)
+                {
+                    if (g_Links[i].Id == linkId)
+                    {
+                        g_Links.erase(g_Links.begin() + i);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Handle node deletion
+        ed::NodeId nodeId;
+        while (ed::QueryDeletedNode(&nodeId))
+        {
+            if (ed::AcceptDeletedItem())
+            {
+                // In a real application, you would delete the node here
+                // For this example, we'll just log it
+                ImGui::SetTooltip("Node %d deleted", nodeId.Get());
+                
+                // Remove all links connected to this node
+                for (int i = g_Links.size() - 1; i >= 0; --i)
+                {
+                    // This is a simplified check - in a real app, you'd need to know which pins belong to which nodes
+                    // For this example, we're just showing the concept
+                    if (nodeId.Get() == 1 && (g_Links[i].InputId == inputPinId1 || g_Links[i].OutputId == outputPinId1))
+                    {
+                        g_Links.erase(g_Links.begin() + i);
+                    }
+                    else if (nodeId.Get() == 4 && (g_Links[i].InputId == inputPinId2 || g_Links[i].OutputId == outputPinId2))
+                    {
+                        g_Links.erase(g_Links.begin() + i);
+                    }
+                }
+            }
+        }
+        
+        ed::EndDelete();
+    }
+    
+    // End the node editor canvas
+    ed::End();
+    
+    // Reset the current editor to nullptr (good practice)
+    ed::SetCurrentEditor(nullptr);
 }
 
-static void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
-{
-    // Begin the node editor canvas
-    ImNodes::BeginNodeEditor();
+void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
+{ 
 
-    // Example nodes (we'll expand this later)
-    {
-        ImNodes::BeginNode(1);
-
-        ImNodes::BeginNodeTitleBar();
-        ImGui::TextUnformatted("Transform Node");
-        ImNodes::EndNodeTitleBar();
-
-        // Input pins - set to filled squares
-        ImNodes::PushAttributeFlag(ImNodesAttributeFlags_None);
-        ImNodes::BeginInputAttribute(1, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
-        ImGui::Text("Position");
-        ImNodes::EndInputAttribute();
-
-        ImNodes::BeginInputAttribute(2, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
-        ImGui::Text("Rotation");
-        ImNodes::EndInputAttribute();
-
-        // Output pin - set to filled square
-        ImNodes::BeginOutputAttribute(3, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
-        ImGui::Indent(120);
-        ImGui::Text("Output");
-        ImNodes::EndOutputAttribute();
-
-        ImNodes::EndNode();
-    }
-
-    {
-        ImNodes::BeginNode(2);
-
-        ImNodes::BeginNodeTitleBar();
-        ImGui::TextUnformatted("Material Node");
-        ImNodes::EndNodeTitleBar();
-
-        ImNodes::BeginInputAttribute(4, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
-        ImGui::Text("Color");
-        ImNodes::EndInputAttribute();
-
-        ImNodes::BeginOutputAttribute(5, ImNodesPinShape_QuadFilled);  // Using QuadFilled shape
-        ImGui::Indent(120);
-        ImGui::Text("Output");
-        ImNodes::EndOutputAttribute();
-
-        ImNodes::EndNode();
-    }
-
-    // Render existing links
-    for (const NodeConnection& connection : g_Connections) {
-        ImNodes::Link(
-            connection.inputNodeId * 1000 + connection.outputNodeId,
-            connection.outputPinId,
-            connection.inputPinId
-        );
-    }
-
-    ImNodes::EndNodeEditor();
-
-    // Handle new connections
-    int startPinId, endPinId;
-    if (ImNodes::IsLinkCreated(&startPinId, &endPinId)) {
-        NodeConnection newConnection;
-        newConnection.outputPinId = startPinId;
-        newConnection.inputPinId = endPinId;
-        newConnection.outputNodeId = startPinId / 1000;
-        newConnection.inputNodeId = endPinId / 1000;
-        g_Connections.push_back(newConnection);
-    }
-
-    // Handle connection deletion
-    int linkId;
-    if (ImNodes::IsLinkDestroyed(&linkId)) {
-        // Remove the connection with the matching ID
-        g_Connections.erase(
-            std::remove_if(
-                g_Connections.begin(),
-                g_Connections.end(),
-                [linkId](const NodeConnection& conn) {
-                    return (conn.inputNodeId * 1000 + conn.outputNodeId) == linkId;
-                }
-            ),
-            g_Connections.end()
-        );
-    }
-
-    // Add node context menu
-    int nodeId;
-    if (ImNodes::IsNodeHovered(&nodeId) && ImGui::IsMouseClicked(1)) // Right click
-    {
-        ImGui::OpenPopup("NodeContextMenu");
-    }
-
-    // Render context menu
-    if (ImGui::BeginPopup("NodeContextMenu"))
-    {
-        if (ImGui::MenuItem("Delete Node")) {
-            // TODO: Implement node deletion
-            // You'll need to:
-            // 1. Remove the node from your data structure
-            // 2. Remove any connections to/from this node
-        }
-        
-        if (ImGui::MenuItem("Duplicate Node")) {
-            // TODO: Implement node duplication
-        }
-        
-        if (ImGui::MenuItem("Copy")) {
-            // TODO: Implement node copying
-        }
-        
-        ImGui::Separator();
-        
-        if (ImGui::BeginMenu("Add Input")) {
-            if (ImGui::MenuItem("Float")) {
-                // TODO: Add float input
-            }
-            if (ImGui::MenuItem("Vector3")) {
-                // TODO: Add vector3 input
-            }
-            if (ImGui::MenuItem("String")) {
-                // TODO: Add string input
-            }
-            ImGui::EndMenu();
-        }
-        
-        if (ImGui::BeginMenu("Add Output")) {
-            if (ImGui::MenuItem("Float")) {
-                // TODO: Add float output
-            }
-            if (ImGui::MenuItem("Vector3")) {
-                // TODO: Add vector3 output
-            }
-            if (ImGui::MenuItem("String")) {
-                // TODO: Add string output
-            }
-            ImGui::EndMenu();
-        }
-        
-        ImGui::EndPopup();
-    }
-
-    // Background context menu (when right-clicking on empty space)
-    if (ImGui::IsMouseClicked(1) && !ImGui::IsAnyItemHovered()) 
-    {
-        ImGui::OpenPopup("BackgroundContextMenu");
-    }
-
-    if (ImGui::BeginPopup("BackgroundContextMenu"))
-    {
-        if (ImGui::MenuItem("Add Transform Node")) {
-            // TODO: Create new transform node at mouse position
-        }
-        if (ImGui::MenuItem("Add Material Node")) {
-            // TODO: Create new material node at mouse position
-        }
-        if (ImGui::MenuItem("Add Math Node")) {
-            // TODO: Create new math node at mouse position
-        }
-        
-        ImGui::Separator();
-        
-        if (ImGui::MenuItem("Paste")) {
-            // TODO: Implement node pasting
-        }
-        
-        ImGui::EndPopup();
-    }
-
-    ImGui::PopStyleVar();       // Pop ChildBorderSize
 }
 
 // Add this struct to store node data
@@ -496,166 +463,10 @@ struct NodeData {
 // Add this at file scope
 static std::unordered_map<std::string, NodeData> nodePositions;
 
-static void RenderExampleNode(const char* title, ImVec2 initialWorldPos, HdEditorWindowData* windowData)
+static void RenderExampleNode()
 {
-    // Get or create node data
-    auto& nodeData = nodePositions[title];
-    if (nodeData.worldPos.x == 0 && nodeData.worldPos.y == 0) {
-        nodeData.worldPos = initialWorldPos;
-    }
-
-    // Transform current world position to screen space
-    ImVec2 screenPos = WorldToScreen(nodeData.worldPos, ImGui::GetCursorScreenPos());
-    
-    // Get canvas boundaries
-    ImVec2 canvasMin = ImGui::GetWindowPos();
-    ImVec2 canvasMax = ImVec2(canvasMin.x + ImGui::GetWindowSize().x, 
-                             canvasMin.y + ImGui::GetWindowSize().y);
-
-    // Skip rendering if the node is completely outside the canvas
-    ImVec2 nodeSize(250, 200); // Use actual node size
-    if (screenPos.x + nodeSize.x < canvasMin.x || 
-        screenPos.y + nodeSize.y < canvasMin.y ||
-        screenPos.x > canvasMax.x || 
-        screenPos.y > canvasMax.y)
-    {
-        return;
-    }
-
-    // Set the viewport to match the canvas area
-    ImGui::SetNextWindowViewport(ImGui::GetWindowViewport()->ID);
-    
-    // Always set the window position to follow viewport
-    ImGui::SetNextWindowPos(screenPos);
-    ImGui::SetNextWindowSize(nodeSize, ImGuiCond_FirstUseEver);
-    
-    ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    
-    ImGuiWindowFlags nodeFlags = 
-        ImGuiWindowFlags_NoSavedSettings |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoScrollWithMouse |
-        ImGuiWindowFlags_NoDocking |
-        ImGuiWindowFlags_NoFocusOnAppearing;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5f, 0.5f));
-    ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.3f, 0.3f, 0.3f, 0.6f));
-    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.4f, 0.4f, 0.4f, 0.8f));
-    
-    bool nodeOpen = ImGui::Begin(title, nullptr, nodeFlags);
-    
-    ImGui::PopStyleColor(2);
-    ImGui::PopStyleVar();
-
-    if (nodeOpen)
-    {
-        // Handle node dragging
-        if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
-        {
-            if (!nodeData.isDragging)
-            {
-                nodeData.isDragging = true;
-            }
-        }
-        
-        if (nodeData.isDragging)
-        {
-            if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            {
-                // Update world position based on screen delta
-                nodeData.worldPos.x += ImGui::GetIO().MouseDelta.x;
-                nodeData.worldPos.y += ImGui::GetIO().MouseDelta.y;
-            }
-            else
-            {
-                nodeData.isDragging = false;
-            }
-        }
-
-        float windowWidth = ImGui::GetContentRegionAvail().x;
-        float inputColumnWidth = windowWidth * (2.0f/3.0f);  // 2/3 of width for inputs
-        float outputColumnWidth = windowWidth * (1.0f/3.0f); // 1/3 of width for outputs
-
-        // Add this at the top of the window
-        if (ImGui::BeginMenuBar()) {
-            if (ImGui::BeginMenu("View")) {
-                static bool useStraightLinks = false;
-                if (ImGui::MenuItem("Straight Links", nullptr, &useStraightLinks)) {
-                    ImNodesStyle& style = ImNodes::GetStyle();
-                    // When true, make links nearly straight by using many segments
-                    // When false, use fewer segments for more curved links
-                    style.LinkLineSegmentsPerLength = useStraightLinks ? 0.9f : 0.1f;
-                }
-                ImGui::EndMenu();
-            }
-            ImGui::EndMenuBar();
-        }
-
-        // Left column (Inputs)
-        ImGui::BeginGroup();
-        {
-            // Speed input
-            ImGui::Text("Speed"); ImGui::SameLine();
-            if (!IsInputConnected("Speed")) {
-                ImGui::SetNextItemWidth(inputColumnWidth - ImGui::GetItemRectSize().x - ImGui::GetStyle().ItemSpacing.x - 10);
-                float speed = 2.0f;
-                if (ImGui::SliderFloat("##Speed", &speed, 0.0f, 10.0f)) {
-                    // Handle value change
-                }
-                if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Speed of the transformation\nType: float [0.0 - 10.0]");
-                }
-            }
-
-            // Position input
-            ImGui::Text("Position");
-            if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip("World position\nType: Vector3");
-            }
-        }
-        ImGui::EndGroup();
-
-        // Right column (Outputs)
-        ImGui::SameLine(inputColumnWidth);
-        ImGui::BeginGroup();
-        {
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + outputColumnWidth - ImGui::CalcTextSize("Result").x - 4);
-            ImGui::Text("Result");
-            if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip("Transformed result\nType: Matrix4x4");
-            }
-        }
-        ImGui::EndGroup();
-
-        // Bottom toolbar with centered tiny icons
-        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 20);
-        
-        float buttonsWidth = (8 * 3) + (8 * 2);
-        float startX = (windowWidth - buttonsWidth) * 0.5f;
-        ImGui::SetCursorPosX(startX);
-        
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 1));
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));
-        
-        ImVec2 buttonSize(8, 8);
-        
-        if (ImGui::Button(ICON_MS_SETTINGS "##settings", buttonSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Node Settings");
-        
-        ImGui::SameLine();
-        if (ImGui::Button(ICON_MS_DOCK "##dock", buttonSize)) {
-            nodeFlags ^= ImGuiWindowFlags_NoDocking;
-        }
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Docking");
-        
-        ImGui::SameLine();
-        if (ImGui::Button(ICON_MS_DELETE "##delete", buttonSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete Node");
-        
-        ImGui::PopStyleVar(2);
-    }
-    ImGui::End();
+    // This function is intentionally empty for now
+    // We'll implement it step by step after we confirm the canvas works
 }
 
 // Placeholder function - to be implemented properly later
@@ -666,6 +477,7 @@ static bool IsInputConnected(const char* inputName)
 
 void RenderMiniMap() 
 {
+    // Position and size the minimap window
     ImGui::SetNextWindowPos(
         ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x - 210,
                ImGui::GetWindowPos().y + ImGui::GetWindowSize().y - 160),
@@ -673,7 +485,7 @@ void RenderMiniMap()
     );
     ImGui::SetNextWindowSize(ImVec2(200, 150), ImGuiCond_Always);
     
-    if (ImGui::Begin("##MiniMap", nullptr, 
+   if (ImGui::Begin("##MiniMap", nullptr, 
         ImGuiWindowFlags_NoTitleBar | 
         ImGuiWindowFlags_NoResize | 
         ImGuiWindowFlags_NoMove |
@@ -704,107 +516,99 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
     ImGui::SetNextWindowSizeConstraints(ImVec2(200, toolbarHeight), ImVec2(FLT_MAX, toolbarHeight));    // Force fixed height
 
     // Create a child window with fixed height for the toolbar
-    ImGui::BeginChild("NodeGraphToolbar", ImVec2(-1, toolbarHeight), true, 
+    // Note: BeginChild doesn't take a p_open parameter, so we don't pass it here
+    if (ImGui::BeginChild("NodeGraphToolbar", ImVec2(-1, toolbarHeight), true, 
         ImGuiWindowFlags_NoScrollbar | 
-       ImGuiWindowFlags_NoScrollWithMouse);
-
-    // Match TopToolbar's style settings
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-    
-    // Style for buttons
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-    ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 0.3f));
-    
-    // Ensure buttons start from the very top-left corner
-    ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
-
-    // Left section - Transform tools
+        ImGuiWindowFlags_NoScrollWithMouse))
     {
-        if (ImGui::Button(ICON_MS_OPEN_WITH "##Pan", windowData->iconDefaultSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Pan Tool (H)");
-        ImGui::SameLine();
+        // Match TopToolbar's style settings
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
         
-        if (ImGui::Button(ICON_MS_CROP_FREE "##Frame", windowData->iconDefaultSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Frame Selected (F)");
-        ImGui::SameLine();
+        // Style for buttons
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+        ImVec4 buttonColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(buttonColor.x, buttonColor.y, buttonColor.z, 0.3f));
         
-        // Add Reset View button
-        if (ImGui::Button(ICON_MS_RESTART_ALT "##ResetView", windowData->iconDefaultSize)) {
-            viewport.viewPosition = ImVec2(0.0f, 0.0f);
-            ImNodes::EditorContextResetPanning(ImVec2(0.0f, 0.0f));
-        }
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Reset View");
-        ImGui::SameLine();
-        
-        // Add Grid toggle
-        if (ImGui::Button(ICON_MS_GRID_ON "##Grid", windowData->iconDefaultSize)) {
-            showGrid = !showGrid;
-            ImNodesStyle& style = ImNodes::GetStyle();
-            if (showGrid)
-                style.Flags |= ImNodesStyleFlags_GridLines;
-            else
-                style.Flags &= ~ImNodesStyleFlags_GridLines;
-        }
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid");
-        ImGui::SameLine();
+        // Ensure buttons start from the very top-left corner
+        ImGui::SetCursorScreenPos(ImGui::GetWindowPos());
 
-        // Add Grid Snapping toggle
-        static bool snapToGrid = false;
-        if (ImGui::Button(ICON_MS_GRID_4X4 "##GridSnap", windowData->iconDefaultSize)) {
-            snapToGrid = !snapToGrid;
-            ImNodesStyle& style = ImNodes::GetStyle();
-            if (snapToGrid)
-                style.Flags |= ImNodesStyleFlags_GridSnapping;
-            else
-                style.Flags &= ~ImNodesStyleFlags_GridSnapping;
+        // Left section - Transform tools
+        {
+            if (ImGui::Button(ICON_MS_OPEN_WITH "##Pan", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Pan Tool (H)");
+            ImGui::SameLine();
+            
+            if (ImGui::Button(ICON_MS_CROP_FREE "##Frame", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Frame Selected (F)");
+            ImGui::SameLine();
+            
+            // Add Reset View button
+            if (ImGui::Button(ICON_MS_RESTART_ALT "##ResetView", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Reset View");
+            ImGui::SameLine();
+            
+            // Add Grid toggle
+            if (ImGui::Button(ICON_MS_GRID_ON "##Grid", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid");
+            ImGui::SameLine();
+
+            // Add Grid Snapping toggle
+            static bool snapToGrid = false;
+            if (ImGui::Button(ICON_MS_GRID_4X4 "##GridSnap", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid Snapping");
+            ImGui::SameLine();
+            
+            ImGui::Dummy(ImVec2(5,0)); ImGui::SameLine();
         }
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid Snapping");
-        ImGui::SameLine();
         
-        ImGui::Dummy(ImVec2(5,0)); ImGui::SameLine();
+        // Middle section - Node operations
+        {
+            if (ImGui::Button(ICON_MS_ADD_BOX "##AddNode", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add Node (Tab)");
+            ImGui::SameLine();
+            
+            if (ImGui::Button(ICON_MS_CONTENT_CUT "##Cut", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Cut Selected (Ctrl+X)");
+            ImGui::SameLine();
+            
+            if (ImGui::Button(ICON_MS_CONTENT_COPY "##Copy", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Copy Selected (Ctrl+C)");
+            ImGui::SameLine();
+            
+            if (ImGui::Button(ICON_MS_CONTENT_PASTE "##Paste", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Paste (Ctrl+V)");
+            ImGui::SameLine();
+            
+            ImGui::Dummy(ImVec2(5,0)); ImGui::SameLine();
+        }
+        
+        // Right section - Graph operations
+        {
+            if (ImGui::Button(ICON_MS_PLAY_ARROW "##Execute", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Execute Graph");
+            ImGui::SameLine();
+            
+            if (ImGui::Button(ICON_MS_STOP "##Stop", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Stop Execution");
+            ImGui::SameLine();
+            
+            if (ImGui::Button(ICON_MS_SAVE "##Save", windowData->iconDefaultSize)) {}
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Quick Save (Ctrl+S)");
+        }
+        
+        // Make sure to pop all style modifications
+        ImGui::PopStyleColor();
+        ImGui::PopStyleVar(5); // Pop all 4 style vars we pushed
+        
+        ImGui::EndChild();
     }
-    
-    // Middle section - Node operations
+    else
     {
-        if (ImGui::Button(ICON_MS_ADD_BOX "##AddNode", windowData->iconDefaultSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Add Node (Tab)");
-        ImGui::SameLine();
-        
-        if (ImGui::Button(ICON_MS_CONTENT_CUT "##Cut", windowData->iconDefaultSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Cut Selected (Ctrl+X)");
-        ImGui::SameLine();
-        
-        if (ImGui::Button(ICON_MS_CONTENT_COPY "##Copy", windowData->iconDefaultSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Copy Selected (Ctrl+C)");
-        ImGui::SameLine();
-        
-        if (ImGui::Button(ICON_MS_CONTENT_PASTE "##Paste", windowData->iconDefaultSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Paste (Ctrl+V)");
-        ImGui::SameLine();
-        
-        ImGui::Dummy(ImVec2(5,0)); ImGui::SameLine();
+        // If BeginChild fails, still pop the style var we pushed before it
+        ImGui::PopStyleVar(); // Pop ChildRounding
     }
-    
-    // Right section - Graph operations
-    {
-        if (ImGui::Button(ICON_MS_PLAY_ARROW "##Execute", windowData->iconDefaultSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Execute Graph");
-        ImGui::SameLine();
-        
-        if (ImGui::Button(ICON_MS_STOP "##Stop", windowData->iconDefaultSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Stop Execution");
-        ImGui::SameLine();
-        
-        if (ImGui::Button(ICON_MS_SAVE "##Save", windowData->iconDefaultSize)) {}
-        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Quick Save (Ctrl+S)");
-    }
-    
-    ImGui::PopStyleColor();
-    ImGui::PopStyleVar(5);
-    ImGui::EndChild();
 }
 
 static void RenderRightSidebar() 

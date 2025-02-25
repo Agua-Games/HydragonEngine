@@ -21,6 +21,7 @@
 		"commands" : 
 		[
 			"add_library",
+			"add_compile_definitions",
 			"include_directories",
 			"target_include_directories"
 		],
@@ -46,29 +47,41 @@
 			{
 				"command" : 1,
 				"file" : 1,
-				"line" : 153,
-				"parent" : 2
-			},
-			{
-				"command" : 1,
-				"file" : 1,
-				"line" : 160,
-				"parent" : 2
-			},
-			{
-				"command" : 1,
-				"file" : 1,
-				"line" : 166,
+				"line" : 36,
 				"parent" : 2
 			},
 			{
 				"command" : 2,
+				"file" : 1,
+				"line" : 156,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 163,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 169,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 176,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
 				"file" : 0,
 				"line" : 34,
 				"parent" : 0
 			},
 			{
-				"command" : 2,
+				"command" : 3,
 				"file" : 0,
 				"line" : 83,
 				"parent" : 0
@@ -84,26 +97,37 @@
 					"fragment" : "/DWIN32 /D_WINDOWS /W3 /MD /O2 /Ob2 /DNDEBUG"
 				}
 			],
-			"includes" : 
+			"defines" : 
 			[
 				{
 					"backtrace" : 3,
+					"define" : "IMGUI_DEFINE_MATH_OPERATORS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 4,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/ThirdParty/glfw/include"
 				},
 				{
-					"backtrace" : 4,
+					"backtrace" : 5,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/ThirdParty/imgui"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 6,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/ThirdParty/imnodes"
 				},
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/ThirdParty/imgui-node-editor"
+				},
+				{
+					"backtrace" : 8,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/ThirdParty/volk"
 				},
 				{
-					"backtrace" : 7,
+					"backtrace" : 9,
 					"path" : "C:/VulkanSDK/1.4.304.0/Include"
 				}
 			],
