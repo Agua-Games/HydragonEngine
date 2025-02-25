@@ -29,8 +29,9 @@ struct HdEditorWindowData
     // Editor sleep and auto-sleep feature
     bool isSleeping = false;
 
-    // Add NodeGraphState
+    // Node Graph Editor variables
     NodeGraphState nodeGraphState;
+    float nodeGraphEditor_GridOpacity = 0.1f;
 
     // Scripting, debugging, profiling useful info
     bool showConsoleCategories = true;

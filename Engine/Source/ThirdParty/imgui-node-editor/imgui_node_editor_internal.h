@@ -9,19 +9,18 @@
 // CREDITS
 //   Written by Michal Cichon
 //------------------------------------------------------------------------------
+// HYDRAGON MODIFIED
+// The imgui-node-editor source files have been modified to integrate with 
+// Hydragon Engine.
+//------------------------------------------------------------------------------
 # ifndef __IMGUI_NODE_EDITOR_INTERNAL_H__
 # define __IMGUI_NODE_EDITOR_INTERNAL_H__
 # pragma once
 
-
 //------------------------------------------------------------------------------
-//# ifndef IMGUI_DEFINE_MATH_OPERATORS
-//#     define IMGUI_DEFINE_MATH_OPERATORS
-//# endif
 # include "imgui_node_editor.h"
 
-// Only include imgui_internal.h if absolutely necessary for features beyond math operators
-#include <imgui_internal.h>
+#include <imgui_internal.h>     // Only include imgui_internal.h if absolutely necessary for features beyond math operators
 #include <imgui.h>
 
 # include "imgui_extra_math.h"

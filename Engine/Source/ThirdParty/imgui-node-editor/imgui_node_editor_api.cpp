@@ -9,6 +9,10 @@
 // CREDITS
 //   Written by Michal Cichon
 //------------------------------------------------------------------------------
+// HYDRAGON MODIFIED
+// The imgui-node-editor source files have been modified to integrate with 
+// Hydragon Engine.
+//------------------------------------------------------------------------------
 # include "imgui_node_editor_internal.h"
 # include <algorithm>
 

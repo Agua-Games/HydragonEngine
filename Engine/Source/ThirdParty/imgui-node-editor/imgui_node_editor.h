@@ -9,6 +9,10 @@
 // CREDITS
 //   Written by Michal Cichon
 //------------------------------------------------------------------------------
+// HYDRAGON MODIFIED
+// The imgui-node-editor source files have been modified to integrate with 
+// Hydragon Engine.
+//------------------------------------------------------------------------------
 # ifndef __IMGUI_NODE_EDITOR_H__
 # define __IMGUI_NODE_EDITOR_H__
 # pragma once
@@ -110,6 +114,9 @@ struct Config
     int                     ContextMenuButtonIndex; // Mouse button index context menu action will react to (0-left, 1-right, 2-middle)
     bool                    EnableSmoothZoom;
     float                   SmoothZoomPower;
+    bool                    EnableGridVisibility;
+    bool                    EnableGridSnap;
+    bool                    EnableAutoPanning;
 
     Config()
         : SettingsFile("NodeEditor.json")
@@ -127,6 +134,9 @@ struct Config
         , NavigateButtonIndex(1)
         , ContextMenuButtonIndex(1)
         , EnableSmoothZoom(false)
+        , EnableGridVisibility(true)
+        , EnableGridSnap(false)
+        , EnableAutoPanning(true)
 # ifdef __APPLE__
         , SmoothZoomPower(1.1f)
 # else

@@ -44,6 +44,11 @@
 //
 // CREDITS
 //   Written by Michal Cichon
+// -----------------------------------------------------------------------------
+// HYDRAGON MODIFIED
+// The imgui-node-editor source files have been modified to integrate with 
+// Hydragon Engine.
+//------------------------------------------------------------------------------
 # ifndef __IMGUI_EX_CANVAS_H__
 # define __IMGUI_EX_CANVAS_H__
 # pragma once

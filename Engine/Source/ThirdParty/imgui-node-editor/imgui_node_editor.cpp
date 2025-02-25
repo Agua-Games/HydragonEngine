@@ -8,6 +8,10 @@
 //
 // CREDITS
 //   Written by Michal Cichon
+// -----------------------------------------------------------------------------
+// HYDRAGON MODIFIED
+// The imgui-node-editor source files have been modified to integrate with 
+// Hydragon Engine.
 //------------------------------------------------------------------------------
 # include "imgui_node_editor_internal.h"
 # include <cstdio> // snprintf
@@ -3974,12 +3978,13 @@ bool ed::DragAction::Process(const Control& control)
         auto draggedOrigin  = m_DraggedObject->DragStartLocation();
         auto alignPivot     = ImVec2(0, 0);
 
-        // TODO: Move this experimental alignment to closes pivot out of internals to node API
+        // TODO: Move this experimental alignment to closest pivot out of internals to node API
         if (auto draggedNode = m_DraggedObject->AsNode())
         {
             float x = FLT_MAX;
             float y = FLT_MAX;
 
+            // Test pivot
             auto testPivot = [this, &x, &y, &draggedOrigin, &dragOffset, &alignPivot](const ImVec2& pivot)
             {
                 auto initial   = draggedOrigin + dragOffset + pivot;
@@ -3998,18 +4003,17 @@ bool ed::DragAction::Process(const Control& control)
                 }
             };
 
+            // Test all pins
             for (auto pin = draggedNode->m_LastPin; pin; pin = pin->m_PreviousPin)
             {
                 auto pivot = pin->m_Pivot.GetCenter() - draggedNode->m_Bounds.Min;
                 testPivot(pivot);
             }
-
-            //testPivot(point(0, 0));
         }
 
         auto alignedOffset  = Editor->AlignPointToGrid(draggedOrigin + dragOffset + alignPivot) - draggedOrigin - alignPivot;
 
-        if (!ImGui::GetIO().KeyAlt)
+        if (Editor->GetConfig().EnableGridSnap || ImGui::GetIO().KeyCtrl)
             dragOffset = alignedOffset;
 
         for (auto object : m_Objects)

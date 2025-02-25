@@ -9,6 +9,11 @@
 //
 // CREDITS
 //   Written by Michal Cichon
+// -----------------------------------------------------------------------------
+// HYDRAGON MODIFIED
+// The imgui-node-editor source files have been modified to integrate with 
+// Hydragon Engine.
+//------------------------------------------------------------------------------
 # ifndef __CRUDE_JSON_H__
 # define __CRUDE_JSON_H__
 # pragma once
