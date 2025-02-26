@@ -5,8 +5,6 @@
 #pragma once
 #include <string>                           // Required for imgui-node-editor
 #include <imgui.h>                          // Required for imgui-node-editor
-//#include "imgui_impl_glfw.h"
-//#include "imgui_impl_opengl3.h"
 #include "imgui_node_editor.h"
 namespace nodeEd = ax::NodeEditor;
 
@@ -14,7 +12,18 @@ namespace hdImgui {
 
 struct HdEditorWindowData;
 
+/**
+ * Initialize the node graph editor.
+ * Should be called once during application startup.
+ * @param windowData Editor window data containing global settings
+ */
 void InitializeNodeGraphEditor(HdEditorWindowData* windowData);
+
+/**
+ * Shutdown the node graph editor.
+ * Should be called during application shutdown to clean up resources.
+ */
+void ShutdownNodeGraphEditor();
 
 /**
  * Shows the node graph editor window.
