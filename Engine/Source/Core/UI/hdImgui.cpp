@@ -100,7 +100,7 @@ void InitializeWindows(HdEditorWindowData* windowData){
     hdImageTools::Initialize();
     hdSceneGraphEditor::Initialize();
     #endif
-    hdImgui::InitializeNodeGraphEditor(windowData);
+    hdImgui::InitializeNodeGraphEditor(windowData);     // To be changed to class-based approach. Methods.
     #if 0
     hdMacroEditor::Initialize();
     hdPropertyEditor::Initialize();

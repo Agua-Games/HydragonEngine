@@ -1,12 +1,31 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * The Network Editor is a specialized view for network-related nodes.
+ * It follows the engine's node-graph centric architecture by:
+ * - Focusing on visualization of network node relationships
+ * - Delegating property editing to the central Properties window
+ * - Providing quick access to common network operations
  */
 #pragma once
 #include <imgui.h>  // Include ImGui's header
 
 #include "hdImgui.h"
+//#include "HD_Node.h"
+//#include "HD_NetworkNode.h"
 
 namespace hdImgui {
+
+/**
+ * @brief Shows the network editor window.
+ * This editor visualizes network topology and provides
+ * quick access to common network operations, while
+ * delegating detailed property editing to the Properties window.
+ * 
+ * @param p_open Pointer to boolean controlling window visibility
+ * @param windowData Editor window data containing global settings
+ */
 void ShowNetworkingEditor(bool* p_open, HdEditorWindowData* windowData);
+
 } // namespace hdImgui

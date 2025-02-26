@@ -1,6 +1,20 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * HD_Node is the fundamental building block in the engine's
+ * node-graph centric architecture. All functionality is
+ * represented as nodes or connections between nodes.
+ * 
+ * ARCHITECTURAL NOTE:
+ * - Nodes are the primary entities in the system.
+ * - Nodes can be visual, logical, or data-oriented.
+ * - Nodes can be connected to form complex systems.
+ * 
+ * TODO:
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ *   (Remember to not implement in HD_Node what is supposed to be in HD_Object).
+ * - Flesh out the class and its methods, structs, enums, etc.
  */
 #pragma once
 
@@ -47,7 +61,10 @@ struct HD_NodeInfo : public HD_ObjectInfo {
     }
 };
 
-/**@brief Base class for all nodes in Hydragon
+/**@brief Base class for all nodes in the engine.
+ * Nodes are the primary entities in the system and
+ * represent all functionality, whether visual, logical,
+ * or data-oriented.
  */
 template<typename... Types>
 class HD_Node : public HD_Object {

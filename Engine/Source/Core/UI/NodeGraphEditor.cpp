@@ -4,7 +4,15 @@
  * 
  * The Node Graph Editor uses imgui and the imgui-node-editor (extension) library.
  * The implementation will be based on the example provided in the imgui-node-editor repository.
- * TODO:
+ * 
+ * ARCHITECTURAL NOTE:
+ * This editor follows the engine's node-graph centric architecture:
+ * - All functionality is represented as nodes in the graph
+ * - The UI is a visualization layer for the underlying node structure
+ * - Sub-editors are consolidated views of related nodes and their properties
+ * - The Properties window is the central point for editing node parameters
+ *
+ *  TODO:
  *  - Properly separate imgui-node-editor's initialization and destruction (move these to hdImgui) from render/update (implemented here).
  *  - Cleanup and refactor the whole file, after each session of bringing code snippets from the examples.
  *      - Get rid of unused structs, variables etc.
@@ -24,8 +32,19 @@ namespace nodeEd = ax::NodeEditor;
 #include "NodeGraphEditor.h"
 #include "NodeGraphState.h"
 #include "hdImgui.h"
+//#include "HD_Node.h"                  // For node integration - next (architecture) steps
+#include "PropertyEditor.h"             // For property integration
 
 namespace hdImgui {
+
+// Add this at the top with other static variables
+static nodeEd::EditorContext* g_NodeEditorContext = nullptr;
+
+// === For next (architecture) steps ===
+// Forward declarations for sub-editor integration
+//void NotifyNodeSelected(HD_Node* node);
+//void UpdateSubEditors(HD_Node* selectedNode);
+// === end of next steps ===
 
 static NodeGraphState graphState;  // Instance of our state struct
 
@@ -72,8 +91,26 @@ static bool showConnectionPoints = true;  // Controls visibility of connection s
 static std::unordered_map<std::string, NodeData> nodePositions;
 
 void InitializeNodeGraphEditor(HdEditorWindowData* windowData) {
-    // Initialize node graph state
-    //graphState = NodeGraphState();
+    // Only initialize if not already done
+    if (g_NodeEditorContext == nullptr) {
+        // Initialize node graph state
+        graphState = NodeGraphState();
+
+        nodeEd::Config config;
+        config.SettingsFile = "NodeEditorSettings.json";        // Optional: save layout to file
+
+        // Make sure navigation is enabled
+        config.NavigateButtonIndex = ImGuiMouseButton_Middle;  // Middle mouse button for panning
+        config.DragButtonIndex = ImGuiMouseButton_Left;        // Left mouse button for dragging nodes
+        g_NodeEditorContext = nodeEd::CreateEditor(&config);
+    }
+}
+
+void ShutdownNodeGraphEditor() {
+    if (g_NodeEditorContext) {
+        nodeEd::DestroyEditor(g_NodeEditorContext);
+        g_NodeEditorContext = nullptr;
+    }
 }
 
 static ImVec2 WorldToScreen(const ImVec2& worldPos, const ImVec2& canvasOrigin) {
@@ -261,22 +298,14 @@ static void RenderNodeLibraryContent()
 
 void RenderGraphCanvas(HdEditorWindowData* windowData)
 {
-    // Initialize editor context if not already done
-    static nodeEd::EditorContext* nodeEditorContext = nullptr;
-    if (nodeEditorContext == nullptr)
-    {
-        nodeEd::Config config;
-        config.SettingsFile = "NodeEditorSettings.json"; // Optional: save layout to file
-        
-        // Make sure navigation is enabled
-        config.NavigateButtonIndex = ImGuiMouseButton_Middle;  // Middle mouse button for panning
-        config.DragButtonIndex = ImGuiMouseButton_Left;        // Left mouse button for dragging nodes
-        
-        nodeEditorContext = nodeEd::CreateEditor(&config);
+    // Check if editor context exists
+    if (g_NodeEditorContext == nullptr) {
+        ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Node Editor not initialized!");
+        return;
     }
 
     // Set current editor context
-    nodeEd::SetCurrentEditor(nodeEditorContext);
+    nodeEd::SetCurrentEditor(g_NodeEditorContext);
     
     // Begin the node editor canvas
     nodeEd::Begin("Node Editor", ImVec2(0.0f, 0.0f));
@@ -320,7 +349,6 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     ImGui::TextUnformatted("Output ->");
     nodeEd::EndPin();
     
-    // End first node
     nodeEd::EndNode();
     
     // Begin second node
@@ -344,7 +372,6 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     ImGui::TextUnformatted("Output ->");
     nodeEd::EndPin();
     
-    // End second node
     nodeEd::EndNode();
     
     // Draw existing links
