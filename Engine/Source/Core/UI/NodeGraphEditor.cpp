@@ -37,13 +37,12 @@ namespace nodeEd = ax::NodeEditor;
 
 namespace hdImgui {
 
-// Add this at the top with other static variables
-static nodeEd::EditorContext* g_NodeEditorContext = nullptr;
+static nodeEd::EditorContext* g_NodeEditorContext = nullptr;       // imgui-node-editor context
 
 // === For next (architecture) steps ===
 // Forward declarations for sub-editor integration
-//void NotifyNodeSelected(HD_Node* node);
-//void UpdateSubEditors(HD_Node* selectedNode);
+//void NotifyNodeSelected(HD_Node* node);           // Un-comment this when node integration is done
+//void UpdateSubEditors(HD_Node* selectedNode);     // And this
 // === end of next steps ===
 
 static NodeGraphState graphState;  // Instance of our state struct
@@ -550,6 +549,16 @@ static void RenderMiniMapContent()
     ImGui::Text("Mini Map");
 }
 
+static bool EnsureNodeEditorContext() {
+    if (g_NodeEditorContext == nullptr) {
+        return false;
+    }
+    
+    // Set the current editor context if it's not already set
+    nodeEd::SetCurrentEditor(g_NodeEditorContext);
+    return true;
+}
+
 static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
@@ -564,7 +573,6 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
     ImGui::SetNextWindowSizeConstraints(ImVec2(200, toolbarHeight), ImVec2(FLT_MAX, toolbarHeight));    // Force fixed height
 
     // Create a child window with fixed height for the toolbar
-    // Note: BeginChild doesn't take a p_open parameter, so we don't pass it here
     if (ImGui::BeginChild("NodeGraphToolbar", ImVec2(-1, toolbarHeight), true, 
         ImGuiWindowFlags_NoScrollbar | 
         ImGuiWindowFlags_NoScrollWithMouse))
@@ -591,7 +599,9 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             // Frame Selected button
             if (ImGui::Button(ICON_MS_CROP_FREE "##Frame", windowData->iconDefaultSize)) {
                 // Use NavigateToSelection to frame selected nodes
-                nodeEd::NavigateToSelection(true); 
+                if (EnsureNodeEditorContext()) {
+                    nodeEd::NavigateToSelection(true);
+                }
             }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Frame Selected (F)");
             ImGui::SameLine();
@@ -599,7 +609,9 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             // Reset View button
             if (ImGui::Button(ICON_MS_RESTART_ALT "##ResetView", windowData->iconDefaultSize)) {
                 // Use NavigateToContent to reset view
-                nodeEd::NavigateToContent();
+                if (EnsureNodeEditorContext()) {
+                    nodeEd::NavigateToContent();
+                }
             }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Reset View");
             ImGui::SameLine();
@@ -612,7 +624,9 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
                 windowData->nodeGraphEditor_GridOpacity = showGrid ? 1.0f : 0.0f;
                 
                 // Apply the grid opacity to the editor
-                nodeEd::GetStyle().Colors[nodeEd::StyleColor_Grid] = ImColor(1.0f, 1.0f, 1.0f, windowData->nodeGraphEditor_GridOpacity);
+                if (EnsureNodeEditorContext()) {
+                    nodeEd::GetStyle().Colors[nodeEd::StyleColor_Grid] = ImColor(1.0f, 1.0f, 1.0f, windowData->nodeGraphEditor_GridOpacity);
+                }
             }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid");
             ImGui::SameLine();
