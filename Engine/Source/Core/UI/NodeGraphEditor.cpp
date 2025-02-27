@@ -11,6 +11,7 @@
 #include "IconsMaterialSymbols.h"
 #include <imgui.h>
 #include "imgui_node_editor.h"
+#include "Imgui_SteppedLineRenderer.h"
 namespace nodeEd = ax::NodeEditor;
 
 #include "NodeGraphEditor.h"
@@ -70,7 +71,7 @@ struct NodeStyle{
     float nodeRounding;
     float pinIconSize;
     enum LinkStyle linkStyle;
-
+    ImSteppedLineStyle steppedLink;
 };
 NodeStyle nodeStyle = {
     ImColor(90, 102, 110, 255),

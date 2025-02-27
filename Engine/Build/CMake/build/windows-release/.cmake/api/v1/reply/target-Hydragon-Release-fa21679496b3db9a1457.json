@@ -557,7 +557,8 @@
 				65,
 				66,
 				67,
-				68
+				68,
+				69
 			]
 		}
 	],
@@ -688,14 +689,15 @@
 				65,
 				66,
 				67,
-				68
+				68,
+				69
 			]
 		},
 		{
 			"name" : "Header Files",
 			"sourceIndexes" : 
 			[
-				69
+				70
 			]
 		}
 	],
@@ -717,6 +719,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Graphics/Vulkan/VulkanLoader.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Imgui_SteppedLineMath.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
