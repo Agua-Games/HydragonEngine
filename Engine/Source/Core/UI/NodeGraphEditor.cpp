@@ -218,19 +218,9 @@ void BeginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, ImColor tit
         IM_COL32(225, 225, 225, 255),
         title
     );
-    
+
     // Small spacing after title bar
     ImGui::Dummy(ImVec2(0, 4.0f));
-    
-    // Begin a group to constrain the node width
-    ImGui::BeginGroup();
-}
-
-// End the node with title bar
-void EndNodeWithTitleBar() {
-    // End the group that constrains node width
-    ImGui::EndGroup();
-    nodeEd::EndNode();
 }
 
 // Helper to create an input pin with custom styling
@@ -240,7 +230,7 @@ void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     // Begin the pin
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Input);
     
-    // Set pin pivot alignment to left
+    // Set pin pivot alignment to left (for interaction area)
     nodeEd::PinPivotAlignment(ImVec2(0.0f, 0.5f));
     
     // Get pin position for visual icon
@@ -288,7 +278,7 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     // Begin the pin
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Output);
     
-    // Set pin pivot alignment to right
+    // Set pin pivot alignment to left (for interaction area)
     nodeEd::PinPivotAlignment(ImVec2(0.0f, 0.5f));
     
     // Calculate positions for visual and interaction areas
@@ -320,7 +310,7 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     // End the pin
     nodeEd::EndPin();
     
-    ImGui::EndGroup();
+    ImGui::EndGroup();      // End the group for this pin
 }
 
 // Forward declare internal helper functions
