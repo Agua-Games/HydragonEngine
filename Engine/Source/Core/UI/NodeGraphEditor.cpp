@@ -73,12 +73,16 @@ struct NodeStyle{
     ImColor nodeBgColor;
     ImColor nodeBorderColor;
     ImColor pinColor;
+    float pinIconSize;
+    ImVec4 nodePadding;
 };
 NodeStyle nodeStyle = {
     ImColor(90, 102, 110, 255),
     ImColor(0.21f, 0.22f, 0.22f, 0.43f),
     ImColor(0.43f, 0.43f, 0.5f, 0.5f),
-    ImColor(0.43f, 0.43f, 0.5f, 0.5f)
+    ImColor(0.80f, 0.89f, 0.89f, 0.75f),
+    9.0f,
+    ImVec4(0.0f, 4.0f, 0.0f, 15.0f)
 };
 
 struct NodeConnection {
@@ -132,7 +136,7 @@ void InitializeNodeGraphEditor(HdEditorWindowData* windowData) {
             // Style
             nodeEd::Style& nodesStyle = nodeEd::GetStyle();
             // Customize spacing and rounding - imgui-node-editor
-            nodesStyle.NodePadding = ImVec4(9.0f, 4.0f, 9.0f, 10.0f);
+            nodesStyle.NodePadding = nodeStyle.nodePadding;
             nodesStyle.NodeRounding = 11.0f;
             nodesStyle.NodeBorderWidth = 1.6f;
             nodesStyle.PinRounding = 0.0f;
@@ -229,53 +233,36 @@ void EndNodeWithTitleBar() {
     nodeEd::EndNode();
 }
 
-// Custom pin rendering function
-void DrawSquarePin(const ImVec2& pos, bool isInput, ImColor color) {
-    ImDrawList* drawList = ImGui::GetWindowDrawList();
-    const float size = 10.0f; // Fixed size matching visual design
-    
-    // Calculate offset based on pin type
-    float offset = isInput ? (-size/2) : (size/2); // size*2 since size=8
-    
-    // Draw the square pin outside node
-    ImVec2 pinMin = ImVec2(pos.x - size * 0.5f + offset, pos.y - size * 0.5f);
-    ImVec2 pinMax = ImVec2(pos.x + size * 0.5f + offset, pos.y + size * 0.5f);
-    
-    // Fill
-    drawList->AddRectFilled(
-        pinMin, 
-        pinMax, 
-        color, 
-        0.0f // Slight rounding
-    );
-    
-    /* // Border
-    drawList->AddRect(
-        pinMin, 
-        pinMax, 
-        IM_COL32(50, 50, 50, 255), 
-        0.0f, // Slight rounding
-        0, 
-        1.5f // Border thickness
-    ); */
-}
-
 // Helper to create an input pin with custom styling
-void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor color = ImColor(220, 48, 48)) {
+void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     // Begin the pin
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Input);
     
     // Set pin pivot alignment to left
     nodeEd::PinPivotAlignment(ImVec2(0.0f, 0.5f));
     
-    // Get precise pin position accounting for full offset
+    // Get pin position for visual icon
     ImVec2 pinPos = ImGui::GetCursorScreenPos();
-    pinPos.x -= 16.0f; // Move left by pin size * 2
-    pinPos.y += ImGui::GetTextLineHeight() * 0.5f;
-    DrawSquarePin(pinPos, true, nodeStyle.pinColor);
+    pinPos.x += 0.0f; // Add slight offset to touch inner border, if needed
+    pinPos.y += ImGui::GetTextLineHeight() * 0.5f - (nodeStyle.pinIconSize * 0.5f); // Center vertically
+
+    // Draw pin icon
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    const float iconSize = nodeStyle.pinIconSize;
+    ImVec2 iconMin = ImVec2(pinPos.x, pinPos.y);
+    ImVec2 iconMax = ImVec2(pinPos.x + iconSize, pinPos.y + iconSize);
+    
+    // Check if pin is connected
+    bool isConnected = nodeEd::PinHadAnyLinks(pinId);
+    
+    if (isConnected) {
+        drawList->AddRectFilled(iconMin, iconMax, pinColor, 0.0f);
+    } else {
+        drawList->AddRect(iconMin, iconMax, pinColor, 0.0f, 0, 1.5f);
+    }
     
     // Add spacing for the pin icon
-    ImGui::Dummy(ImVec2(16.0f, ImGui::GetTextLineHeight()));
+    ImGui::Dummy(ImVec2(iconSize + 8.0f, ImGui::GetTextLineHeight()));
     
     // End the pin
     nodeEd::EndPin();
@@ -286,9 +273,13 @@ void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor color = ImCol
 }
 
 // Helper to create an output pin with custom styling
-void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor color = ImColor(48, 150, 220)) {
+void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     // Begin a group for this pin to ensure proper layout
     ImGui::BeginGroup();
+    
+    // Display the label first
+    ImGui::TextUnformatted(label);
+    ImGui::SameLine(0, 4.0f);
     
     // Begin the pin
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Output);
@@ -296,22 +287,36 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor color = ImCo
     // Set pin pivot alignment to right
     nodeEd::PinPivotAlignment(ImVec2(1.0f, 0.5f));
     
-    // Add spacing for the pin icon
-    ImGui::Dummy(ImVec2(16.0f, ImGui::GetTextLineHeight()));
-    
-    // Get precise pin position accounting for full offset
+    // Calculate positions for visual and interaction areas
     ImVec2 pinPos = ImGui::GetCursorScreenPos();
-    pinPos.x += 16.0f; // Move right by pin size * 2
-    pinPos.y -= ImGui::GetTextLineHeight() * 0.5f;
-    DrawSquarePin(pinPos, false, nodeStyle.pinColor);
+    const float iconSize = nodeStyle.pinIconSize;
+    
+    // Position at right border, accounting for icon size
+    //pinPos.x = pinPos.x + ImGui::GetContentRegionAvail().x - iconSize - 1.0f;
+    pinPos.x = pinPos.x + ImGui::GetContentRegionAvail().x;
+    
+    // Center vertically
+    pinPos.y += (ImGui::GetTextLineHeight() - iconSize) * 0.5f - (nodeStyle.pinIconSize * 0.5f);
+
+    // Draw pin icon
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    ImVec2 iconMin = ImVec2(pinPos.x, pinPos.y);
+    ImVec2 iconMax = ImVec2(pinPos.x + iconSize, pinPos.y + iconSize);
+    
+    // Check if pin is connected
+    bool isConnected = nodeEd::PinHadAnyLinks(pinId);
+    
+    if (isConnected) {
+        drawList->AddRectFilled(iconMin, iconMax, pinColor, 0.0f);
+    } else {
+        drawList->AddRect(iconMin, iconMax, pinColor, 0.0f, 0, 1.5f);
+    }
+    
+    // Add dummy for proper pin interaction area
+    ImGui::Dummy(ImVec2(iconSize + 8.0f, ImGui::GetTextLineHeight()));
     
     // End the pin
     nodeEd::EndPin();
-    
-    // Display the label before the pin (positioned to the left of the pin)
-    ImGui::SameLine(0, 0);
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::CalcTextSize(label).x - 20.0f);
-    ImGui::TextUnformatted(label);
     
     ImGui::EndGroup();
 }
@@ -526,23 +531,20 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     ImGui::Dummy(ImVec2(0, 5));
     
     // Input pins with custom styling
-    BeginInputPin(inputPinId1, "Speed", ImColor(147, 226, 74));
+    BeginInputPin(inputPinId1, "Speed", nodeStyle.pinColor);
     
     ImGui::SameLine(150); // Fixed position for output pins
     
     // Output pins with custom styling
-    BeginOutputPin(outputPinId1, "Result1", ImColor(220, 48, 48));
+    BeginOutputPin(outputPinId1, "Result1", nodeStyle.pinColor);
     
     ImGui::Dummy(ImVec2(0, 5)); // Spacing between pins
     
-    BeginInputPin(inputPinId2, "Orientation", ImColor(68, 201, 156));
+    BeginInputPin(inputPinId2, "Orientation", nodeStyle.pinColor);
     
     ImGui::SameLine(150); // Fixed position for output pins
     
-    BeginOutputPin(outputPinId2, "Result2", ImColor(51, 150, 215));
-    
-    // Add some padding at the bottom
-    ImGui::Dummy(ImVec2(0, 5));
+    BeginOutputPin(outputPinId2, "Result2", nodeStyle.pinColor);
     
     nodeEd::EndNode();
     
@@ -553,15 +555,12 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     ImGui::Dummy(ImVec2(0, 5));
     
     // Input pin with custom styling
-    BeginInputPin(inputPinId3, "Albedo", ImColor(124, 21, 153));
+    BeginInputPin(inputPinId3, "Albedo", nodeStyle.pinColor);
     
     ImGui::SameLine(150); // Fixed position for output pins
     
     // Output pin with custom styling
-    BeginOutputPin(outputPinId3, "Mat Result", ImColor(218, 0, 183));
-    
-    // Add some padding at the bottom
-    ImGui::Dummy(ImVec2(0, 5));
+    BeginOutputPin(outputPinId3, "Mat Result", nodeStyle.pinColor);
     
     nodeEd::EndNode();
     
