@@ -1,6 +1,15 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * ARCHITECTURAL NOTE:
+ * Wrapper for window creation, input and UI functionality. Leverages glfw, Dear imgui, imgui-node-editor and other third-party libraries.
+ * 
+ * TODO:
+ * - Refactor the architecture to use classes, inheritance, encapsulation, more well-structured code, instead of namespace + free-functions.
+ * - Also use classes & methods for the sub-editors.
+ * - Change the name of the files to better reflect its broader purpose: hdEditor.h and hdEditor.cpp? HydragonEditor? MainEditor?
+ * - Move here the initialization, update and cleanup code blocks currently in main.cpp responsible for glfw, imgui, steps.
  */
 #pragma once
 #include <chrono>
@@ -223,7 +232,7 @@ void StyleColorsHydragonDark(){
     // Get a referenc to the style structure
     ImGuiStyle& style = ImGui::GetStyle();
     //ImNodesStyle& nodesStyle = ImNodes::GetStyle();     // imnodes imgui extension
-    nodeEd::Style& nodesStyle = nodeEd::GetStyle();
+    //nodeEd::Style& nodesStyle = nodeEd::GetStyle();
 
     // Customize spacing and rounding
     style.WindowPadding = ImVec2(15.0f, 15.0f);  // Padding within windows

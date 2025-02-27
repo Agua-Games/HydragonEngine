@@ -13,7 +13,6 @@
  * - The Properties window is the central point for editing node parameters
  *
  *  TODO:
- *  - Properly separate imgui-node-editor's initialization and destruction (move these to hdImgui) from render/update (implemented here).
  *  - Cleanup and refactor the whole file, after each session of bringing code snippets from the examples.
  *      - Get rid of unused structs, variables etc.
  *      - Organize the code into logical sections and functions.
@@ -89,6 +88,16 @@ static int g_NextId = 1; // Used to generate unique IDs
 static bool showConnectionPoints = true;  // Controls visibility of connection squares
 static std::unordered_map<std::string, NodeData> nodePositions;
 
+static bool EnsureNodeEditorContext() {     // Helper function to avoid silently failing by lack of context
+    if (g_NodeEditorContext == nullptr) {
+        return false;
+    }
+    
+    // Set the current editor context if it's not already set
+    nodeEd::SetCurrentEditor(g_NodeEditorContext);
+    return true;
+}
+
 void InitializeNodeGraphEditor(HdEditorWindowData* windowData) {
     // Only initialize if not already done
     if (g_NodeEditorContext == nullptr) {
@@ -102,6 +111,28 @@ void InitializeNodeGraphEditor(HdEditorWindowData* windowData) {
         config.NavigateButtonIndex = ImGuiMouseButton_Middle;  // Middle mouse button for panning
         config.DragButtonIndex = ImGuiMouseButton_Left;        // Left mouse button for dragging nodes
         g_NodeEditorContext = nodeEd::CreateEditor(&config);
+
+        if (EnsureNodeEditorContext())
+        {
+            // Temporary implementation here - move to StyleColorsHydragonDark(), in hdImgui.cpp later.
+
+            // Style
+            nodeEd::Style& nodesStyle = nodeEd::GetStyle();
+            // Customize spacing and rounding - imgui-node-editor
+            nodesStyle.NodePadding = ImVec4(9.0f, 4.0f, 9.0f, 10.0f);
+            nodesStyle.NodeRounding = 11.0f;
+            nodesStyle.NodeBorderWidth = 1.6f;
+            nodesStyle.PinRounding = 0.0f;
+            //nodesStyle.SnapLinkToPinDir = 1.0f;
+            nodesStyle.LinkStrength = 100.0f;           // move strength to menu entry to toggle between bezier and straight lines
+
+            // Style colors
+            nodesStyle.Colors[nodeEd::StyleColor_Bg] = ImColor(0.21f, 0.22f, 0.22f, 1.0f);
+            nodesStyle.Colors[nodeEd::StyleColor_Grid] = ImColor(0.27f, 0.28f, 0.28f, 0.5f);
+            nodesStyle.Colors[nodeEd::StyleColor_NodeBg] = ImColor(0.21f, 0.22f, 0.22f, 0.43f);
+            nodesStyle.Colors[nodeEd::StyleColor_NodeBorder] = ImColor(0.43f, 0.43f, 0.5f, 0.5f);
+            nodesStyle.Colors[nodeEd::StyleColor_SelLinkBorder] = ImColor(0.43f, 0.43f, 0.5f, 0.5f);
+        }
     }
 }
 
@@ -124,6 +155,158 @@ static ImVec2 WorldToScreen(const ImVec2& worldPos, const ImVec2& canvasOrigin) 
         canvasOrigin.x + viewSpace.x,
         canvasOrigin.y + viewSpace.y
     );
+}
+
+// Improved node with title bar that aligns perfectly with node borders
+void BeginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, ImColor titleBarColor, ImColor nodeColor) {
+    // Begin the node
+    nodeEd::BeginNode(nodeId);
+    
+    // Calculate node width based on content
+    float nodeWidth = ImGui::CalcTextSize(title).x + 40.0f;
+    nodeWidth = std::max(nodeWidth, 120.0f); // Minimum width
+    
+    // Get the node editor style to match rounding
+    float cornerRounding = nodeEd::GetStyle().NodeRounding;
+    
+    // Create a dummy for the title bar
+    ImGui::Dummy(ImVec2(nodeWidth, 24.0f));
+    
+    // Get the rect for the title bar
+    ImVec2 rectMin = ImGui::GetItemRectMin();
+    ImVec2 rectMax = ImGui::GetItemRectMax();
+    
+    // Get node position/size to align header perfectly
+    ImVec2 nodePos = nodeEd::GetNodePosition(nodeId);
+    ImVec2 nodeSize = nodeEd::GetNodeSize(nodeId);
+    
+    // Draw title bar using node's full width with zero padding
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    drawList->AddRectFilled(
+        nodePos,
+        ImVec2(nodePos.x + nodeSize.x, nodePos.y + 24.0f), // Fixed header height
+        titleBarColor,
+        cornerRounding,
+        ImDrawFlags_RoundCornersTop
+    );
+
+    // Draw title text
+    ImVec2 textSize = ImGui::CalcTextSize(title);
+    drawList->AddText(
+        ImVec2(
+            nodePos.x + (nodeSize.x - textSize.x) * 0.5f,
+            nodePos.y + (24.0f - textSize.y) * 0.5f
+        ),
+        IM_COL32(255, 255, 255, 255),
+        title
+    );
+
+    // Draw separator using full node width
+    drawList->AddLine(
+        ImVec2(nodePos.x, nodePos.y + 24.0f),
+        ImVec2(nodePos.x + nodeSize.x, nodePos.y + 24.0f),
+        IM_COL32(70, 70, 70, 255),
+        1.0f
+    );
+    
+    // Small spacing after title bar
+    ImGui::Dummy(ImVec2(0, 4.0f));
+    
+    // Begin a group to constrain the node width
+    ImGui::BeginGroup();
+}
+
+// End the node with title bar
+void EndNodeWithTitleBar() {
+    // End the group that constrains node width
+    ImGui::EndGroup();
+    nodeEd::EndNode();
+}
+
+// Custom pin rendering function
+void DrawSquarePin(const ImVec2& pos, float size, bool isInput, ImColor color) {
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    
+    // Offset to make pins stick out from the node border
+    // Position pins outside node border
+    float offset = isInput ? -size : size;
+    
+    // Draw the square pin outside node
+    ImVec2 pinMin = ImVec2(pos.x - size * 0.5f + offset, pos.y - size * 0.5f);
+    ImVec2 pinMax = ImVec2(pos.x + size * 0.5f + offset, pos.y + size * 0.5f);
+    
+    // Fill
+    drawList->AddRectFilled(
+        pinMin, 
+        pinMax, 
+        color, 
+        2.0f // Slight rounding
+    );
+    
+    // Border
+    drawList->AddRect(
+        pinMin, 
+        pinMax, 
+        IM_COL32(50, 50, 50, 255), 
+        2.0f, // Slight rounding
+        0, 
+        1.5f // Border thickness
+    );
+}
+
+// Helper to create an input pin with custom styling
+void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor color = ImColor(220, 48, 48)) {
+    // Begin the pin
+    nodeEd::BeginPin(pinId, nodeEd::PinKind::Input);
+    
+    // Set pin pivot alignment to left
+    nodeEd::PinPivotAlignment(ImVec2(0.0f, 0.5f));
+    
+    // Draw custom pin shape
+    ImVec2 pinPos = ImGui::GetCursorScreenPos();
+    pinPos.y += ImGui::GetTextLineHeight() * 0.5f;
+    DrawSquarePin(pinPos, 8.0f, true, color);
+    
+    // Add spacing for the pin icon
+    ImGui::Dummy(ImVec2(16.0f, ImGui::GetTextLineHeight()));
+    
+    // End the pin
+    nodeEd::EndPin();
+    
+    // Display the label after the pin
+    ImGui::SameLine(0, 4.0f);
+    ImGui::TextUnformatted(label);
+}
+
+// Helper to create an output pin with custom styling
+void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor color = ImColor(48, 150, 220)) {
+    // Begin a group for this pin to ensure proper layout
+    ImGui::BeginGroup();
+    
+    // Begin the pin
+    nodeEd::BeginPin(pinId, nodeEd::PinKind::Output);
+    
+    // Set pin pivot alignment to right
+    nodeEd::PinPivotAlignment(ImVec2(1.0f, 0.5f));
+    
+    // Add spacing for the pin icon
+    ImGui::Dummy(ImVec2(16.0f, ImGui::GetTextLineHeight()));
+    
+    // Draw custom pin shape
+    ImVec2 pinPos = ImGui::GetCursorScreenPos();
+    pinPos.x -= 8.0f;
+    pinPos.y -= ImGui::GetTextLineHeight() * 0.5f;
+    DrawSquarePin(pinPos, 8.0f, false, color);
+    
+    // End the pin
+    nodeEd::EndPin();
+    
+    // Display the label before the pin (positioned to the left of the pin)
+    ImGui::SameLine(0, 0);
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() - ImGui::CalcTextSize(label).x - 20.0f);
+    ImGui::TextUnformatted(label);
+    
+    ImGui::EndGroup();
 }
 
 // Forward declare internal helper functions
@@ -312,12 +495,14 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     // === FIRST NODE ===
     static nodeEd::NodeId nodeId1 = 1;
     static nodeEd::PinId inputPinId1 = 2;
-    static nodeEd::PinId outputPinId1 = 3;
+    static nodeEd::PinId inputPinId2 = 3;
+    static nodeEd::PinId outputPinId1 = 4;
+    static nodeEd::PinId outputPinId2 = 5;
     
     // === SECOND NODE ===
-    static nodeEd::NodeId nodeId2 = 4;
-    static nodeEd::PinId inputPinId2 = 5;
-    static nodeEd::PinId outputPinId2 = 6;
+    static nodeEd::NodeId nodeId2 = 6;
+    static nodeEd::PinId inputPinId3 = 7;
+    static nodeEd::PinId outputPinId3 = 8;
     
     // Set node positions only once
     if (g_FirstFrame)
@@ -327,49 +512,49 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
         g_FirstFrame = false;
     }
     
-    // Begin first node
-    nodeEd::BeginNode(nodeId1);
+    // === Begin first node with custom title bar ===
+    BeginNodeWithTitleBar(nodeId1, "Transform", ImColor(70, 120, 180, 255), ImColor(60, 60, 60, 200));
     
-    // Node title
-    ImGui::TextUnformatted("Node A");
+    // Add some spacing
+    ImGui::Dummy(ImVec2(0, 5));
     
-    // Add some content to make the node bigger and easier to grab
-    ImGui::Dummy(ImVec2(100, 10));
+    // Input pins with custom styling
+    BeginInputPin(inputPinId1, "Speed", ImColor(147, 226, 74));
     
-    // Input pin
-    nodeEd::BeginPin(inputPinId1, nodeEd::PinKind::Input);
-    ImGui::TextUnformatted("-> Input");
-    nodeEd::EndPin();
+    ImGui::SameLine(150); // Fixed position for output pins
     
-    ImGui::SameLine();
+    // Output pins with custom styling
+    BeginOutputPin(outputPinId1, "Result1", ImColor(220, 48, 48));
     
-    // Output pin
-    nodeEd::BeginPin(outputPinId1, nodeEd::PinKind::Output);
-    ImGui::TextUnformatted("Output ->");
-    nodeEd::EndPin();
+    ImGui::Dummy(ImVec2(0, 5)); // Spacing between pins
+    
+    BeginInputPin(inputPinId2, "Orientation", ImColor(68, 201, 156));
+    
+    ImGui::SameLine(150); // Fixed position for output pins
+    
+    BeginOutputPin(outputPinId2, "Result2", ImColor(51, 150, 215));
+    
+    // Add some padding at the bottom
+    ImGui::Dummy(ImVec2(0, 5));
     
     nodeEd::EndNode();
     
-    // Begin second node
-    nodeEd::BeginNode(nodeId2);
+    // === Begin second node with custom title bar ===
+    BeginNodeWithTitleBar(nodeId2, "Material", ImColor(180, 70, 120, 255), ImColor(60, 60, 60, 200));
     
-    // Node title
-    ImGui::TextUnformatted("Node B");
+    // Add some spacing
+    ImGui::Dummy(ImVec2(0, 5));
     
-    // Add some content to make the node bigger and easier to grab
-    ImGui::Dummy(ImVec2(100, 10));
+    // Input pin with custom styling
+    BeginInputPin(inputPinId3, "Albedo", ImColor(124, 21, 153));
     
-    // Input pin
-    nodeEd::BeginPin(inputPinId2, nodeEd::PinKind::Input);
-    ImGui::TextUnformatted("-> Input");
-    nodeEd::EndPin();
+    ImGui::SameLine(150); // Fixed position for output pins
     
-    ImGui::SameLine();
+    // Output pin with custom styling
+    BeginOutputPin(outputPinId3, "Mat Result", ImColor(218, 0, 183));
     
-    // Output pin
-    nodeEd::BeginPin(outputPinId2, nodeEd::PinKind::Output);
-    ImGui::TextUnformatted("Output ->");
-    nodeEd::EndPin();
+    // Add some padding at the bottom
+    ImGui::Dummy(ImVec2(0, 5));
     
     nodeEd::EndNode();
     
@@ -549,16 +734,6 @@ static void RenderMiniMapContent()
     ImGui::Text("Mini Map");
 }
 
-static bool EnsureNodeEditorContext() {
-    if (g_NodeEditorContext == nullptr) {
-        return false;
-    }
-    
-    // Set the current editor context if it's not already set
-    nodeEd::SetCurrentEditor(g_NodeEditorContext);
-    return true;
-}
-
 static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
@@ -621,11 +796,11 @@ static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData)
             if (ImGui::Button(ICON_MS_GRID_ON "##Grid", windowData->iconDefaultSize)) {
                 showGrid = !showGrid;
                 // Toggle grid visibility by changing its opacity
-                windowData->nodeGraphEditor_GridOpacity = showGrid ? 1.0f : 0.0f;
+                windowData->nodeGraphEditor_GridOpacity = showGrid ? 0.5f : 0.0f;
                 
                 // Apply the grid opacity to the editor
                 if (EnsureNodeEditorContext()) {
-                    nodeEd::GetStyle().Colors[nodeEd::StyleColor_Grid] = ImColor(1.0f, 1.0f, 1.0f, windowData->nodeGraphEditor_GridOpacity);
+                    nodeEd::GetStyle().Colors[nodeEd::StyleColor_Grid] = ImColor(0.27f, 0.28f, 0.28f, windowData->nodeGraphEditor_GridOpacity);   // Temporary hardcoded values. Fix later!
                 }
             }
             if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle Grid");
