@@ -2,22 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * The Node Graph Editor uses imgui and the imgui-node-editor (extension) library.
- * The implementation will be based on the example provided in the imgui-node-editor repository.
- * 
- * ARCHITECTURAL NOTE:
- * This editor follows the engine's node-graph centric architecture:
- * - All functionality is represented as nodes in the graph
- * - The UI is a visualization layer for the underlying node structure
- * - Sub-editors are consolidated views of related nodes and their properties
- * - The Properties window is the central point for editing node parameters
- *
- *  TODO:
- *  - Cleanup and refactor the whole file, after each session of bringing code snippets from the examples.
- *      - Get rid of unused structs, variables etc.
- *      - Organize the code into logical sections and functions.
- *      - Put the file into proper order, well-structured, cohesive.
- *      - Gradually move it closer to the blueprints-example.cpp file, as this file has the most complete implementation.
+ * The Node Graph Editor is a specialized view for node-based graph editing.
  */
 #include <string>
 #include <vector>
@@ -171,20 +156,6 @@ void ShutdownNodeGraphEditor() {
         nodeEd::DestroyEditor(g_NodeEditorContext);
         g_NodeEditorContext = nullptr;
     }
-}
-
-static ImVec2 WorldToScreen(const ImVec2& worldPos, const ImVec2& canvasOrigin) {
-    // 1. Transform from world space to view space (subtract camera position)
-    ImVec2 viewSpace = ImVec2(
-        worldPos.x - viewport.viewPosition.x,
-        worldPos.y - viewport.viewPosition.y
-    );
-    
-    // 2. Transform to screen space (add canvas origin)
-    return ImVec2(
-        canvasOrigin.x + viewSpace.x,
-        canvasOrigin.y + viewSpace.y
-    );
 }
 
 // Improved node with title bar that aligns perfectly with node borders
