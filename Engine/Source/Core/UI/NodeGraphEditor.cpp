@@ -235,6 +235,8 @@ void EndNodeWithTitleBar() {
 
 // Helper to create an input pin with custom styling
 void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
+    const float iconSize = nodeStyle.pinIconSize;
+    
     // Begin the pin
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Input);
     
@@ -243,12 +245,12 @@ void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     
     // Get pin position for visual icon
     ImVec2 pinPos = ImGui::GetCursorScreenPos();
+    // Position at left border, accounting for icon size
     pinPos.x += 0.0f; // Add slight offset to touch inner border, if needed
-    pinPos.y += ImGui::GetTextLineHeight() * 0.5f - (nodeStyle.pinIconSize * 0.5f); // Center vertically
+    pinPos.y += ImGui::GetTextLineHeight() * 0.5f - (iconSize * 0.5f); // Center vertically
 
     // Draw pin icon
     ImDrawList* drawList = ImGui::GetWindowDrawList();
-    const float iconSize = nodeStyle.pinIconSize;
     ImVec2 iconMin = ImVec2(pinPos.x, pinPos.y);
     ImVec2 iconMax = ImVec2(pinPos.x + iconSize, pinPos.y + iconSize);
     
@@ -262,7 +264,7 @@ void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     }
     
     // Add spacing for the pin icon
-    ImGui::Dummy(ImVec2(iconSize + 8.0f, ImGui::GetTextLineHeight()));
+    ImGui::Dummy(ImVec2(iconSize + 3.0f, ImGui::GetTextLineHeight()));
     
     // End the pin
     nodeEd::EndPin();
@@ -276,6 +278,8 @@ void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
 void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     // Begin a group for this pin to ensure proper layout
     ImGui::BeginGroup();
+
+    const float iconSize = nodeStyle.pinIconSize;
     
     // Display the label first
     ImGui::TextUnformatted(label);
@@ -288,15 +292,13 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     nodeEd::PinPivotAlignment(ImVec2(1.0f, 0.5f));
     
     // Calculate positions for visual and interaction areas
+    
+    
+    // Get pin position for visual icon.
     ImVec2 pinPos = ImGui::GetCursorScreenPos();
-    const float iconSize = nodeStyle.pinIconSize;
-    
     // Position at right border, accounting for icon size
-    //pinPos.x = pinPos.x + ImGui::GetContentRegionAvail().x - iconSize - 1.0f;
-    pinPos.x = pinPos.x + ImGui::GetContentRegionAvail().x;
-    
-    // Center vertically
-    pinPos.y += (ImGui::GetTextLineHeight() - iconSize) * 0.5f - (nodeStyle.pinIconSize * 0.5f);
+    pinPos.x += 0.0f;
+    pinPos.y += ImGui::GetTextLineHeight() * 0.5f - (iconSize * 0.5f);     // Center vertically
 
     // Draw pin icon
     ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -313,7 +315,7 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     }
     
     // Add dummy for proper pin interaction area
-    ImGui::Dummy(ImVec2(iconSize + 8.0f, ImGui::GetTextLineHeight()));
+    ImGui::Dummy(ImVec2(iconSize + 3.0f, ImGui::GetTextLineHeight()));
     
     // End the pin
     nodeEd::EndPin();
