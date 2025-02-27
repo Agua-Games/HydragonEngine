@@ -263,7 +263,7 @@ void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
         drawList->AddRect(iconMin, iconMax, pinColor, 0.0f, 0, 1.5f);
     }
     
-    // Add spacing for the pin icon
+    // Add dummy for proper pin interaction area
     ImGui::Dummy(ImVec2(iconSize + 3.0f, ImGui::GetTextLineHeight()));
     
     // End the pin
@@ -289,7 +289,7 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Output);
     
     // Set pin pivot alignment to right
-    nodeEd::PinPivotAlignment(ImVec2(1.0f, 0.5f));
+    nodeEd::PinPivotAlignment(ImVec2(0.0f, 0.5f));
     
     // Calculate positions for visual and interaction areas
     
@@ -297,13 +297,13 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     // Get pin position for visual icon.
     ImVec2 pinPos = ImGui::GetCursorScreenPos();
     // Position at right border, accounting for icon size
-    pinPos.x += 0.0f;
+    pinPos.x += 0.0f; // Add slight offset to touch inner border, if needed
     pinPos.y += ImGui::GetTextLineHeight() * 0.5f - (iconSize * 0.5f);     // Center vertically
 
     // Draw pin icon
     ImDrawList* drawList = ImGui::GetWindowDrawList();
-    ImVec2 iconMin = ImVec2(pinPos.x, pinPos.y);
-    ImVec2 iconMax = ImVec2(pinPos.x + iconSize, pinPos.y + iconSize);
+    ImVec2 iconMin = ImVec2(pinPos.x + 3.0f, pinPos.y);     // +3.0f offset because the interaction area is bigger
+    ImVec2 iconMax = ImVec2(pinPos.x + iconSize + 3.0f, pinPos.y + iconSize);
     
     // Check if pin is connected
     bool isConnected = nodeEd::PinHadAnyLinks(pinId);
@@ -315,7 +315,7 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     }
     
     // Add dummy for proper pin interaction area
-    ImGui::Dummy(ImVec2(iconSize + 3.0f, ImGui::GetTextLineHeight()));
+    ImGui::Dummy(ImVec2(iconSize + 3.0f, ImGui::GetTextLineHeight()));  // +3.0f to have a bigger interaction area
     
     // End the pin
     nodeEd::EndPin();
