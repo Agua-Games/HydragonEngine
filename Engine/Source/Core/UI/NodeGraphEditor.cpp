@@ -68,21 +68,34 @@ struct NodeData {
     bool isDragging;
 };
 
+enum class LinkStyle
+{
+    Straight,
+    Bezier,
+    Stepped,
+};
+
 struct NodeStyle{
     ImColor titleBarColor;
     ImColor nodeBgColor;
     ImColor nodeBorderColor;
     ImColor pinColor;
-    float pinIconSize;
+
     ImVec4 nodePadding;
+    float nodeRounding;
+    float pinIconSize;
+    enum LinkStyle linkStyle;
+
 };
 NodeStyle nodeStyle = {
     ImColor(90, 102, 110, 255),
     ImColor(0.21f, 0.22f, 0.22f, 0.43f),
     ImColor(0.43f, 0.43f, 0.5f, 0.5f),
     ImColor(0.80f, 0.89f, 0.89f, 0.75f),
+    ImVec4(0.0f, 4.0f, 0.0f, 15.0f),
+    11.0f,
     9.0f,
-    ImVec4(0.0f, 4.0f, 0.0f, 15.0f)
+    LinkStyle::Bezier,
 };
 
 struct NodeConnection {
@@ -137,7 +150,7 @@ void InitializeNodeGraphEditor(HdEditorWindowData* windowData) {
             nodeEd::Style& nodesStyle = nodeEd::GetStyle();
             // Customize spacing and rounding - imgui-node-editor
             nodesStyle.NodePadding = nodeStyle.nodePadding;
-            nodesStyle.NodeRounding = 11.0f;
+            nodesStyle.NodeRounding = nodeStyle.nodeRounding;
             nodesStyle.NodeBorderWidth = 1.6f;
             nodesStyle.PinRounding = 0.0f;
             //nodesStyle.SnapLinkToPinDir = 1.0f;
@@ -364,7 +377,27 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
         }
         if (ImGui::BeginMenu("View"))
         {
-            if (ImGui::MenuItem("Straight Links")) {}
+            static int s_linkStyle = 2;
+            if (ImGui::Combo("Link Style", &s_linkStyle, "Straight\0Bezier\0Stepped\0")) 
+            {
+                switch (s_linkStyle) {
+                    case 0: 
+                        nodeStyle.linkStyle = LinkStyle::Straight; 
+                        if (EnsureNodeEditorContext())
+                        {
+                            nodeEd::GetStyle().LinkStrength = 0.0f;
+                        };
+                        break;
+                    case 1: 
+                        nodeStyle.linkStyle = LinkStyle::Bezier; 
+                        if (EnsureNodeEditorContext())
+                        {
+                            nodeEd::GetStyle().LinkStrength = 100.0f;
+                        };
+                        break;
+                    case 2: nodeStyle.linkStyle = LinkStyle::Stepped; break;
+                }
+            }
             if (ImGui::MenuItem("Reset Panning")) {
                 nodeEd::NavigateToContent();
             }
