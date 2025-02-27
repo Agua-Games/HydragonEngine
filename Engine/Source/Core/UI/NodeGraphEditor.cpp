@@ -68,6 +68,19 @@ struct NodeData {
     bool isDragging;
 };
 
+struct NodeStyle{
+    ImColor titleBarColor;
+    ImColor nodeBgColor;
+    ImColor nodeBorderColor;
+    ImColor pinColor;
+};
+NodeStyle nodeStyle = {
+    ImColor(90, 102, 110, 255),
+    ImColor(0.21f, 0.22f, 0.22f, 0.43f),
+    ImColor(0.43f, 0.43f, 0.5f, 0.5f),
+    ImColor(0.43f, 0.43f, 0.5f, 0.5f)
+};
+
 struct NodeConnection {
     nodeEd::PinId outputPinId;
     nodeEd::PinId inputPinId;
@@ -129,7 +142,7 @@ void InitializeNodeGraphEditor(HdEditorWindowData* windowData) {
             // Style colors
             nodesStyle.Colors[nodeEd::StyleColor_Bg] = ImColor(0.21f, 0.22f, 0.22f, 1.0f);
             nodesStyle.Colors[nodeEd::StyleColor_Grid] = ImColor(0.27f, 0.28f, 0.28f, 0.5f);
-            nodesStyle.Colors[nodeEd::StyleColor_NodeBg] = ImColor(0.21f, 0.22f, 0.22f, 0.43f);
+            nodesStyle.Colors[nodeEd::StyleColor_NodeBg] = nodeStyle.nodeBgColor;
             nodesStyle.Colors[nodeEd::StyleColor_NodeBorder] = ImColor(0.43f, 0.43f, 0.5f, 0.5f);
             nodesStyle.Colors[nodeEd::StyleColor_SelLinkBorder] = ImColor(0.43f, 0.43f, 0.5f, 0.5f);
         }
@@ -197,16 +210,9 @@ void BeginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, ImColor tit
             nodePos.x + (nodeSize.x - textSize.x) * 0.5f,
             nodePos.y + (24.0f - textSize.y) * 0.5f
         ),
-        IM_COL32(255, 255, 255, 255),
+        // Match text color with Hydragon Style - *later move this to proper solid, organized place.
+        IM_COL32(225, 225, 225, 255),
         title
-    );
-
-    // Draw separator using full node width
-    drawList->AddLine(
-        ImVec2(nodePos.x, nodePos.y + 24.0f),
-        ImVec2(nodePos.x + nodeSize.x, nodePos.y + 24.0f),
-        IM_COL32(70, 70, 70, 255),
-        1.0f
     );
     
     // Small spacing after title bar
@@ -224,12 +230,12 @@ void EndNodeWithTitleBar() {
 }
 
 // Custom pin rendering function
-void DrawSquarePin(const ImVec2& pos, float size, bool isInput, ImColor color) {
+void DrawSquarePin(const ImVec2& pos, bool isInput, ImColor color) {
     ImDrawList* drawList = ImGui::GetWindowDrawList();
+    const float size = 10.0f; // Fixed size matching visual design
     
-    // Offset to make pins stick out from the node border
-    // Position pins outside node border
-    float offset = isInput ? -size : size;
+    // Calculate offset based on pin type
+    float offset = isInput ? (-size/2) : (size/2); // size*2 since size=8
     
     // Draw the square pin outside node
     ImVec2 pinMin = ImVec2(pos.x - size * 0.5f + offset, pos.y - size * 0.5f);
@@ -240,18 +246,18 @@ void DrawSquarePin(const ImVec2& pos, float size, bool isInput, ImColor color) {
         pinMin, 
         pinMax, 
         color, 
-        2.0f // Slight rounding
+        0.0f // Slight rounding
     );
     
-    // Border
+    /* // Border
     drawList->AddRect(
         pinMin, 
         pinMax, 
         IM_COL32(50, 50, 50, 255), 
-        2.0f, // Slight rounding
+        0.0f, // Slight rounding
         0, 
         1.5f // Border thickness
-    );
+    ); */
 }
 
 // Helper to create an input pin with custom styling
@@ -262,10 +268,11 @@ void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor color = ImCol
     // Set pin pivot alignment to left
     nodeEd::PinPivotAlignment(ImVec2(0.0f, 0.5f));
     
-    // Draw custom pin shape
+    // Get precise pin position accounting for full offset
     ImVec2 pinPos = ImGui::GetCursorScreenPos();
+    pinPos.x -= 16.0f; // Move left by pin size * 2
     pinPos.y += ImGui::GetTextLineHeight() * 0.5f;
-    DrawSquarePin(pinPos, 8.0f, true, color);
+    DrawSquarePin(pinPos, true, nodeStyle.pinColor);
     
     // Add spacing for the pin icon
     ImGui::Dummy(ImVec2(16.0f, ImGui::GetTextLineHeight()));
@@ -292,11 +299,11 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor color = ImCo
     // Add spacing for the pin icon
     ImGui::Dummy(ImVec2(16.0f, ImGui::GetTextLineHeight()));
     
-    // Draw custom pin shape
+    // Get precise pin position accounting for full offset
     ImVec2 pinPos = ImGui::GetCursorScreenPos();
-    pinPos.x -= 8.0f;
+    pinPos.x += 16.0f; // Move right by pin size * 2
     pinPos.y -= ImGui::GetTextLineHeight() * 0.5f;
-    DrawSquarePin(pinPos, 8.0f, false, color);
+    DrawSquarePin(pinPos, false, nodeStyle.pinColor);
     
     // End the pin
     nodeEd::EndPin();
@@ -513,7 +520,7 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     }
     
     // === Begin first node with custom title bar ===
-    BeginNodeWithTitleBar(nodeId1, "Transform", ImColor(70, 120, 180, 255), ImColor(60, 60, 60, 200));
+    BeginNodeWithTitleBar(nodeId1, "Transform", nodeStyle.titleBarColor, ImColor(60, 60, 60, 200));
     
     // Add some spacing
     ImGui::Dummy(ImVec2(0, 5));
@@ -540,7 +547,7 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     nodeEd::EndNode();
     
     // === Begin second node with custom title bar ===
-    BeginNodeWithTitleBar(nodeId2, "Material", ImColor(180, 70, 120, 255), ImColor(60, 60, 60, 200));
+    BeginNodeWithTitleBar(nodeId2, "Material", nodeStyle.titleBarColor, ImColor(60, 60, 60, 200));
     
     // Add some spacing
     ImGui::Dummy(ImVec2(0, 5));
@@ -904,11 +911,11 @@ static void RenderStatusBar()
     ImGui::BeginChild("StatusBar", ImVec2(0, 24), true);
     
     // Performance stats
-    ImGui::BeginGroup();
+    ImGui::BeginGroup(); // Start output pin group
     ImGui::Text("FPS: %.1f", graphState.fps);
     ImGui::SameLine();
     ImGui::Text("| Mem: %.1f MB", graphState.graphMemoryUsage);
-    ImGui::EndGroup();
+    ImGui::EndGroup(); // End output pin group
     
     ImGui::SameLine();
     ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
