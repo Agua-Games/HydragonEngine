@@ -292,7 +292,7 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Output);
     
     // Set pin pivot alignment to left (for interaction area)
-    nodeEd::PinPivotAlignment(ImVec2(0.0f, 0.5f));
+    nodeEd::PinPivotAlignment(ImVec2(1.0f, 0.5f));
     
     // Calculate positions for visual and interaction areas
     
