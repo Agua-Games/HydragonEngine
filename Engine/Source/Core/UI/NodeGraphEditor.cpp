@@ -11,7 +11,6 @@
 #include "IconsMaterialSymbols.h"
 #include <imgui.h>
 #include "imgui_node_editor.h"
-//#include "Imgui_SteppedLineRenderer.h"
 #include "Imgui_SteppedLineMath.h"
 namespace nodeEd = ax::NodeEditor;
 
@@ -31,12 +30,18 @@ static nodeEd::EditorContext* g_NodeEditorContext = nullptr;       // imgui-node
 //void UpdateSubEditors(HD_Node* selectedNode);     // And this
 // === end of next steps ===
 
+// === State Management ===
 static NodeGraphState graphState;  // Instance of our state struct
-
-struct ViewportState {
-    ImVec2 viewPosition = ImVec2(0.0f, 0.0f);  // Camera position in world space
-    float zoom = 1.0f;  // For future use
+struct ViewportState {             // Maybe useful in the future for canvas bookmarks etc.
+    ImVec2 viewPosition = ImVec2(0.0f, 0.0f);
+    float zoom = 1.0f;
 } viewport;
+
+// === Node Graph Editor - Basic Elements ===
+struct PinPositionData {
+    ImVec2 position;
+    bool isValid;
+};
 
 enum class PinType
 {
@@ -48,11 +53,6 @@ enum class PinType
     Object,
     Function,
     Delegate,
-};
-
-struct NodeData {
-    ImVec2 worldPos;
-    bool isDragging;
 };
 
 struct LinkInfo
@@ -80,6 +80,11 @@ LinkStyle linkStyle = {
     LinkShape::Bezier
 };
 
+struct NodeData {
+    ImVec2 worldPos;
+    bool isDragging;
+};
+
 struct NodeStyle{
     ImColor titleBarColor;
     ImColor nodeBgColor;
@@ -100,23 +105,9 @@ NodeStyle nodeStyle = {
     9.0f
 };
 
-struct NodeConnection {
-    nodeEd::PinId outputPinId;
-    nodeEd::PinId inputPinId;
-    nodeEd::NodeId outputNodeId;
-    nodeEd::NodeId inputNodeId;
-};
-
-static bool g_FirstFrame = true;
-static ImVector<LinkInfo> g_Links;
-static int g_NextId = 1; // Used to generate unique IDs
-static bool showConnectionPoints = true;  // Controls visibility of connection squares
-static std::unordered_map<std::string, NodeData> nodePositions;
-
-struct PinPositionData {
-    ImVec2 position;
-    bool isValid;
-};
+static bool g_FirstFrame = true;            // Flag for first frame
+static ImVector<LinkInfo> g_Links;          // List of live links
+static int g_NextId = 1;                    // Used to generate unique IDs
 
 // Define a custom comparator for PinId
 struct PinIdCompare {
@@ -132,7 +123,6 @@ static bool EnsureNodeEditorContext() {     // Helper function to avoid silently
     if (g_NodeEditorContext == nullptr) {
         return false;
     }
-    
     // Set the current editor context if it's not already set
     nodeEd::SetCurrentEditor(g_NodeEditorContext);
     return true;

@@ -1,113 +1,12 @@
+/** 
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * he Imgui Stepped Line Math is a custom implementation for stepped line calculations.
+ */
+
 #include "Imgui_SteppedLineMath.h"
 #include <algorithm>
-
-//------------------------------------------------------------------------------
-template <typename T>
-T ImSteppedLineSample(const T& start, const T& end, float t, float stepPosition, bool horizontalFirst)
-{
-    // Simple linear interpolation
-    return start + (end - start) * t;
-}
-
-//------------------------------------------------------------------------------
-template <typename T>
-T ImSteppedLineSample(const ImSteppedLinePointsT<T>& line, float t)
-{
-    return ImSteppedLineSample(line.Start, line.End, t, line.Step, line.HorizontalFirst);
-}
-
-//------------------------------------------------------------------------------
-template <typename T>
-float ImSteppedLineLength(const T& start, const T& end, bool horizontalFirst)
-{
-    // Simple distance calculation
-    return ImLength(end - start);
-}
-
-//------------------------------------------------------------------------------
-template <typename T>
-float ImSteppedLineLength(const ImSteppedLinePointsT<T>& line)
-{
-    return ImSteppedLineLength(line.Start, line.End, line.HorizontalFirst);
-}
-
-//------------------------------------------------------------------------------
-ImRect ImSteppedLineBoundingRect(const ImVec2& start, const ImVec2& end, bool horizontalFirst)
-{
-    ImRect rect;
-    rect.Add(start);
-    rect.Add(end);
-    return rect;
-}
-
-//------------------------------------------------------------------------------
-ImRect ImSteppedLineBoundingRect(const ImSteppedLinePoints& line)
-{
-    return ImSteppedLineBoundingRect(line.Start, line.End, line.HorizontalFirst);
-}
-
-//------------------------------------------------------------------------------
-void ImSteppedLineFixedStep(
-    ImSteppedLineFixedStepCallback callback,
-    void* user_pointer,
-    const ImVec2& start,
-    const ImVec2& end,
-    float step_position,
-    bool horizontal_first)
-{
-    ImSteppedLineFixedStepSample sample;
-    
-    // Just sample start and end points
-    sample.Point = start;
-    sample.Length = 0.0f;
-    sample.IsCorner = false;
-    callback(sample, user_pointer);
-    
-    sample.Point = end;
-    sample.Length = ImLength(end - start);
-    sample.IsCorner = false;
-    callback(sample, user_pointer);
-}
-
-//------------------------------------------------------------------------------
-ImSteppedLineProjectResult ImProjectOnSteppedLine(
-    const ImVec2& p, 
-    const ImVec2& start, 
-    const ImVec2& end, 
-    bool horizontalFirst,
-    float stepPosition,
-    float cornerRadius)
-{
-    ImSteppedLineProjectResult result;
-    
-    // Simple projection onto line
-    ImVec2 line = end - start;
-    float len2 = ImLengthSqr(line);
-    
-    if (len2 < FLT_EPSILON)
-    {
-        result.Point = start;
-        result.Time = 0;
-        result.Distance = ImLength(p - start);
-        return result;
-    }
-    
-    float t = ImClamp(ImDot(p - start, line) / len2, 0.0f, 1.0f);
-    result.Point = start + line * t;
-    result.Time = t;
-    result.Distance = ImLength(p - result.Point);
-    
-    return result;
-}
-
-//------------------------------------------------------------------------------
-ImSteppedLineProjectResult ImProjectOnSteppedLine(
-    const ImVec2& p, 
-    const ImSteppedLinePoints& line,
-    float cornerRadius)
-{
-    return ImProjectOnSteppedLine(p, line.Start, line.End, line.HorizontalFirst, line.Step, cornerRadius);
-}
 
 void ImSteppedLineRenderer::DrawLinkShapeHandle(ImVec2 ratioPoint, ImDrawList* drawList, float size, ImU32 color)
 {
