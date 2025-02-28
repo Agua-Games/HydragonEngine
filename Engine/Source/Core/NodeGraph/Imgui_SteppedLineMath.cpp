@@ -160,11 +160,11 @@ void ImSteppedLineRenderer::DrawSteppedLine(
     drawList->AddLine(horizontalEnd1, ratioPoint, color, thickness);
     
     // Second segment (stepped): ratioPoint to end
-    // Step 1: Draw horizontal line (x component only)
-    ImVec2 horizontalEnd2(end.x, ratioPoint.y);
+    // Step 1: Draw vertical line (y component only)
+    ImVec2 horizontalEnd2(ratioPoint.x, end.y);
     drawList->AddLine(ratioPoint, horizontalEnd2, color, thickness);
     
-    // Step 2: Draw vertical line (y component only)
+    // Step 2: Draw horizontal line (x component only)
     drawList->AddLine(horizontalEnd2, end, color, thickness);
     
     // Debug: Draw the ratio point as a small red square
