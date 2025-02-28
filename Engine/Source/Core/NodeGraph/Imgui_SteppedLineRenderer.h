@@ -9,13 +9,6 @@ struct ImSteppedLineProjectResult {
     float t;          // Normalized position along the line (0.0 to 1.0)
 };
 
-// Style structure for stepped lines
-struct ImSteppedLineStyle {
-    float cornerRadius = 5.0f;
-    float stepPosition = 0.5f;
-    bool horizontalFirst = true;
-};
-
 // Main class declaration
 class ImSteppedLineRenderer {
 public:
@@ -24,22 +17,19 @@ public:
         const ImVec2& start,
         const ImVec2& end,
         ImU32 color,
-        float thickness,
-        const ImSteppedLineStyle& style);
+        float thickness);
 
     static void DrawSteppedLine(
         ImDrawList* drawList,
         const ImVec2& start,
         const ImVec2& end,
         ImU32 color,
-        float thickness,
-        const ImSteppedLineStyle& style);
+        float thickness);
 
     static ImSteppedLineProjectResult ProjectOnLine(
         const ImVec2& point,
         const ImVec2& start,
-        const ImVec2& end,
-        const ImSteppedLineStyle& style);
+        const ImVec2& end);
 
 private:
     static void AddArcPoints(

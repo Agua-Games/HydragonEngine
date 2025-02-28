@@ -114,8 +114,7 @@ void ImSteppedLineRenderer::DrawHydragonLine(
     const ImVec2& start,
     const ImVec2& end,
     ImU32 color,
-    float thickness,
-    const ImSteppedLineStyle& style)
+    float thickness)
 {
     // Calculate the ratio point using golden ratio
     float ratio = 0.382034f;
@@ -144,8 +143,7 @@ void ImSteppedLineRenderer::DrawSteppedLine(
     const ImVec2& start,
     const ImVec2& end,
     ImU32 color,
-    float thickness,
-    const ImSteppedLineStyle& style)
+    float thickness)
 {
     // Calculate the ratio point using inverse golden ratio
     float ratio = 0.382034f;

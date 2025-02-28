@@ -1,23 +1,21 @@
-//------------------------------------------------------------------------------
-// VERSION 0.1
-//
-// LICENSE
-//   This software is dual-licensed to the public domain and under the following
-//   license: you are granted a perpetual, irrevocable license to copy, modify,
-//   publish, and distribute this file as you see fit.
-//
-//------------------------------------------------------------------------------
+/** 
+ * Hydragon original code is under the following license:
+ * 
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * The Node Graph Editor is a specialized view for node-based graph editing.
+ */
+/**
+ * imgui and imgui-node-editor code are under their respective licenses, found in
+ * the ThirdParty directory (Source/ThirdParty/Licenses/).
+ */
 #ifndef __IMGUI_STEPPED_LINE_MATH_H__
 #define __IMGUI_STEPPED_LINE_MATH_H__
 #pragma once
 
 #include "imgui_extra_math.h"
 #include "imgui.h"
-
-struct ImSteppedLineStyle {
-    float breakPosition = 0.1f;  // Where along x-axis the direction changes (0.0 to 1.0)
-    float cornerRadius = 0.0f;   // Radius for rounded corners. 0 = sharp corners
-};
 
 class ImSteppedLineRenderer {
 public:
@@ -26,18 +24,14 @@ public:
         const ImVec2& start,
         const ImVec2& end,
         ImU32 color,
-        float thickness,
-        const ImSteppedLineStyle& style
-    );
+        float thickness);
     
     static void DrawSteppedLine(
         ImDrawList* drawList,
         const ImVec2& start,
         const ImVec2& end,
         ImU32 color,
-        float thickness,
-        const ImSteppedLineStyle& style
-    );
+        float thickness);
 };
 
 //------------------------------------------------------------------------------

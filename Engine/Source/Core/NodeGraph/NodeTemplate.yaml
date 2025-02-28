@@ -1,0 +1,75 @@
+node:
+  # Base HD_Object properties
+  name: "MyCustomNode"
+  description: "Performs specific operation X"
+  category: "Processing"  # e.g., Transform, Physics, Audio, etc.
+  version: "1.0.0"
+  metadata:
+    serializable: true
+    editable_in_editor: true
+    procedural: false
+    stateless: false
+    cache_enabled: true
+
+  # HD_Node specific
+  node_type: "Transform"  # matches NodeType enum
+  execution:
+    streaming:
+      enabled: true
+      force_sync: false
+      chunk_size: 1024
+      priority_threshold: 0.5
+
+  # Ports configuration
+  ports:
+    inputs:
+      - name: "input1"
+        type: "float"
+        default_value: 0.0
+        validation: "value >= 0"
+        ui_hints: 
+          display: "slider"
+          min: 0.0
+          max: 1.0
+      - name: "trigger"
+        type: "flow"
+        is_execution_port: true
+    
+    outputs:
+      - name: "output1"
+        type: "vector3"
+        cached: true
+        ui_hints:
+          color: [0.8, 0.8, 0.9]
+
+  # Code generation
+  implementation:
+    language: "cpp"  # or "python", "lua"
+    process_function: |
+      void Process() {
+        auto input = GetInput("input1");
+        SetOutput("output1", ProcessValue(input));
+      }
+    initialize_function: |
+      void Initialize() {
+        // Setup code
+      }
+    cleanup_function: |
+      void Cleanup() {
+        // Cleanup code
+      }
+
+  # Debug support
+  debug:
+    breakpoint_locations: ["process_start", "process_end"]
+    watch_expressions: ["input1", "output1"]
+    state_inspection:
+      internal_state: "m_processedCount"
+
+  # Visual styling
+  style:
+    title_bar_color: [90, 102, 110, 255]
+    node_bg_color: [53, 56, 56, 110]
+    node_border_color: [110, 110, 128, 128]
+    pin_color: [204, 227, 227, 191]
+    pin_size: 8.0

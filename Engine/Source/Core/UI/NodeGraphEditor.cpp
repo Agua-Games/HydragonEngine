@@ -54,12 +54,29 @@ struct NodeData {
     bool isDragging;
 };
 
-enum class LinkStyle
+struct LinkInfo
+{
+    nodeEd::LinkId Id;
+    nodeEd::PinId InputId;
+    nodeEd::PinId OutputId;
+};
+
+enum class LinkShape
 {
     Hydragon,
     Straight,
     Bezier,
     Stepped,
+};
+
+struct LinkStyle
+{
+    ImColor linkColor;
+    enum LinkShape linkShape;
+};
+LinkStyle linkStyle = {
+    ImColor(1.0f, 1.0f, 1.0f, 0.2f),
+    LinkShape::Bezier
 };
 
 struct NodeStyle{
@@ -71,8 +88,6 @@ struct NodeStyle{
     ImVec4 nodePadding;
     float nodeRounding;
     float pinIconSize;
-    enum LinkStyle linkStyle;
-    ImSteppedLineStyle steppedLink;
 };
 NodeStyle nodeStyle = {
     ImColor(90, 102, 110, 255),
@@ -81,8 +96,7 @@ NodeStyle nodeStyle = {
     ImColor(0.80f, 0.89f, 0.89f, 0.75f),
     ImVec4(0.0f, 4.0f, 0.0f, 15.0f),
     11.0f,
-    9.0f,
-    LinkStyle::Bezier,
+    9.0f
 };
 
 struct NodeConnection {
@@ -90,13 +104,6 @@ struct NodeConnection {
     nodeEd::PinId inputPinId;
     nodeEd::NodeId outputNodeId;
     nodeEd::NodeId inputNodeId;
-};
-
-struct LinkInfo
-{
-    nodeEd::LinkId Id;
-    nodeEd::PinId InputId;
-    nodeEd::PinId OutputId;
 };
 
 static bool g_FirstFrame = true;
@@ -324,7 +331,6 @@ static void RenderStatusBar();
 static void RenderGraphCanvas(HdEditorWindowData* windowData);
 
 // Forward declarations
-static void RenderExampleNode();
 static bool IsInputConnected(const char* inputName);
 
 void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData) 
@@ -364,32 +370,31 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
         }
         if (ImGui::BeginMenu("View"))
         {
-            static int s_linkStyle = 3;
-            if (ImGui::Combo("Link Style", &s_linkStyle, "Hydragon\0Straight\0Bezier\0Stepped\0")) 
+            static int s_linkShape = 3;
+            if (ImGui::Combo("Link Shape", &s_linkShape, "Hydragon\0Straight\0Bezier\0Stepped\0")) 
             {
-                switch (s_linkStyle) {
-                    case 0: 
-                        nodeStyle.linkStyle = LinkStyle::Hydragon; 
+                switch (s_linkShape) {
+                    case 0:
                         if (EnsureNodeEditorContext())
                         {
-                            nodeStyle.linkStyle = LinkStyle::Hydragon; break;
+                            linkStyle.linkShape = LinkShape::Hydragon; break;
                         };
                         break;
-                    case 1: 
-                        nodeStyle.linkStyle = LinkStyle::Straight; 
+                    case 1:
                         if (EnsureNodeEditorContext())
                         {
+                            linkStyle.linkShape = LinkShape::Straight;
                             nodeEd::GetStyle().LinkStrength = 0.0f;
                         };
                         break;
-                    case 2: 
-                        nodeStyle.linkStyle = LinkStyle::Bezier; 
+                    case 2:
                         if (EnsureNodeEditorContext())
                         {
+                            linkStyle.linkShape = LinkShape::Bezier; 
                             nodeEd::GetStyle().LinkStrength = 100.0f;
                         };
                         break;
-                    case 3: nodeStyle.linkStyle = LinkStyle::Stepped; break;
+                    case 3: linkStyle.linkShape = LinkShape::Stepped; break;
                 }
             }
             if (ImGui::MenuItem("Reset Panning")) {
@@ -586,7 +591,7 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     // Draw existing links
     for (auto& link : g_Links)
     {
-        if (nodeStyle.linkStyle == LinkStyle::Hydragon) {
+        if (linkStyle.linkShape == LinkShape::Hydragon) {
             ImVec2 startPos, endPos;
             
             if (nodeEd::QueryNewLink(nullptr, nullptr)) {  // Check if we're creating a new link
@@ -604,23 +609,15 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
                 }
             }
             
-            // Create stepped line style
-            ImSteppedLineStyle steppedStyle;
-            steppedStyle.cornerRadius = 5.0f;
-            steppedStyle.stepPosition = 0.5f;
-            steppedStyle.horizontalFirst = true;
-            
-            // Draw the stepped line
+            // Draw the Hydragon line
             ImSteppedLineRenderer::DrawHydragonLine(
                 ImGui::GetWindowDrawList(),
                 startPos,
                 endPos,
-                ImGui::GetColorU32(nodeEd::GetStyle().Colors[nodeEd::StyleColor_Flow]),
-                2.0f,
-                steppedStyle
-            );
+                linkStyle.linkColor,
+                2.0f);
         }
-        else if (nodeStyle.linkStyle == LinkStyle::Stepped) {
+        else if (linkStyle.linkShape == LinkShape::Stepped) {
             ImVec2 startPos, endPos;
             
             if (nodeEd::QueryNewLink(nullptr, nullptr)) {  // Check if we're creating a new link
@@ -637,22 +634,14 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
                     endPos = GetStoredPinPosition(link.InputId);
                 }
             }
-            
-            // Create stepped line style
-            ImSteppedLineStyle steppedStyle;
-            steppedStyle.cornerRadius = 5.0f;
-            steppedStyle.stepPosition = 0.5f;
-            steppedStyle.horizontalFirst = true;
             
             // Draw the stepped line
             ImSteppedLineRenderer::DrawSteppedLine(
                 ImGui::GetWindowDrawList(),
                 startPos,
                 endPos,
-                ImGui::GetColorU32(nodeEd::GetStyle().Colors[nodeEd::StyleColor_Flow]),
-                2.0f,
-                steppedStyle
-            );
+                linkStyle.linkColor,
+                2.0f);
         } 
         else 
         {
@@ -790,12 +779,6 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
 void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
 { 
 
-}
-
-static void RenderExampleNode()
-{
-    // This function is intentionally empty for now
-    // We'll implement it step by step after we confirm the canvas works
 }
 
 // Placeholder function - to be implemented properly later
