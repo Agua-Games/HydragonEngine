@@ -109,12 +109,21 @@ ImSteppedLineProjectResult ImProjectOnSteppedLine(
     return ImProjectOnSteppedLine(p, line.Start, line.End, line.HorizontalFirst, line.Step, cornerRadius);
 }
 
+void ImSteppedLineRenderer::DrawLinkShapeHandle(ImVec2 ratioPoint, ImDrawList* drawList, float size, ImU32 color)
+{
+    float squareSize = 5.0f;
+    ImVec2 squareMin(ratioPoint.x - squareSize, ratioPoint.y - squareSize);
+    ImVec2 squareMax(ratioPoint.x + squareSize, ratioPoint.y + squareSize);
+    drawList->AddRect(squareMin, squareMax, color);
+}
+
 void ImSteppedLineRenderer::DrawHydragonLine(
     ImDrawList* drawList,
     const ImVec2& start,
     const ImVec2& end,
     ImU32 color,
-    float thickness)
+    float thickness, 
+    bool enableHandle)
 {
     // Calculate the ratio point using golden ratio
     float ratio = 0.382034f;
@@ -131,11 +140,12 @@ void ImSteppedLineRenderer::DrawHydragonLine(
     // Second segment: straight line from ratioPoint to end
     drawList->AddLine(ratioPoint, end, color, thickness);
     
-    // Debug: Draw the ratio point as a small red square
-    float squareSize = 5.0f;
-    ImVec2 squareMin(ratioPoint.x - squareSize, ratioPoint.y - squareSize);
-    ImVec2 squareMax(ratioPoint.x + squareSize, ratioPoint.y + squareSize);
-    drawList->AddRect(squareMin, squareMax, IM_COL32(255, 0, 0, 255));
+    // Draw the ratio point as a square handle, so user can move the ratioPoint?
+    if (enableHandle)
+    {
+        DrawLinkShapeHandle(ratioPoint, drawList, 5.0f, color);
+    }
+    
 }
 
 void ImSteppedLineRenderer::DrawSteppedLine(
@@ -143,7 +153,8 @@ void ImSteppedLineRenderer::DrawSteppedLine(
     const ImVec2& start,
     const ImVec2& end,
     ImU32 color,
-    float thickness)
+    float thickness,
+    bool enableHandle)
 {
     // Calculate the ratio point using inverse golden ratio
     float ratio = 0.382034f;
@@ -165,9 +176,9 @@ void ImSteppedLineRenderer::DrawSteppedLine(
     // Step 2: Draw horizontal line (x component only)
     drawList->AddLine(horizontalEnd2, end, color, thickness);
     
-    // Debug: Draw the ratio point as a small red square
-    float squareSize = 5.0f;
-    ImVec2 squareMin(ratioPoint.x - squareSize, ratioPoint.y - squareSize);
-    ImVec2 squareMax(ratioPoint.x + squareSize, ratioPoint.y + squareSize);
-    drawList->AddRect(squareMin, squareMax, IM_COL32(255, 0, 0, 255));
+    // Draw the ratio point as a square handle, so user can move the ratioPoint?
+    if (enableHandle)
+    {
+        DrawLinkShapeHandle(ratioPoint, drawList, 5.0f, color);
+    }
 }

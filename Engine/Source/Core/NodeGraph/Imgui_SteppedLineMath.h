@@ -19,19 +19,27 @@
 
 class ImSteppedLineRenderer {
 public:
+    static void ImSteppedLineRenderer::DrawLinkShapeHandle(
+        ImVec2 ratioPoint, 
+        ImDrawList* drawList, 
+        float size, ImU32 
+        color);
+
     static void DrawHydragonLine(
         ImDrawList* drawList,
         const ImVec2& start,
         const ImVec2& end,
         ImU32 color,
-        float thickness);
+        float thickness,
+        bool enableHandle);
     
     static void DrawSteppedLine(
         ImDrawList* drawList,
         const ImVec2& start,
         const ImVec2& end,
         ImU32 color,
-        float thickness);
+        float thickness,
+        bool enableHandle);
 };
 
 //------------------------------------------------------------------------------

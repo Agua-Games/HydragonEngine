@@ -11,7 +11,8 @@
 #include "IconsMaterialSymbols.h"
 #include <imgui.h>
 #include "imgui_node_editor.h"
-#include "Imgui_SteppedLineRenderer.h"
+//#include "Imgui_SteppedLineRenderer.h"
+#include "Imgui_SteppedLineMath.h"
 namespace nodeEd = ax::NodeEditor;
 
 #include "NodeGraphEditor.h"
@@ -397,14 +398,19 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
                     case 3: linkStyle.linkShape = LinkShape::Stepped; break;
                 }
             }
-            if (ImGui::MenuItem("Reset Panning")) {
-                nodeEd::NavigateToContent();
-            }
-            if (ImGui::MenuItem("Reset Zoom")) {
-                nodeEd::NavigateToContent();  // This will reset both panning and zoom
+            if (ImGui::MenuItem("Reset View")) {
+               if (EnsureNodeEditorContext()) 
+               {
+                   nodeEd::NavigateToContent();
+               }
             }
             if (ImGui::MenuItem("Frame All")) {}
-            if (ImGui::MenuItem("Frame Selected")) {}
+            if (ImGui::MenuItem("Frame Selected")) {
+                if (EnsureNodeEditorContext()) 
+                {
+                    nodeEd::NavigateToSelection(true);
+                }
+            }
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
@@ -615,7 +621,8 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
                 startPos,
                 endPos,
                 linkStyle.linkColor,
-                2.0f);
+                2.0f,
+                false);
         }
         else if (linkStyle.linkShape == LinkShape::Stepped) {
             ImVec2 startPos, endPos;
@@ -641,7 +648,8 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
                 startPos,
                 endPos,
                 linkStyle.linkColor,
-                2.0f);
+                2.0f,
+                false);
         } 
         else 
         {
