@@ -51,9 +51,16 @@ For licensing inquiries or further information, please contact **Agua Games** at
 
 This software uses the following third-party libraries:
 
-- **glfw**: Licensed under the [zlib License](./Engine/Source/ThirdParty/Licenses/glfw_LICENSE.md).
-- **imgui**: Licensed under the [MIT License](./Engine/Source/ThirdParty/Licenses/imgui_LICENSE.txt).
-- **vulkan-headers**: Licensed under the [Apache 2.0 License](./Engine/Source/ThirdParty/Licenses/vulkan-headers_LICENSE.txt).
+- **glfw**: [zlib License](./Engine/Source/ThirdParty/Licenses/glfw_LICENSE.md).
+- **fmt**:  [fmt License](./Engine/Source/ThirdParty/Licenses/fmt_LICENSE.txt).
+- **imgui**: [MIT License](./Engine/Source/ThirdParty/Licenses/imgui_LICENSE.txt).
+- **IconFontCppHeaders**:  [IconFontCppHeaders License](./Engine/Source/ThirdParty/Licenses/IconFontCppHeaders_LICENSE.txt).
+- **Font-Awesome**: [GPL License](./Engine/Source/ThirdParty/Licenses/Font-Awesome_LICENSE.txt).
+- **material-design-icons**: [Apache 2.0 License](./Engine/Source/ThirdParty/Licenses/material-design-icons_LICENSE.txt).
+- **imgui-node-editor**: [MIT License](./Engine/Source/ThirdParty/Licenses/imgui-node-editor_LICENSE.txt).
+- **vulkan-headers**: [Apache 2.0 License](./Engine/Source/ThirdParty/Licenses/vulkan-headers_LICENSE.txt).
+- **volk**: [volk License](./Engine/Source/ThirdParty/Licenses/volk_LICENSE.txt).
+- **VulkanMemoryAllocator**: [VulkanMemoryAllocator License](./Engine/Source/ThirdParty/Licenses/VulkanMemoryAllocator_LICENSE.txt).
 
 For more information about the licensing terms of these libraries, please refer to their respective license files in the `third_party` directory.
 
