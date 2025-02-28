@@ -41,7 +41,7 @@ T ImSteppedLineSample(const T& start, const T& end, float t, float stepPosition,
         // Second segment: horizontal movement
         else
         {
-            float segmentT = (t - stepPosition) / (1.0f - stepPosition);
+            float segmentT = t / stepPosition;
             result.x = start.x + (end.x - start.x) * segmentT;
             result.y = end.y;
         }
@@ -268,4 +268,16 @@ ImSteppedLineProjectResult ImProjectOnSteppedLine(
     float cornerRadius = 0.0f)
 {
     return ImProjectOnSteppedLine(p, line.Start, line.End, line.HorizontalFirst, line.Step, cornerRadius);
+}
+
+void ImSteppedLineRenderer::DrawLine(
+    ImDrawList* drawList,
+    const ImVec2& start,
+    const ImVec2& end,
+    ImU32 color,
+    float thickness,
+    const ImSteppedLineStyle& style)
+{
+    // Just draw a straight line from start to end
+    drawList->AddLine(start, end, color, thickness);
 }

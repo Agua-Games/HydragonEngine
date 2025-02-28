@@ -12,6 +12,24 @@
 #pragma once
 
 #include "imgui_extra_math.h"
+#include "imgui.h"
+
+struct ImSteppedLineStyle {
+    float breakPosition = 0.1f;  // Where along x-axis the direction changes (0.0 to 1.0)
+    float cornerRadius = 0.0f;   // Radius for rounded corners. 0 = sharp corners
+};
+
+class ImSteppedLineRenderer {
+public:
+    static void DrawLine(
+        ImDrawList* drawList,
+        const ImVec2& start,
+        const ImVec2& end,
+        ImU32 color,
+        float thickness,
+        const ImSteppedLineStyle& style
+    );
+};
 
 //------------------------------------------------------------------------------
 template <typename T>

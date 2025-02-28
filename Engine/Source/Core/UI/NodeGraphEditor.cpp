@@ -104,6 +104,21 @@ static int g_NextId = 1; // Used to generate unique IDs
 static bool showConnectionPoints = true;  // Controls visibility of connection squares
 static std::unordered_map<std::string, NodeData> nodePositions;
 
+struct PinPositionData {
+    ImVec2 position;
+    bool isValid;
+};
+
+// Define a custom comparator for PinId
+struct PinIdCompare {
+    bool operator()(const nodeEd::PinId& a, const nodeEd::PinId& b) const {
+        return a.Get() < b.Get();  // Compare the underlying IDs
+    }
+};
+
+// Use the custom comparator with std::map
+static std::map<nodeEd::PinId, PinPositionData, PinIdCompare> g_PinPositions;
+
 static bool EnsureNodeEditorContext() {     // Helper function to avoid silently failing by lack of context
     if (g_NodeEditorContext == nullptr) {
         return false;
@@ -212,24 +227,23 @@ void BeginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, ImColor tit
 void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     const float iconSize = nodeStyle.pinIconSize;
     
-    // Begin the pin
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Input);
-    
-    // Set pin pivot alignment to left (for interaction area)
     nodeEd::PinPivotAlignment(ImVec2(0.0f, 0.5f));
     
-    // Get pin position for visual icon
     ImVec2 pinPos = ImGui::GetCursorScreenPos();
-    // Position at left border, accounting for icon size
-    pinPos.x += 0.0f; // Add slight offset to touch inner border, if needed
-    pinPos.y += ImGui::GetTextLineHeight() * 0.5f - (iconSize * 0.5f); // Center vertically
+    pinPos.x += 0.0f;
+    pinPos.y += ImGui::GetTextLineHeight() * 0.5f - (iconSize * 0.5f);
+    
+    g_PinPositions[pinId] = PinPositionData{
+        ImVec2(pinPos.x + iconSize * 0.5f, pinPos.y + iconSize * 0.5f),
+        true
+    };
 
     // Draw pin icon
     ImDrawList* drawList = ImGui::GetWindowDrawList();
     ImVec2 iconMin = ImVec2(pinPos.x, pinPos.y);
     ImVec2 iconMax = ImVec2(pinPos.x + iconSize, pinPos.y + iconSize);
     
-    // Check if pin is connected
     bool isConnected = nodeEd::PinHadAnyLinks(pinId);
     
     if (isConnected) {
@@ -238,49 +252,40 @@ void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
         drawList->AddRect(iconMin, iconMax, pinColor, 0.0f, 0, 1.5f);
     }
     
-    // Add dummy for proper pin interaction area
     ImGui::Dummy(ImVec2(iconSize + 3.0f, ImGui::GetTextLineHeight()));
-    
-    // End the pin
     nodeEd::EndPin();
     
-    // Display the label after the pin
     ImGui::SameLine(0, 4.0f);
     ImGui::TextUnformatted(label);
 }
 
 // Helper to create an output pin with custom styling
 void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
-    // Begin a group for this pin to ensure proper layout
     ImGui::BeginGroup();
-
     const float iconSize = nodeStyle.pinIconSize;
     
-    // Display the label first
     ImGui::TextUnformatted(label);
     ImGui::SameLine(0, 4.0f);
     
-    // Begin the pin
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Output);
-    
-    // Set pin pivot alignment to left (for interaction area)
     nodeEd::PinPivotAlignment(ImVec2(1.0f, 0.5f));
     
-    // Calculate positions for visual and interaction areas
-    
-    
-    // Get pin position for visual icon.
+    // Get and store pin position
     ImVec2 pinPos = ImGui::GetCursorScreenPos();
-    // Position at right border, accounting for icon size
-    pinPos.x += 0.0f; // Add slight offset to touch inner border, if needed
-    pinPos.y += ImGui::GetTextLineHeight() * 0.5f - (iconSize * 0.5f);     // Center vertically
+    pinPos.x += 0.0f;
+    pinPos.y += ImGui::GetTextLineHeight() * 0.5f - (iconSize * 0.5f);
+    
+    // Store the position with the icon center point
+    g_PinPositions[pinId] = PinPositionData{
+        ImVec2(pinPos.x + 3.0f + iconSize * 0.5f, pinPos.y + iconSize * 0.5f),
+        true
+    };
 
     // Draw pin icon
     ImDrawList* drawList = ImGui::GetWindowDrawList();
-    ImVec2 iconMin = ImVec2(pinPos.x + 3.0f, pinPos.y);     // +3.0f offset because the interaction area is bigger
+    ImVec2 iconMin = ImVec2(pinPos.x + 3.0f, pinPos.y);
     ImVec2 iconMax = ImVec2(pinPos.x + iconSize + 3.0f, pinPos.y + iconSize);
     
-    // Check if pin is connected
     bool isConnected = nodeEd::PinHadAnyLinks(pinId);
     
     if (isConnected) {
@@ -289,13 +294,22 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
         drawList->AddRect(iconMin, iconMax, pinColor, 0.0f, 0, 1.5f);
     }
     
-    // Add dummy for proper pin interaction area
-    ImGui::Dummy(ImVec2(iconSize + 3.0f, ImGui::GetTextLineHeight()));  // +3.0f to have a bigger interaction area
-    
-    // End the pin
+    ImGui::Dummy(ImVec2(iconSize + 3.0f, ImGui::GetTextLineHeight()));
     nodeEd::EndPin();
-    
-    ImGui::EndGroup();      // End the group for this pin
+    ImGui::EndGroup();
+}
+
+ImVec2 GetStoredPinPosition(nodeEd::PinId pinId) {
+    auto it = g_PinPositions.find(pinId);
+    if (it != g_PinPositions.end() && it->second.isValid) {
+        return it->second.position;
+    }
+    return ImGui::GetMousePos(); // Fallback to mouse pos if not found
+}
+
+// You might want to add this at the beginning of your frame:
+void ClearPinPositions() {
+    g_PinPositions.clear();
 }
 
 // Forward declare internal helper functions
@@ -564,7 +578,43 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     // Draw existing links
     for (auto& link : g_Links)
     {
-        nodeEd::Link(link.Id, link.InputId, link.OutputId);
+        if (nodeStyle.linkStyle == LinkStyle::Stepped) {
+            ImVec2 startPos, endPos;
+            
+            if (nodeEd::QueryNewLink(nullptr, nullptr)) {  // Check if we're creating a new link
+                // Get the start pin position during dragging
+                nodeEd::PinId startPinId, endPinId;
+                if (nodeEd::QueryNewLink(&startPinId, &endPinId)) {
+                    startPos = GetStoredPinPosition(startPinId);
+                    endPos = ImGui::GetMousePos();
+                }
+            } else {
+                // Normal connected link case
+                if (nodeEd::GetLinkPins(link.Id, &link.InputId, &link.OutputId)) {
+                    startPos = GetStoredPinPosition(link.OutputId);
+                    endPos = GetStoredPinPosition(link.InputId);
+                }
+            }
+            
+            // Create stepped line style
+            ImSteppedLineStyle steppedStyle;
+            steppedStyle.cornerRadius = 5.0f;
+            steppedStyle.stepPosition = 0.5f;
+            steppedStyle.horizontalFirst = true;
+            
+            // Draw the stepped line
+            ImSteppedLineRenderer::DrawLine(
+                ImGui::GetWindowDrawList(),
+                startPos,
+                endPos,
+                ImGui::GetColorU32(nodeEd::GetStyle().Colors[nodeEd::StyleColor_Flow]),
+                2.0f,
+                steppedStyle
+            );
+        } else {
+            // Original bezier/straight line drawing
+            nodeEd::Link(link.Id, link.InputId, link.OutputId);
+        }
     }
     
     // Handle interactions for creating links
