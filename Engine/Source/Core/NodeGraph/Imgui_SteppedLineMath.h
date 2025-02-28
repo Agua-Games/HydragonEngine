@@ -21,7 +21,16 @@ struct ImSteppedLineStyle {
 
 class ImSteppedLineRenderer {
 public:
-    static void DrawLine(
+    static void DrawHydragonLine(
+        ImDrawList* drawList,
+        const ImVec2& start,
+        const ImVec2& end,
+        ImU32 color,
+        float thickness,
+        const ImSteppedLineStyle& style
+    );
+    
+    static void DrawSteppedLine(
         ImDrawList* drawList,
         const ImVec2& start,
         const ImVec2& end,

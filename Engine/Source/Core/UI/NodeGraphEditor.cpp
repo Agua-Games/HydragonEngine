@@ -56,6 +56,7 @@ struct NodeData {
 
 enum class LinkStyle
 {
+    Hydragon,
     Straight,
     Bezier,
     Stepped,
@@ -363,25 +364,32 @@ void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData)
         }
         if (ImGui::BeginMenu("View"))
         {
-            static int s_linkStyle = 2;
-            if (ImGui::Combo("Link Style", &s_linkStyle, "Straight\0Bezier\0Stepped\0")) 
+            static int s_linkStyle = 3;
+            if (ImGui::Combo("Link Style", &s_linkStyle, "Hydragon\0Straight\0Bezier\0Stepped\0")) 
             {
                 switch (s_linkStyle) {
                     case 0: 
+                        nodeStyle.linkStyle = LinkStyle::Hydragon; 
+                        if (EnsureNodeEditorContext())
+                        {
+                            nodeStyle.linkStyle = LinkStyle::Hydragon; break;
+                        };
+                        break;
+                    case 1: 
                         nodeStyle.linkStyle = LinkStyle::Straight; 
                         if (EnsureNodeEditorContext())
                         {
                             nodeEd::GetStyle().LinkStrength = 0.0f;
                         };
                         break;
-                    case 1: 
+                    case 2: 
                         nodeStyle.linkStyle = LinkStyle::Bezier; 
                         if (EnsureNodeEditorContext())
                         {
                             nodeEd::GetStyle().LinkStrength = 100.0f;
                         };
                         break;
-                    case 2: nodeStyle.linkStyle = LinkStyle::Stepped; break;
+                    case 3: nodeStyle.linkStyle = LinkStyle::Stepped; break;
                 }
             }
             if (ImGui::MenuItem("Reset Panning")) {
@@ -578,7 +586,7 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     // Draw existing links
     for (auto& link : g_Links)
     {
-        if (nodeStyle.linkStyle == LinkStyle::Stepped) {
+        if (nodeStyle.linkStyle == LinkStyle::Hydragon) {
             ImVec2 startPos, endPos;
             
             if (nodeEd::QueryNewLink(nullptr, nullptr)) {  // Check if we're creating a new link
@@ -603,7 +611,7 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
             steppedStyle.horizontalFirst = true;
             
             // Draw the stepped line
-            ImSteppedLineRenderer::DrawLine(
+            ImSteppedLineRenderer::DrawHydragonLine(
                 ImGui::GetWindowDrawList(),
                 startPos,
                 endPos,
@@ -611,7 +619,43 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
                 2.0f,
                 steppedStyle
             );
-        } else {
+        }
+        else if (nodeStyle.linkStyle == LinkStyle::Stepped) {
+            ImVec2 startPos, endPos;
+            
+            if (nodeEd::QueryNewLink(nullptr, nullptr)) {  // Check if we're creating a new link
+                // Get the start pin position during dragging
+                nodeEd::PinId startPinId, endPinId;
+                if (nodeEd::QueryNewLink(&startPinId, &endPinId)) {
+                    startPos = GetStoredPinPosition(startPinId);
+                    endPos = ImGui::GetMousePos();
+                }
+            } else {
+                // Normal connected link case
+                if (nodeEd::GetLinkPins(link.Id, &link.InputId, &link.OutputId)) {
+                    startPos = GetStoredPinPosition(link.OutputId);
+                    endPos = GetStoredPinPosition(link.InputId);
+                }
+            }
+            
+            // Create stepped line style
+            ImSteppedLineStyle steppedStyle;
+            steppedStyle.cornerRadius = 5.0f;
+            steppedStyle.stepPosition = 0.5f;
+            steppedStyle.horizontalFirst = true;
+            
+            // Draw the stepped line
+            ImSteppedLineRenderer::DrawSteppedLine(
+                ImGui::GetWindowDrawList(),
+                startPos,
+                endPos,
+                ImGui::GetColorU32(nodeEd::GetStyle().Colors[nodeEd::StyleColor_Flow]),
+                2.0f,
+                steppedStyle
+            );
+        } 
+        else 
+        {
             // Original bezier/straight line drawing
             nodeEd::Link(link.Id, link.InputId, link.OutputId);
         }
