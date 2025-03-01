@@ -12,6 +12,7 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
+  
 void ShowProcOrchestrator(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
@@ -21,4 +22,5 @@ void ShowProcOrchestrator(bool* p_open, HdEditorWindowData* windowData)
     }  
     ImGui::End();
 }
+
 } // namespace hdImgui

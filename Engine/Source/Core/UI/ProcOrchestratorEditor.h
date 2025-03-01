@@ -27,5 +27,12 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
+
+/**
+ * @brief Renders the main procedural orchestrator window.
+ * @param p_open Pointer to boolean controlling window visibility
+ * @param windowData Editor window data containing global settings
+ */
 void ShowProcOrchestrator(bool* p_open, HdEditorWindowData* windowData);
+
 } // namespace hdImgui

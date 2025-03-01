@@ -1,15 +1,30 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_CommandNode.h
+ * @brief HD_CommandNode represents a command node in the engine's node graph.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Command nodes are used to execute functions with inputs and outputs.
+ * - They can be synchronous or asynchronous.
+ * 
+ * TODO:
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
 #pragma once
-
-#include "HD_Node.h"
 #include <functional>
 #include <future>
 #include <tuple>
 #include <chrono>
 #include <any>
+
+#include "HD_Node.h"
+#include "HD_AIInterface.h"
 
 namespace hd {
 
@@ -17,7 +32,7 @@ namespace hd {
  * @brief Command node for executing functions with inputs and outputs
  */
 template<typename... Inputs>
-class HD_CommandNode : public HD_Node {
+class HD_CommandNode : public HD_Node<Inputs...> {
 public:
     using CommandFunc = std::function<void(Inputs...)>;
     using AsyncCommandFunc = std::function<std::future<void>(Inputs...)>;
@@ -59,12 +74,68 @@ public:
         return HD_Node::LoadAsync();
     }
 
+    // Required overrides
+    void OnResume() override {
+        if (!pendingTasks.empty()) {
+            // Resume pending async tasks
+        }
+    }
+    
+    void OnPause() override {
+        if (!pendingTasks.empty()) {
+            // Pause/suspend pending async tasks
+        }
+    }
+    
+    void OnDirty() override {
+        // Command nodes typically don't cache results
+        // but might need to invalidate pending executions
+        pendingTasks.clear();
+    }
+
+    // Cache system integration
+    bool CanCache() const override { return false; } // Commands typically shouldn't cache
+    
+    uint64_t ComputeCacheKey() const override {
+        // Commands are typically stateless, so no caching
+        return 0;
+    }
+
+    // AI integration
+    AIInterface GetAIInterface() const override {
+        AIInterface interface;
+        interface.taskDesc.intent = "Execute parameterized commands";
+        interface.capabilities.canModifyProperties = false;
+        interface.capabilities.canModifyLogic = true;
+        interface.semantics.purpose = "Command execution";
+        interface.semantics.domain = "Command Processing";
+        return interface;
+    }
+
+    std::vector<std::string> GetOptimizationSuggestions() const override {
+        return {
+            "Consider batching similar commands",
+            "Evaluate async execution opportunities",
+            "Check command dependencies for parallel execution"
+        };
+    }
+
 private:
     CommandFunc command;
     AsyncCommandFunc asyncCommand;
     std::tuple<std::string...> inputNames;
     bool isAsynchronous = false;
     std::vector<std::future<void>> pendingTasks;
+
+    // Helper to check if all inputs are ready
+    bool AreInputsReady() const {
+        return CheckInputsReady(std::index_sequence_for<Inputs...>{});
+    }
+
+    template<size_t... Is>
+    bool CheckInputsReady(std::index_sequence<Is...>) const {
+        return (... && HasInput<Inputs>(std::get<Is>(inputNames)));
+    }
 
     template<size_t... Is>
     void ExecuteCommand(std::index_sequence<Is...>) {

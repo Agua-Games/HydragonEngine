@@ -1,6 +1,18 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file hdImgui.h
+ * @brief Wrapper for window creation, input and UI functionality.
+ * 
+ * ARCHITECTURAL NOTES:
+ * Wrapper for window creation, input and UI functionality. Leverages glfw, Dear imgui, imgui-node-editor and other third-party libraries.
+ * 
+ * TODO:
+ * - Change the name of the files to better reflect its broader purpose: hdEditor.h and hdEditor.cpp? HydragonEditor? MainEditor?
+ * - Refactor the architecture to use classes, inheritance, encapsulation, more well-structured code, instead of namespace + free-functions.
+ * - Also use classes & methods for the sub-editors.
+ * - Move here the initialization, update and cleanup code blocks currently in main.cpp responsible for glfw, imgui, steps.
  */
 #pragma once
 #include "imgui.h"

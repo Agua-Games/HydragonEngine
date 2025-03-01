@@ -1,6 +1,22 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_SceneNode.h
+ * @brief Base class for all scenes in Hydragon
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Scene nodes are the primary entities in the system.
+ * - By design, both levels, sub-levels, "game objects", attached components, etc. are all scene nodes.
+ * - Scene nodes can be connected to form complex systems.
+ * - As much as possible, scene nodes implement functionality akin to openUSD's UsdStage, though optimized for realtime.
+ * 
+ * TODO:
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
 #pragma once
 
@@ -16,7 +32,7 @@
 #include <glm/glm.hpp>
 
 namespace hd {
-
+    
 /**
  * @brief Metadata and attributes container for scene nodes
  * 
@@ -53,7 +69,9 @@ struct HD_SceneInfo : public HD_NodeInfo {
  * - Scene graph manipulation
  * - Transform propagation
  */
-class HD_SceneNode : public HD_Node {
+class HD_SceneNode : public HD_Node<> {  // Empty template params if no types needed
+    // or specify needed types:
+    // class HD_SceneNode : public HD_Node<Transform, Material, Geometry>
 public:
     // Node Graph Integration
     class SceneNodePort {
@@ -309,6 +327,34 @@ public:
         SetOutputValue("BoundingBox", CalculateBoundingBox());
     }
 
+    void OnResume() override;
+    void OnPause() override;
+    void OnDirty() override { MarkChildrenDirty(); }
+    
+    std::string GetNodeSemantics() const override {
+        return "Scene node managing hierarchical scene content with USD-like features";
+    }
+    
+    std::vector<std::string> GetSafetyConstraints() const override {
+        return {
+            "Transform hierarchy must remain valid",
+            "Node names must be unique within scope",
+            "Referenced scenes must exist"
+        };
+    }
+    
+    void GenerateLanguageSpecificCode(const std::string& language) override {
+        // Implementation
+    }
+    
+    void ValidateGeneratedCode(const std::string& code) override {
+        // Implementation
+    }
+    
+    void ApplyCodeChanges(const std::string& code) override {
+        // Implementation
+    }
+
 protected:
     /** Scene-specific metadata and attributes */
     HD_SceneInfo SceneInfo;
@@ -445,6 +491,66 @@ private:
             }
         }
     }
+
+    uint64_t ComputeCacheKey() const override {
+        // Will combine: scene structure hash, transform states, active variants
+        return 0;
+    }
+
+    // Cache system integration
+    bool CanCache() const override { return true; }
+    
+    void UpdateCache() override {
+        if (!CanCache() || !isDirty) return;
+        
+        // Will store:
+        // - Flattened transform hierarchy
+        // - Active variant states
+        // - Computed bounds
+        // - Visibility states
+    }
+    
+    bool TryRestoreFromCache() {
+        if (!CanCache()) return false;
+        // Will attempt to restore cached state
+        return false;
+    }
+
+    // AI integration essentials
+    AIInterface GetAIInterface() const override {
+        AIInterface interface;
+        interface.taskDesc.intent = "Scene composition and management";
+        interface.capabilities.canModifyProperties = true;
+        interface.capabilities.canModifyLogic = false;
+        interface.semantics.purpose = "Scene hierarchy management";
+        interface.semantics.domain = "Scene Graph";
+        return interface;
+    }
+
+    std::vector<std::string> GetOptimizationSuggestions() const override {
+        return {
+            // Will include:
+            // - Instance merging opportunities
+            // - Transform hierarchy optimization
+            // - Variant consolidation
+        };
+    }
+
+    void MarkChildrenDirty() {
+        for (auto& child : Children) {
+            if (auto sceneNode = std::dynamic_pointer_cast<HD_SceneNode>(child)) {
+                sceneNode->OnDirty();
+            }
+        }
+    }
+
+    // Cache-related members
+    struct SceneCache {
+        std::vector<glm::mat4> flattenedTransforms;
+        std::vector<uint32_t> activeVariants;
+        BoundingBox cachedBounds;
+        uint64_t lastCacheKey = 0;
+    } cache;
 };
 
 } // namespace hd

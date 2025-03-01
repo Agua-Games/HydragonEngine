@@ -2,25 +2,17 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * ARCHITECTURAL NOTE:
- * Wrapper for window creation, input and UI functionality. Leverages glfw, Dear imgui, imgui-node-editor and other third-party libraries.
- * 
- * TODO:
- * - Refactor the architecture to use classes, inheritance, encapsulation, more well-structured code, instead of namespace + free-functions.
- * - Also use classes & methods for the sub-editors.
- * - Change the name of the files to better reflect its broader purpose: hdEditor.h and hdEditor.cpp? HydragonEditor? MainEditor?
- * - Move here the initialization, update and cleanup code blocks currently in main.cpp responsible for glfw, imgui, steps.
+ * @file hdImgui.cpp
  */
 #pragma once
 #include <chrono>
 #include <iostream>
-#include <stdio.h>          // printf, fprintf
-#include <stdlib.h>         // abort
-#include <GLFW/glfw3.h>     // Include GLFW header for GLFWwindow
-#include <imgui_internal.h>  // For internal ImGui functions if needed
+#include <stdio.h>          // To use printf, fprintf
+#include <stdlib.h>         // To use abort
+#include <GLFW/glfw3.h>
+#include <imgui_internal.h>
 #include <imgui_impl_glfw.h>
 #include <imgui.h>
-//#include <imnodes.h>
 #include "imgui_node_editor.h"
 namespace nodeEd = ax::NodeEditor;
 
@@ -92,6 +84,7 @@ static std::chrono::steady_clock::time_point s_lastInteractionTime;
 // =========== Initialization ===========
 void InitializeWindows(HdEditorWindowData* windowData){
     #if 0
+    // TODO: Refactor all these initializations to a class-based approach.
     hdEditor::Initialize();
     hdMainMenu::Initialize();
     hdTopToolbar::Initialize();
@@ -173,8 +166,7 @@ bool Initialize(GLFWwindow* window, HdEditorWindowData* windowData) {
 }
 
 void Cleanup() {
-    // Cleanup imgui-node-editor context (before imgui).
-    // Order of cleanup is always the reverse of initialization
+    // Cleanup imgui-node-editor context (before imgui). This is the reverse of initialization.
     if (nodeEditorContext) {
         nodeEd::DestroyEditor(nodeEditorContext);
         nodeEditorContext = nullptr;
@@ -183,8 +175,7 @@ void Cleanup() {
     // Destroy ImGui context
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    //ImNodes::DestroyContext();
-    }
+}
 
 void InitializeImgui(GLFWwindow* window) {
     if (!window) return;
@@ -215,7 +206,6 @@ void InitializeIconFont(HdEditorWindowData* windowData) {
 void InitializeImguiNodeEditor(HdEditorWindowData* windowData) {
     if (!windowData) return;
 
-    //nodeEd::Config config;
     config.SettingsFile = "NodeEditorSettings.json"; // Optional: save layout to file
 
     // Make sure navigation is enabled
@@ -229,9 +219,11 @@ void StyleColorsHydragonDark(){
     // Start with ImGui's default dark style
     ImGui::StyleColorsDark();
 
-    // Get a referenc to the style structure
+    // Get references to the style structures
     ImGuiStyle& style = ImGui::GetStyle();
-    //ImNodesStyle& nodesStyle = ImNodes::GetStyle();     // imnodes imgui extension
+
+    // Need to figure out how to use EnsureNodeEditorContext() here (the variables and functions there
+    // in NodeGraphEditor.cpp are static)
     //nodeEd::Style& nodesStyle = nodeEd::GetStyle();
 
     // Customize spacing and rounding
@@ -310,36 +302,7 @@ void StyleColorsHydragonDark(){
     style.Colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     style.Colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
-    // Customize spacing and rounding - imgui-node-editor
-    //nodesStyle.NodePadding = ImVec4(11.0f, 4.0f, 11.0f, 4.0f);
-    //nodesStyle.NodeRounding = 11.0f;
-    //nodesStyle.LinkStrength = 1.9f;
-
-    // Customize spacing and rounding - imnodes
-    //nodesStyle.Flags = ImNodesStyleFlags_GridLines | ImNodesStyleFlags_NodeOutline | ImNodesStyleFlags_GridSnapping;
-    //nodesStyle.Flags = ImNodesStyleFlags_GridLines | ImNodesStyleFlags_NodeOutline;
-    /*
-    nodesStyle.NodePadding = ImVec2(11.0f, 4.0f);
-    nodesStyle.NodeCornerRounding = 11.0f;
-    nodesStyle.PinOffset = 2.0f;
-    nodesStyle.PinQuadSideLength = 8.3f;
-    nodesStyle.LinkThickness = 1.9f;
-
-    // Customize colors - imnodes
-    nodesStyle.Colors[ImNodesCol_TitleBar] = IM_COL32(86, 94, 108, 120);
-    nodesStyle.Colors[ImNodesCol_TitleBarHovered] = IM_COL32(120, 128, 142, 170);
-    nodesStyle.Colors[ImNodesCol_TitleBarSelected] = IM_COL32(120, 128, 142, 170);
-    nodesStyle.Colors[ImNodesCol_NodeBackground] = IM_COL32(54, 56, 56, 110);
-    nodesStyle.Colors[ImNodesCol_NodeBackgroundHovered] = IM_COL32(54, 56, 56, 110);
-    nodesStyle.Colors[ImNodesCol_NodeBackgroundSelected] = IM_COL32(54, 56, 56, 110);
-    nodesStyle.Colors[ImNodesCol_GridBackground] = IM_COL32(54, 56, 56, 255);
-    nodesStyle.Colors[ImNodesCol_Link] = IM_COL32(150, 150, 150, 150);
-    nodesStyle.Colors[ImNodesCol_LinkHovered] = IM_COL32(200, 200, 200, 180);
-    nodesStyle.Colors[ImNodesCol_LinkSelected] = IM_COL32(200, 200, 200, 180);
-    nodesStyle.Colors[ImNodesCol_Pin] = IM_COL32(150, 150, 150, 150);
-    nodesStyle.Colors[ImNodesCol_PinHovered] = IM_COL32(200, 200, 200, 180);
-    nodesStyle.Colors[ImNodesCol_GridLine] = IM_COL32(70, 72, 72, 180);
-    */
+    // TO-DO: Find a way to move NodeGraphEditor's style here.
 }
 
 void StyleColorsHydragonLight() {
