@@ -904,12 +904,6 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/PatternOrchestrator.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/PerformanceScalabilityEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
@@ -929,6 +923,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/PresetEditor.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ProcOrchestratorEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

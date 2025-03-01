@@ -99,7 +99,7 @@ struct HdEditorWindowData
     bool isPhysicsWindowOpen = true;
     bool isBottomStatusBarWindowOpen = true;
     bool isFileExplorerWindowOpen = true;
-    bool isPatternOrchestratorWindowOpen = true;
+    bool isProcOrchestratorWindowOpen = true;
 
     bool isProfilerWindowOpen = true;
     bool profilerRecordingEnabled = true;

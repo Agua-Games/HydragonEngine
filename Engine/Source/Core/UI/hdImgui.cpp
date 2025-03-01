@@ -48,7 +48,7 @@ namespace nodeEd = ax::NodeEditor;
 #include "PhysicsEditor.h"
 #include "BottomStatusBar.h"
 #include "FileExplorer.h"
-#include "PatternOrchestrator.h"
+#include "ProcOrchestratorEditor.h"
 #include "Profiler.h"
 #include "StreamingEditor.h"
 #include "ImageTools.h"
@@ -120,7 +120,7 @@ void InitializeWindows(HdEditorWindowData* windowData){
     hdPhysicsEditor::Initialize();
     hdBottomStatusBar::Initialize();
     hdFileExplorer::Initialize();
-    hdPatternOrchestrator::Initialize();
+    hdProcOrchestrator::Initialize();
     hdProfiler::Initialize();
     hdStreamingEditor::Initialize();
     hdImageTools::Initialize();
@@ -499,8 +499,8 @@ void RenderHydragonEditor(HdEditorWindowData* windowData) {
     if (windowData->isBottomStatusBarWindowOpen) { hdImgui::ShowBottomStatusBar(&windowData->isBottomStatusBarWindowOpen, windowData); }
     // File Explorer
     if (windowData->isFileExplorerWindowOpen) { hdImgui::ShowFileExplorer(&windowData->isFileExplorerWindowOpen, windowData); }
-    // Pattern Orchestrator
-    if (windowData->isPatternOrchestratorWindowOpen) { hdImgui::ShowPatternOrchestrator(&windowData->isPatternOrchestratorWindowOpen, windowData); }
+    // Procedural (Pattern) Orchestrator
+    if (windowData->isProcOrchestratorWindowOpen) { hdImgui::ShowProcOrchestrator(&windowData->isProcOrchestratorWindowOpen, windowData); }
     // Profiler
     if (windowData->isProfilerWindowOpen) { hdImgui::ShowProfiler(&windowData->isProfilerWindowOpen, windowData); }
     // Streaming Editor
