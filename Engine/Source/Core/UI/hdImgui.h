@@ -21,8 +21,8 @@
 #include "imgui_node_editor.h"
 #include "imgui_node_editor_internal.h"  // Required for imgui-node-editor
 #include <string>
-#include <GLFW/glfw3.h>  // Include GLFW header for GLFWwindow. Required also for imgui-node-editor
-#include "NodeGraphState.h"  // Add this include
+#include <GLFW/glfw3.h>                 // Include GLFW header for GLFWwindow. Required also for imgui-node-editor
+#include "NodeGraphState.h"             // Add this include
 
 /**
  * @brief Namespace for ImGui integration functions.

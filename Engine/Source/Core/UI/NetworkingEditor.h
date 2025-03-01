@@ -2,14 +2,17 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * The Network Editor is a specialized view for network-related nodes.
+ * @file NetworkingEditor.h
+ * @brief The Network Editor is a specialized view for network-related nodes.
+ * 
+ * ARCHITECTURAL NOTES:
  * It follows the engine's node-graph centric architecture by:
  * - Focusing on visualization of network node relationships
  * - Delegating property editing to the central Properties window
  * - Providing quick access to common network operations
  */
 #pragma once
-#include <imgui.h>  // Include ImGui's header
+#include <imgui.h>
 
 #include "hdImgui.h"
 //#include "HD_Node.h"

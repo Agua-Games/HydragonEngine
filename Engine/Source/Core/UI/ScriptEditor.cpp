@@ -1,17 +1,20 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file ScriptEditor.cpp
+ * @brief The Script Editor is a specialized view for script-based nodes.
  */
 #pragma once
 #include "imgui.h"
 #include <string>
-
 #include "IconsMaterialSymbols.h"
 
 #include "ScriptEditor.h"
 #include "hdImgui.h"
 
 namespace hdImgui {
+
 void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
@@ -359,4 +362,5 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
     }
     ImGui::End();
 }
+
 } // namespace hdImgui

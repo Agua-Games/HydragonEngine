@@ -1,12 +1,14 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file PresetEditor.cpp
+ * @brief The Preset Editor is a specialized view for preset-based nodes.
  */
 #include <string>
 #include <algorithm>
 #include <vector>
 #include <map>
-
 #include <imgui.h>
 #include "misc/cpp/imgui_stdlib.h"
 #include "IconsMaterialSymbols.h"

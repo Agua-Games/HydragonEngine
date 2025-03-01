@@ -1,6 +1,9 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file Viewport2D.cpp
+ * @brief The Viewport 2D is a specialized view for 2D content.
  */
 #pragma once
 #include "imgui.h"
@@ -11,6 +14,7 @@
 #include "hdImgui.h"
 
 namespace hdImgui {
+
 void ShowViewport2D(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
@@ -382,4 +386,5 @@ void ShowViewport2D(bool* p_open, HdEditorWindowData* windowData)
     }
     ImGui::End();
 }
+
 } // namespace hdImgui

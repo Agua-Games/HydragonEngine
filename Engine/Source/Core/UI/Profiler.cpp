@@ -1,6 +1,9 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file Profiler.cpp
+ * @brief The Profiler is a specialized view for performance analysis.
  */
 #include <imgui.h>
 #include <string>

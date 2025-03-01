@@ -2,7 +2,13 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
- * Hydragon's Vulkan Loader
+ * @file VulkanLoader.h
+ * @brief Hydragon's Vulkan Loader
+ * 
+ * ARCHITECTURAL NOTES:
+ * 
+ * TODO:
+ * 
  */
 #pragma once
 #include <vulkan/vulkan.h>

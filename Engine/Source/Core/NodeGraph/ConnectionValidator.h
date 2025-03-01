@@ -2,12 +2,15 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * HD_ConnectionValidator ensures node connections are valid
+ * @brief HD_ConnectionValidator ensures node connections are valid
  * and provides meaningful feedback for invalid connections.
  */
 #pragma once
+#include <map>
 #include <string>
+#include <vector>
 #include "HD_Node.h"
+#include "HD_NodeTypeSystem.h"
 
 namespace hd {
 

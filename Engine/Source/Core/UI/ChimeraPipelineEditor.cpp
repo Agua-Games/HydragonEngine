@@ -1,10 +1,13 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file ChimeraPipelineEditor.cpp
+ * @brief The Chimera Pipeline Editor is a specialized view for pipeline-based nodes.
  */
 #pragma once
-#include "imgui.h"  // Include ImGui's header
 #include <string>
+#include "imgui.h"
 
 #include "ChimeraPipelineEditor.h"
 #include "hdImgui.h"

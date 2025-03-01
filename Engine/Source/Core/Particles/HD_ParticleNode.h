@@ -1,12 +1,26 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_ParticleNode.h
+ * @brief ParticleNode represents a particle system node in the engine's node graph.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Particle nodes are used to simulate and render particle systems.
+ * 
+ * TODO:
+ * - Update the whole content to match the latest HD_Object and HD_Node design.
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
 #pragma once
 
-#include "Core/NodeGraph/HD_Node.h"
-#include "Core/Procedural/HD_ProceduralTypes.h"
-#include "Core/Procedural/HD_ProceduralOrchestrator.h"
+#include "HD_Node.h"
+#include "HD_ProceduralTypes.h"
+#include "HD_ProceduralOrchestrator.h"
 
 namespace hd {
 

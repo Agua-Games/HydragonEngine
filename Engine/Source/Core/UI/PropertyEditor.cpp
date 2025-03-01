@@ -1,15 +1,19 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file PropertyEditor.cpp
+ * @brief The Property Editor is a specialized view for property-based nodes.
  */
 #pragma once
-#include <imgui.h>  // Include ImGui's header
+#include <imgui.h>
 #include <string>
 
 #include "PropertyEditor.h"
 #include "hdImgui.h"
 
 namespace hdImgui {
+
 void ShowPropertyEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
@@ -19,4 +23,5 @@ void ShowPropertyEditor(bool* p_open, HdEditorWindowData* windowData)
     }
     ImGui::End();
 }
+
 } // namespace hdImgui

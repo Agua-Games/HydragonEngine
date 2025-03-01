@@ -64,6 +64,16 @@ If your contribution contains code or content that is subject to an existing cop
 ## **Acknowledging Your Contributions**
 Contributors who submit changes will be acknowledged in the project’s repository. Please ensure that your contributions are your original work or properly attributed.
 
+Agua Games also wants to aknowledge the invaluable contributions of coding assistants, who in practice act as team
+members, so deserve proper mention and well deserved aknowledgement. Without their help, this project would not be possible, specially being it a one-man effort (as of February 2025).
+
+Hopefully we don't forget anyone, but here are the coding assistants:
+- Claude
+- Deepseek
+- Augment
+- Qwen
+- ChatGPT
+
 ---
 
 ## **Third-Party Libraries**

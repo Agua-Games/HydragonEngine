@@ -3,7 +3,6 @@
  * Licensed under the Agua Games License 1.0
  */
 #include <string>
-
 #include <imgui.h>
 #include "IconsMaterialSymbols.h"
 

@@ -3,6 +3,7 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @file ProcOrchestratorEditor.cpp
+ * @brief The Procedural Orchestrator Editor is a specialized view for procedural pattern orchestration.
  */
 #pragma once
 #include <string>

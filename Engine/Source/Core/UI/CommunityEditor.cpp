@@ -1,11 +1,13 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file CommunityEditor.cpp
+ * @brief The Community Editor is a specialized view for community-based nodes.
  */
 #include <string>
 #include <vector>
 #include <algorithm>
-
 #include <imgui.h>
 #include "misc/cpp/imgui_stdlib.h"
 #include "IconsMaterialSymbols.h"

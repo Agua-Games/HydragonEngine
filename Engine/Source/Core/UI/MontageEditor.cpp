@@ -1,12 +1,15 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file MontageEditor.cpp
+ * @brief The Montage Editor is a specialized view for montage-based nodes.
  */
 #include <imgui.h>
 #include <string>
 #include <vector>
-#include <algorithm>  // for std::clamp
-#include "misc/cpp/imgui_stdlib.h"  // Add this include for std::string support
+#include <algorithm>                // for std::clamp
+#include "misc/cpp/imgui_stdlib.h"  // Add this include for std::string support (required for MontageEditor)
 
 #include "MontageEditor.h"
 #include "hdImgui.h"

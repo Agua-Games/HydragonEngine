@@ -2,7 +2,8 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
- * Vulkan context class.
+ * @file VulkanContext.h
+ * @brief Vulkan context class.
  * Wraps Vulkan handles and provides access to them.
  * 
  * TODO (some of these may be addressed not here but in VulkanBackend.h, .cpp):

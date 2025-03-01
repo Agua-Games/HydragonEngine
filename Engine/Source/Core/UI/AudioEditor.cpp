@@ -1,6 +1,9 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file AudioEditor.cpp
+ * The Audio Editor is a specialized view for audio-based nodes.
  */
 #include <imgui.h>
 #include <string>

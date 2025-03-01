@@ -1,6 +1,9 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file CommandsPalette.cpp
+ * @brief The Commands Palette is a specialized view for displaying and executing commands.
  */
 #include <imgui.h>
 #include <string>

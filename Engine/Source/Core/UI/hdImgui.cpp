@@ -3,6 +3,7 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @file hdImgui.cpp
+ * @brief Wrapper for window creation, input and UI functionality.
  */
 #pragma once
 #include <chrono>

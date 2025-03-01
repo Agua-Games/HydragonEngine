@@ -1,6 +1,9 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file RightToolbar.cpp
+ * @brief The right toolbar is a specialized view for displaying tools and options.
  */
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -11,6 +14,7 @@
 #include "IconsMaterialSymbols.h"
 
 namespace hdImgui {
+
 void ShowRightToolbar(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGuiWindowClass window_class;
@@ -55,4 +59,5 @@ void ShowRightToolbar(bool* p_open, HdEditorWindowData* windowData)
 
     ImGui::PopStyleVar(3);
 }
+
 } // namespace hdImgui

@@ -1,6 +1,21 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file SceneAllocator.h
+ * @brief Header file for the SceneAllocator class.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - SceneAllocator is a singleton class that manages the allocation of scene data.
+ * - It is responsible for allocating and deallocating scene data.
+ * - It uses the Vulkan Memory Allocator (VMA) for GPU memory management.
+ * 
+ * TODO:
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
 #pragma once
 

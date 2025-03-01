@@ -1,12 +1,15 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_VegetationNode.h
+ * @brief VegetationNode represents a vegetation node in the engine's node graph.
  */
 #pragma once
 
-#include "Core/NodeGraph/HD_Node.h"
-#include "Core/Procedural/HD_ProceduralTypes.h"
-#include "Core/Procedural/HD_ProceduralOrchestrator.h"
+#include "HD_Node.h"
+#include "HD_ProceduralTypes.h"
+#include "HD_ProceduralOrchestrator.h"
 
 namespace hd {
 

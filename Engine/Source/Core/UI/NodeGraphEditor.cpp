@@ -2,7 +2,8 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * The Node Graph Editor is a specialized view for node-based graph editing.
+ * @file NodeGraphEditor.cpp
+ * @brief A specialized view for node-based graph editing.
  */
 #include <string>
 #include <vector>

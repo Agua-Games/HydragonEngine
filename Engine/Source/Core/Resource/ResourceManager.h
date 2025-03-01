@@ -1,9 +1,23 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file ResourceManager.h
+ * @brief Header file for the ResourceManager class.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - ResourceManager is a singleton class that manages the loading and management of resources.
+ * - It is responsible for loading and managing resources such as textures, models, and shaders.
+ * - It uses the Vulkan API for resource management.
+ * 
+ * TODO:
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
 #pragma once
-
 #include <string>
 #include <filesystem>
 #include <imgui.h>

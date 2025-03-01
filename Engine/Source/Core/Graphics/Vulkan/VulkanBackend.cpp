@@ -3,7 +3,8 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * Vulkan backend for the engine.
+ * @file VulkanBackend.cpp
+ * @brief Vulkan backend for the engine.
  * Wraps Vulkan handles and provides access to them.
  * 
  * TODO:

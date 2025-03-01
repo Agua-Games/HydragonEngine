@@ -1,12 +1,24 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_TypographyNode.h
+ * @brief Typography node for text rendering and layout.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Typography nodes are used for rendering and styling text.
+ * 
+ * TODO:
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
 #pragma once
-
-#include "Core/NodeGraph/HD_Node.h"
-#include "Core/Text/HD_FontSystem.h"
-#include "Core/Rendering/HD_RenderTarget.h"
+#include "HD_Node.h"
+#include "HD_FontSystem.h"
+#include "HD_RenderTarget.h"
 
 namespace hd {
 

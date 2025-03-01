@@ -76,6 +76,15 @@ public:
     // Getters for attributes & metadata
     const HD_NodeInfo& GetNodeInfo() const { return NodeInfo; }
 
+    // === Procedural Generation ===
+    // Every node can:
+    virtual void Evolve();        // Change over time
+    virtual void Adapt();         // Respond to context
+    virtual void SelfModify();    // Modify its own behavior
+    virtual void Harmonize();     // Maintain system balance
+
+    // === Node Graph Interface ===
+
     // Core virtual methods - to be implemented only in derived classes
     virtual void OnResume() = 0;
     virtual void OnPause() = 0;

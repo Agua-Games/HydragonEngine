@@ -1,15 +1,19 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file SettingsEditor.cpp
+ * @brief The Settings Editor is a specialized view for managing settings.
  */
 #pragma once
-#include <imgui.h>  // Include ImGui's header
+#include <imgui.h>
 #include <string>
 
 #include "SettingsEditor.h"
 #include "hdImgui.h"
 
 namespace hdImgui {
+
 void ShowSettingsEditor(bool* p_open, HdEditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
@@ -21,4 +25,5 @@ void ShowSettingsEditor(bool* p_open, HdEditorWindowData* windowData)
     }
     ImGui::End();
 }
+
 } // namespace hdImgui

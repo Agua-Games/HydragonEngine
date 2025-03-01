@@ -1,12 +1,24 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_TransformNode.h
+ * @brief TransformNode represents a transform node in the engine's node graph.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Transform nodes are used to apply transformations to objects.
+ * 
+ * TODO:
+ * - Update the whole content to match the latest HD_Object and HD_Node design.
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
  */
 #pragma once
-
-#include "HD_Node.h"
 #include <vector>
 #include <memory>
+
+#include "HD_Node.h"
 
 namespace hd {
 

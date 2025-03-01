@@ -1,11 +1,24 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_BlendNode.h
+ * @brief BlendNode represents a blend node in the engine's node graph.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Blend nodes are used to blend between two values, from simple integers to complex patterns.
+ * 
+ * TODO:
+ * - Update the whole content to match the latest HD_Object and HD_Node design.
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
  */
 #pragma once
-
-#include "Core/NodeGraph/HD_Node.h"
-#include "Core/Procedural/HD_ProceduralTypes.h"
+#include <vector>
+#include <string>
+#include "HD_Node.h"
+#include "HD_ProceduralTypes.h"
 
 namespace hd {
 

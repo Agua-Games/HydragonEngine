@@ -1,6 +1,25 @@
+/**
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_MeshDeformerNode.h
+ * @brief MeshDeformerNode represents a mesh deformer node in the engine's node graph.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Mesh deformer nodes are used to apply deformations to mesh geometry.
+ * 
+ * TODO:
+ * - Update the whole content to match the latest HD_Object and HD_Node design.
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
+ */
+
 #pragma once
-#include "Core/Procedural/HD_DeformerNode.h"
-#include "Core/Geometry/HD_MeshTypes.h"
+#include "HD_DeformerNode.h"
+#include "HD_MeshTypes.h"
 
 namespace hd {
 

@@ -1,10 +1,17 @@
+/**
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @file VegetationChain.h
+ * @brief Header file for the VegetationChain class.
+ */
 #pragma once
 
-#include "Core/NodeGraph/HD_Node.h"
-#include "Core/Vegetation/HD_ProcVegetationDensityNode.h"
-#include "Core/Vegetation/HD_ProcVegetationPlacementNode.h"
-#include "Core/Vegetation/HD_ProcVegetationGrowthNode.h"
-#include "Core/Vegetation/HD_ProcVegetationWindNode.h"
+#include "HD_Node.h"
+#include "HD_ProcVegetationDensityNode.h"
+#include "HD_ProcVegetationPlacementNode.h"
+#include "HD_ProcVegetationGrowthNode.h"
+#include "HD_ProcVegetationWindNode.h"
 
 namespace hd {
 
@@ -32,6 +39,3 @@ inline void CreateVegetationChain(HD_Node& graph) {
 }
 
 } // namespace hd
-```
-
-I added `inline` to the function since it's now in a header file, and `#pragma once` to prevent multiple inclusions.

@@ -1,12 +1,14 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file FontEditor.cpp
+ * @brief The Font Editor is a specialized view for managing fonts.
  */
 #pragma once
 #include <string>
 #include <vector>
 #include <algorithm>
-
 #include <imgui.h>
 #include "IconsMaterialSymbols.h"
 

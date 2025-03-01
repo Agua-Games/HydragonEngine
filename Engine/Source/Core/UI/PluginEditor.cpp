@@ -1,11 +1,13 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file PluginEditor.cpp
+ * @brief The Plugin Editor is a specialized view for managing plugins.
  */
 #include <string>
 #include <vector>
 #include <algorithm>  // for std::clamp
-
 #include <imgui.h>
 #include <imgui_internal.h>
 #include "IconsMaterialSymbols.h"

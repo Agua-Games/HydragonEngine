@@ -1,13 +1,16 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_ProcPrecipitationNode.h
+ * @brief ProcPrecipitationNode represents a procedural precipitation node in the engine's node graph.
  */
 #pragma once
 
-#include "Core/NodeGraph/HD_Node.h"
-#include "Core/Procedural/HD_ProceduralTypes.h"
-#include "Core/Procedural/HD_ProceduralOrchestrator.h"
-#include "Core/Weather/HD_WeatherTypes.h"
+#include "HD_Node.h"
+#include "HD_ProceduralTypes.h"
+#include "HD_ProceduralOrchestrator.h"
+#include "HD_WeatherTypes.h"
 
 namespace hd {
 
@@ -133,14 +136,3 @@ private:
 };
 
 } // namespace hd
-```
-
-This implementation includes:
-1. A node info struct defining inputs/outputs
-2. The main precipitation node class with type-safe template parameters
-3. Processing logic for both rain and snow
-4. Surface effect generation
-5. Accumulation and wetness computation
-6. Node graph editor integration
-
-Would you like me to proceed with implementing any of the private member functions, or would you prefer to move on to another file?

@@ -1,6 +1,9 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file LightingEditor.cpp
+ * @brief The Lighting Editor is a specialized view for lighting-based nodes.
  */
 #include <imgui.h>
 #include "LightingEditor.h"

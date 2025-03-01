@@ -2,7 +2,10 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  *
- * Viewport manager for Vulkan.
+ * @file ViewportManager.h
+ * @brief Viewport manager for Vulkan.
+ * 
+ * ARCHITECTURAL NOTES:
  * Handles synchronization and presentation of multiple viewports.
  * - Synchronizes rendering across multiple viewports
  * - Manages presentation of viewports

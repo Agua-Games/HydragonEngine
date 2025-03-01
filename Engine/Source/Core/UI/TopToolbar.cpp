@@ -1,11 +1,13 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file TopToolbar.cpp
+ * @brief The top toolbar is a specialized view for displaying tools and options.
  */
 #pragma once
-#include <imgui.h>  // Include ImGui's header
+#include <imgui.h>
 #include <string>
-
 #include "IconsFontAwesome6.h"
 #include "IconsMaterialSymbols.h"
 

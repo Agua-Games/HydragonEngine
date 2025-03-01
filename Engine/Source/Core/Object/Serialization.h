@@ -1,6 +1,19 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file Serialization.h
+ * @brief Header file for the VersionedSerializer class.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - VersionedSerializer is a utility class for handling versioned serialization and migration of objects.
+ * 
+ * TODO:
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
  */
 #pragma once
 #include <functional>

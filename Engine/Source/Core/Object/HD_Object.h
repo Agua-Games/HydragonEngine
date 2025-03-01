@@ -1,6 +1,22 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_Object.h
+ * @brief Enhanced base class for all objects in Hydragon
+ * 
+ * ARCHITECTURAL NOTES:
+ * - HD_Object is the fundamental building block in the engine's object-oriented architecture.
+ * - It provides enhanced metadata, reflection, and serialization capabilities.
+ * - It supports versioning, dependency management, and enhanced logging.
+ * - It supports procedural generation and stateless objects.
+ * 
+ * TODO:
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
  */
 #pragma once
 #include <string>

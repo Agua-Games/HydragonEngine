@@ -1,11 +1,14 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file StreamingEditor.cpp
+ * @brief The Streaming Editor is a specialized view for streaming-based nodes.
  */
 #include <imgui.h>
 #include <string>
 #include <vector>
-#include <algorithm>  // for std::count_if
+#include <algorithm>                // for std::count_if
 #include "StreamingEditor.h"
 #include "hdImgui.h"
 #include "IconsMaterialSymbols.h"

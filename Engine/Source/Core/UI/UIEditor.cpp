@@ -1,16 +1,20 @@
 /** 
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file UIEditor.cpp
+ * @brief The UI Editor is a specialized view for user interface design.
  */
 #include <imgui.h>
 #include <string>
 #include <vector>
 #include <memory>
-#include <algorithm>  // for std::clamp
+#include <algorithm>                 // for std::clamp
+
 #include "UIEditor.h"
 #include "hdImgui.h"
 #include "IconsMaterialSymbols.h"
-#include "VulkanBackend.h"  // Add necessary graphics backend
+#include "VulkanBackend.h"           // Add necessary graphics backend
 
 namespace hdImgui {
 

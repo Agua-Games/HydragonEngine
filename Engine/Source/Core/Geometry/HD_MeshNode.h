@@ -1,16 +1,29 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_MeshNode.h
+ * @brief MeshNode represents a mesh node in the engine's node graph.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Mesh nodes are used to represent and process mesh geometry.
+ * 
+ * TODO:
+ * - Update the whole content to match the latest HD_Object and HD_Node design.
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
 #pragma once
-
-#include "Core/NodeGraph/HD_Node.h"
-#include "Core/Geometry/HD_MeshTypes.h"
-#include "Core/Materials/HD_MaterialNode.h"
-#include "Core/SceneGraph/HD_RuntimeVariants.h"
-#include "Core/Transform/HD_TransformNode.h"
-#include "Core/Procedural/HD_ProceduralTypes.h"
-#include "Core/USD/HD_UsdSchema.h"
+#include "HD_Node.h"
+#include "MeshTypes.h"
+#include "HD_MaterialNode.h"
+#include "RuntimeVariants.h"
+#include "HD_TransformNode.h"
+#include "ProceduralTypes.h"
+#include "HD_UsdSchema.h"
 #include <glm/glm.hpp>
 
 namespace hd {

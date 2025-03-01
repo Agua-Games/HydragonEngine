@@ -1,13 +1,16 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_ProcCloudNode.h
+ * @brief ProcCloudNode represents a procedural cloud node in the engine's node graph.
  */
 #pragma once
 
-#include "Core/NodeGraph/HD_Node.h"
-#include "Core/Procedural/HD_ProceduralTypes.h"
-#include "Core/Procedural/HD_ProceduralOrchestrator.h"
-#include "Core/Rendering/HD_VolumetricTypes.h"
+#include "HD_Node.h"
+#include "HD_ProceduralTypes.h"
+#include "HD_ProceduralOrchestrator.h"
+#include "HD_VolumetricTypes.h"
 
 namespace hd {
 
@@ -143,6 +146,3 @@ private:
 };
 
 } // namespace hd
-```
-
-Would you like me to continue with `HD_FogNode.h` and `HD_PrecipitationNode.h`?

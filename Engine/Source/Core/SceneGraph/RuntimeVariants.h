@@ -1,9 +1,22 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file RuntimeVariants.h
+ * @brief Header file for the RuntimeVariants classes.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - RuntimeVariants is a utility class for managing runtime variants of nodes or subtrees.
+ * 
+ * TODO:
+ * - Flesh out the class and its methods, structs, enums, etc.
+ * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
+ * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Create .cpp file and move the implementation there.
+ * - Organize the existing code into logical sections and functions.
+ * - Consider adding support for custom criteria and metrics.
  */
 #pragma once
-
 #include <string>
 #include <memory>
 #include <vector>

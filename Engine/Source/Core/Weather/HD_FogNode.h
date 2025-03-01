@@ -1,12 +1,15 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file HD_FogNode.h
+ * @brief FogNode represents a fog node in the engine's node graph.
  */
 #pragma once
 
-#include "Core/NodeGraph/HD_Node.h"
-#include "Core/Rendering/HD_VolumetricTypes.h"
-#include "Core/Weather/HD_WeatherTypes.h"
+#include "HD_Node.h"
+#include "HD_VolumetricTypes.h"
+#include "HD_WeatherTypes.h"
 
 namespace hd {
 
