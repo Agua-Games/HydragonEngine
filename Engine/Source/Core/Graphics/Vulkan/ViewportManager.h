@@ -12,7 +12,7 @@
  * - Handles swap chain recreation and viewport transitions
  * - Avoids flickering during viewport creation and transitions
  * 
- * TODO (some of these may be addressed not here but in VulkanBackend.h, .cpp):
+ * TODO (some of these may be addressed not here but in VulkanCore.h, .cpp):
  *  - Flesh out the class, structs, and functions
  *  - Add error handling and logging
  *  - Implement swap chain recreation and viewport transition handling

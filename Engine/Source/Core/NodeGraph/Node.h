@@ -42,7 +42,7 @@ struct NodeInfo : public ObjectInfo {
     struct StreamingConfig {
         bool enabled = true;
         bool forceSync = false;
-        size_t chunkSize = 1024;
+        size_t chunkSize = 1024;        // In bytes
         float priorityThreshold = 0.5f;
     } streamingConfig;
 
@@ -100,8 +100,14 @@ public:
      */
     void AddChild(const std::shared_ptr<Node>& child);
 
-    // Remove a child node by name
-    void RemoveChild(const std::string& childName);
+    /**
+     * @brief Remove a child node by name.
+     * TODO: if we're going to allow instances with the same name, we need to use a different approach, like remove a child by unique ID (probably automatically generated)
+     * or remove a child by pointer.
+     * @param childName The name of the child node to remove.
+     * @return True if the child was found and removed, false otherwise.
+     */
+    bool RemoveChild(const std::string& childName);
 
     /**
      * @brief Get all child nodes of this node.
@@ -110,7 +116,8 @@ public:
     const std::vector<std::shared_ptr<Node>>& GetChildren() const;
 
     // === Reflection Support ===
-    // *This probably will be removed, responsibility transferred to the Reflection system
+    // *This probably will be removed, responsibility transferred to the Reflection system, or even a simpler system, like we are planning to use, where in the
+    // node graphs implemented in code we simply pass a "runtime" argument to the property definition function.
     struct PropertyDefinition {
         std::string name;
         std::string type;
@@ -157,7 +164,7 @@ public:
     StreamingState streamingState;
 
     /**
-     * @brief Synchronously load this node's data.
+     * @brief Asynchronously load this node's data.
      */
     virtual std::future<void> LoadAsync();
     virtual void Stream();
@@ -165,7 +172,7 @@ public:
     virtual void UpdateStreamingPriority();
 
     /**
-     * @brief Synchronously stream this node's data.
+     * @brief Synchronously stream this node's data. This is the default implementation, but derived classes can override it.
      */
     virtual void StreamSync();
     virtual void StreamAsync();
@@ -221,6 +228,11 @@ public:
     virtual void ImportCustomImplementation(const CustomizableElements& elements);
 
     // === Port Management ===
+    // TODO: Almost certainly refactor to be based on the actual use of node graphs (the core usage being implementing them in code, inside classes, be it instancing and
+    // connecting other nodes directly or assigning them as child nodes and them accessing their members), where the concise fluent style (it's an actual C++ coding style) 
+    // syntax and workflow are paramount design features - we want users to feel good and highly productive using the engine in "barebones" mode, in code for most things.
+    // So, the connection to and accessing of node graph members will possibly be simpler than currently we see below for port management. Or maybe those GetPort(), SetPort()
+    // will still be useful for UI - visual node graph editor. For state, sync, etc.
     struct PortDefinition {             // Port definitions and metadata
         std::string name;
         std::string type;
@@ -270,14 +282,15 @@ public:
     void Deserialize(std::istream& stream) override;
 
     // === Visualization ===
-    // *These may end up moved to UIManager's responsibility, NodeGraphManager responsibility.
     /**
-     * @brief Draw this node in the Inspector panel.
+     * @brief Draw this node in the Properties panel.
+     * Ports will be automatically drawn based on their data types, etc. But for custom visualization logic, override this method in derived classes.
      */
-    virtual void DrawInInspector();
+    virtual void DrawInPropertyEditor();
 
     /**
      * @brief Draw this node in the Node Graph Editor.
+     * Nodes will be automatically drawn based on their data types, structure, etc. But for custom visualization logic, override this method in derived classes.
      */
     virtual void DrawInNodeGraph();
 
@@ -288,7 +301,7 @@ public:
             std::string cpp;
             std::string python;
             std::string lua;
-            std::string blueprint; // Visual scripting
+            std::string graph; // Visual scripting
         };
         
         // Language-specific metadata
@@ -324,8 +337,8 @@ public:
     struct AIInterface {
         // Task descriptions for AI manipulation
         struct TaskDescription {
-            std::string intent;           // What the task aims to achieve
-            std::string constraints;      // Limitations and requirements
+            std::string intent;                     // What the task aims to achieve
+            std::string constraints;                // Limitations and requirements
             std::vector<std::string> prerequisites; // Required conditions
             std::vector<std::string> effects;       // Expected outcomes
         };
@@ -341,10 +354,10 @@ public:
 
         // Semantic information for AI understanding
         struct SemanticInfo {
-            std::string purpose;          // Node's primary function
-            std::string domain;           // Domain-specific context
-            std::vector<std::string> tags;// Semantic tags
-            std::string relationships;    // Relationship with other nodes
+            std::string purpose;             // Node's primary function
+            std::string domain;              // Domain-specific context
+            std::vector<std::string> tags;   // Semantic tags
+            std::string relationships;       // Relationship with other nodes
         };
 
         // Performance metrics for AI optimization
@@ -392,15 +405,15 @@ public:
     struct DebugInfo {
         std::vector<std::string> watchedVariables;
         std::vector<std::string> breakpoints;
-        std::string profileHints;    // Performance profiling hints
+        std::string profileHints;             // Performance profiling hints
     };
     DebugInfo debugInfo;
 
 protected:
     // === Core Node Implementation ===
-    NodeInfo NodeInfo;                      // Metadata and attributes for the node
+    NodeInfo NodeInfo;                           // Metadata and attributes for the node
     std::vector<std::shared_ptr<Node>> Children; // Child nodes (making this a node graph)
-    virtual void Load();                     // Load node-specific data
+    virtual void Load();                         // Load node-specific data
 
     mutable std::mutex ChildrenMutex;         // Mutex for thread-safe access to children
     mutable std::mutex SerializationMutex;    // Mutex for thread-safe serialization

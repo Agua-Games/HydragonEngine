@@ -7,7 +7,7 @@
  * 
  * Updates saved below temporarily, just not to forget what I changed in imgui's example code:
  * - Removed boilerplate code to allow compatibility with very old VS compilers.
- * - Removed the #include "imgui_impl_vulkan.h" as it is not used here. Instead, we use our own Core/Graphics/Vulkan/VulkanBackend.h
+ * - Removed the #include "imgui_impl_vulkan.h" as it is not used here. Instead, we use our own Core/Graphics/Vulkan/VulkanCore.h
  * - Added code to initialize the engine's resource manager, load resources - fonts etc.
  * - Added includes for UIManager, ResourceManager, and filesystem.
  * - Switched main() to WinMain() to be able to use the Windows API.
@@ -26,7 +26,7 @@
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
-#include "Graphics/Vulkan/VulkanBackend.h"
+#include "Graphics/Vulkan/VulkanCore.h"
 #include "UIManager.h"
 #include "ResourceManager.h"
 

@@ -11,7 +11,7 @@
 #include <filesystem>
 #include <GLFW/glfw3.h>
 
-#include "Graphics/Vulkan/VulkanBackend.h"
+#include "Graphics/Vulkan/VulkanCore.h"
 #include "UIManager.h"
 #include "ResourceManager.h"
 
@@ -38,7 +38,7 @@ void RunApplication() {
 
     try {
         // Initialize Vulkan backend
-        hd::Graphics::VulkanBackend& vulkan = hd::Graphics::VulkanBackend::GetInstance();
+        hd::Graphics::VulkanCore& vulkan = hd::Graphics::VulkanCore::GetInstance();
         if (!vulkan.initialize(window)) {
             throw std::runtime_error("Failed to initialize Vulkan backend");
         }

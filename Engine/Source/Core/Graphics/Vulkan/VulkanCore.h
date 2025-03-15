@@ -6,8 +6,8 @@
  * Wraps Vulkan handles and provides access to them.
  * 
  * TODO:
- *  - Flesh out the class (VulkanBackend) and its methods, structs (before it, also inside of hd namespace)
- *  - Do the above without removing the existing imgui_impl_vulkan code in VulkanBackend.cpp. To gradually replace it with our own implementation.
+ *  - Flesh out the class (VulkanCore) and its methods, structs (before it, also inside of hd namespace)
+ *  - Do the above without removing the existing imgui_impl_vulkan code in VulkanCore.cpp. To gradually replace it with our own implementation.
  *  - Add logging - make use of Vulkan's validation layers
  *  - Add support for customizing the implementation of imgui_impl_vulkan.cpp
  */
@@ -392,15 +392,15 @@ struct Window
  * @brief The main Vulkan backend class.
  * Provides the core functionality for rendering ImGui draw data and the engine's graphics using Vulkan.
  */
-class VulkanBackend {           // Main Backend Class
+class VulkanCore {           // Main Backend Class
 public:
     // === Singleton & Lifecycle ===
     /**
-     * @brief Get the singleton instance of the VulkanBackend class.
+     * @brief Get the singleton instance of the VulkanCore class.
      * @return The singleton instance.
      */
-    static VulkanBackend& GetInstance() {
-        static VulkanBackend instance;
+    static VulkanCore& GetInstance() {
+        static VulkanCore instance;
         return instance;
     }
     
@@ -589,7 +589,7 @@ public:
      */
     int GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode) { }
 
-    ~VulkanBackend();
+    ~VulkanCore();
 
 private:
     // 1. Core Data
@@ -609,11 +609,11 @@ private:
     void SetupDescriptorPool();
 
     // 3. Singleton Implementation
-    VulkanBackend() noexcept;
-    VulkanBackend(const VulkanBackend&) = delete;
-    VulkanBackend& operator=(const VulkanBackend&) = delete;
-    VulkanBackend(VulkanBackend&&) = delete;
-    VulkanBackend& operator=(VulkanBackend&&) = delete;  
+    VulkanCore() noexcept;
+    VulkanCore(const VulkanCore&) = delete;
+    VulkanCore& operator=(const VulkanCore&) = delete;
+    VulkanCore(VulkanCore&&) = delete;
+    VulkanCore& operator=(VulkanCore&&) = delete;  
 };
 
 } // namespace hd

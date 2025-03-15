@@ -712,7 +712,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Graphics/Vulkan/VulkanBackend.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Graphics/Vulkan/VulkanCore.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -1012,6 +1012,12 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/UIManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Viewport2D.cpp",
 			"sourceGroupIndex" : 0
 		},
@@ -1037,12 +1043,6 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/VolumeEditor.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/UIManager.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

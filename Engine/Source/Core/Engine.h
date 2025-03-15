@@ -39,7 +39,7 @@
 #include "ProceduralOrchestrator.h"      // Evolution
 #include "SystemOrchestrator.h"             // Coordination
 #include "ResourceManager.h"                // Assets
-#include "VulkanBackend.h"                  // Graphics
+#include "VulkanCore.h"                  // Graphics
 
 namespace hd {
 
@@ -83,7 +83,7 @@ private:
     std::unique_ptr<ResourceManager> m_resourceManager;
     
     // Graphics backend
-    std::unique_ptr<Graphics::VulkanBackend> m_graphicsBackend;
+    std::unique_ptr<Graphics::VulkanCore> m_graphicsBackend;
     
     /**
      * @brief Internal state of the engine.

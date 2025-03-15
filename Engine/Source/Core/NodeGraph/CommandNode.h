@@ -88,16 +88,19 @@ public:
     }
     
     void OnDirty() override {
-        // Command nodes typically don't cache results
-        // but might need to invalidate pending executions
         pendingTasks.clear();
     }
 
-    // Cache system integration
-    bool CanCache() const override { return false; } // Commands typically shouldn't cache
+    /**
+     * @brief Determine if this node can cache results.
+     * Cache system integration. We must decide if command nodes should cache results by default. Because despite their dynamic nature, being able to cache may be 
+     * beneficial in many situations. e.g. a transform node which scales a mesh, and we want to cache the result of the whole node chain before it, to avoiding unnecessary 
+     * recomputation. The other design choice would be to have a dedicated "cache checkpoint" node, dedicated to marking cache checkpoints, but this venue would lead to
+     * more verbosity.
+     */
+    bool CanCache() const override { return true; }
     
     uint64_t ComputeCacheKey() const override {
-        // Commands are typically stateless, so no caching
         return 0;
     }
 
@@ -155,7 +158,7 @@ std::shared_ptr<CommandNode<Inputs...>> MakeCommandNode(
     const std::string& name,
     std::function<void(Inputs...)> cmd,
     std::tuple<std::string...> inputNames) {
-    NodeInfo info(name, true, true, "Command", {}, {}, false); // streaming disabled
+    NodeInfo info(name, true, true, "Command", {}, {}, false);  // streaming disabled
     return std::make_shared<CommandNode<Inputs...>>(
         info, std::move(cmd), std::move(inputNames));
 }

@@ -14,7 +14,7 @@
 #include "UIEditor.h"
 #include "UIManager.h"
 #include "IconsMaterialSymbols.h"
-#include "VulkanBackend.h"           // Add necessary graphics backend
+#include "VulkanCore.h"           // Add necessary graphics backend
 
 namespace hd {
 

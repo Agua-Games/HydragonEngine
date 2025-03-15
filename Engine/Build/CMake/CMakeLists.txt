@@ -232,7 +232,7 @@ set(SRC_FILES_MANUAL
     ${IMGUI-NODE-EDITOR_DIR}/imgui_node_editor.cpp
     ${IMGUI-NODE-EDITOR_DIR}/imgui_node_editor_api.cpp
 
-    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp    # removed in favor of our own Core/Graphics/Vulkan/VulkanBackend.cpp
+    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp    # removed in favor of our own Core/Graphics/Vulkan/VulkanCore.cpp
 )
 
 # ======================================================================================
@@ -280,7 +280,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # we're replacing, like imgui_impl_vulkan.h
 target_sources(${PROJECT_NAME} PRIVATE
     ${IMGUI_DIR}/backends/imgui_impl_glfw.h
-    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp    # removed in favor of our own Core/Graphics/Vulkan/VulkanBackend
+    #${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp    # removed in favor of our own Core/Graphics/Vulkan/VulkanCore
 )
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${THIRD-PARTY_SOURCE_DIR}/IconFontCppHeaders)
