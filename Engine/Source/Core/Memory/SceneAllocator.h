@@ -66,7 +66,7 @@ struct MaterialData {
     // Add other material properties as needed
 };
 
-class HD_SceneAllocator {
+class SceneAllocator {
 public:
     static constexpr size_t LARGE_ALLOCATION_THRESHOLD = 1024 * 1024;  // 1MB
 
@@ -77,7 +77,7 @@ public:
         bool useVMAForGeometry = true;
     };
 
-    explicit HD_SceneAllocator(const AllocationStrategy& strategy = AllocationStrategy(),
+    explicit SceneAllocator(const AllocationStrategy& strategy = AllocationStrategy(),
                              VmaAllocator vmaAllocator = nullptr)
         : transformPool(strategy.transformPoolSize),
           materialPool(strategy.materialPoolSize),

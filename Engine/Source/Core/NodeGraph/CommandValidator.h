@@ -21,7 +21,7 @@ struct ValidationRule {
     std::string errorMessage;
 };
 
-class HD_CommandValidator {
+class CommandValidator {
 public:
     template<typename T>
     void AddRule(const std::string& inputName, 

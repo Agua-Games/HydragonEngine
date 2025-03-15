@@ -28,9 +28,9 @@
 
 #include "Object.h"
 #include "NodeCompilationContext.h"
-#include "HD_CodeGenContext.h"
-#include "HD_DependencyGraph.h"
-#include "HD_CommandValidator.h"
+#include "CodeGenContext.h"
+#include "DependencyGraph.h"
+#include "CommandValidator.h"
 
 namespace hd {
 
@@ -123,10 +123,10 @@ public:
     std::vector<PropertyDefinition> properties;
 
     // === Validation Support ===
-    std::shared_ptr<HD_CommandValidator> validator;
+    std::shared_ptr<CommandValidator> validator;
 
-    void SetValidator(std::shared_ptr<HD_CommandValidator> v) { validator = std::move(v); }
-    const std::shared_ptr<HD_CommandValidator>& GetValidator() const { return validator; }
+    void SetValidator(std::shared_ptr<CommandValidator> v) { validator = std::move(v); }
+    const std::shared_ptr<CommandValidator>& GetValidator() const { return validator; }
 
     template<typename T>
     bool SetInputValue(const std::string& name, const T& value);

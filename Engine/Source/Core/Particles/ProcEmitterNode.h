@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProcEmitterNode.h
+ * @file ProcEmitterNode.h
  * @brief ProcEmitterNode represents a procedural emitter node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -20,8 +20,8 @@
 
 namespace hd {
 
-struct HD_EmitterInfo : public NodeInfo {
-    HD_EmitterInfo() {
+struct EmitterInfo : public NodeInfo {
+    EmitterInfo() {
         NodeType = "Particles/Emitter";
         
         Inputs = {

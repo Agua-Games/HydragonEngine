@@ -18,13 +18,13 @@
 #include <unordered_map>
 #include <queue>
 
-#include "HD_ProceduralTypes.h"
+#include "ProceduralTypes.h"
 #include "Node.h"
 
 namespace hd {
 
-struct HD_ProceduralOrchestratorInfo : public NodeInfo {
-    HD_ProceduralOrchestratorInfo() {
+struct ProceduralOrchestratorInfo : public NodeInfo {
+    ProceduralOrchestratorInfo() {
         NodeType = "Procedural/Orchestrator";
         Name = "Procedural Orchestrator";
         
@@ -59,10 +59,10 @@ struct IntentTask {
     bool propagate;
 };
 
-class HD_ProceduralOrchestrator : public Node {
+class ProceduralOrchestrator : public Node {
 public:
-    static HD_ProceduralOrchestrator& GetInstance() {
-        static HD_ProceduralOrchestrator instance;
+    static ProceduralOrchestrator& GetInstance() {
+        static ProceduralOrchestrator instance;
         return instance;
     }
 
@@ -187,8 +187,8 @@ public:
     }
 
 private:
-    HD_ProceduralOrchestrator() 
-        : Node(HD_ProceduralOrchestratorInfo()) {}
+    ProceduralOrchestrator() 
+        : Node(ProceduralOrchestratorInfo()) {}
     
     std::unordered_map<std::string, std::unique_ptr<IPattern>> patterns;
     std::queue<IntentTask> intentQueue;
@@ -221,8 +221,8 @@ private:
     }
 
     // Prevent copying of singleton
-    HD_ProceduralOrchestrator(const HD_ProceduralOrchestrator&) = delete;
-    HD_ProceduralOrchestrator& operator=(const HD_ProceduralOrchestrator&) = delete;
+    ProceduralOrchestrator(const ProceduralOrchestrator&) = delete;
+    ProceduralOrchestrator& operator=(const ProceduralOrchestrator&) = delete;
 };
 
 } // namespace hd

@@ -2,19 +2,19 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_FogNode.h
+ * @file FogNode.h
  * @brief FogNode represents a fog node in the engine's node graph.
  */
 #pragma once
 
 #include "Node.h"
-#include "HD_VolumetricTypes.h"
-#include "HD_WeatherTypes.h"
+#include "VolumetricTypes.h"
+#include "WeatherTypes.h"
 
 namespace hd {
 
-struct HD_FogInfo : public NodeInfo {
-    HD_FogInfo() {
+struct FogInfo : public NodeInfo {
+    FogInfo() {
         NodeType = "Weather/Fog";
         
         Inputs = {
@@ -41,9 +41,9 @@ struct HD_FogInfo : public NodeInfo {
     }
 };
 
-class HD_FogNode : public Node<VolumetricData, DensityField, ScatteringParams, VisibilityData> {
+class FogNode : public Node<VolumetricData, DensityField, ScatteringParams, VisibilityData> {
 public:
-    explicit HD_FogNode(const HD_FogInfo& info = HD_FogInfo())
+    explicit FogNode(const FogInfo& info = FogInfo())
         : Node(info) {}
 
     void ProcessNodeGraph() override {

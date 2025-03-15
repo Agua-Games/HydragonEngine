@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_NoiseNode.h
+ * @file NoiseNode.h
  * @brief NoiseNode represents a noise node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -17,13 +17,13 @@
 #pragma once
 
 #include "Core/NodeGraph/Node.h"
-#include "Core/Procedural/HD_ProceduralTypes.h"
-#include "Core/Math/HD_Noise.h"
+#include "Core/Procedural/ProceduralTypes.h"
+#include "Core/Math/Noise.h"
 
 namespace hd {
 
-struct HD_NoiseInfo : public NodeInfo {
-    HD_NoiseInfo() {
+struct NoiseInfo : public NodeInfo {
+    NoiseInfo() {
         NodeType = "Procedural/Noise";
         
         Inputs = {
@@ -45,7 +45,7 @@ struct HD_NoiseInfo : public NodeInfo {
     }
 };
 
-class HD_NoiseNode : public Node {
+class NoiseNode : public Node {
 public:
     enum class NoiseType {
         Perlin,
@@ -56,7 +56,7 @@ public:
         Custom
     };
 
-    explicit HD_NoiseNode(const HD_NoiseInfo& info = HD_NoiseInfo())
+    explicit NoiseNode(const NoiseInfo& info = NoiseInfo())
         : Node(info) {}
 
     std::vector<std::string> GetInputPorts() const override {
@@ -93,7 +93,7 @@ public:
     }
 
 protected:
-    HD_NoiseInfo NoiseInfo;
+    NoiseInfo NoiseInfo;
 };
 
 } // namespace hd

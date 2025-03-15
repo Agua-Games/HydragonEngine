@@ -11,7 +11,7 @@ namespace hd {
 
 class Node;
 
-class HD_CodeGenContext {
+class CodeGenContext {
 public:
     void AddProcessCall(Node* node);
     void AddInlinedCode(Node* node, const std::string& code);

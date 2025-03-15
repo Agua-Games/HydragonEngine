@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_MeshDeformerNode.h
+ * @file MeshDeformerNode.h
  * @brief MeshDeformerNode represents a mesh deformer node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -18,13 +18,13 @@
  */
 
 #pragma once
-#include "HD_DeformerNode.h"
-#include "HD_MeshTypes.h"
+#include "DeformerNode.h"
+#include "MeshTypes.h"
 
 namespace hd {
 
-struct HD_MeshDeformerInfo : public HD_DeformerInfo {
-    HD_MeshDeformerInfo() {
+struct MeshDeformerInfo : public DeformerInfo {
+    MeshDeformerInfo() {
         NodeType = "Geometry/MeshDeformer";
         
         // Add mesh-specific inputs
@@ -44,10 +44,10 @@ struct HD_MeshDeformerInfo : public HD_DeformerInfo {
     }
 };
 
-class HD_MeshDeformerNode : public HD_DeformerNode {
+class MeshDeformerNode : public DeformerNode {
 public:
-    explicit HD_MeshDeformerNode(const HD_MeshDeformerInfo& info = HD_MeshDeformerInfo())
-        : HD_DeformerNode(info) {}
+    explicit MeshDeformerNode(const MeshDeformerInfo& info = MeshDeformerInfo())
+        : DeformerNode(info) {}
 
     void BakeForRuntime() override {
         // Optimize for runtime performance

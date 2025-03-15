@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_TransformNode.h
+ * @file TransformNode.h
  * @brief TransformNode represents a transform node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:

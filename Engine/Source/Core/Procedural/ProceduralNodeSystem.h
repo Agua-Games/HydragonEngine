@@ -13,8 +13,8 @@
  */
 #pragma once
 
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 #include "Node.h"
 
 namespace hd {
@@ -23,20 +23,20 @@ class ProceduralNodeSystem {
 public:
     // Create a self-modifying procedural pattern
     std::unique_ptr<Node> CreateProceduralPattern() {
-        auto pattern = std::make_unique<HD_ProceduralEvolutionNode>();
+        auto pattern = std::make_unique<ProceduralEvolutionNode>();
         
         // Connect to orchestrator
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         
         // Setup self-modification capabilities
         pattern->EnableSelfModification(true);
         
         // Add procedural modification nodes
-        auto modifier = pattern->AddChild<HD_SelfModifyingNode>();
+        auto modifier = pattern->AddChild<SelfModifyingNode>();
         modifier->ConnectToOrchestrator(&orchestrator);
         
         // Setup validation and safety
-        auto validator = pattern->AddChild<HD_ValidationNode>();
+        auto validator = pattern->AddChild<ValidationNode>();
         validator->SetValidationRules(GetSafetyRules());
         
         return pattern;

@@ -22,8 +22,8 @@ public:
     // Register built-in nodes
     void RegisterBuiltInNodes() {           // TODO: Move to implementation file
         // This is a placeholder for actual registration logic, which we will try automate, using parsing, loops.
-        RegisterNode<HD_TransformNode>("Transform");
-        RegisterNode<HD_PhysicsNode>("Physics");
+        RegisterNode<TransformNode>("Transform");
+        RegisterNode<PhysicsNode>("Physics");
         // ...
     }
 

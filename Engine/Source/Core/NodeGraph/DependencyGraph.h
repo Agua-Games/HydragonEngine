@@ -19,7 +19,7 @@ struct CompiledSubgraph {
     std::function<void(const std::vector<std::any>&, std::vector<std::any>&)> executeFunc;
 };
 
-class HD_DependencyGraph {
+class DependencyGraph {
 public:
     void AddDependency(Node* dependent, Node* dependency) {
         std::unique_lock lock(graphMutex);

@@ -2,12 +2,12 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProcVegetationPlacementNode.h
+ * @file ProcVegetationPlacementNode.h
  * @brief ProcVegetationPlacementNode represents a procedural vegetation placement node in the engine's node graph.
  */
 
-struct HD_VegetationPlacementInfo : public NodeInfo {
-    HD_VegetationPlacementInfo() {
+struct VegetationPlacementInfo : public NodeInfo {
+    VegetationPlacementInfo() {
         NodeType = "Vegetation/PlacementGenerator";
         
         Inputs = {

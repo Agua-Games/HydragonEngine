@@ -16,7 +16,7 @@
 
 #include "UIManager.h"
 //#include "Node.h"
-//#include "HD_NetworkNode.h"
+//#include "NetworkNode.h"
 
 namespace hd {
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ColorGradingNode.h
+ * @file ColorGradingNode.h
  * @brief Color grading node for image processing.
  * 
  * ARCHITECTURAL NOTES:
@@ -17,13 +17,13 @@
  */
 #pragma once
 #include "Node.h"
-#include "HD_RenderTarget.h"
-#include "HD_ColorSpace.h"
+#include "RenderTarget.h"
+#include "ColorSpace.h"
 
 namespace hd {
 
-struct HD_ColorGradingInfo : public NodeInfo {
-    HD_ColorGradingInfo() {
+struct ColorGradingInfo : public NodeInfo {
+    ColorGradingInfo() {
         NodeType = "Design/ColorGrading";
         
         Inputs = {
@@ -46,9 +46,9 @@ struct HD_ColorGradingInfo : public NodeInfo {
     }
 };
 
-class HD_ColorGradingNode : public Node<RenderTarget, HistogramData, WaveformData> {
+class ColorGradingNode : public Node<RenderTarget, HistogramData, WaveformData> {
 public:
-    explicit HD_ColorGradingNode(const HD_ColorGradingInfo& info = HD_ColorGradingInfo())
+    explicit ColorGradingNode(const ColorGradingInfo& info = ColorGradingInfo())
         : Node(info), GradingInfo(info) {}
 
     void ProcessNodeGraph() override {
@@ -98,7 +98,7 @@ public:
     }
 
 private:
-    HD_ColorGradingInfo GradingInfo;
+    ColorGradingInfo GradingInfo;
 };
 
 } // namespace hd

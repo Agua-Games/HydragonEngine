@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_BlendNode.h
+ * @file BlendNode.h
  * @brief BlendNode represents a blend node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -18,12 +18,12 @@
 #include <vector>
 #include <string>
 #include "Node.h"
-#include "HD_ProceduralTypes.h"
+#include "ProceduralTypes.h"
 
 namespace hd {
 
-struct HD_BlendInfo : public NodeInfo {
-    HD_BlendInfo() {
+struct BlendInfo : public NodeInfo {
+    BlendInfo() {
         NodeType = "Procedural/Blend";
         
         Inputs = {
@@ -43,7 +43,7 @@ struct HD_BlendInfo : public NodeInfo {
     }
 };
 
-class HD_BlendNode : public Node {
+class BlendNode : public Node {
 public:
     enum class BlendMode {
         Linear,
@@ -56,7 +56,7 @@ public:
         Custom
     };
 
-    explicit HD_BlendNode(const HD_BlendInfo& info = HD_BlendInfo())
+    explicit BlendNode(const BlendInfo& info = BlendInfo())
         : Node(info) {}
 
     std::vector<std::string> GetInputPorts() const override {
@@ -93,7 +93,7 @@ public:
     }
 
 protected:
-    HD_BlendInfo BlendInfo;
+    BlendInfo BlendInfo;
 };
 
 } // namespace hd

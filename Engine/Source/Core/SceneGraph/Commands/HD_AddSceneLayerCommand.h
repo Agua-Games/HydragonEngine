@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_AddSceneLayerCommand.h
+ * @file AddSceneLayerCommand.h
  * @brief Header file for the AddSceneLayer command node.
  * 
  * ARCHITECTURAL NOTES:
@@ -17,8 +17,8 @@
  */
 #pragma once
 
-#include "HD_CommandNode.h"
-#include "HD_CommandValidation.h"
+#include "CommandNode.h"
+#include "CommandValidation.h"
 #include "SceneNode.h"
 
 namespace hd {
@@ -27,10 +27,10 @@ namespace hd {
  * @brief Factory function for creating an AddSceneLayer command node
  * @return Shared pointer to the command node
  */
-inline std::shared_ptr<HD_CommandNode<SceneNode*, std::string>> 
+inline std::shared_ptr<CommandNode<SceneNode*, std::string>> 
 CreateAddSceneLayerCommand() {
     // Create validator
-    auto validator = std::make_shared<HD_CommandValidator>();
+    auto validator = std::make_shared<CommandValidator>();
     
     // Add validation rules
     validator->AddRule<std::string>("LayerPath",

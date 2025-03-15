@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_MaterialNode.h
+ * @file MaterialNode.h
  * @brief MaterialNode represents a material node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -19,14 +19,14 @@
 #pragma once
 
 #include "Core/NodeGraph/Node.h"
-#include "Core/Rendering/HD_ShaderCache.h"
-#include "Core/Rendering/HD_RenderTypes.h"
-#include "Core/SceneGraph/HD_RuntimeVariants.h"
+#include "Core/Rendering/ShaderCache.h"
+#include "Core/Rendering/RenderTypes.h"
+#include "Core/SceneGraph/RuntimeVariants.h"
 #include <spirv_reflect.h>
 #include <vulkan/vulkan.h>
 #include <pxr/usd/usdShade/material.h>
 #include <glm/glm.hpp>
-#include "Core/Procedural/HD_ProceduralTypes.h"
+#include "Core/Procedural/ProceduralTypes.h"
 
 namespace hd {
 
@@ -57,14 +57,14 @@ struct MaterialVariantConfig {
 /**
  * @brief Enhanced material node info with USD compatibility
  */
-struct HD_MaterialInfo : public NodeInfo {
+struct MaterialInfo : public NodeInfo {
     MaterialDomain Domain = MaterialDomain::Surface;
     MaterialBlendMode BlendMode = MaterialBlendMode::Opaque;
     bool UsesProcedural = false;
     bool RequiresRayTracing = false;
     std::vector<MaterialVariantConfig> VariantConfigs;
     
-    HD_MaterialInfo() {
+    MaterialInfo() {
         NodeType = "Material";
         IsStreamable = true;
         IsAsyncLoadable = true;
@@ -74,9 +74,9 @@ struct HD_MaterialInfo : public NodeInfo {
 /**
  * @brief Advanced material node supporting USD, procedural generation, and variants
  */
-class HD_MaterialNode : public Node {
+class MaterialNode : public Node {
 public:
-    explicit HD_MaterialNode(const HD_MaterialInfo& info = HD_MaterialInfo())
+    explicit MaterialNode(const MaterialInfo& info = MaterialInfo())
         : Node(info), MaterialInfo(info) {
         InitializeDefaultPorts();
         InitializeShaderCache();
@@ -223,7 +223,7 @@ public:
     }
 
 protected:
-    HD_MaterialInfo MaterialInfo;
+    MaterialInfo MaterialInfo;
     std::unordered_map<uint32_t, ShaderVariant> ShaderVariants;
     RuntimeMaterialData RuntimeData;
 

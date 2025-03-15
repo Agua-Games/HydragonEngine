@@ -39,9 +39,9 @@ struct VariantCriteria {
 /**
  * @brief Represents a single variant of a node or subtree
  */
-class HD_Variant {
+class Variant {
 public:
-    explicit HD_Variant(const std::string& name = "", 
+    explicit Variant(const std::string& name = "", 
                        const VariantCriteria& criteria = VariantCriteria())
         : name(name), criteria(criteria) {}
 
@@ -67,24 +67,24 @@ private:
 /**
  * @brief Manages a set of variants for a node or subtree
  */
-class HD_VariantSet {
+class VariantSet {
 public:
     void AddVariant(const std::string& name, const VariantCriteria& criteria) {
-        variants.emplace_back(std::make_shared<HD_Variant>(name, criteria));
+        variants.emplace_back(std::make_shared<Variant>(name, criteria));
     }
 
-    std::shared_ptr<HD_Variant> GetVariant(const std::string& name) {
+    std::shared_ptr<Variant> GetVariant(const std::string& name) {
         auto it = std::find_if(variants.begin(), variants.end(),
             [&name](const auto& variant) { return variant->GetName() == name; });
         return it != variants.end() ? *it : nullptr;
     }
 
-    std::shared_ptr<HD_Variant> SelectBestVariant(
+    std::shared_ptr<Variant> SelectBestVariant(
         float performanceMetric,
         float distance,
         const std::unordered_map<std::string, float>& customMetrics = {}) 
     {
-        std::shared_ptr<HD_Variant> bestVariant = nullptr;
+        std::shared_ptr<Variant> bestVariant = nullptr;
         float bestScore = std::numeric_limits<float>::lowest();
 
         for (const auto& variant : variants) {
@@ -113,12 +113,12 @@ public:
             });
     }
 
-    const std::vector<std::shared_ptr<HD_Variant>>& GetVariants() const { 
+    const std::vector<std::shared_ptr<Variant>>& GetVariants() const { 
         return variants; 
     }
 
 private:
-    std::vector<std::shared_ptr<HD_Variant>> variants;
+    std::vector<std::shared_ptr<Variant>> variants;
 
     float CalculateVariantScore(
         const VariantCriteria& criteria,

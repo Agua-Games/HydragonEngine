@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_SkeletonNode.h
+ * @file SkeletonNode.h
  * @brief SkeletonNode represents a skeleton node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -22,8 +22,8 @@
 
 namespace hd {
 
-struct HD_SkeletonInfo : public NodeInfo {
-    HD_SkeletonInfo() {
+struct SkeletonInfo : public NodeInfo {
+    SkeletonInfo() {
         NodeType = "Geometry/Skeleton";
         
         Inputs = {
@@ -43,9 +43,9 @@ struct HD_SkeletonInfo : public NodeInfo {
     }
 };
 
-class HD_SkeletonNode : public Node {
+class SkeletonNode : public Node {
 public:
-    explicit HD_SkeletonNode(const HD_SkeletonInfo& info = HD_SkeletonInfo())
+    explicit SkeletonNode(const SkeletonInfo& info = SkeletonInfo())
         : Node(info) {}
 
     void ProcessNodeGraph() override;

@@ -11,8 +11,8 @@
  */
 #pragma once
 
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 
 namespace hd {
 
@@ -39,7 +39,7 @@ public:
     
 private:
     // Orchestration of procedural systems
-    HD_ProceduralOrchestrator& m_orchestrator;
+    ProceduralOrchestrator& m_orchestrator;
     
     // State tracking
     GenerationState m_currentState;

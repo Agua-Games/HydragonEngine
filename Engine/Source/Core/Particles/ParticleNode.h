@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ParticleNode.h
+ * @file ParticleNode.h
  * @brief ParticleNode represents a particle system node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -19,13 +19,13 @@
 #pragma once
 
 #include "Node.h"
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 
 namespace hd {
 
-struct HD_ParticleInfo : public NodeInfo {
-    HD_ParticleInfo() {
+struct ParticleInfo : public NodeInfo {
+    ParticleInfo() {
         NodeType = "Particles/ParticleSystem";
         
         Inputs = {
@@ -54,16 +54,16 @@ struct HD_ParticleInfo : public NodeInfo {
     }
 };
 
-class HD_ParticleNode : public Node {
+class ParticleNode : public Node {
 public:
-    explicit HD_ParticleNode(const HD_ParticleInfo& info = HD_ParticleInfo())
+    explicit ParticleNode(const ParticleInfo& info = ParticleInfo())
         : Node(info) {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         particlePatternId = orchestrator.RegisterPattern(CreateDefaultParticlePattern());
     }
 
     void ProcessNodeGraph() override {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         
         // Process inputs
         auto emitter = GetInputValue<EmitterData>("Emitter");

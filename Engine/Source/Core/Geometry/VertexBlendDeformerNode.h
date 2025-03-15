@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_VertexBlendDeformerNode.h
+ * @file VertexBlendDeformerNode.h
  * @brief VertexBlendDeformerNode represents a vertex blend deformer node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -18,12 +18,12 @@
  */
 
 #pragma once
-#include "HD_DeformerNode.h"
+#include "DeformerNode.h"
 
 namespace hd {
 
-struct HD_VertexBlendInfo : public HD_DeformerInfo {
-    HD_VertexBlendInfo() {
+struct VertexBlendInfo : public DeformerInfo {
+    VertexBlendInfo() {
         NodeType = "Geometry/VertexBlendDeformer";
         
         // Add blend-specific inputs
@@ -38,10 +38,10 @@ struct HD_VertexBlendInfo : public HD_DeformerInfo {
     }
 };
 
-class HD_VertexBlendDeformerNode : public HD_DeformerNode {
+class VertexBlendDeformerNode : public DeformerNode {
 public:
-    explicit HD_VertexBlendDeformerNode(const HD_VertexBlendInfo& info = HD_VertexBlendInfo())
-        : HD_DeformerNode(info) {}
+    explicit VertexBlendDeformerNode(const VertexBlendInfo& info = VertexBlendInfo())
+        : DeformerNode(info) {}
 
 protected:
     void ApplyDeformation() override;

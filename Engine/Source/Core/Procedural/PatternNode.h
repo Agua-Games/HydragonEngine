@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_PatternNode.h
+ * @file PatternNode.h
  * @brief PatternNode represents a procedural pattern node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -16,14 +16,14 @@
  */
 #pragma once
 
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 #include "Core/NodeGraph/Node.h"
 
 namespace hd {
 
-struct HD_ProceduralPatternInfo : public NodeInfo {
-    HD_ProceduralPatternInfo() {
+struct ProceduralPatternInfo : public NodeInfo {
+    ProceduralPatternInfo() {
         NodeType = "Procedural/Pattern";
         
         Inputs = {
@@ -45,23 +45,23 @@ struct HD_ProceduralPatternInfo : public NodeInfo {
     }
 };
 
-class HD_PatternNode : public Node {
+class PatternNode : public Node {
 public:
-    explicit HD_PatternNode(const HD_ProceduralPatternInfo& info = HD_ProceduralPatternInfo())
+    explicit PatternNode(const ProceduralPatternInfo& info = ProceduralPatternInfo())
         : Node(info) {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         patternId = orchestrator.RegisterPattern(CreateDefaultPattern());
     }
 
-    ~HD_PatternNode() {
+    ~PatternNode() {
         if (!patternId.empty()) {
-            auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+            auto& orchestrator = ProceduralOrchestrator::GetInstance();
             orchestrator.UnregisterPattern(patternId);
         }
     }
 
     void ProcessNodeGraph() override {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         
         uint32_t seed = GetInputValue<uint32_t>("Seed");
         float scale = GetInputValue<float>("Scale");

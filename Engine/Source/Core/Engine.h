@@ -36,7 +36,7 @@
 #include <vector>
 
 #include "NodeGraph.h"                   // Foundation
-#include "HD_ProceduralOrchestrator.h"      // Evolution
+#include "ProceduralOrchestrator.h"      // Evolution
 #include "SystemOrchestrator.h"             // Coordination
 #include "ResourceManager.h"                // Assets
 #include "VulkanBackend.h"                  // Graphics
@@ -52,7 +52,7 @@ public:
     
     // Core system access
     NodeGraph& GetNodeGraph();
-    HD_ProceduralOrchestrator& GetProceduralOrchestrator();
+    ProceduralOrchestrator& GetProceduralOrchestrator();
     SystemOrchestrator& GetSystemOrchestrator();
     
     // Runtime control
@@ -78,7 +78,7 @@ private:
 
     // Core systems
     std::unique_ptr<NodeGraph> m_nodeGraph;
-    std::unique_ptr<HD_ProceduralOrchestrator> m_proceduralOrchestrator;
+    std::unique_ptr<ProceduralOrchestrator> m_proceduralOrchestrator;
     std::unique_ptr<SystemOrchestrator> m_systemOrchestrator;
     std::unique_ptr<ResourceManager> m_resourceManager;
     

@@ -2,19 +2,19 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_VegetationNode.h
+ * @file VegetationNode.h
  * @brief VegetationNode represents a vegetation node in the engine's node graph.
  */
 #pragma once
 
 #include "Node.h"
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 
 namespace hd {
 
-struct HD_VegetationInfo : public NodeInfo {
-    HD_VegetationInfo() {
+struct VegetationInfo : public NodeInfo {
+    VegetationInfo() {
         NodeType = "Vegetation/VegetationSystem";
         
         Inputs = {
@@ -43,16 +43,16 @@ struct HD_VegetationInfo : public NodeInfo {
     }
 };
 
-class HD_VegetationNode : public Node {
+class VegetationNode : public Node {
 public:
-    explicit HD_VegetationNode(const HD_VegetationInfo& info = HD_VegetationInfo())
+    explicit VegetationNode(const VegetationInfo& info = VegetationInfo())
         : Node(info) {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         vegetationPatternId = orchestrator.RegisterPattern(CreateDefaultVegetationPattern());
     }
 
     void ProcessNodeGraph() override {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         
         // Process inputs
         auto terrain = GetInputValue<TerrainData>("Terrain");

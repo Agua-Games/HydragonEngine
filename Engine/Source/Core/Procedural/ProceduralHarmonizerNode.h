@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProceduralHarmonizerNode.h
+ * @file ProceduralHarmonizerNode.h
  * @brief HarmonizerNode represents a harmonizer node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -16,14 +16,14 @@
  */
 #pragma once
 
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 #include "Core/NodeGraph/Node.h"
 
 namespace hd {
 
-struct HD_HarmonizerInfo : public NodeInfo {
-    HD_HarmonizerInfo() {
+struct HarmonizerInfo : public NodeInfo {
+    HarmonizerInfo() {
         NodeType = "Procedural/Harmonizer";
         
         Inputs = {
@@ -44,13 +44,13 @@ struct HD_HarmonizerInfo : public NodeInfo {
     }
 };
 
-class HD_ProceduralHarmonizerNode : public Node {
+class ProceduralHarmonizerNode : public Node {
 public:
-    explicit HD_ProceduralHarmonizerNode(const HD_HarmonizerInfo& info = HD_HarmonizerInfo())
+    explicit ProceduralHarmonizerNode(const HarmonizerInfo& info = HarmonizerInfo())
         : Node(info) {}
 
     void ProcessNodeGraph() override {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         
         auto patternA = GetInputValue<ProceduralPatternData>("PatternA");
         auto patternB = GetInputValue<ProceduralPatternData>("PatternB");

@@ -17,7 +17,7 @@
 
 namespace hd {
 
-class HD_SelfModifyingNode : public Node {
+class SelfModifyingNode : public Node {
 public:
     // Node modification interface
     virtual bool CanModifyStructure() const { return m_allowStructuralChanges; }

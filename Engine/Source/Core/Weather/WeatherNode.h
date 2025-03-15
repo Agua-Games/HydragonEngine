@@ -2,19 +2,19 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_WeatherNode.h
+ * @file WeatherNode.h
  * @brief WeatherNode represents a weather node in the engine's node graph.
  */
 #pragma once
 
 #include "Node.h"
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 
 namespace hd {
 
-struct HD_WeatherInfo : public NodeInfo {
-    HD_WeatherInfo() {
+struct WeatherInfo : public NodeInfo {
+    WeatherInfo() {
         NodeType = "Weather/WeatherSystem";
         
         Inputs = {
@@ -44,16 +44,16 @@ struct HD_WeatherInfo : public NodeInfo {
     }
 };
 
-class HD_WeatherNode : public Node<WeatherState, AtmosphereParams, CloudData, PrecipitationData> {
+class WeatherNode : public Node<WeatherState, AtmosphereParams, CloudData, PrecipitationData> {
 public:
-    explicit HD_WeatherNode(const HD_WeatherInfo& info = HD_WeatherInfo())
+    explicit WeatherNode(const WeatherInfo& info = WeatherInfo())
         : Node(info) {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         weatherPatternId = orchestrator.RegisterPattern(CreateDefaultWeatherPattern());
     }
 
     void ProcessNodeGraph() override {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         
         // Process inputs
         auto time = GetInputValue<float>("Time");

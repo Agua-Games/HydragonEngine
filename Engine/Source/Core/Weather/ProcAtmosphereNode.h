@@ -2,20 +2,20 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProcAtmosphereNode.h
+ * @file ProcAtmosphereNode.h
  * @brief ProcAtmosphereNode represents a procedural atmosphere node in the engine's node graph.
  */
 #pragma once
 
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 #include "Node.h"
 
 namespace hd {
 
 // Info struct inherits from NodeInfo - used for metadata/configuration
-struct HD_AtmosphereInfo : public NodeInfo {
-    HD_AtmosphereInfo() {
+struct AtmosphereInfo : public NodeInfo {
+    AtmosphereInfo() {
         NodeType = "Weather/Atmosphere";
         
         Inputs = {
@@ -41,9 +41,9 @@ struct HD_AtmosphereInfo : public NodeInfo {
 };
 
 // Actual node class inherits from Node - provides functionality
-class HD_ProcAtmosphereNode : public Node<AtmosphereState, ScatteringParams, DensityProfile> {
+class ProcAtmosphereNode : public Node<AtmosphereState, ScatteringParams, DensityProfile> {
 public:
-    explicit HD_ProcAtmosphereNode(const HD_AtmosphereInfo& info = HD_AtmosphereInfo())
+    explicit ProcAtmosphereNode(const AtmosphereInfo& info = AtmosphereInfo())
         : Node(info) {}
 
     void ProcessNodeGraph() override {

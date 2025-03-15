@@ -2,20 +2,20 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProcPrecipitationNode.h
+ * @file ProcPrecipitationNode.h
  * @brief ProcPrecipitationNode represents a procedural precipitation node in the engine's node graph.
  */
 #pragma once
 
 #include "Node.h"
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
-#include "HD_WeatherTypes.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
+#include "WeatherTypes.h"
 
 namespace hd {
 
-struct HD_PrecipitationInfo : public NodeInfo {
-    HD_PrecipitationInfo() {
+struct PrecipitationInfo : public NodeInfo {
+    PrecipitationInfo() {
         NodeType = "Weather/Precipitation";
         
         Inputs = {
@@ -43,23 +43,23 @@ struct HD_PrecipitationInfo : public NodeInfo {
     }
 };
 
-class HD_ProcPrecipitationNode : public Node<ParticleData, SurfaceEffects, AudioData, AccumulationData> {
+class ProcPrecipitationNode : public Node<ParticleData, SurfaceEffects, AudioData, AccumulationData> {
 public:
-    explicit HD_ProcPrecipitationNode(const HD_PrecipitationInfo& info = HD_PrecipitationInfo())
+    explicit ProcPrecipitationNode(const PrecipitationInfo& info = PrecipitationInfo())
         : Node(info) {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         precipPatternId = orchestrator.RegisterPattern(CreateDefaultPrecipitationPattern());
     }
 
-    ~HD_ProcPrecipitationNode() {
+    ~ProcPrecipitationNode() {
         if (!precipPatternId.empty()) {
-            auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+            auto& orchestrator = ProceduralOrchestrator::GetInstance();
             orchestrator.UnregisterPattern(precipPatternId);
         }
     }
 
     void ProcessNodeGraph() override {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
 
         // Get input values
         auto atmosphereState = GetPortValue<AtmosphereState>("AtmosphereState");

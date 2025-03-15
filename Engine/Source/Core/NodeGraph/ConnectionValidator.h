@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @brief HD_ConnectionValidator ensures node connections are valid
+ * @brief ConnectionValidator ensures node connections are valid
  * and provides meaningful feedback for invalid connections.
  */
 #pragma once
@@ -29,7 +29,7 @@ struct ConnectionValidationResult {
 /**
  * Validates connections between nodes and provides feedback
  */
-class HD_ConnectionValidator {
+class ConnectionValidator {
 public:
     // Basic validation
     static ConnectionValidationResult ValidateConnection(

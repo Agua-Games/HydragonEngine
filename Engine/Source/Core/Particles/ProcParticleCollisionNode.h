@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProcParticleCollisionNode.h
+ * @file ProcParticleCollisionNode.h
  * @brief ProcParticleCollisionNode represents a procedural particle collision node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -19,8 +19,8 @@
 
 namespace hd {
 
-struct HD_ParticleCollisionInfo : public NodeInfo {
-    HD_ParticleCollisionInfo() {
+struct ParticleCollisionInfo : public NodeInfo {
+    ParticleCollisionInfo() {
         NodeType = "Particles/Collision";
         
         Inputs = {

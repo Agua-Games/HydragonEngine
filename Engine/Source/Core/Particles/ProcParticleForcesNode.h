@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProcParticleForcesNode.h
+ * @file ProcParticleForcesNode.h
  * @brief ProcParticleForcesNode represents a procedural particle forces node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -20,8 +20,8 @@
 
 namespace hd {
 
-struct HD_ParticleForcesInfo : public NodeInfo {
-    HD_ParticleForcesInfo() {
+struct ParticleForcesInfo : public NodeInfo {
+    ParticleForcesInfo() {
         NodeType = "Particles/Forces";
         
         Inputs = {

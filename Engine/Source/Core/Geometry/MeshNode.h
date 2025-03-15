@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_MeshNode.h
+ * @file MeshNode.h
  * @brief MeshNode represents a mesh node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -19,17 +19,17 @@
 #pragma once
 #include "Node.h"
 #include "MeshTypes.h"
-#include "HD_MaterialNode.h"
+#include "MaterialNode.h"
 #include "RuntimeVariants.h"
-#include "HD_TransformNode.h"
+#include "TransformNode.h"
 #include "ProceduralTypes.h"
-#include "HD_UsdSchema.h"
+#include "UsdSchema.h"
 #include <glm/glm.hpp>
 
 namespace hd {
 
-struct HD_MeshInfo : public NodeInfo {
-    HD_MeshInfo() {
+struct MeshInfo : public NodeInfo {
+    MeshInfo() {
         NodeType = "Geometry/Mesh";
         
         Inputs = {
@@ -50,28 +50,28 @@ struct HD_MeshInfo : public NodeInfo {
     }
 };
 
-class HD_MeshNode : public Node {
+class MeshNode : public Node {
 public:
-    explicit HD_MeshNode(const HD_MeshInfo& info = HD_MeshInfo())
+    explicit MeshNode(const MeshInfo& info = MeshInfo())
         : Node(info) {}
 
     void ProcessNodeGraph() override {
         // Process base transform
-        auto transform = GetInputValue<std::shared_ptr<HD_TransformNode>>("Transform");
+        auto transform = GetInputValue<std::shared_ptr<TransformNode>>("Transform");
         
         // Process deformers in sequence
-        auto deformers = GetInputValue<std::vector<std::shared_ptr<HD_DeformerNode>>>("Deformers");
+        auto deformers = GetInputValue<std::vector<std::shared_ptr<DeformerNode>>>("Deformers");
         ProcessDeformerChain(deformers);
         
         // Apply material and finish processing
-        auto material = GetInputValue<std::shared_ptr<HD_MaterialNode>>("Material");
+        auto material = GetInputValue<std::shared_ptr<MaterialNode>>("Material");
         ApplyMaterial(material);
         
         UpdateOutputs();
     }
 
 private:
-    void ProcessDeformerChain(const std::vector<std::shared_ptr<HD_DeformerNode>>& deformers);
+    void ProcessDeformerChain(const std::vector<std::shared_ptr<DeformerNode>>& deformers);
     void UpdateOutputs();
 };
 

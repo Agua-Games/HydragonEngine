@@ -21,8 +21,8 @@
 #pragma once
 
 #include "Node.h"
-#include "HD_SceneAllocator.h"
-#include "HD_RuntimeVariants.h"
+#include "SceneAllocator.h"
+#include "RuntimeVariants.h"
 #include <future>
 #include <memory>
 #include <string>
@@ -39,7 +39,7 @@ namespace hd {
  * Extends base node info with USD-specific attributes for scene composition
  * and layering capabilities.
  */
-struct HD_SceneInfo : public NodeInfo {
+struct SceneInfo : public NodeInfo {
     /** Path to the scene's USD layer file */
     std::string LayerPath;
     /** Referenced USD files for composition */
@@ -47,7 +47,7 @@ struct HD_SceneInfo : public NodeInfo {
     /** Controls USD layer-based composition */
     bool IsLayered = true;
 
-    HD_SceneInfo(const std::string& name = "", bool isSerializable = true,
+    SceneInfo(const std::string& name = "", bool isSerializable = true,
                  bool isEditableInEditor = true, const std::string& nodeType = "",
                  const std::vector<std::string>& inputs = {},
                  const std::vector<std::string>& outputs = {},
@@ -161,7 +161,7 @@ public:
         }
     };
 
-    explicit SceneNode(const HD_SceneInfo& info)
+    explicit SceneNode(const SceneInfo& info)
         : Node(info), SceneInfo(info) {
         InitializePorts();
     }
@@ -169,7 +169,7 @@ public:
     virtual ~SceneNode() = default;
 
     /** @return Current scene information and metadata */
-    const HD_SceneInfo& GetSceneInfo() const { return SceneInfo; }
+    const SceneInfo& GetSceneInfo() const { return SceneInfo; }
 
     /** @return Root node of this scene graph */
     std::shared_ptr<Node> GetRoot() const;
@@ -233,7 +233,7 @@ public:
      * @brief References another scene graph for composition
      * @param otherGraph Scene graph to reference
      */
-    void ReferenceSceneGraph(const std::shared_ptr<HD_SceneGraph>& otherGraph);
+    void ReferenceSceneGraph(const std::shared_ptr<SceneGraph>& otherGraph);
 
     /**
      * @brief Clones a subtree of nodes
@@ -290,7 +290,7 @@ public:
      */
     void DrawInNodeGraph() override;
 
-#if HD_EDITOR_MODE
+#if EDITOR_MODE
     /**
      * @brief Creates a variant of a node or subtree (editor only)
      * @param node Node to create variant from
@@ -357,7 +357,7 @@ public:
 
 protected:
     /** Scene-specific metadata and attributes */
-    HD_SceneInfo SceneInfo;
+    SceneInfo SceneInfo;
 
     /** Current evaluation time */
     float CurrentTime = 0.0f;
@@ -385,7 +385,7 @@ protected:
         }
     }
 
-#if HD_EDITOR_MODE
+#if EDITOR_MODE
     /** Editor-only variant storage */
     std::unordered_map<std::string, std::shared_ptr<Node>> Variants;
 

@@ -17,7 +17,7 @@ namespace hd {
 /**
  * @brief Command queue for executing commands in a thread-safe manner
  */
-class HD_CommandQueue {
+class CommandQueue {
 public:
     struct Command {
         std::function<void()> execute;

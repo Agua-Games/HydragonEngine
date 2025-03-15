@@ -2,19 +2,19 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProcVegetationGrowthNode.h
+ * @file ProcVegetationGrowthNode.h
  * @brief ProcVegetationGrowthNode represents a procedural vegetation growth node in the engine's node graph.
  */
 #pragma once
 
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 #include "Node.h"
 
 namespace hd {
 
-struct HD_VegetationGrowthInfo : public NodeInfo {
-    HD_VegetationGrowthInfo() {
+struct VegetationGrowthInfo : public NodeInfo {
+    VegetationGrowthInfo() {
         NodeType = "Vegetation/GrowthSimulator";
         
         Inputs = {

@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_LayoutNode.h
+ * @file LayoutNode.h
  * @brief Layout node for UI composition.
  * 
  * ARCHITECTURAL NOTES:
@@ -17,13 +17,13 @@
  */
 #pragma once
 #include "Node.h"
-#include "HD_RenderTarget.h"
-#include "HD_LayoutSystem.h"
+#include "RenderTarget.h"
+#include "LayoutSystem.h"
 
 namespace hd {
 
-struct HD_LayoutInfo : public NodeInfo {
-    HD_LayoutInfo() {
+struct LayoutInfo : public NodeInfo {
+    LayoutInfo() {
         NodeType = "Design/Layout";
         
         Inputs = {
@@ -45,9 +45,9 @@ struct HD_LayoutInfo : public NodeInfo {
     }
 };
 
-class HD_LayoutNode : public Node<RenderTarget, std::vector<BoundingBox>, GridGuides> {
+class LayoutNode : public Node<RenderTarget, std::vector<BoundingBox>, GridGuides> {
 public:
-    explicit HD_LayoutNode(const HD_LayoutInfo& info = HD_LayoutInfo())
+    explicit LayoutNode(const LayoutInfo& info = LayoutInfo())
         : Node(info), LayoutInfo(info) {}
 
     void ProcessNodeGraph() override {
@@ -74,7 +74,7 @@ public:
     }
 
 private:
-    HD_LayoutInfo LayoutInfo;
+    LayoutInfo LayoutInfo;
 };
 
 } // namespace hd

@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * HD_GraphAnalyzer provides tools to analyze node graphs for
+ * GraphAnalyzer provides tools to analyze node graphs for
  * potential issues, dead ends, and breaking points.
  */
 #pragma once
@@ -37,7 +37,7 @@ struct GraphIssue {
 /**
  * Analyzes node graphs for potential issues
  */
-class HD_GraphAnalyzer {
+class GraphAnalyzer {
 public:
     // Core analysis
     static std::vector<GraphIssue> AnalyzeGraph(const std::vector<Node*>& nodes);

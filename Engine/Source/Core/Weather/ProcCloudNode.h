@@ -2,20 +2,20 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProcCloudNode.h
+ * @file ProcCloudNode.h
  * @brief ProcCloudNode represents a procedural cloud node in the engine's node graph.
  */
 #pragma once
 
 #include "Node.h"
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
-#include "HD_VolumetricTypes.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
+#include "VolumetricTypes.h"
 
 namespace hd {
 
-struct HD_CloudInfo : public NodeInfo {
-    HD_CloudInfo() {
+struct CloudInfo : public NodeInfo {
+    CloudInfo() {
         NodeType = "Weather/Clouds";
         
         Inputs = {
@@ -47,23 +47,23 @@ struct HD_CloudInfo : public NodeInfo {
     }
 };
 
-class HD_ProcCloudNode : public Node<VolumetricData, ShadowData, LightingData, PrecipitationData> {
+class ProcCloudNode : public Node<VolumetricData, ShadowData, LightingData, PrecipitationData> {
 public:
-    explicit HD_ProcCloudNode(const HD_CloudInfo& info = HD_CloudInfo())
+    explicit ProcCloudNode(const CloudInfo& info = CloudInfo())
         : Node(info) {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         cloudPatternId = orchestrator.RegisterPattern(CreateDefaultCloudPattern());
     }
 
-    ~HD_ProcCloudNode() {
+    ~ProcCloudNode() {
         if (!cloudPatternId.empty()) {
-            auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+            auto& orchestrator = ProceduralOrchestrator::GetInstance();
             orchestrator.UnregisterPattern(cloudPatternId);
         }
     }
 
     void ProcessNodeGraph() override {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         
         // Get input values
         auto atmosphereState = GetPortValue<AtmosphereState>("AtmosphereState");

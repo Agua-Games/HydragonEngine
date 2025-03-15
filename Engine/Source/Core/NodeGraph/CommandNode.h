@@ -2,8 +2,8 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_CommandNode.h
- * @brief HD_CommandNode represents a command node in the engine's node graph.
+ * @file CommandNode.h
+ * @brief CommandNode represents a command node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
  * - Command nodes are used to execute functions with inputs and outputs.
@@ -24,7 +24,7 @@
 #include <any>
 
 #include "Node.h"
-#include "HD_AIInterface.h"
+#include "AIInterface.h"
 
 namespace hd {
 
@@ -32,12 +32,12 @@ namespace hd {
  * @brief Command node for executing functions with inputs and outputs
  */
 template<typename... Inputs>
-class HD_CommandNode : public Node<Inputs...> {
+class CommandNode : public Node<Inputs...> {
 public:
     using CommandFunc = std::function<void(Inputs...)>;
     using AsyncCommandFunc = std::function<std::future<void>(Inputs...)>;
 
-    HD_CommandNode(const NodeInfo& info,
+    CommandNode(const NodeInfo& info,
                   CommandFunc cmd,
                   std::tuple<std::string...> inNames,
                   bool isAsync = false)
@@ -49,7 +49,7 @@ public:
         NodeInfo.streamingConfig.enabled = false;
     }
 
-    HD_CommandNode(const NodeInfo& info,
+    CommandNode(const NodeInfo& info,
                   AsyncCommandFunc asyncCmd,
                   std::tuple<std::string...> inNames)
         : Node(info)
@@ -151,23 +151,23 @@ private:
 
 // Factory functions for cleaner syntax
 template<typename... Inputs>
-std::shared_ptr<HD_CommandNode<Inputs...>> MakeCommandNode(
+std::shared_ptr<CommandNode<Inputs...>> MakeCommandNode(
     const std::string& name,
     std::function<void(Inputs...)> cmd,
     std::tuple<std::string...> inputNames) {
     NodeInfo info(name, true, true, "Command", {}, {}, false); // streaming disabled
-    return std::make_shared<HD_CommandNode<Inputs...>>(
+    return std::make_shared<CommandNode<Inputs...>>(
         info, std::move(cmd), std::move(inputNames));
 }
 
 template<typename... Inputs>
-std::shared_ptr<HD_CommandNode<Inputs...>> MakeAsyncCommandNode(
+std::shared_ptr<CommandNode<Inputs...>> MakeAsyncCommandNode(
     const std::string& name,
     std::function<std::future<void>(Inputs...)> cmd,
     std::tuple<std::string...> inputNames) {
     NodeInfo info(name);
     info.IsAsyncLoadable = true;
-    return std::make_shared<HD_CommandNode<Inputs...>>(
+    return std::make_shared<CommandNode<Inputs...>>(
         info, std::move(cmd), std::move(inputNames));
 }
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_ProceduralEvolutionNode.h
+ * @file ProceduralEvolutionNode.h
  * @brief EvolutionNode represents an evolution node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -19,14 +19,14 @@
  */
 #pragma once
 
-#include "HD_ProceduralTypes.h"
-#include "HD_ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralOrchestrator.h"
 #include "Core/NodeGraph/Node.h"
 
 namespace hd {
 
-struct HD_EvolutionInfo : public NodeInfo {
-    HD_EvolutionInfo() {
+struct EvolutionInfo : public NodeInfo {
+    EvolutionInfo() {
         NodeType = "Procedural/Evolution";
         
         Inputs = {
@@ -48,12 +48,12 @@ struct HD_EvolutionInfo : public NodeInfo {
     }
 };
 
-class HD_ProceduralEvolutionNode : public Node {
+class ProceduralEvolutionNode : public Node {
 public:
-    explicit HD_ProceduralEvolutionNode(const HD_EvolutionInfo& info = HD_EvolutionInfo())
+    explicit ProceduralEvolutionNode(const EvolutionInfo& info = EvolutionInfo())
         : Node(info) {
         // Register with orchestrator on creation
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         m_evolutionPatternId = orchestrator.RegisterPattern(
             std::make_unique<ProceduralPattern>(
                 ProceduralPatternType::Evolution,
@@ -62,14 +62,14 @@ public:
         );
     }
 
-    ~HD_ProceduralEvolutionNode() {
+    ~ProceduralEvolutionNode() {
         // Cleanup registration
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         orchestrator.UnregisterPattern(m_evolutionPatternId);
     }
 
     void ProcessNodeGraph() override {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         
         // Get inputs
         auto sourcePattern = GetInputValue<ProceduralPatternData>("SourcePattern");
@@ -116,7 +116,7 @@ private:
     }
 
     void NotifyOrchestrator() {
-        auto& orchestrator = HD_ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::GetInstance();
         
         // Propagate evolution state to orchestrator
         IntentTask evolutionIntent{

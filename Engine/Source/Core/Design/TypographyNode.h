@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_TypographyNode.h
+ * @file TypographyNode.h
  * @brief Typography node for text rendering and layout.
  * 
  * ARCHITECTURAL NOTES:
@@ -17,13 +17,13 @@
  */
 #pragma once
 #include "Node.h"
-#include "HD_FontSystem.h"
-#include "HD_RenderTarget.h"
+#include "FontSystem.h"
+#include "RenderTarget.h"
 
 namespace hd {
 
-struct HD_TypographyInfo : public NodeInfo {
-    HD_TypographyInfo() {
+struct TypographyInfo : public NodeInfo {
+    TypographyInfo() {
         NodeType = "Design/Typography";
         
         Inputs = {
@@ -46,9 +46,9 @@ struct HD_TypographyInfo : public NodeInfo {
     }
 };
 
-class HD_TypographyNode : public Node<RenderTarget, FontMetrics, BoundingBox> {
+class TypographyNode : public Node<RenderTarget, FontMetrics, BoundingBox> {
 public:
-    explicit HD_TypographyNode(const HD_TypographyInfo& info = HD_TypographyInfo())
+    explicit TypographyNode(const TypographyInfo& info = TypographyInfo())
         : Node(info), TypoInfo(info) {}
 
     void ProcessNodeGraph() override {
@@ -76,7 +76,7 @@ public:
     }
 
 private:
-    HD_TypographyInfo TypoInfo;
+    TypographyInfo TypoInfo;
 };
 
 } // namespace hd

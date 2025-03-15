@@ -35,9 +35,9 @@ struct ExecutionResult {
     std::string nodeId;  // ID of the executed node
 };
 
-class HD_ExecutionContext {
+class ExecutionContext {
 public:
-    HD_ExecutionContext() = default;
+    ExecutionContext() = default;
     
     // Timeout control
     void SetTimeout(std::chrono::milliseconds timeout) {

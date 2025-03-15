@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file HD_DeformerNode.h
+ * @file DeformerNode.h
  * @brief DeformerNode represents a deformer node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -17,12 +17,12 @@
 
 #pragma once
 #include "Core/NodeGraph/Node.h"
-#include "Core/Procedural/HD_ProceduralTypes.h"
+#include "Core/Procedural/ProceduralTypes.h"
 
 namespace hd {
 
-struct HD_DeformerInfo : public NodeInfo {
-    HD_DeformerInfo() {
+struct DeformerInfo : public NodeInfo {
+    DeformerInfo() {
         NodeType = "Procedural/Deformer";
         IsProcedural = true;
         
@@ -46,9 +46,9 @@ struct HD_DeformerInfo : public NodeInfo {
     }
 };
 
-class HD_DeformerNode : public Node {
+class DeformerNode : public Node {
 public:
-    explicit HD_DeformerNode(const HD_DeformerInfo& info = HD_DeformerInfo())
+    explicit DeformerNode(const DeformerInfo& info = DeformerInfo())
         : Node(info) {}
 
     virtual void ProcessNodeGraph() override {
