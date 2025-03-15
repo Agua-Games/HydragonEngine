@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "HD_Node.h"
+#include "Node.h"
 
 namespace hd {
 
@@ -29,8 +29,8 @@ enum class GraphIssueSeverity {
 struct GraphIssue {
     std::string description;
     GraphIssueSeverity severity;
-    std::vector<HD_Node*> relatedNodes;
-    std::vector<std::pair<HD_Node*, std::string>> relatedPorts;
+    std::vector<Node*> relatedNodes;
+    std::vector<std::pair<Node*, std::string>> relatedPorts;
     std::string suggestedFix;
 };
 
@@ -40,22 +40,22 @@ struct GraphIssue {
 class HD_GraphAnalyzer {
 public:
     // Core analysis
-    static std::vector<GraphIssue> AnalyzeGraph(const std::vector<HD_Node*>& nodes);
+    static std::vector<GraphIssue> AnalyzeGraph(const std::vector<Node*>& nodes);
     
     // Specific analyses
-    static std::vector<GraphIssue> FindDeadEnds(const std::vector<HD_Node*>& nodes);
-    static std::vector<GraphIssue> FindUnusedOutputs(const std::vector<HD_Node*>& nodes);
-    static std::vector<GraphIssue> FindMissingInputs(const std::vector<HD_Node*>& nodes);
-    static std::vector<GraphIssue> FindPerformanceBottlenecks(const std::vector<HD_Node*>& nodes);
+    static std::vector<GraphIssue> FindDeadEnds(const std::vector<Node*>& nodes);
+    static std::vector<GraphIssue> FindUnusedOutputs(const std::vector<Node*>& nodes);
+    static std::vector<GraphIssue> FindMissingInputs(const std::vector<Node*>& nodes);
+    static std::vector<GraphIssue> FindPerformanceBottlenecks(const std::vector<Node*>& nodes);
     
     // Graph metrics
-    static int CalculateGraphComplexity(const std::vector<HD_Node*>& nodes);
-    static std::map<std::string, int> GetNodeTypeDistribution(const std::vector<HD_Node*>& nodes);
-    static int GetMaxGraphDepth(const std::vector<HD_Node*>& nodes);
+    static int CalculateGraphComplexity(const std::vector<Node*>& nodes);
+    static std::map<std::string, int> GetNodeTypeDistribution(const std::vector<Node*>& nodes);
+    static int GetMaxGraphDepth(const std::vector<Node*>& nodes);
     
     // Visualization helpers
     static void HighlightIssues(const std::vector<GraphIssue>& issues);
-    static void GenerateGraphReport(const std::vector<HD_Node*>& nodes, const std::string& outputPath);
+    static void GenerateGraphReport(const std::vector<Node*>& nodes, const std::string& outputPath);
 };
 
 } // namespace hd

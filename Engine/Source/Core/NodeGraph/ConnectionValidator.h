@@ -9,8 +9,8 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "HD_Node.h"
-#include "HD_NodeTypeSystem.h"
+#include "Node.h"
+#include "NodeTypeSystem.h"
 
 namespace hd {
 
@@ -33,23 +33,23 @@ class HD_ConnectionValidator {
 public:
     // Basic validation
     static ConnectionValidationResult ValidateConnection(
-        HD_Node* sourceNode, const std::string& outputPort,
-        HD_Node* targetNode, const std::string& inputPort);
+        Node* sourceNode, const std::string& outputPort,
+        Node* targetNode, const std::string& inputPort);
     
     // Advanced validation
-    static ConnectionValidationResult ValidateGraphIntegrity(const std::vector<HD_Node*>& nodes);
-    static bool DetectCycles(const std::vector<HD_Node*>& nodes);
-    static std::vector<HD_Node*> FindDisconnectedNodes(const std::vector<HD_Node*>& nodes);
+    static ConnectionValidationResult ValidateGraphIntegrity(const std::vector<Node*>& nodes);
+    static bool DetectCycles(const std::vector<Node*>& nodes);
+    static std::vector<Node*> FindDisconnectedNodes(const std::vector<Node*>& nodes);
     
     // Validation visualization
     static ImColor GetCompatibilityColor(float compatibilityScore);
     static std::string GetCompatibilityTooltip(const ConnectionValidationResult& result);
     
     // Suggestion system
-    static std::vector<std::pair<HD_Node*, std::string>> SuggestCompatibleOutputs(
-        HD_Node* targetNode, const std::string& inputPort);
-    static std::vector<std::pair<HD_Node*, std::string>> SuggestCompatibleInputs(
-        HD_Node* sourceNode, const std::string& outputPort);
+    static std::vector<std::pair<Node*, std::string>> SuggestCompatibleOutputs(
+        Node* targetNode, const std::string& inputPort);
+    static std::vector<std::pair<Node*, std::string>> SuggestCompatibleInputs(
+        Node* sourceNode, const std::string& outputPort);
 };
 
 } // namespace hd

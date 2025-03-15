@@ -12,7 +12,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Graphics/Vulkan/VulkanBackend.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "ResourceManager.h"
 
 float appIdleSleepTime = 60.0f;
@@ -62,12 +62,12 @@ void RunApplication() {
             }
 
             // Process user interactions and handle sleep/wake
-            hdImgui::ProcessUserInteractions(window);
-            hdImgui::AutoSleepAfterInactivity(appIdleSleepTime);
+            UIManager::ProcessUserInteractions(window);
+            UIManager::AutoSleepAfterInactivity(appIdleSleepTime);
 
             // Render UI if not sleeping
-            if (!hdImgui::IsSleeping()) {
-                hdImgui::RenderHydragonEditor();
+            if (!UIManager::IsSleeping()) {
+                UIManager::RenderHydragonEditor();
             }
 
             // End frame and present

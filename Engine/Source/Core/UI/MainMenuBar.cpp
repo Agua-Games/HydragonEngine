@@ -10,9 +10,9 @@
 #include <string>
 
 #include "MainMenuBar.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 // === Layout variables ===
 
 /**
@@ -20,7 +20,7 @@ namespace hdImgui {
  * @param p_open A pointer to a boolean variable. If not NULL, the main menu bar will display a close button in the upper-right corner, and clicking it 
  * will set the variable to false.
  */
-void ShowMainMenuBar(bool* p_open, HdEditorWindowData* windowData) {
+void ShowMainMenuBar(bool* p_open, EditorWindowData* windowData) {
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
@@ -708,4 +708,4 @@ void ShowMainMenuBar(bool* p_open, HdEditorWindowData* windowData) {
         ImGui::EndMainMenuBar();
     }
 }
-} //  namespace hdImgui
+} //  namespace hd

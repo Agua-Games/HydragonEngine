@@ -8,8 +8,15 @@
 #pragma once
 #include <imgui.h>  // Include ImGui's header
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowAssetManager(bool* p_open, HdEditorWindowData* windowData);
-} // namespace hdImgui
+namespace hd {
+
+/**
+ * @brief Renders the main asset manager window.
+ * @param p_open Pointer to boolean controlling window visibility
+ * @param windowData Editor window data containing global settings
+ */
+void ShowAssetManager(bool* p_open, EditorWindowData* windowData);
+
+} // namespace hd

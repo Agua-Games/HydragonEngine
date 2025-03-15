@@ -7,12 +7,12 @@
  */
 #include <imgui.h>
 #include "LightingEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 
-namespace hdImgui {
+namespace hd {
 
-void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowLightingEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
@@ -156,4 +156,4 @@ void ShowLightingEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

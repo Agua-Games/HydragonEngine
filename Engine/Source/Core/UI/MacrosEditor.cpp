@@ -9,16 +9,16 @@
 #include <string>
 #include "IconsMaterialSymbols.h"
 #include "MacrosEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 static bool s_isRecording = false;
 static bool s_isPaused = false;
 static char s_macroName[256] = "";
 static int s_selectedCommandIndex = -1;
 
-void ShowMacrosEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowMacrosEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Macros##Editor", p_open, ImGuiWindowFlags_MenuBar))
@@ -199,4 +199,4 @@ void ShowMacrosEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

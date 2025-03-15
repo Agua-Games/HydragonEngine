@@ -10,13 +10,13 @@
 
 namespace hd {
 
-class HD_Node;
+class Node;
 
-class HD_NodeCompilationContext {
+class NodeCompilationContext {
 public:
-    void AddDefaultNodeCompilation(HD_Node* node);
-    void AddOptimizedNodeCompilation(HD_Node* node, const std::string& optimizationHint);
-    void AddInlinedNodeCompilation(HD_Node* node);
+    void AddDefaultNodeCompilation(Node* node);
+    void AddOptimizedNodeCompilation(Node* node, const std::string& optimizationHint);
+    void AddInlinedNodeCompilation(Node* node);
     
     bool ValidateCompilation() const;
     void GenerateCompiledOutput(const std::string& targetPath);
@@ -28,13 +28,13 @@ public:
 
 private:
     struct CompilationUnit {
-        HD_Node* node;
+        Node* node;
         std::string optimizationHint;
         bool isInlined;
     };
 
     std::vector<CompilationUnit> compilationUnits;
-    std::unordered_map<HD_Node*, size_t> nodeToUnitMap;
+    std::unordered_map<Node*, size_t> nodeToUnitMap;
     
     int optimizationLevel = 1;
     bool inliningEnabled = true;

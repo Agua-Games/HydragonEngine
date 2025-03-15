@@ -10,11 +10,11 @@
 #include <string>
 
 #include "ScriptsPalette.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
-void ShowScriptsPalette(bool* p_open, HdEditorWindowData* windowData) 
+void ShowScriptsPalette(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Scripts Palette", p_open, ImGuiWindowFlags_MenuBar))
@@ -43,4 +43,4 @@ void ShowScriptsPalette(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
     
 }
-} // namespace hdImgui
+} // namespace hd

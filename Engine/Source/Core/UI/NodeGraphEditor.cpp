@@ -17,18 +17,18 @@ namespace nodeEd = ax::NodeEditor;
 
 #include "NodeGraphEditor.h"
 #include "NodeGraphState.h"
-#include "hdImgui.h"
-//#include "HD_Node.h"                  // For node integration - next (architecture) steps
+#include "UIManager.h"
+//#include "Node.h"                  // For node integration - next (architecture) steps
 #include "PropertyEditor.h"             // For property integration
 
-namespace hdImgui {
+namespace hd {
 
 static nodeEd::EditorContext* g_NodeEditorContext = nullptr;       // imgui-node-editor context
 
 // === For next (architecture) steps ===
 // Forward declarations for sub-editor integration
-//void NotifyNodeSelected(HD_Node* node);           // Un-comment this when node integration is done
-//void UpdateSubEditors(HD_Node* selectedNode);     // And this
+//void NotifyNodeSelected(Node* node);           // Un-comment this when node integration is done
+//void UpdateSubEditors(Node* selectedNode);     // And this
 // === end of next steps ===
 
 // === State Management ===
@@ -129,7 +129,7 @@ static bool EnsureNodeEditorContext() {     // Helper function to avoid silently
     return true;
 }
 
-void InitializeNodeGraphEditor(HdEditorWindowData* windowData) {
+void InitializeNodeGraphEditor(EditorWindowData* windowData) {
     // Only initialize if not already done
     if (g_NodeEditorContext == nullptr) {
         // Initialize node graph state
@@ -145,7 +145,7 @@ void InitializeNodeGraphEditor(HdEditorWindowData* windowData) {
 
         if (EnsureNodeEditorContext())
         {
-            // Temporary implementation here - move to StyleColorsHydragonDark(), in hdImgui.cpp later.
+            // Temporary implementation here - move to StyleColorsHydragonDark(), in UIManager.cpp later.
 
             // Style
             nodeEd::Style& nodesStyle = nodeEd::GetStyle();
@@ -315,17 +315,17 @@ void ClearPinPositions() {
 // Forward declare internal helper functions
 static void RenderNodeLibrary();
 static void RenderNodeLibraryContent();
-static void RenderGraphCanvasContent(HdEditorWindowData* windowData);
+static void RenderGraphCanvasContent(EditorWindowData* windowData);
 static void RenderMiniMapContent();
-static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData);
+static void RenderTopToolbar(bool* p_open, EditorWindowData* windowData);
 static void RenderRightSidebar();
 static void RenderStatusBar();
-static void RenderGraphCanvas(HdEditorWindowData* windowData);
+static void RenderGraphCanvas(EditorWindowData* windowData);
 
 // Forward declarations
 static bool IsInputConnected(const char* inputName);
 
-void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData) 
 {   
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     
@@ -511,7 +511,7 @@ static void RenderNodeLibraryContent()
     }
 }
 
-void RenderGraphCanvas(HdEditorWindowData* windowData)
+void RenderGraphCanvas(EditorWindowData* windowData)
 {
     // Check if editor context exists
     if (g_NodeEditorContext == nullptr) {
@@ -775,7 +775,7 @@ void RenderGraphCanvas(HdEditorWindowData* windowData)
     nodeEd::SetCurrentEditor(nullptr);
 }
 
-void RenderGraphCanvasContent(HdEditorWindowData* windowData) 
+void RenderGraphCanvasContent(EditorWindowData* windowData) 
 { 
 
 }
@@ -813,7 +813,7 @@ static void RenderMiniMapContent()
     ImGui::Text("Mini Map");
 }
 
-static void RenderTopToolbar(bool* p_open, HdEditorWindowData* windowData) 
+static void RenderTopToolbar(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;
@@ -1044,4 +1044,4 @@ static void RenderStatusBar()
     ImGui::PopStyleVar();
 }
 
-} // namespace hdImgui
+} // namespace hd

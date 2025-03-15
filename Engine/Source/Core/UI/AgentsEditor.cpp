@@ -7,10 +7,10 @@
 #include <string>
 
 #include "AgentsEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowAgentsEditor(bool* p_open, HdEditorWindowData* windowData) 
+namespace hd {
+void ShowAgentsEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Agents", p_open, ImGuiWindowFlags_MenuBar))
@@ -230,4 +230,4 @@ void ShowAgentsEditor(bool* p_open, HdEditorWindowData* windowData)
     }
     ImGui::End();
 }
-} // namespace hdImgui
+} // namespace hd

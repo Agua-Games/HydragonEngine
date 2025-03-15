@@ -10,10 +10,10 @@
 #include <string>
 
 #include "BottomToolbar.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowBottomToolbar(bool* p_open, HdEditorWindowData* windowData) 
+namespace hd {
+void ShowBottomToolbar(bool* p_open, EditorWindowData* windowData) 
 {
     if (ImGui::Begin("Bottom Toolbar", p_open))
     {
@@ -21,4 +21,4 @@ void ShowBottomToolbar(bool* p_open, HdEditorWindowData* windowData)
     }
     ImGui::End();
 }
-} // namespace hdImgui
+} // namespace hd

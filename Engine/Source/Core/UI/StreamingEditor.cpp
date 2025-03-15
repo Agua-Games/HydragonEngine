@@ -10,10 +10,10 @@
 #include <vector>
 #include <algorithm>                // for std::count_if
 #include "StreamingEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 
-namespace hdImgui {
+namespace hd {
 
 // Independent structure definitions
 struct SceneStreamingSettings {
@@ -69,7 +69,7 @@ struct StreamingControlState {
 
 static StreamingControlState s_streamingState;
 
-void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowStreamingEditor(bool* p_open, EditorWindowData* windowData) 
 {
     // Store the current padding to restore it later
     const ImVec2 originalPadding = ImGui::GetStyle().WindowPadding;
@@ -353,4 +353,4 @@ void ShowStreamingEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

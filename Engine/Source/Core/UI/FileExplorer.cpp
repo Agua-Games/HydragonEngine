@@ -16,12 +16,12 @@
 #include <imgui.h>
 
 #include "FileExplorer.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "ResourceManager.h"
 
 namespace fs = std::filesystem;
 
-namespace hdImgui {
+namespace hd {
 
 namespace {
     static char searchBuffer[256] = "";
@@ -189,7 +189,7 @@ static void RenderSettingsPanel()
 }
 
 // Main function implementation
-void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData) 
+void ShowFileExplorer(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !windowData) return;
 
@@ -340,6 +340,6 @@ void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd
 
 

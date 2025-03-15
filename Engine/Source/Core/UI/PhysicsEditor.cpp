@@ -10,20 +10,20 @@
 #include "IconsMaterialSymbols.h"
 
 #include "PhysicsEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 // Forward declarations of internal functions
-static void ShowPhysicsToolbar(HdEditorWindowData* windowData);
-static void ShowSolverPanel(HdEditorWindowData* windowData);
-static void ShowRigPanel(HdEditorWindowData* windowData);
-static void ShowConstraintsPanel(HdEditorWindowData* windowData);
-static void ShowProceduralPanel(HdEditorWindowData* windowData);
-static void ShowSimulationPanel(HdEditorWindowData* windowData);
-static void ShowOptimizationPanel(HdEditorWindowData* windowData);
+static void ShowPhysicsToolbar(EditorWindowData* windowData);
+static void ShowSolverPanel(EditorWindowData* windowData);
+static void ShowRigPanel(EditorWindowData* windowData);
+static void ShowConstraintsPanel(EditorWindowData* windowData);
+static void ShowProceduralPanel(EditorWindowData* windowData);
+static void ShowSimulationPanel(EditorWindowData* windowData);
+static void ShowOptimizationPanel(EditorWindowData* windowData);
 
-static void ShowSolverPanel(HdEditorWindowData* windowData)
+static void ShowSolverPanel(EditorWindowData* windowData)
 {
     // Left panel - Solver hierarchy and types
     ImGui::BeginChild("SolverLeft", ImVec2(200, 0), true);
@@ -105,7 +105,7 @@ static void ShowSolverPanel(HdEditorWindowData* windowData)
     ImGui::EndChild();
 }
 
-void ShowPhysicsEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowPhysicsEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (!ImGui::Begin("Physics", p_open, ImGuiWindowFlags_MenuBar))
@@ -217,7 +217,7 @@ void ShowPhysicsEditor(bool* p_open, HdEditorWindowData* windowData)
 }
 
 // Implement toolbar with consistent styling
-static void ShowPhysicsToolbar(HdEditorWindowData* windowData)
+static void ShowPhysicsToolbar(EditorWindowData* windowData)
 {
     const float toolbarHeight = 30.0f;
     
@@ -272,7 +272,7 @@ static void ShowPhysicsToolbar(HdEditorWindowData* windowData)
     ImGui::EndChild();
 }
 
-static void ShowRigPanel(HdEditorWindowData* windowData)
+static void ShowRigPanel(EditorWindowData* windowData)
 {
     // Left panel - Rig hierarchy
     ImGui::BeginChild("RigLeft", ImVec2(200, 0), true);
@@ -331,7 +331,7 @@ static void ShowRigPanel(HdEditorWindowData* windowData)
     ImGui::EndChild();
 }
 
-static void ShowConstraintsPanel(HdEditorWindowData* windowData)
+static void ShowConstraintsPanel(EditorWindowData* windowData)
 {
     static int selectedConstraint = 0;
     static bool enableConstraint = true;
@@ -382,7 +382,7 @@ static void ShowConstraintsPanel(HdEditorWindowData* windowData)
     ImGui::EndChild();
 }
 
-static void ShowProceduralPanel(HdEditorWindowData* windowData)
+static void ShowProceduralPanel(EditorWindowData* windowData)
 {
     static int selectedGenerator = 0;
     static bool enableProcedural = true;
@@ -443,7 +443,7 @@ static void ShowProceduralPanel(HdEditorWindowData* windowData)
     ImGui::EndChild();
 }
 
-static void ShowSimulationPanel(HdEditorWindowData* windowData)
+static void ShowSimulationPanel(EditorWindowData* windowData)
 {
     static bool simulationRunning = false;
     static float simulationSpeed = 1.0f;
@@ -516,7 +516,7 @@ static void ShowSimulationPanel(HdEditorWindowData* windowData)
     }
 }
 
-static void ShowOptimizationPanel(HdEditorWindowData* windowData)
+static void ShowOptimizationPanel(EditorWindowData* windowData)
 {
     static bool enableMultithreading = true;
     static bool enableGPUAcceleration = true;
@@ -580,4 +580,4 @@ static void ShowOptimizationPanel(HdEditorWindowData* windowData)
     }
 }
 
-} // namespace hdImgui
+} // namespace hd

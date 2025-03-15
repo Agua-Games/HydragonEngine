@@ -17,7 +17,7 @@ struct NodeTemplateValidator {
     }
 };
 
-class HD_NodeFactory {
+class NodeFactory {
 public:
     // Register built-in nodes
     void RegisterBuiltInNodes() {           // TODO: Move to implementation file
@@ -33,7 +33,7 @@ public:
     }
 
     // Create node instance
-    std::shared_ptr<HD_Node> CreateNode(const std::string& nodeType) {              // TODO: Move to implementation file
+    std::shared_ptr<Node> CreateNode(const std::string& nodeType) {              // TODO: Move to implementation file
         if (auto it = m_BuiltInNodes.find(nodeType); it != m_BuiltInNodes.end()) {
             return it->second();  // Use native implementation
         }

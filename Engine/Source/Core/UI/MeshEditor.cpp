@@ -8,13 +8,13 @@
 #include <imgui.h>
 #include <string>
 #include "MeshEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 static MeshToolSettings g_meshToolSettings;
 
-void ShowMeshEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowMeshEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Mesh", p_open, ImGuiWindowFlags_MenuBar))
@@ -284,4 +284,4 @@ void ShowUSDPanel()
     }
 }
 
-} // namespace hdImgui
+} // namespace hd

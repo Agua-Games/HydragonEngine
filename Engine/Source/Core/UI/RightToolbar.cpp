@@ -10,12 +10,12 @@
 #include <string>
 
 #include "RightToolbar.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 
-namespace hdImgui {
+namespace hd {
 
-void ShowRightToolbar(bool* p_open, HdEditorWindowData* windowData) 
+void ShowRightToolbar(bool* p_open, EditorWindowData* windowData) 
 {
     ImGuiWindowClass window_class;
     window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
@@ -60,4 +60,4 @@ void ShowRightToolbar(bool* p_open, HdEditorWindowData* windowData)
     ImGui::PopStyleVar(3);
 }
 
-} // namespace hdImgui
+} // namespace hd

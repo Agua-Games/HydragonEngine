@@ -19,7 +19,7 @@
 
 #include "HD_CommandNode.h"
 #include "HD_CommandValidation.h"
-#include "HD_SceneNode.h"
+#include "SceneNode.h"
 
 namespace hd {
 
@@ -27,7 +27,7 @@ namespace hd {
  * @brief Factory function for creating an AddSceneLayer command node
  * @return Shared pointer to the command node
  */
-inline std::shared_ptr<HD_CommandNode<HD_SceneNode*, std::string>> 
+inline std::shared_ptr<HD_CommandNode<SceneNode*, std::string>> 
 CreateAddSceneLayerCommand() {
     // Create validator
     auto validator = std::make_shared<HD_CommandValidator>();
@@ -41,7 +41,7 @@ CreateAddSceneLayerCommand() {
     );
 
     // Create async command
-    auto asyncCmd = [](HD_SceneNode* scene, const std::string& path) {
+    auto asyncCmd = [](SceneNode* scene, const std::string& path) {
         return std::async(std::launch::async, [scene, path]() {
             // Simulate async operation
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -49,7 +49,7 @@ CreateAddSceneLayerCommand() {
         });
     };
 
-    return MakeAsyncCommandNode<HD_SceneNode*, std::string>(
+    return MakeAsyncCommandNode<SceneNode*, std::string>(
         "AddSceneLayer",
         asyncCmd,
         std::make_tuple("Scene", "LayerPath")

@@ -14,9 +14,9 @@
 #include "IconsMaterialSymbols.h"
 
 #include "LocalizationEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct LocalizationEntry {
     std::string key;
@@ -49,7 +49,7 @@ struct LocalizationState {
     } currentView = ViewMode::Translations;
 };
 
-void ShowLocalizationEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowLocalizationEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static LocalizationState state{};
     
@@ -214,4 +214,4 @@ void ShowLocalizationEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

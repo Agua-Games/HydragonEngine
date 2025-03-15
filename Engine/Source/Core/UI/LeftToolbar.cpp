@@ -10,11 +10,11 @@
 #include <string>
 
 #include "LeftToolbar.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 
-namespace hdImgui {
-void ShowLeftToolbar(bool* p_open, HdEditorWindowData* windowData) 
+namespace hd {
+void ShowLeftToolbar(bool* p_open, EditorWindowData* windowData) 
 {
     ImGuiWindowClass window_class;
     window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
@@ -94,4 +94,4 @@ void ShowLeftToolbar(bool* p_open, HdEditorWindowData* windowData)
 
     ImGui::PopStyleVar(3);
 }
-} // namespace hdImgui
+} // namespace hd

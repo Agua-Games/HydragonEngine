@@ -9,12 +9,12 @@
 
 namespace hd {
 
-class HD_Node;
+class Node;
 
 class HD_CodeGenContext {
 public:
-    void AddProcessCall(HD_Node* node);
-    void AddInlinedCode(HD_Node* node, const std::string& code);
+    void AddProcessCall(Node* node);
+    void AddInlinedCode(Node* node, const std::string& code);
     void AddDependency(const std::string& header);
     
     void SetTargetLanguage(const std::string& lang) { targetLanguage = lang; }
@@ -25,7 +25,7 @@ public:
 
 private:
     struct CodeUnit {
-        HD_Node* node;
+        Node* node;
         std::string code;
         bool isInlined;
     };

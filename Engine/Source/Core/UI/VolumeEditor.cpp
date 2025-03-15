@@ -8,13 +8,13 @@
 #include <imgui.h>
 #include <string>
 #include "VolumeEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 static VolumeToolSettings g_volumeToolSettings;
 
-void ShowVolumeEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowVolumeEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Volume", p_open, ImGuiWindowFlags_MenuBar))
@@ -238,4 +238,4 @@ void ShowVDBPanel()
     }
 }
 
-} // namespace hdImgui
+} // namespace hd

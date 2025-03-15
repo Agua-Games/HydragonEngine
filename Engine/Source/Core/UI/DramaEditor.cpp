@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 #include "DramaEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct DramaEditorState {
     std::string currentDramaName;
@@ -63,7 +63,7 @@ struct DramaEditorState {
 
 static DramaEditorState* state = nullptr;
 
-void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowDramaEditor(bool* p_open, EditorWindowData* windowData) 
 {
     if (!state) {
         state = new DramaEditorState();
@@ -354,4 +354,4 @@ void ShowDramaEditor(bool* p_open, HdEditorWindowData* windowData)
     }
 }
 
-} // namespace hdImgui
+} // namespace hd

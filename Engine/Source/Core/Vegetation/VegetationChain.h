@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include "HD_Node.h"
+#include "Node.h"
 #include "HD_ProcVegetationDensityNode.h"
 #include "HD_ProcVegetationPlacementNode.h"
 #include "HD_ProcVegetationGrowthNode.h"
@@ -16,7 +16,7 @@
 namespace hd {
 
 // Example of how to chain vegetation nodes
-inline void CreateVegetationChain(HD_Node& graph) {
+inline void CreateVegetationChain(Node& graph) {
     // Create nodes
     auto densityNode = graph.CreateNode<HD_ProcVegetationDensityNode>();
     auto placementNode = graph.CreateNode<HD_ProcVegetationPlacementNode>();

@@ -9,8 +9,8 @@
 #include <imgui.h>
 #include <string>
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowFileExplorer(bool* p_open, HdEditorWindowData* windowData);
-} // namespace hdImgui
+namespace hd {
+void ShowFileExplorer(bool* p_open, EditorWindowData* windowData);
+} // namespace hd

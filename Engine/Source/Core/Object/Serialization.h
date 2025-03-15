@@ -34,13 +34,13 @@ struct Version {
 
 class VersionedSerializer {
 public:
-    using MigrationFunc = std::function<void(HD_Object&)>;
+    using MigrationFunc = std::function<void(Object&)>;
 
     static void RegisterMigration(Version from, Version to, MigrationFunc func) {
         migrations[{from, to}] = std::move(func);
     }
 
-    static void Migrate(HD_Object& obj, Version from, Version to) {
+    static void Migrate(Object& obj, Version from, Version to) {
         if (from == to) return;
 
         // Find migration path

@@ -9,9 +9,9 @@
  * - Removed boilerplate code to allow compatibility with very old VS compilers.
  * - Removed the #include "imgui_impl_vulkan.h" as it is not used here. Instead, we use our own Core/Graphics/Vulkan/VulkanBackend.h
  * - Added code to initialize the engine's resource manager, load resources - fonts etc.
- * - Added includes for hdImgui, ResourceManager, and filesystem.
+ * - Added includes for UIManager, ResourceManager, and filesystem.
  * - Switched main() to WinMain() to be able to use the Windows API.
- * - Turned off StyleColorsDark(), to use our own style - hdImgui::StyleColorsHydragonDark().
+ * - Turned off StyleColorsDark(), to use our own style - UIManager::StyleColorsHydragonDark().
  */
 #pragma once
 #include <windows.h>
@@ -27,7 +27,7 @@
 #include <vulkan/vulkan.h>
 
 #include "Graphics/Vulkan/VulkanBackend.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "ResourceManager.h"
 
 // Volk headers
@@ -401,10 +401,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     resourceManager.LoadFonts();  // This will load both default and icon fonts
 
     // 4. Create and initialize window data structure
-    hdImgui::HdEditorWindowData hdEditorWindowData;
-    hdEditorWindowData.defaultFont = resourceManager.GetDefaultFont();
-    hdEditorWindowData.iconFont = resourceManager.GetIconFont();
-    hdImgui::Initialize(window, &hdEditorWindowData);
+    hd::EditorWindowData EditorWindowData;
+    EditorWindowData.defaultFont = resourceManager.GetDefaultFont();
+    EditorWindowData.iconFont = resourceManager.GetIconFont();
+    hd::Initialize(window, &EditorWindowData);
 
     // 5. Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForVulkan(window, true);
@@ -459,11 +459,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         ImGui::NewFrame();
         
         // =========== Hydragon main window ===========
-        // (Later move most inline code to proper functions in hdImgui and probably dedicated files for each sub-editor, to avoid having
-        // too much code in hdImgui.h)
+        // (Later move most inline code to proper functions in UIManager and probably dedicated files for each sub-editor, to avoid having
+        // too much code in UIManager.h)
         if (show_Hydragon_window)
         {
-            hdImgui::RenderHydragonEditor(&hdEditorWindowData);
+            hd::RenderHydragonEditor(&EditorWindowData);
         }
         // End of Hydragon main window ===========
 
@@ -494,7 +494,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     err = vkDeviceWaitIdle(g_Device);
     check_vk_result(err);
     ImGui_ImplVulkan_Shutdown();    // Remove this later, after migrating backend: Shutdown will be called from backend
-    hdImgui::Cleanup();             // Wraps imgui_impl_glfw Shutdown cleanup for ImGui and ImNodes
+    hd::Cleanup();             // Wraps imgui_impl_glfw Shutdown cleanup for ImGui and imgui-node-editor
 
     CleanupVulkanWindow();    // Remove this later, after migrating backend: Cleanup, DestroyWindow, Shutdown will be called from backend
     CleanupVulkan();          // Same comment as above

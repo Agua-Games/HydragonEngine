@@ -12,10 +12,10 @@
 #include <algorithm>                    // Add this for std::count_if
 #include "IconsMaterialSymbols.h"
 #include "PropertiesMatrixEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "misc/cpp/imgui_stdlib.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct PropertyColumn {
     std::string name;
@@ -52,7 +52,7 @@ struct MatrixState {
     } sortMode = SortMode::ByName;
 };
 
-void ShowPropertiesMatrixEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowPropertiesMatrixEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static MatrixState state{};
     
@@ -218,4 +218,4 @@ void ShowPropertiesMatrixEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

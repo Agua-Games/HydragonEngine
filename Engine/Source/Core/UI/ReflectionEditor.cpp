@@ -13,9 +13,9 @@
 #include "IconsMaterialSymbols.h"
 
 #include "ReflectionEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct ReflectionType {
     std::string name;
@@ -49,7 +49,7 @@ struct ReflectionState {
     } currentView = ViewMode::Types;
 };
 
-void ShowReflectionEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowReflectionEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static ReflectionState state{};
     
@@ -211,4 +211,4 @@ void ShowReflectionEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

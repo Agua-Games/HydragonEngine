@@ -11,9 +11,9 @@
 #include "IconsMaterialSymbols.h"
 
 #include "AssetManager.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 // Forward declaration of helper function
 const char* GetAssetTypeIcon(int index);
@@ -21,7 +21,7 @@ const char* GetAssetTypeIcon(int index);
 // Static variables for persistent state
 static float s_thumbnailScale = 1.0f;
 
-void ShowAssetManager(bool* p_open, HdEditorWindowData* windowData) 
+void ShowAssetManager(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;
@@ -193,4 +193,4 @@ const char* GetAssetTypeIcon(int index)
     }
 }
 
-} // namespace hdImgui
+} // namespace hd

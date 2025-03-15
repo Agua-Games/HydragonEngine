@@ -8,7 +8,7 @@
  * ARCHITECTURAL NOTES:
  * 
  * TODO:
- * - Update the whole content to match the latest HD_Object and HD_Node design.
+ * - Update the whole content to match the latest Object and Node design.
  * - Create .cpp file and move the implementation there.
  * - Organize the existing code into logical sections and functions.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
@@ -19,11 +19,11 @@
 #include <queue>
 
 #include "HD_ProceduralTypes.h"
-#include "HD_Node.h"
+#include "Node.h"
 
 namespace hd {
 
-struct HD_ProceduralOrchestratorInfo : public HD_NodeInfo {
+struct HD_ProceduralOrchestratorInfo : public NodeInfo {
     HD_ProceduralOrchestratorInfo() {
         NodeType = "Procedural/Orchestrator";
         Name = "Procedural Orchestrator";
@@ -59,7 +59,7 @@ struct IntentTask {
     bool propagate;
 };
 
-class HD_ProceduralOrchestrator : public HD_Node {
+class HD_ProceduralOrchestrator : public Node {
 public:
     static HD_ProceduralOrchestrator& GetInstance() {
         static HD_ProceduralOrchestrator instance;
@@ -188,7 +188,7 @@ public:
 
 private:
     HD_ProceduralOrchestrator() 
-        : HD_Node(HD_ProceduralOrchestratorInfo()) {}
+        : Node(HD_ProceduralOrchestratorInfo()) {}
     
     std::unordered_map<std::string, std::unique_ptr<IPattern>> patterns;
     std::queue<IntentTask> intentQueue;

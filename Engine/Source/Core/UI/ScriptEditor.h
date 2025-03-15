@@ -8,14 +8,14 @@
 #pragma once
 #include <imgui.h>
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 /**
  * @brief Renders the main script editor window.
  * @param p_open Pointer to boolean controlling window visibility
  * @param windowData Editor window data containing global settings
  */
-void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowScriptEditor(bool* p_open, EditorWindowData* windowData);
 
-} // namespace hdImgui
+} // namespace hd

@@ -14,9 +14,9 @@
 #include <imgui.h>
 
 #include "BottomStatusBar.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 // === Layout variables ===
 static float statusBarHeight = 9.0f;
@@ -27,7 +27,7 @@ static float statusBarHeight = 9.0f;
  *               will display a close button in the upper-right corner, and 
  *               clicking it will set the variable to false.
  */
-void ShowBottomStatusBar(bool* p_open, HdEditorWindowData* windowData) 
+void ShowBottomStatusBar(bool* p_open, EditorWindowData* windowData) 
 {
     // Set the toolbar to a horizontal strip layout
     ImGuiWindowClass window_class;
@@ -64,4 +64,4 @@ void ShowBottomStatusBar(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * HD_NodeTypeSystem provides the foundation for node compatibility
+ * NodeTypeSystem provides the foundation for node compatibility
  * and validation in the engine's node-graph architecture.
  */
 #pragma once

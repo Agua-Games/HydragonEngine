@@ -8,10 +8,10 @@
 #pragma once
 #include <imgui.h>
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
-void ShowViewport2D(bool* p_open, HdEditorWindowData* windowData);
+void ShowViewport2D(bool* p_open, EditorWindowData* windowData);
 
-} // namespace hdImgui
+} // namespace hd

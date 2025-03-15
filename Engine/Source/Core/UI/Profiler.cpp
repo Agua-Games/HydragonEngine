@@ -12,9 +12,9 @@
 #include "IconsMaterialSymbols.h"
 
 #include "Profiler.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 // Data structures
 struct ProfilerSettings {
@@ -133,7 +133,7 @@ static void ShowProfilerOverlay(const ProfilerSettings& settings)
 }
 
 // Main Profiler implementation
-void ShowProfiler(bool* p_open, HdEditorWindowData* windowData)
+void ShowProfiler(bool* p_open, EditorWindowData* windowData)
 {
     static ProfilerSettings settings;
     static float leftPanelWidth = 250.0f;
@@ -262,4 +262,4 @@ void ShowProfiler(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

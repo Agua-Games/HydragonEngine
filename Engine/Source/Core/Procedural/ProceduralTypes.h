@@ -8,7 +8,7 @@
  * ARCHITECTURAL NOTES:
  * 
  * TODO:
- * - Update the whole content to match the latest HD_Object and HD_Node design.
+ * - Update the whole content to match the latest Object and Node design.
  * - Create .cpp file and move the implementation there.
  * - Organize the existing code into logical sections and functions.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.

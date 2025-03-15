@@ -8,8 +8,16 @@
 #pragma once
 #include <imgui.h>
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowBottomStatusBar(bool* p_open, HdEditorWindowData* windowData);
-} // namespace hdImgui
+namespace hd {
+
+/** 
+ * @brief Displays the bottom status bar in the UI.
+ * @param p_open A pointer to a boolean variable. If not NULL, the bottom status bar 
+ *               will display a close button in the upper-right corner, and 
+ *               clicking it will set the variable to false.
+ */
+void ShowBottomStatusBar(bool* p_open, EditorWindowData* windowData);
+
+} // namespace hd

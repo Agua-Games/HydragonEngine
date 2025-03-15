@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 #include "InputEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct InputAction {
     std::string name;
@@ -144,7 +144,7 @@ static void ShowInputMappingTable()
     }
 }
 
-void ShowInputEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowInputEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (!ImGui::Begin("Input", p_open, ImGuiWindowFlags_MenuBar))
@@ -283,4 +283,4 @@ void ShowInputEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

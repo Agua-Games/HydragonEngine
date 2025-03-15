@@ -35,7 +35,7 @@
 #include <string>
 #include <vector>
 
-#include "HD_NodeGraph.h"                   // Foundation
+#include "NodeGraph.h"                   // Foundation
 #include "HD_ProceduralOrchestrator.h"      // Evolution
 #include "SystemOrchestrator.h"             // Coordination
 #include "ResourceManager.h"                // Assets
@@ -51,7 +51,7 @@ public:
     void Shutdown();
     
     // Core system access
-    HD_NodeGraph& GetNodeGraph();
+    NodeGraph& GetNodeGraph();
     HD_ProceduralOrchestrator& GetProceduralOrchestrator();
     SystemOrchestrator& GetSystemOrchestrator();
     
@@ -77,7 +77,7 @@ private:
     Engine& operator=(const Engine&) = delete;
 
     // Core systems
-    std::unique_ptr<HD_NodeGraph> m_nodeGraph;
+    std::unique_ptr<NodeGraph> m_nodeGraph;
     std::unique_ptr<HD_ProceduralOrchestrator> m_proceduralOrchestrator;
     std::unique_ptr<SystemOrchestrator> m_systemOrchestrator;
     std::unique_ptr<ResourceManager> m_resourceManager;

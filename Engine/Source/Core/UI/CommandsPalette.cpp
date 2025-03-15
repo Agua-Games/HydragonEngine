@@ -9,9 +9,9 @@
 #include <string>
 #include "IconsMaterialSymbols.h"
 #include "CommandsPalette.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 // Command structure to hold command data
 struct Command {
@@ -26,7 +26,7 @@ static bool s_isSearchFocused = false;
 static char s_searchBuffer[256] = "";
 static int s_selectedIndex = 0;
 
-void ShowCommandsPalette(bool* p_open, HdEditorWindowData* windowData) 
+void ShowCommandsPalette(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;
@@ -128,4 +128,4 @@ void ShowCommandsPalette(bool* p_open, HdEditorWindowData* windowData)
         s_isSearchFocused = false;
 }
 
-} // namespace hdImgui
+} // namespace hd

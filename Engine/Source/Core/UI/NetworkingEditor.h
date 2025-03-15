@@ -14,11 +14,11 @@
 #pragma once
 #include <imgui.h>
 
-#include "hdImgui.h"
-//#include "HD_Node.h"
+#include "UIManager.h"
+//#include "Node.h"
 //#include "HD_NetworkNode.h"
 
-namespace hdImgui {
+namespace hd {
 
 /**
  * @brief Shows the network editor window.
@@ -29,6 +29,6 @@ namespace hdImgui {
  * @param p_open Pointer to boolean controlling window visibility
  * @param windowData Editor window data containing global settings
  */
-void ShowNetworkingEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowNetworkingEditor(bool* p_open, EditorWindowData* windowData);
 
-} // namespace hdImgui
+} // namespace hd

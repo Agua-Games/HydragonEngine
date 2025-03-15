@@ -13,9 +13,9 @@
 #include "IconsMaterialSymbols.h"
 
 #include "CommunityEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct CommunityTask {
     std::string name;
@@ -49,7 +49,7 @@ struct CommunityState {
     } currentView = ViewMode::Overview;
 };
 
-void ShowCommunityEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowCommunityEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static CommunityState state{};
     
@@ -199,4 +199,4 @@ void ShowCommunityEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

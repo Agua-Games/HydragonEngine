@@ -10,10 +10,10 @@
 #include "imgui.h"
 
 #include "ChimeraPipelineEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowChimeraPipelineEditor(bool* p_open, HdEditorWindowData* windowData) 
+namespace hd {
+void ShowChimeraPipelineEditor(bool* p_open, EditorWindowData* windowData) 
 {
     // Early out if window is not open
     if (!p_open || !*p_open)
@@ -206,5 +206,5 @@ void ShowChimeraPipelineEditor(bool* p_open, HdEditorWindowData* windowData)
 
     ImGui::End();
 }
-} // namespace hdImgui
+} // namespace hd
 

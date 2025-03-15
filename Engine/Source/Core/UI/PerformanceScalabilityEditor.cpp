@@ -10,14 +10,14 @@
 #include <string>
 
 #include "PerformanceScalabilityEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 static const char* QualityLevels[] = { "Low", "Medium", "High", "Maximum" };
 static int CurrentPreset = 0;
 
-void ShowPerformanceScalabilityEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowPerformanceScalabilityEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
@@ -166,4 +166,4 @@ void ShowPerformanceScalabilityEditor(bool* p_open, HdEditorWindowData* windowDa
     }
     ImGui::End();
 }
-} // namespace hdImgui
+} // namespace hd

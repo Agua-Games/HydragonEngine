@@ -11,15 +11,15 @@
 #include <string>
 
 #include "Viewport3D.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 // Viewport overlay states
 static bool showStats = true;
 static bool showGrid = true;
 
-void ShowViewport3D(bool* p_open, HdEditorWindowData* windowData) 
+void ShowViewport3D(bool* p_open, EditorWindowData* windowData) 
 {
     // Configure window to maximize space for 3D content
     ImGui::SetNextWindowBgAlpha(1.0f);
@@ -205,4 +205,4 @@ void ShowViewport3D(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

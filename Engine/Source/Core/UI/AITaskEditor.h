@@ -11,12 +11,12 @@
 #include <memory>
 #include <imgui.h>
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 // Forward declarations
-struct HdEditorWindowData;
+struct EditorWindowData;
 
 // Task types
 enum class TaskType {
@@ -46,6 +46,6 @@ struct Task {
 };
 
 // Main editor function
-void ShowAITaskEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowAITaskEditor(bool* p_open, EditorWindowData* windowData);
 
-} // namespace hdImgui
+} // namespace hd

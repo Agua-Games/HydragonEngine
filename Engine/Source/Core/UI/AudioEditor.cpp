@@ -8,10 +8,10 @@
 #include <imgui.h>
 #include <string>
 #include "AudioEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct AudioEditorState {
     // Current audio asset/pattern being edited
@@ -44,7 +44,7 @@ struct AudioEditorState {
 
 static AudioEditorState s_audioState;
 
-void ShowAudioEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowAudioEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
@@ -297,4 +297,4 @@ void ShowAudioEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::PopStyleVar(); // Window padding
 }
 
-} // namespace hdImgui
+} // namespace hd

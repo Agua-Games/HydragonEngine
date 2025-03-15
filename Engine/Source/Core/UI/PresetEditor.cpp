@@ -14,9 +14,9 @@
 #include "IconsMaterialSymbols.h"
 
 #include "PresetEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct PresetEntry {
     std::string name;
@@ -47,7 +47,7 @@ struct PresetState {
     } currentView = ViewMode::Library;
 };
 
-void ShowPresetEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowPresetEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static PresetState state{};
     
@@ -217,4 +217,4 @@ void ShowPresetEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

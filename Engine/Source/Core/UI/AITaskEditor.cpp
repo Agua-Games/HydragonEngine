@@ -7,9 +7,9 @@
 #include "IconsMaterialSymbols.h"
 
 #include "AITaskEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 namespace {  // Anonymous namespace for internal state
     struct AITaskEditorState {
@@ -107,7 +107,7 @@ static void ShowTaskDetails() {
     }
 }
 
-void ShowAITaskEditor(bool* p_open, HdEditorWindowData* windowData) {
+void ShowAITaskEditor(bool* p_open, EditorWindowData* windowData) {
     if (!p_open || !*p_open)
         return;
 
@@ -214,4 +214,4 @@ void ShowAITaskEditor(bool* p_open, HdEditorWindowData* windowData) {
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

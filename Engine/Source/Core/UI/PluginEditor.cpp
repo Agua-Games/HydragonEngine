@@ -13,9 +13,9 @@
 #include "IconsMaterialSymbols.h"
 
 #include "PluginEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct PluginSettings {
     // Plugin info
@@ -75,7 +75,7 @@ static void ShowPluginToolbar(PluginSettings& settings)
     ImGui::PopStyleVar(4);
 }
 
-void ShowPluginEditor(bool* p_open, HdEditorWindowData* windowData)
+void ShowPluginEditor(bool* p_open, EditorWindowData* windowData)
 {
     static PluginSettings settings;
     static float leftPanelWidth = 250.0f;
@@ -220,4 +220,4 @@ void ShowPluginEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

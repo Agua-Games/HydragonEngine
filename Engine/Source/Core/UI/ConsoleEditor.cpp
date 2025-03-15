@@ -9,9 +9,9 @@
 #include <string>
 #include "IconsMaterialSymbols.h"
 #include "ConsoleEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 // Console state
 static char s_inputBuffer[2048] = "";
@@ -29,7 +29,7 @@ static ImVec4 WARNING_COLOR = ImVec4(0.85f, 0.85f, 0.45f, 1.00f);
 static ImVec4 ERROR_COLOR   = ImVec4(0.85f, 0.45f, 0.45f, 1.00f);
 static ImVec4 DEBUG_COLOR   = ImVec4(0.45f, 0.65f, 0.85f, 1.00f);
 
-void ShowConsoleEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowConsoleEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     
@@ -283,4 +283,4 @@ void ShowConsoleEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

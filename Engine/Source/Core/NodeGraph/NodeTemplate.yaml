@@ -1,5 +1,5 @@
 node:
-  # Base HD_Object properties
+  # Base Object properties
   name: "MyCustomNode"
   description: "Performs specific operation X"
   category: "Processing"  # e.g., Transform, Physics, Audio, etc.
@@ -11,7 +11,7 @@ node:
     stateless: false
     cache_enabled: true
 
-  # HD_Node specific
+  # Node specific
   node_type: "Transform"  # matches NodeType enum
   execution:
     streaming:

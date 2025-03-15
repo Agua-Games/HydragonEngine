@@ -12,15 +12,15 @@
 #include "misc/cpp/imgui_stdlib.h"  // Add this include for std::string support (required for MontageEditor)
 
 #include "MontageEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 
-namespace hdImgui {
+namespace hd {
 
 // Forward declarations
-static void ShowMontageToolbar(HdEditorWindowData* windowData);
-static void ShowTrackView(HdEditorWindowData* windowData, bool isCollapsed);
-static void ShowPropertyPanel(HdEditorWindowData* windowData);
+static void ShowMontageToolbar(EditorWindowData* windowData);
+static void ShowTrackView(EditorWindowData* windowData, bool isCollapsed);
+static void ShowPropertyPanel(EditorWindowData* windowData);
 
 struct MontageTrack {
     std::string name;  // Using std::string since imgui_stdlib.h is available
@@ -57,7 +57,7 @@ struct MontageState {
 
 static MontageState state;
 
-static void ShowMontageToolbar(HdEditorWindowData* windowData)
+static void ShowMontageToolbar(EditorWindowData* windowData)
 {
     // Style settings for a compact toolbar
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 4));
@@ -149,7 +149,7 @@ static void ShowMontageToolbar(HdEditorWindowData* windowData)
     ImGui::PopStyleVar(2);
 }
 
-static void ShowTrackView(HdEditorWindowData* windowData, bool isCollapsed)
+static void ShowTrackView(EditorWindowData* windowData, bool isCollapsed)
 {
     const float trackHeight = 24.0f;
     static float headerWidth = 200.0f;  // Now static to preserve width between frames
@@ -240,7 +240,7 @@ static void ShowTrackView(HdEditorWindowData* windowData, bool isCollapsed)
     ImGui::EndChild();
 }
 
-void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowMontageEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
@@ -317,7 +317,7 @@ void ShowMontageEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-static void ShowPropertyPanel(HdEditorWindowData* windowData)
+static void ShowPropertyPanel(EditorWindowData* windowData)
 {
     ImGui::Text("Properties - Coming Soon");
     ImGui::Separator();
@@ -339,4 +339,4 @@ static void ShowPropertyPanel(HdEditorWindowData* windowData)
     }
 }
 
-} // namespace hdImgui
+} // namespace hd

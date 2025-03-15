@@ -11,11 +11,11 @@
 #include "IconsMaterialSymbols.h"
 
 #include "ScriptEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
-void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowScriptEditor(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;
@@ -363,4 +363,4 @@ void ShowScriptEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

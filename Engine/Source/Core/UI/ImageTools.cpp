@@ -10,10 +10,10 @@
 #include <string>
 
 #include "ImageTools.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowImageTools(bool* p_open, HdEditorWindowData* windowData) 
+namespace hd {
+void ShowImageTools(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Image Tools", p_open, ImGuiWindowFlags_MenuBar))
@@ -90,4 +90,4 @@ void ShowImageTools(bool* p_open, HdEditorWindowData* windowData)
     }
     ImGui::End();
 }
-} // namespace hdImgui
+} // namespace hd

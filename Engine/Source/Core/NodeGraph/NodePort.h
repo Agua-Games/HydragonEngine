@@ -11,7 +11,7 @@
 
 namespace hd {
 
-class HD_NodePort {
+class NodePort {
 public:
     enum class Direction {
         Input,
@@ -24,7 +24,7 @@ public:
         std::function<bool(const std::any&)> validator;
     };
 
-    HD_NodePort(const std::string& name, Direction direction, const TypeInfo& typeInfo)
+    NodePort(const std::string& name, Direction direction, const TypeInfo& typeInfo)
         : name(name)
         , direction(direction)
         , typeInfo(typeInfo) {}
@@ -49,7 +49,7 @@ public:
     Direction GetDirection() const { return direction; }
     const TypeInfo& GetTypeInfo() const { return typeInfo; }
 
-    bool IsCompatibleWith(const HD_NodePort& other) const {
+    bool IsCompatibleWith(const NodePort& other) const {
         return typeInfo.type == other.typeInfo.type;
     }
 
@@ -86,20 +86,20 @@ private:
 } // namespace hd
 ```
 
-And the corresponding changes to `HD_Node.h`:
+And the corresponding changes to `Node.h`:
 
-<augment_code_snippet path="Engine/Source/Core/NodeGraph/HD_Node.h" mode="EDIT">
+<augment_code_snippet path="Engine/Source/Core/NodeGraph/Node.h" mode="EDIT">
 ```cpp
 // ... (previous includes)
-#include "HD_NodePort.h"
+#include "NodePort.h"
 
 namespace hd {
 
-// ... (HD_NodeInfo remains the same)
+// ... (NodeInfo remains the same)
 
-class HD_Node : public HD_Object {
+class Node : public Object {
 public:
-    explicit HD_Node(const HD_NodeInfo& info) : HD_Object(info), NodeInfo(info) {
+    explicit Node(const NodeInfo& info) : Object(info), NodeInfo(info) {
         InitializePorts();
     }
 
@@ -108,15 +108,15 @@ public:
     // Enhanced port system
     template<typename T>
     bool AddInputPort(const std::string& name) {
-        auto typeInfo = HD_NodePort::CreateTypeInfo<T>();
-        inputPorts.emplace(name, HD_NodePort(name, HD_NodePort::Direction::Input, typeInfo));
+        auto typeInfo = NodePort::CreateTypeInfo<T>();
+        inputPorts.emplace(name, NodePort(name, NodePort::Direction::Input, typeInfo));
         return true;
     }
 
     template<typename T>
     bool AddOutputPort(const std::string& name) {
-        auto typeInfo = HD_NodePort::CreateTypeInfo<T>();
-        outputPorts.emplace(name, HD_NodePort(name, HD_NodePort::Direction::Output, typeInfo));
+        auto typeInfo = NodePort::CreateTypeInfo<T>();
+        outputPorts.emplace(name, NodePort(name, NodePort::Direction::Output, typeInfo));
         return true;
     }
 
@@ -134,12 +134,12 @@ public:
         return it->second.GetValue<T>(outValue);
     }
 
-    const HD_NodePort* GetInputPort(const std::string& name) const {
+    const NodePort* GetInputPort(const std::string& name) const {
         auto it = inputPorts.find(name);
         return it != inputPorts.end() ? &it->second : nullptr;
     }
 
-    const HD_NodePort* GetOutputPort(const std::string& name) const {
+    const NodePort* GetOutputPort(const std::string& name) const {
         auto it = outputPorts.find(name);
         return it != outputPorts.end() ? &it->second : nullptr;
     }
@@ -147,8 +147,8 @@ public:
 protected:
     virtual void InitializePorts() = 0;
 
-    std::unordered_map<std::string, HD_NodePort> inputPorts;
-    std::unordered_map<std::string, HD_NodePort> outputPorts;
+    std::unordered_map<std::string, NodePort> inputPorts;
+    std::unordered_map<std::string, NodePort> outputPorts;
 
     // ... (rest of the protected members)
 };

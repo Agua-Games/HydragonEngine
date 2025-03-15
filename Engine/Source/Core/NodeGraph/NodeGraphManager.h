@@ -1,9 +1,9 @@
 
 namespace hd {
-class HD_NodeGraphManager {
+class NodeGraphManager {
     public:
-        bool ConnectNodes(const std::shared_ptr<HD_Node>& source, 
-                         const std::shared_ptr<HD_Node>& target,
+        bool ConnectNodes(const std::shared_ptr<Node>& source, 
+                         const std::shared_ptr<Node>& target,
                          const std::string& sourcePort = "",
                          const std::string& targetPort = "") {
             // Validate connection based on metadata and port validation
@@ -24,16 +24,16 @@ class HD_NodeGraphManager {
 
     private:
         struct Connection {
-            std::shared_ptr<HD_Node> source;
-            std::shared_ptr<HD_Node> target;
+            std::shared_ptr<Node> source;
+            std::shared_ptr<Node> target;
             std::string sourcePort;
             std::string targetPort;
         };
 
         std::vector<Connection> connections;
 
-        bool IsValidConnection(const std::shared_ptr<HD_Node>& source, 
-                             const std::shared_ptr<HD_Node>& target,
+        bool IsValidConnection(const std::shared_ptr<Node>& source, 
+                             const std::shared_ptr<Node>& target,
                              const std::string& sourcePort,
                              const std::string& targetPort) {
             // Type compatibility check
@@ -51,15 +51,15 @@ class HD_NodeGraphManager {
             return true;
         }
 
-        bool WouldCreateCycle(const std::shared_ptr<HD_Node>& source,
-                             const std::shared_ptr<HD_Node>& target) {
+        bool WouldCreateCycle(const std::shared_ptr<Node>& source,
+                             const std::shared_ptr<Node>& target) {
             // Simple DFS to detect cycles
-            std::unordered_set<HD_Node*> visited;
+            std::unordered_set<Node*> visited;
             return CheckCycle(target.get(), source.get(), visited);
         }
 
-        bool CheckCycle(HD_Node* current, HD_Node* target, 
-                       std::unordered_set<HD_Node*>& visited) {
+        bool CheckCycle(Node* current, Node* target, 
+                       std::unordered_set<Node*>& visited) {
             if (current == target) return true;
             if (visited.contains(current)) return false;
             

@@ -10,14 +10,14 @@
 #include <string>
 
 #include "DebugEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 
-namespace hdImgui {
+namespace hd {
 
 float filter_InputTextWidth = 500.0f;
 
-void ShowDebugEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowDebugEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Debug", p_open, ImGuiWindowFlags_MenuBar))
@@ -120,4 +120,4 @@ void ShowDebugEditor(bool* p_open, HdEditorWindowData* windowData)
     }      
     ImGui::End();
 }
-} // namespace hdImgui
+} // namespace hd

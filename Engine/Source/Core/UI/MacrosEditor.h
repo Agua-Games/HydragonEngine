@@ -8,8 +8,8 @@
 #pragma once
 #include <imgui.h>
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowMacrosEditor(bool* p_open, HdEditorWindowData* windowData);
-} // namespace hdImgui
+namespace hd {
+void ShowMacrosEditor(bool* p_open, EditorWindowData* windowData);
+} // namespace hd

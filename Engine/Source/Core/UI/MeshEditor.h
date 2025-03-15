@@ -8,9 +8,9 @@
 #pragma once
 #include <imgui.h>
 #include <string>
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct MeshToolSettings {
     // Decimation settings
@@ -49,10 +49,10 @@ struct MeshToolSettings {
     } uvParams;
 };
 
-void ShowMeshEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowMeshEditor(bool* p_open, EditorWindowData* windowData);
 void ShowMeshToolsPanel(MeshToolSettings& settings);
 void ShowUVPanel(MeshToolSettings& settings);
 void ShowProceduralPanel(MeshToolSettings& settings);
 void ShowUSDPanel();
 
-} // namespace hdImgui
+} // namespace hd

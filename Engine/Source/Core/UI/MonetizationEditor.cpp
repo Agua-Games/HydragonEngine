@@ -12,10 +12,10 @@
 #include "IconsMaterialSymbols.h"
 
 #include "MonetizationEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "misc/cpp/imgui_stdlib.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct MonetizationProduct {
     std::string id;
@@ -50,7 +50,7 @@ struct MonetizationState {
     } currentView = ViewMode::Dashboard;
 };
 
-void ShowMonetizationEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowMonetizationEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static MonetizationState state{};
     
@@ -207,4 +207,4 @@ void ShowMonetizationEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

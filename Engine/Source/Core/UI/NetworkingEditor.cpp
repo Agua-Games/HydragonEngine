@@ -10,10 +10,10 @@
 #include <string>
 
 #include "NetworkingEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowNetworkingEditor(bool* p_open, HdEditorWindowData* windowData) 
+namespace hd {
+void ShowNetworkingEditor(bool* p_open, EditorWindowData* windowData) 
 {
     // Static buffers for network statistics
     static float bandwidthHistory[100] = {};
@@ -195,4 +195,4 @@ void ShowNetworkingEditor(bool* p_open, HdEditorWindowData* windowData)
     }
     ImGui::End();
 }
-} // namespace hdImgui
+} // namespace hd

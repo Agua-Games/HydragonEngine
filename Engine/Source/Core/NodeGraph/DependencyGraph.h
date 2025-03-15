@@ -21,17 +21,17 @@ struct CompiledSubgraph {
 
 class HD_DependencyGraph {
 public:
-    void AddDependency(HD_Node* dependent, HD_Node* dependency) {
+    void AddDependency(Node* dependent, Node* dependency) {
         std::unique_lock lock(graphMutex);
         dependencies[dependent].insert(dependency);
         reverseDependencies[dependency].insert(dependent);
     }
 
-    std::vector<HD_Node*> GetExecutionOrder() {
+    std::vector<Node*> GetExecutionOrder() {
         std::shared_lock lock(graphMutex);
-        std::vector<HD_Node*> order;
-        std::unordered_set<HD_Node*> visited;
-        std::unordered_set<HD_Node*> processing;
+        std::vector<Node*> order;
+        std::unordered_set<Node*> visited;
+        std::unordered_set<Node*> processing;
 
         for (const auto& [node, _] : dependencies) {
             if (!visited.contains(node)) {
@@ -42,7 +42,7 @@ public:
     }
 
     // Marks a subgraph for compilation
-    void MarkCompilationBoundary(const std::vector<HD_Node*>& subgraphNodes, 
+    void MarkCompilationBoundary(const std::vector<Node*>& subgraphNodes, 
                                 const std::string& cacheIdentifier) {
         std::unique_lock lock(graphMutex);
         
@@ -95,12 +95,12 @@ public:
 
 private:
     struct CompilationBoundary {
-        std::vector<HD_Node*> nodes;
+        std::vector<Node*> nodes;
         std::string identifier;
     };
 
     struct SingleNode {
-        HD_Node* ptr;
+        Node* ptr;
     };
 
     struct CompiledSubgraphTask {
@@ -113,15 +113,15 @@ private:
     using ExecutionTask = std::variant<SingleNode, CompiledSubgraphTask>;
 
     std::shared_mutex graphMutex;
-    std::unordered_map<HD_Node*, std::unordered_set<HD_Node*>> dependencies;
-    std::unordered_map<HD_Node*, std::unordered_set<HD_Node*>> reverseDependencies;
+    std::unordered_map<Node*, std::unordered_set<Node*>> dependencies;
+    std::unordered_map<Node*, std::unordered_set<Node*>> reverseDependencies;
     std::vector<CompilationBoundary> compilationBoundaries;
     std::unordered_map<std::string, CompiledSubgraph> compiledSubgraphs;
 
-    void TopologicalSort(HD_Node* node, 
-                        std::unordered_set<HD_Node*>& visited,
-                        std::unordered_set<HD_Node*>& processing,
-                        std::vector<HD_Node*>& order) {
+    void TopologicalSort(Node* node, 
+                        std::unordered_set<Node*>& visited,
+                        std::unordered_set<Node*>& processing,
+                        std::vector<Node*>& order) {
         processing.insert(node);
 
         for (const auto& dep : dependencies[node]) {
@@ -138,9 +138,9 @@ private:
         order.push_back(node);
     }
 
-    void GroupNodesIntoLayers(const std::vector<HD_Node*>& order,
-                             std::vector<std::vector<HD_Node*>>& layers) {
-        std::unordered_map<HD_Node*, size_t> nodeLayer;
+    void GroupNodesIntoLayers(const std::vector<Node*>& order,
+                             std::vector<std::vector<Node*>>& layers) {
+        std::unordered_map<Node*, size_t> nodeLayer;
         
         // Assign layer numbers to nodes
         for (auto* node : order) {

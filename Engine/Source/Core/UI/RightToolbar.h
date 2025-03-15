@@ -8,15 +8,15 @@
 #pragma once
 #include <imgui.h>
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 /** 
  * @brief Displays the right toolbar in the UI.
  * @param p_open A pointer to a boolean variable. If not NULL, the right toolbar 
  *               will display a close button in the upper-right corner, and 
  *               clicking it will set the variable to false.
  */
-void ShowRightToolbar(bool* p_open, HdEditorWindowData* windowData);
+void ShowRightToolbar(bool* p_open, EditorWindowData* windowData);
 
-} // namespace hdImgui
+} // namespace hd

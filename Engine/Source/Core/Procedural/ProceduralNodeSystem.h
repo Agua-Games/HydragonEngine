@@ -15,14 +15,14 @@
 
 #include "HD_ProceduralTypes.h"
 #include "HD_ProceduralOrchestrator.h"
-#include "HD_Node.h"
+#include "Node.h"
 
 namespace hd {
 
 class ProceduralNodeSystem {
 public:
     // Create a self-modifying procedural pattern
-    std::unique_ptr<HD_Node> CreateProceduralPattern() {
+    std::unique_ptr<Node> CreateProceduralPattern() {
         auto pattern = std::make_unique<HD_ProceduralEvolutionNode>();
         
         // Connect to orchestrator

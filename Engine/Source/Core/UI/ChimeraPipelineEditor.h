@@ -8,8 +8,15 @@
 #pragma once
 #include <imgui.h>
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowChimeraPipelineEditor(bool* p_open, HdEditorWindowData* windowData);
-} // namespace hdImgui
+namespace hd {
+
+/**
+ * @brief Renders the Chimera Pipeline Editor window.
+ * @param p_open Pointer to boolean controlling window visibility
+ * @param windowData Editor window data containing global settings
+ */
+void ShowChimeraPipelineEditor(bool* p_open, EditorWindowData* windowData);
+
+} // namespace hd

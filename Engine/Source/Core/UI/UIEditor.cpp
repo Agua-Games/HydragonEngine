@@ -12,11 +12,11 @@
 #include <algorithm>                 // for std::clamp
 
 #include "UIEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "IconsMaterialSymbols.h"
 #include "VulkanBackend.h"           // Add necessary graphics backend
 
-namespace hdImgui {
+namespace hd {
 
 // Forward declarations
 static void ShowWidgetLibrary();
@@ -155,7 +155,7 @@ static void ShowProperties()
     }
 }
 
-void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowUIEditor(bool* p_open, EditorWindowData* windowData) 
 {
     if (!state.isInitialized) {
         if (!InitializeUIEditor()) {
@@ -419,4 +419,4 @@ void ShowUIEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

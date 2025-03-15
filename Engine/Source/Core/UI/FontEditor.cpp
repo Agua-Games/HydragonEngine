@@ -13,10 +13,10 @@
 #include "IconsMaterialSymbols.h"
 
 #include "FontEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData) 
+namespace hd {
+void ShowFontEditor(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;
@@ -173,4 +173,4 @@ void ShowFontEditor(bool* p_open, HdEditorWindowData* windowData)
 
     ImGui::End();  // End Font Editor window
 }
-} // namespace hdImgui
+} // namespace hd

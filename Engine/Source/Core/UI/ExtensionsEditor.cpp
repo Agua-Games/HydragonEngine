@@ -12,9 +12,9 @@
 #include "IconsMaterialSymbols.h"
 
 #include "ExtensionsEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct ExtensionSettings {
     // Extension filters
@@ -101,7 +101,7 @@ static void ShowExtensionCard(const char* name, const char* description, const c
     ImGui::PopStyleVar();
 }
 
-void ShowExtensionsEditor(bool* p_open, HdEditorWindowData* windowData)
+void ShowExtensionsEditor(bool* p_open, EditorWindowData* windowData)
 {
     static ExtensionSettings settings;
     static float leftPanelWidth = 250.0f;
@@ -222,4 +222,4 @@ void ShowExtensionsEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

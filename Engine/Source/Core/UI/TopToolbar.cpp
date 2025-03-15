@@ -12,10 +12,10 @@
 #include "IconsMaterialSymbols.h"
 
 #include "TopToolbar.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "ResourceManager.h"
 
-namespace hdImgui {
+namespace hd {
 // === Layout variables ===
 static float toolbarMaxHeight = 50.0f;
 
@@ -25,7 +25,7 @@ static float toolbarMaxHeight = 50.0f;
  *               will display a close button in the upper-right corner, and 
  *               clicking it will set the variable to false.
  */
-void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
+void ShowTopToolbar(bool* p_open, EditorWindowData* windowData)
 {
     // Set the toolbar to a horizontal strip layout
     ImGuiWindowClass window_class;
@@ -236,4 +236,4 @@ void ShowTopToolbar(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End(); // End the toolbar window
 }
 
-} //  namespace hdImgui
+} //  namespace hd

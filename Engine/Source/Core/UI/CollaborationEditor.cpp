@@ -13,10 +13,10 @@
 #include "IconsMaterialSymbols.h"
 
 #include "CollaborationEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 #include "misc/cpp/imgui_stdlib.h"  // Fixed: Updated include path relative to imgui directory
 
-namespace hdImgui {
+namespace hd {
 
 struct ConnectedUser {
     std::string name;
@@ -41,7 +41,7 @@ struct CollaborationState {
     } currentMode = Mode::Realtime;
 };
 
-void ShowCollaborationEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowCollaborationEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static CollaborationState state{};
     
@@ -198,4 +198,4 @@ void ShowCollaborationEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

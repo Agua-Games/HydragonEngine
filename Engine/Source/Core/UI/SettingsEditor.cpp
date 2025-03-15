@@ -10,11 +10,11 @@
 #include <string>
 
 #include "SettingsEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
-void ShowSettingsEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowSettingsEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Settings", p_open, ImGuiWindowFlags_MenuBar))
@@ -26,4 +26,4 @@ void ShowSettingsEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

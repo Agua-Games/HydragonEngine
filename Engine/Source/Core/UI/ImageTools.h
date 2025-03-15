@@ -8,8 +8,16 @@
 #pragma once
 #include <imgui.h>
 
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
-void ShowImageTools(bool* p_open, HdEditorWindowData* windowData);
-} // namespace hdImgui
+namespace hd {
+
+/** 
+ * @brief Displays the Image Tools window in the UI.
+ * @param p_open A pointer to a boolean variable. If not NULL, the Image Tools 
+ *               will display a close button in the upper-right corner, and 
+ *               clicking it will set the variable to false.
+ */
+void ShowImageTools(bool* p_open, EditorWindowData* windowData);
+
+} // namespace hd

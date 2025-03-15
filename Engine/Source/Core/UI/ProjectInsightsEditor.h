@@ -7,7 +7,7 @@
  */
 #pragma once
 
-namespace hdImgui {
+namespace hd {
 
 struct ProjectInsightsState {
     // Performance checks
@@ -32,7 +32,7 @@ struct ProjectInsightsState {
     float analysisProgress = 0.0f;
 };
 
-struct HdEditorWindowData;
-void ShowProjectInsightsEditor(bool* p_open, HdEditorWindowData* windowData);
+struct EditorWindowData;
+void ShowProjectInsightsEditor(bool* p_open, EditorWindowData* windowData);
 
-} // namespace hdImgui
+} // namespace hd

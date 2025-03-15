@@ -8,7 +8,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace hdImgui {
+namespace hd {
 
 struct NodeGraphState {
     bool snapToGrid = false;
@@ -31,4 +31,4 @@ struct NodeGraphState {
     bool isGraphDirty = false;
 };
 
-} // namespace hdImgui
+} // namespace hd

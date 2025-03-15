@@ -8,9 +8,9 @@
 #pragma once
 #include <imgui.h>
 #include <string>
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
 struct VolumeToolSettings {
     // Volume import/conversion settings
@@ -53,10 +53,10 @@ struct VolumeToolSettings {
     } operation = OperationType::Union;
 };
 
-void ShowVolumeEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowVolumeEditor(bool* p_open, EditorWindowData* windowData);
 void ShowVolumeToolsPanel(VolumeToolSettings& settings);
 void ShowPointCloudPanel(VolumeToolSettings& settings);
 void ShowProceduralPanel(VolumeToolSettings& settings);
 void ShowVDBPanel();
 
-} // namespace hdImgui
+} // namespace hd

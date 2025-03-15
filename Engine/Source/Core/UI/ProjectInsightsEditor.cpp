@@ -9,11 +9,11 @@
 #include <imgui.h>
 #include "IconsMaterialSymbols.h"
 #include "ProjectInsightsEditor.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
 
-void ShowProjectInsightsEditor(bool* p_open, HdEditorWindowData* windowData) 
+void ShowProjectInsightsEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static ProjectInsightsState state;
 
@@ -171,4 +171,4 @@ void ShowProjectInsightsEditor(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd

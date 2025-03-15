@@ -33,9 +33,9 @@
 #include "Imgui_SteppedLineMath.h"          // Required for stepped line rendering
 namespace nodeEd = ax::NodeEditor;
 
-namespace hdImgui {
+namespace hd {
 
-struct HdEditorWindowData;
+struct EditorWindowData;
 
 /**
  * @brief Ensure the node editor context is set.
@@ -47,7 +47,7 @@ static bool EnsureNodeEditorContext();
  * Should be called once during application startup.
  * @param windowData Editor window data containing global settings
  */
-void InitializeNodeGraphEditor(HdEditorWindowData* windowData);
+void InitializeNodeGraphEditor(EditorWindowData* windowData);
 
 /**
  * @brief Shutdown the node graph editor and releases resources.
@@ -59,13 +59,13 @@ void ShutdownNodeGraphEditor();
  * @param p_open Pointer to boolean controlling window visibility
  * @param windowData Editor window data containing global settings
  */
-void ShowNodeGraphEditor(bool* p_open, HdEditorWindowData* windowData);
+void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData);
 
 /**
  * @brief Renders the graph canvas area.
  * @param windowData Editor window data containing global settings
  */
-void RenderGraphCanvas(HdEditorWindowData* windowData);
+void RenderGraphCanvas(EditorWindowData* windowData);
 
 /**
  * @brief Renders the minimap overlay.
@@ -82,4 +82,4 @@ void RenderMiniMap();
 void BeginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, 
     ImColor titleBarColor, ImColor nodeColor);
 
-} // namespace hdImgui
+} // namespace hd

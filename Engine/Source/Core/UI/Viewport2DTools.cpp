@@ -10,11 +10,11 @@
 #include <string>
 
 #include "Viewport2DTools.h"
-#include "hdImgui.h"
+#include "UIManager.h"
 
-namespace hdImgui {
+namespace hd {
     
-void ShowViewport2DTools(bool* p_open, HdEditorWindowData* windowData) 
+void ShowViewport2DTools(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Viewport 2D Tools", p_open))
@@ -54,4 +54,4 @@ void ShowViewport2DTools(bool* p_open, HdEditorWindowData* windowData)
     ImGui::End();
 }
 
-} // namespace hdImgui
+} // namespace hd
