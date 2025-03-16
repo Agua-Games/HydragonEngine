@@ -2,8 +2,16 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @brief NodeManager is responsible for managing the various node graphs we may have, 
+ * @file NodeManager.h
+ * @brief NodeManager is responsible for managing the various node graphs we may have,
  * including creating, connecting, processing, keeping track of nodes, cleanup.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - NodeManager handles the creation, connection, processing and management of nodes.
+ * 
+ * TODO:
+ * - The NodeManager, a singleton, should be responsible to keep track of and update all node graphs,
+ * all nodes in the system.
  */
 #pragma once
 #include <memory>
@@ -11,6 +19,7 @@
 #include "Node.h"
 
 namespace hd {
+
 class NodeManager {
 public:
     static NodeManager& Get() {
@@ -119,4 +128,5 @@ public:
             return false;
         }
     };
+    
 } // namespace hd
