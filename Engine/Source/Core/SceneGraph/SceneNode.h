@@ -6,8 +6,9 @@
  * @brief Base class for all scenes in Hydragon
  * 
  * ARCHITECTURAL NOTES:
- * - Scene nodes are the primary entities in the system.
- * - By design, both levels, sub-levels, "game objects", attached components, etc. are all scene nodes.
+ * - Scene nodes are the primary scene representation entities in the system.
+ * - By design, both levels, sub-levels, "game objects", attached components, etc. are all scene nodes - because we conceptually view scenes as visual hierarchical 
+ * representation trees.
  * - Scene nodes can be connected to form complex systems.
  * - As much as possible, scene nodes implement functionality akin to openUSD's UsdStage, though optimized for realtime.
  * 
@@ -19,10 +20,6 @@
  * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
 #pragma once
-
-#include "Node.h"
-#include "SceneAllocator.h"
-#include "RuntimeVariants.h"
 #include <future>
 #include <memory>
 #include <string>
@@ -31,6 +28,10 @@
 #include <any>
 #include <glm/glm.hpp>
 
+#include "Node.h"
+#include "SceneAllocator.h"
+#include "RuntimeVariants.h"
+
 namespace hd {
     
 /**
@@ -38,6 +39,8 @@ namespace hd {
  * 
  * Extends base node info with USD-specific attributes for scene composition
  * and layering capabilities.
+ * A note on USD: as usd was designed for offline pipelines, we repurpose standard USD features for realtime use. Like: repurposing standard schemas "in-place", to trim
+ * any unnecessary data, add other useful features, etc.
  */
 struct SceneInfo : public NodeInfo {
     /** Path to the scene's USD layer file */
@@ -73,10 +76,11 @@ class SceneNode : public Node<> {  // Empty template params if no types needed
     // or specify needed types:
     // class SceneNode : public Node<Transform, Material, Geometry>
 public:
-    // Node Graph Integration
+    // === Port Management ===
     class SceneNodePort {
     public:
-        // Built-in primitive types
+        // Built-in primitive types.
+        // TODO: Refactor after properly studying usd and beta testing SceneNode's use in Hydragon
         enum class PrimitiveType {
             Transform,
             Material,
@@ -166,11 +170,18 @@ public:
         InitializePorts();
     }
 
+    // === Core Scene Interface ===
     virtual ~SceneNode() = default;
 
     /** @return Current scene information and metadata */
     const SceneInfo& GetSceneInfo() const { return SceneInfo; }
 
+    // === Core Scene Implementation ===
+    void OnResume() override;
+    void OnPause() override;
+    void OnDirty() override { MarkChildrenDirty(); }
+
+    // === Scene Graph Management ===
     /** @return Root node of this scene graph */
     std::shared_ptr<Node> GetRoot() const;
 
@@ -187,35 +198,6 @@ public:
      * @return Newly created node
      */
     std::shared_ptr<Node> CreateNode(const std::string& type, const std::string& name = "");
-
-    /**
-     * @brief Asynchronously loads scene content
-     * @return Future that completes when loading finishes
-     */
-    std::future<void> LoadAsync() override {
-        return std::async(std::launch::async, [this]() {
-            if (SceneInfo.IsAsyncLoadable) {
-                LoadScene();
-            }
-        });
-    }
-
-    /**
-     * @brief Streams scene content based on visibility and priority
-     */
-    void Stream() override {
-        if (SceneInfo.IsStreamable) {
-            StreamScene();
-        }
-    }
-
-    /**
-     * @brief Updates scene state and propagates transforms
-     */
-    void Update() override {
-        PropagateTransformations();
-        Node::Update();
-    }
 
     /**
      * @brief Adds a node to the scene hierarchy
@@ -253,44 +235,7 @@ public:
     /** @brief Returns all instances of a given node */
     std::vector<std::shared_ptr<Node>> GetInstances(const std::shared_ptr<Node>& sourceNode) const;
 
-    /**
-     * @brief Evaluates the scene graph at a specific time
-     * @param time Time point at which to evaluate
-     */
-    void EvaluateAt(float time);
-
-    /** @brief Returns current evaluation time */
-    float GetCurrentTime() const { return CurrentTime; }
-
-    /**
-     * @brief Loads scene from a file
-     * @param filePath Path to the scene file
-     */
-    void LoadFromFile(const std::string& filePath);
-
-    /**
-     * @brief Saves scene to a file
-     * @param filePath Destination path for the scene file
-     */
-    void SaveToFile(const std::string& filePath);
-
-    /**
-     * @brief Loads a compiled runtime scene
-     * @param compiledScenePath Path to the compiled scene file
-     */
-    static std::shared_ptr<SceneNode> LoadCompiledScene(const std::string& compiledScenePath);
-
-    /**
-     * @brief Renders scene properties in the Inspector panel
-     */
-    void DrawInInspector() override;
-
-    /**
-     * @brief Renders scene node in the Node Graph Editor
-     */
-    void DrawInNodeGraph() override;
-
-#if EDITOR_MODE
+    #if EDITOR_MODE
     /**
      * @brief Creates a variant of a node or subtree (editor only)
      * @param node Node to create variant from
@@ -313,6 +258,29 @@ public:
                           const std::unordered_map<std::string, std::string>& selectedVariants);
 #endif
 
+    // === Scene Streaming ===
+    /**
+     * @brief Asynchronously loads scene content
+     * @return Future that completes when loading finishes
+     */
+    std::future<void> LoadAsync() override {
+        return std::async(std::launch::async, [this]() {
+            if (SceneInfo.IsAsyncLoadable) {
+                LoadScene();
+            }
+        });
+    }
+
+    /**
+     * @brief Streams scene content based on visibility and priority
+     */
+    void Stream() override {
+        if (SceneInfo.IsStreamable) {
+            StreamScene();
+        }
+    }
+
+    // === Scene Evaluation ===
     void ProcessNodeGraph() override {
         // Process inputs
         auto worldTransform = GetInputValue<glm::mat4>("WorldTransform");
@@ -327,22 +295,54 @@ public:
         SetOutputValue("BoundingBox", CalculateBoundingBox());
     }
 
-    void OnResume() override;
-    void OnPause() override;
-    void OnDirty() override { MarkChildrenDirty(); }
-    
-    std::string GetNodeSemantics() const override {
-        return "Scene node managing hierarchical scene content with USD-like features";
+    /**
+     * @brief Updates scene state and propagates transforms
+     */
+    void Update() override {
+        PropagateTransformations();
+        Node::Update();
     }
-    
-    std::vector<std::string> GetSafetyConstraints() const override {
-        return {
-            "Transform hierarchy must remain valid",
-            "Node names must be unique within scope",
-            "Referenced scenes must exist"
-        };
-    }
-    
+
+    /**
+     * @brief Evaluates the scene graph at a specific time
+     * @param time Time point at which to evaluate
+     */
+    void EvaluateAt(float time);
+
+    /** @brief Returns current evaluation time */
+    float GetCurrentTime() const { return CurrentTime; }
+
+    // === Scene I/O ===
+    /**
+     * @brief Loads scene from a file
+     * @param filePath Path to the scene file
+     */
+    void LoadFromFile(const std::string& filePath);
+
+    /**
+     * @brief Saves scene to a file
+     * @param filePath Destination path for the scene file
+     */
+    void SaveToFile(const std::string& filePath);
+
+    /**
+     * @brief Loads a compiled runtime scene
+     * @param compiledScenePath Path to the compiled scene file
+     */
+    static std::shared_ptr<SceneNode> LoadCompiledScene(const std::string& compiledScenePath);
+
+    // === Visualization ===
+    /**
+     * @brief Renders scene properties in the Inspector panel
+     */
+    void DrawInPropertyEditor() override;
+
+    /**
+     * @brief Renders scene node in the Node Graph Editor
+     */
+    void DrawInNodeGraph() override;
+   
+    // === Scripting Support ===
     void GenerateLanguageSpecificCode(const std::string& language) override {
         // Implementation
     }
@@ -355,13 +355,28 @@ public:
         // Implementation
     }
 
+    // === AI Support ===
+    std::string GetNodeSemantics() const override {
+        return "Scene node managing hierarchical scene content with USD-like features";
+    }
+    
+    std::vector<std::string> GetSafetyConstraints() const override {
+        return {
+            "Transform hierarchy must remain valid",
+            "Node names must be unique within scope",
+            "Referenced scenes must exist"
+        };
+    }
+
 protected:
+    // === Core Scene Implementation ===
     /** Scene-specific metadata and attributes */
     SceneInfo SceneInfo;
 
     /** Current evaluation time */
     float CurrentTime = 0.0f;
 
+    // === Scene Composition & Streaming ===
     /**
      * @brief Loads scene content from USD layer
      */
@@ -397,6 +412,7 @@ protected:
 #endif
 
 private:
+    // === Runtime Optimization ===
     /** Runtime-optimized scene data */
     struct RuntimeBakedData {
         // Optimized flat arrays for cache-friendly access
@@ -436,6 +452,12 @@ private:
     /** Instance tracking */
     std::unordered_map<std::shared_ptr<Node>, std::vector<std::weak_ptr<Node>>> InstanceMap;
 
+    // === Port Management ===
+    // TODO: Almost certainly refactor to be based on the actual use of node graphs (the core usage being implementing them in code, inside classes, be it instancing and
+    // connecting other nodes directly or assigning them as child nodes and them accessing their members), where the concise fluent style (it's an actual C++ coding style) 
+    // syntax and workflow are paramount design features - we want users to feel good and highly productive using the engine in "barebones" mode, in code for most things.
+    // So, the connection to and accessing of node graph members will possibly be simpler than currently we see below for port management. Or maybe those GetPort(), SetPort()
+    // will still be useful for UI - visual node graph editor. For state, sync, etc.
     std::vector<SceneNodePort> InputPorts;
     std::vector<SceneNodePort> OutputPorts;
     
@@ -471,6 +493,7 @@ private:
         }
     }
 
+    // === Scene Evaluation & Caching ===
     void UpdateTransforms(const glm::mat4& worldTransform) {
         // Update transform hierarchy
         RuntimeData.WorldTransforms[0] = worldTransform;  // Root transform
