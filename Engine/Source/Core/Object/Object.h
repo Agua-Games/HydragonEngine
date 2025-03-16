@@ -12,6 +12,7 @@
  * - It supports procedural generation and stateless objects.
  * 
  * TODO:
+ * - Implement base caching (moved from Node to Object, meant to be overriden in Node)
  * - Fix, unify capital letters for variables - should start with lowercase.
  * - Flesh out the class and its methods, structs, enums, etc.
  * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.

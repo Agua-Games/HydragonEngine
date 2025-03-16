@@ -1,26 +1,70 @@
+/**
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief NodeManager is responsible for managing the various node graphs we may have, 
+ * including creating, connecting, processing, keeping track of nodes, cleanup.
+ */
+#pragma once
+#include <memory>
+#include <vector>
+#include "Node.h"
 
 namespace hd {
-class NodeGraphManager {
-    public:
-        bool ConnectNodes(const std::shared_ptr<Node>& source, 
-                         const std::shared_ptr<Node>& target,
-                         const std::string& sourcePort = "",
-                         const std::string& targetPort = "") {
-            // Validate connection based on metadata and port validation
-            if (!IsValidConnection(source, target, sourcePort, targetPort)) {
-                return false;
-            }
-            
+class NodeManager {
+public:
+    static NodeManager& Get() {
+        static NodeManager instance;
+        return instance;
+    }
+
+    bool Connect(const std::shared_ptr<Node>& source, 
+                   const std::string& sourcePort = "",
+                   const std::shared_ptr<Node>& target,
+                   const std::string& targetPort = "") {
+        if (IsValidConnection(source, target, sourcePort, targetPort)) {
+            // Add the connection
             connections.push_back({source, target, sourcePort, targetPort});
+
+            // TODO: Notify nodes of the connection, make sure the connection persists
+            source->OnConnected(target, sourcePort, targetPort);
+            target->OnConnected(source, targetPort, sourcePort);
+
             return true;
         }
+        return false;
+    }
 
-        void ProcessGraph() {
-            for (const auto& connection : connections) {
-                connection.source->Update();
-                connection.target->Update();
+    void ProcessGraph() {
+        
+    }
+
+    // New node management functionality
+    template<typename T>
+    std::shared_ptr<T> CreateNode(const std::string& name = "") {
+        auto node = std::make_shared<T>();
+        if (!name.empty()) {
+            node->SetName(name);
+        }
+        RegisterNode(node);
+        return node;
+    }
+
+    void RegisterNode(const std::shared_ptr<Node>& node) {
+        nodes.push_back(node);
+    }
+
+    template<typename T>
+    T* FindNode(const std::string& name) const {
+        for (const auto& node : nodes) {
+            if (node->GetName() == name) {
+                if (auto typed = std::dynamic_pointer_cast<T>(node)) {
+                    return typed.get();
+                }
             }
         }
+        return nullptr;
+    }
 
     private:
         struct Connection {
@@ -30,7 +74,8 @@ class NodeGraphManager {
             std::string targetPort;
         };
 
-        std::vector<Connection> connections;
+    std::vector<Connection> connections;
+    std::vector<std::shared_ptr<Node>> nodes;  // New member for node management
 
         bool IsValidConnection(const std::shared_ptr<Node>& source, 
                              const std::shared_ptr<Node>& target,

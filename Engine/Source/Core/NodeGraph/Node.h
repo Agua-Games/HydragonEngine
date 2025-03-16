@@ -10,8 +10,16 @@
  * - Nodes are the primary entities in the system.
  * - Nodes can be visual, logical, or data-oriented.
  * - Nodes can be connected to form complex systems.
+ * - A Node is a Node Graph - they're one and the same. As soon as a node contains other nodes, it becomes a node graph - but it's still a node.
+ * - Inputs and outputs are defined using the property system. Input and output ports are the UI representation of input and output properties.
+ * - Node inherits Object's features and also supports custom nodes, scripting interchange (code/UI), streaming, AI tasks.
  * 
  * TODO:
+ * - Move Debugging features (DebugInfo, functions) to Object. Override as needed, here.
+ * - Move Streaming features to object? *Consult assistant.
+ * - Move AI features to Object?
+ * - Refactor caching to be an override from Object (moved from Node to Object).
+ * - Study this initial design sketch thoroughly and eliminate redundant code.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
  *   (Remember to not implement in Node what is supposed to be in Object).
  * - Flesh out the class and its methods, structs, enums, etc.
@@ -35,24 +43,24 @@
 namespace hd {
 
 struct NodeInfo : public ObjectInfo {
-    std::string NodeType;               // Type of the node (e.g., "Transform", "Physics")
-    std::vector<std::string> Inputs;   // List of input ports for the node
-    std::vector<std::string> Outputs;  // List of output ports for the node
+    std::string NodeType;               
+    std::vector<std::string> Inputs;   
+    std::vector<std::string> Outputs;  
     
     struct StreamingConfig {
         bool enabled = true;
         bool forceSync = false;
-        size_t chunkSize = 1024;        // In bytes
+        size_t chunkSize = 1024;        
         float priorityThreshold = 0.5f;
     } streamingConfig;
 
     NodeInfo(const std::string& name = "", 
-                bool isSerializable = true,
-                bool isEditableInEditor = true,
-                const std::string& nodeType = "",
-                const std::vector<std::string>& inputs = {},
-                const std::vector<std::string>& outputs = {},
-                bool enableStreaming = true)
+             bool isSerializable = true,
+             bool isEditableInEditor = true,
+             const std::string& nodeType = "",
+             const std::vector<std::string>& inputs = {},
+             const std::vector<std::string>& outputs = {},
+             bool enableStreaming = true)
         : ObjectInfo(name, isSerializable, isEditableInEditor),
           NodeType(nodeType), 
           Inputs(inputs), 
@@ -69,9 +77,74 @@ struct NodeInfo : public ObjectInfo {
 template<typename... Types>
 class Node : public Object {
 public:
-    // === Core Node Interface ===
+    // Creation methods
+    static std::shared_ptr<Node> Create(const std::string& name) {
+        return NodeManager::Get().CreateNode(name);
+    }
+    
+    template<typename T>
+    static std::shared_ptr<T> Create(const std::string& name = "") {
+        return NodeManager::Get().CreateNode<T>(name);
+    }
+
+    // Fluent property interface
+    template<typename T>
+    Node& property(const std::string& name, const T& value, bool runtime = false) {
+        if (runtime) {
+            runtimeProperties[name] = value;
+        } else {
+            properties[name] = value;
+        }
+        
+        // Auto-register if not defined
+        if (propertyDefs.find(name) == propertyDefs.end()) {
+            PropertyDefinition def;
+            def.name = name;
+            def.type = typeid(T).name();
+            def.isRuntime = runtime;
+            propertyDefs[name] = def;
+        }
+        
+        return *this;
+    }
+
+    // Define property with full metadata
+    void defineProperty(const std::string& name, const PropertyDefinition& def) {
+        propertyDefs[name] = def;
+    }
+
+    // Enhanced connection method that works with property system
+    Node& connect(const std::string& sourceProperty, const std::string& targetPath) {
+        // Verify source property exists and is connectable
+        auto srcMetadataIt = propertyDefs.find(sourceProperty);
+        if (srcMetadataIt == propertyDefs.end() || !srcMetadataIt->second.isConnectable) {
+            throw std::runtime_error("Source property not found or not connectable");
+        }
+
+        auto [targetNode, targetProperty] = NodeManager::Get().ParsePortPath(targetPath);
+        
+        // Verify target property exists and is connectable
+        auto targetMetadataIt = targetNode->propertyDefs.find(targetProperty);
+        if (targetMetadataIt == targetMetadataIt->end() || !targetMetadataIt->second.isConnectable) {
+            throw std::runtime_error("Target property not found or not connectable");
+        }
+
+        // Use existing connection system
+        NodeManager::Get().Connect(shared_from_this(), targetNode, sourceProperty, targetProperty);
+        return *this;
+    }
+
+    // Add child node
+    template<typename T>
+    std::shared_ptr<T> add(const std::string& name = "") {
+        auto node = NodeManager::Get().CreateNode<T>(name);
+        Children.push_back(node);
+        return node;
+    }
+
+    // Core functionality
     explicit Node(const NodeInfo& info);
-    virtual ~Node() = default;               // Virtual destructor for proper cleanup of derived classes
+    virtual ~Node() = default;
 
     // Getters for attributes & metadata
     const NodeInfo& GetNodeInfo() const { return NodeInfo; }
@@ -115,17 +188,29 @@ public:
      */
     const std::vector<std::shared_ptr<Node>>& GetChildren() const;
 
-    // === Reflection Support ===
-    // *This probably will be removed, responsibility transferred to the Reflection system, or even a simpler system, like we are planning to use, where in the
-    // node graphs implemented in code we simply pass a "runtime" argument to the property definition function.
+    // === Property & Reflection Management ===
+    // *This may be refactored after we properly design and test the Reflection subsystem
     struct PropertyDefinition {
         std::string name;
         std::string type;
         std::string defaultValue;
-        std::string uiHints;         // How to display in property panel
+        std::string description;
         std::string validation;
-        bool isSerializable;
-        bool isExposed;              // Available to external scripts
+        std::string uiHints;        // How to display in UI/property panel
+        
+        // Core flags
+        bool isInput = false;       // Can receive values from other nodes
+        bool isOutput = false;      // Can send values to other nodes
+        bool isRuntime = false;     // Can change during runtime
+        
+        // UI/Editor flags
+        bool isRequired = false;    // Must have a value/connection
+        bool isAdvanced = false;    // Hidden by default in UI
+        bool isExposed = false;     // Available to external scripts
+        
+        // System flags
+        bool isSerializable = true; // Should be saved/loaded
+        bool isConnectable = false; // Can be connected in node graph
     };
     std::vector<PropertyDefinition> properties;
 
@@ -228,34 +313,35 @@ public:
     virtual void ImportCustomImplementation(const CustomizableElements& elements);
 
     // === Port Management ===
-    // TODO: Almost certainly refactor to be based on the actual use of node graphs (the core usage being implementing them in code, inside classes, be it instancing and
-    // connecting other nodes directly or assigning them as child nodes and them accessing their members), where the concise fluent style (it's an actual C++ coding style) 
-    // syntax and workflow are paramount design features - we want users to feel good and highly productive using the engine in "barebones" mode, in code for most things.
-    // So, the connection to and accessing of node graph members will possibly be simpler than currently we see below for port management. Or maybe those GetPort(), SetPort()
-    // will still be useful for UI - visual node graph editor. For state, sync, etc.
-    struct PortDefinition {             // Port definitions and metadata
-        std::string name;
-        std::string type;
-        std::string defaultValue;
-        std::string validation;         // Optional validation expression
-        std::string description;        // Documentation
-        bool isRequired;
-        bool isAdvanced;                // Hidden by default in UI
-    };
-    std::vector<PortDefinition> inputs;
-    std::vector<PortDefinition> outputs;
+    // Ports are used for UI - visual node graph editor, state, sync, etc.
+    // Input and output ports correspond to input and output properties, which are the actual connections between nodes.
+    std::unordered_map<std::string, std::any> runtimeProperties;
+    std::vector<PropertyDefinition> inputs;
+    std::vector<PropertyDefinition> outputs;
 
     /**
      * @brief Get the input ports for this node. 
      * This method should be implemented in derived classes.
      */
-    virtual std::vector<std::string> GetInputPorts() const = 0;  // Inputs for connections
+    virtual std::vector<std::string> GetInputPorts() const override {
+        std::vector<std::string> ports;
+        for (const auto& [name, metadata] : propertyDefs) {
+            if (metadata.isInput) ports.push_back(name);
+        }
+        return ports;
+    }
 
     /**
      * @brief Get the output ports for this node. 
      * This method should be implemented in derived classes.
      */
-    virtual std::vector<std::string> GetOutputPorts() const = 0; // Outputs for connections
+    virtual std::vector<std::string> GetOutputPorts() const override {
+        std::vector<std::string> ports;
+        for (const auto& [name, metadata] : propertyDefs) {
+            if (metadata.isOutput) ports.push_back(name);
+        }
+        return ports;
+    }
 
     /**
      * @brief Set the value of a port. Type-safe port system.
@@ -432,6 +518,11 @@ protected:
     bool TryUseCache() const;
     void UpdateCache();
 
+    // Add property storage
+    std::unordered_map<std::string, std::any> properties;
+    std::unordered_map<std::string, std::any> runtimeProperties;
+    std::unordered_map<std::string, PropertyDefinition> propertyDefs;
+
 private:
     // === Caching & Optimization Support ===
     uint64_t CalculateInputHash() const;
@@ -458,7 +549,7 @@ private:
     CustomizableElements ParseNodeSourceFile(const std::string& sourceCode);
 
     // === Scripting Support ===
-    struct {                            // Scripting state tracking
+    struct ScriptingState{                            // Scripting state tracking
         std::string currentLanguage;
         bool isDirty = false;
         std::string lastValidCode;
@@ -470,7 +561,7 @@ private:
     virtual void ApplyCodeChanges(const std::string& code) = 0;
 
     // === AI Support ===
-    struct {                                    // AI agent state tracking
+    struct AIState{                                    // AI agent state tracking
         std::vector<std::string> appliedTasks;
         std::map<std::string, float> taskSuccess;
         std::vector<std::string> rejectedTasks;
@@ -483,6 +574,3 @@ private:
 };
     
 } // namespace hd
-
-
-

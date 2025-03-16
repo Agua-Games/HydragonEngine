@@ -1,0 +1,17 @@
+// Animation blend tree
+auto anim = graph.create<AnimatorNode>("characterAnim")
+    .connect<BlendSpaceNode>("locomotion")
+        .parameter("speed", 0.0f)
+        .parameter("direction", 0.0f)
+        .addState({0.0f, 0.0f}, "animations/idle.anim")
+        .addState({1.0f, 0.0f}, "animations/walk.anim")
+        .addState({2.0f, 0.0f}, "animations/run.anim")
+    .connect<BlendNode>("upperBody")
+        .addInput("animations/aim.anim", 0.0f)
+        .addMask("upperBody")
+    .connect<StateMachineNode>("actions")
+        .addState("idle")
+        .addState("attack", "animations/attack.anim")
+        .addTransition("idle", "attack")
+            .condition("attack_trigger")
+            .crossfade(0.2f);

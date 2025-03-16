@@ -7,24 +7,27 @@
 * (The Editor is a toggleable embedded layer for the engine).
 * 
 * ARCHITECTURAL NOTES:
-* - The Engine class serves as the central coordinator for all major systems
-* - It implements a hybrid architecture combining:
-*   1. Node-based processing (primary)
-*   2. Traditional scripting
-*   3. Natural language interfaces
-* - Systems are designed to work both independently and in harmony
-* - Procedural generation is deeply integrated at all levels
-* - The architecture supports both active guidance and passive evolution
+* - The Engine class serves as the central coordinator for all major systems, including the editor.
+* - It implements a synthetic architecture, where:
+*   1. Node-based processing is the core of the system, with:
+*     - Traditional scripting as the primary means of interaction
+*     - Visual scripting as an alternative means of interaction
+*   2. Natural language interfaces as a means of interaction
+* - Systems are designed to work both independently and in harmony.
+* - The architecture supports both active guidance and passive evolution.
+* - Asynchronous streaming and multi-threading are integral.
 * 
 * DESIGN PRINCIPLES:
-* - Everything is a node in the system
+* - Everything is a node in the system, including the system itself
+* - Engine core and UI are totally decoupled. Users can have a productive and pleasing coding experience, where they do most things in code alone.
+* Features like runtime editing of variable values without recompilation, runtime compilation of scripts, execution of single commands, coroutines, etc. are possible.
+* - Procedural generation is deeply integrated at all levels
 * - Systems can self-organize and evolve
 * - Users can intervene at any level of abstraction
 * - Harmony is maintained automatically unless explicitly overridden
 * - Performance is optimized through intelligent task distribution
 * 
 * TODO (Sketch Phase):
-* - Implement core node graph architecture
 * - Setup basic orchestration systems
 * - Integrate procedural generation framework
 * - Establish communication protocols between systems

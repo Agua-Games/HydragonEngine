@@ -1,0 +1,18 @@
+// Post-processing chain
+auto post = graph.create<PostProcessNode>("mainPost")
+    .connect<BloomNode>("bloom")
+        .threshold(1.0f)
+        .intensity(0.8f)
+        .scatter(0.7f)
+    .connect<TonemapNode>("tonemap")
+        .operator(TonemapOperator::ACES)
+        .exposure(1.0f)
+    .connect<SSAONode>("ssao")
+        .radius(0.5f)
+        .bias(0.025f)
+        .intensity(1.0f)
+        .quality(SSAOQuality::High)
+    .connect<DOFNode>("dof")
+        .focalDistance(10.0f)
+        .focalRange(5.0f)
+        .maxBlur(1.0f);
