@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file NodeGraph_UsageExample_03.cpp
+ * @file NodeGraph_UsageExample_04.cpp
  * @brief This file contains examples of how to setup a node graph in code.
  */
 #include "Core/Engine.h"

@@ -1,3 +1,5 @@
+# Deprecated. Maybe still used later for user-defined nodes.
+
 node:
   # Base Object properties
   name: "MyCustomNode"
