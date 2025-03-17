@@ -7,14 +7,30 @@
  * 
  * ARCHITECTURAL NOTES:
  * - Object is the fundamental building block in the engine's object-oriented architecture.
- * - It provides enhanced metadata, reflection, and serialization capabilities.
- * - It supports versioning, dependency management, and enhanced logging.
- * - It supports procedural generation and stateless objects.
+ * - It provides a common interface for all objects in the engine.
+ * - The interface is designed around the core phases of an object's lifecycle in hardware: initialization, update, and cleanup:
+ * 
+ *      - Memory Management: Allocation, Initialization, Loading
+ *      - Processing (CPU/GPU Workload): updates, logic, physics, etc.
+ *      - Execution (Final Computation) Submitting GPU/CPU workloads
+ *      - Finalization & Cleanup: Deallocation, Destruction
+ *
+ * - We try to keep Object lean to spare memory and so that coders can have a safely integrated, stable base class to inherit from. We also add to it
+ * very basic support for the Property system, type information/reflection, serialization, name/ID/lifecycle management, basic debugging, etc.
+ * - Object provides basic support for:
+ *      - Metadata
+ *      - Name/ID/Lifecycle Management
+ *      - Reflection
+ *      - Serialization
+ *      - Basic Debugging
  * 
  * TODO:
+ * - Ask assistant about readFromStream() and writeToStream() - if the name means just a stream, as a streams of char, of seeds, etc, or if it has to do with
+ * streaming, in which case streaming should be moved to Node.
+ * - Ask assistant if property management should already be here or in Node, based on industry standards for engines.
+ * - Ask assistant if isProcedural and needsRegeneration should be moved to Node, based on industry standards, existing engines and procedural-based engines, apps.
+ * - Ask assistant if dependency management should be moved to Node.
  * - Implement base caching (moved from Node to Object, meant to be overriden in Node)
- * - Fix, unify capital letters for variables - should start with lowercase.
- * - Flesh out the class and its methods, structs, enums, etc.
  * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
  * - Create .cpp file and move the implementation there.
@@ -95,6 +111,14 @@ struct ObjectInfo {
  */
 class Object {
 public:
+    // === Structure Definitions ===
+
+    // (...)
+
+    // === Allocation, Initialization, Loading ===
+    // Enhanced metadata access
+    const ObjectInfo& getInfo() const { return info; }
+
     explicit Object(const ObjectInfo& info) : info(info), m_initialized(false) {}
     virtual ~Object() {
         if (m_initialized) {
@@ -102,9 +126,7 @@ public:
         }
     }
 
-    // === Core Lifecycle Methods ===
-    
-    /**
+        /**
      * @brief Initialize the object and its resources
      * @return true if initialization succeeded
      */
@@ -119,7 +141,7 @@ public:
         }
 
         // Initialize dependencies
-        for (auto& dep : Dependencies) {
+        for (auto& dep : dependencies) {
             if (!dep->initialize()) {
                 return false;
             }
@@ -127,40 +149,6 @@ public:
 
         m_initialized = true;
         return true;
-    }
-
-    /**
-     * @brief Update the object's state
-     * @param deltaTime Time elapsed since last update in seconds
-     */
-    virtual void update(float deltaTime) {
-        if (!m_initialized) return;
-
-        // Update properties if needed
-        updateProperties(deltaTime);
-
-        // Update dependencies
-        for (auto& dep : Dependencies) {
-            dep->update(deltaTime);
-        }
-    }
-
-    /**
-     * @brief Clean up resources and prepare for destruction
-     */
-    virtual void cleanup() {
-        if (!m_initialized) return;
-
-        // Cleanup dependencies first (reverse order)
-        for (auto it = Dependencies.rbegin(); it != Dependencies.rend(); ++it) {
-            (*it)->cleanup();
-        }
-        Dependencies.clear();
-
-        // Cleanup properties
-        cleanupProperties();
-
-        m_initialized = false;
     }
 
     /**
@@ -174,9 +162,7 @@ public:
     Object(Object&&) noexcept = default;
     Object& operator=(Object&&) noexcept = default;
 
-    // Enhanced metadata access
-    const ObjectInfo& getInfo() const { return info; }
-    
+        // === Property Management ===
     // Type-safe property management
     template<typename T>
     void setProperty(const std::string& name, T&& value) {
@@ -192,22 +178,71 @@ public:
         throw std::runtime_error("Property not found: " + name);
     }
 
+    // === Reflection ===
     // Enhanced reflection system
     virtual void reflect() {
         reflectProperties();
         reflectAttributes();
     }
 
-    // Dependency management
-    void addDependency(const std::shared_ptr<Object>& dep) {
-        Dependencies.push_back(dep);
+    // === Procedural Content ===
+        /**
+     * @brief Determines if this object generates content procedurally
+     * 
+     * Override this in derived classes to indicate procedural behavior.
+     * Procedural objects may:
+     * - Generate content at runtime
+     * - Have different results based on input parameters
+     * - Need special handling for caching/baking
+     * 
+     * @return true if object generates content procedurally
+     */
+    virtual bool isProcedural() const { return info.isProcedural; }
+
+    // Helper method to check if content needs regeneration
+    virtual bool needsRegeneration() const {
+        return isProcedural() && hasInputsChanged();
     }
 
-    const std::vector<std::shared_ptr<Object>>& getDependencies() const {
-        return Dependencies;
+    // === Processing ===
+    /**
+     * @brief Creates a new instance of this object
+     * @param deepCopy If true, also clones all dependencies
+     * @return New instance with copied properties but unique identity
+     */
+    virtual std::shared_ptr<Object> clone(bool deepCopy = false) const {
+        auto clone = std::make_shared<Object>(info);
+        clone->info.properties = info.properties;  // Properties are copied
+        clone->info.attributes = info.attributes;  // Attributes are copied
+        
+        if (deepCopy) {
+            for (const auto& dep : dependencies) {
+                clone->dependencies.push_back(dep->clone(true));
+            }
+        }
+        return clone;
     }
 
-    // Enhanced serialization with version support
+    /**
+     * @brief Update the object's state
+     * @param deltaTime Time elapsed since last update in seconds
+     */
+    virtual void update(float deltaTime) {
+        if (!m_initialized) return;
+
+        // Update properties if needed
+        updateProperties(deltaTime);
+
+        // Update dependencies
+        for (auto& dep : dependencies) {
+            dep->update(deltaTime);
+        }
+    }
+
+    // === Execution ===
+
+    // === Serialization ===
+    // With version support
     virtual void serialize(std::ostream& stream) const {
         if (!info.isSerializable) return;
         
@@ -241,9 +276,18 @@ public:
             readFromStream(stream, value);
             info.properties[propName].Set(value);
         }
+    }    
+
+    // === Dependency management ===
+    void addDependency(const std::shared_ptr<Object>& dep) {
+        dependencies.push_back(dep);
     }
 
-    // Enhanced logging with categories
+    const std::vector<std::shared_ptr<Object>>& getDependencies() const {
+        return dependencies;
+    }
+    
+    // === Debugging/Development ===
     void log(const std::string& message, const std::string& category = "Info") const {
         std::cout << "[" << category << "][" << info.name << "] " << message << std::endl;
     }
@@ -259,72 +303,29 @@ public:
         }
     }
 
+    // === Cleanup ===
     /**
-     * @brief Creates a new instance of this object
-     * @param deepCopy If true, also clones all dependencies
-     * @return New instance with copied properties but unique identity
+     * @brief Clean up resources and prepare for destruction
      */
-    virtual std::shared_ptr<Object> clone(bool deepCopy = false) const {
-        auto clone = std::make_shared<Object>(info);
-        clone->info.properties = info.properties;  // Properties are copied
-        clone->info.attributes = info.attributes;  // Attributes are copied
-        
-        if (deepCopy) {
-            for (const auto& dep : Dependencies) {
-                clone->Dependencies.push_back(dep->clone(true));
-            }
+    virtual void cleanup() {
+        if (!m_initialized) return;
+
+        // Cleanup dependencies first (reverse order)
+        for (auto it = dependencies.rbegin(); it != dependencies.rend(); ++it) {
+            (*it)->cleanup();
         }
-        return clone;
-    }
+        dependencies.clear();
 
-    /**
-     * @brief Determines if this object generates content procedurally
-     * 
-     * Override this in derived classes to indicate procedural behavior.
-     * Procedural objects may:
-     * - Generate content at runtime
-     * - Have different results based on input parameters
-     * - Need special handling for caching/baking
-     * 
-     * @return true if object generates content procedurally
-     */
-    virtual bool isProcedural() const { return info.isProcedural; }
+        // Cleanup properties
+        cleanupProperties();
 
-    // Helper method to check if content needs regeneration
-    virtual bool needsRegeneration() const {
-        return isProcedural() && hasInputsChanged();
-    }
-
-    /**
-     * @brief Validates object state and connections
-     */
-    virtual bool validate() const {
-        // Check property validity
-        for (const auto& [id, prop] : properties) {
-            if (!validateProperty(id, prop)) return false;
-        }
-
-        // Check dependency validity
-        for (const auto& dep : dependencies) {
-            if (auto ptr = dep.lock()) {
-                if (!ptr->validate()) return false;
-            } else {
-                return false; // Invalid weak_ptr
-            }
-        }
-
-        return true;
+        m_initialized = false;
     }
 
 protected:
     ObjectInfo info;
-    std::vector<std::shared_ptr<Object>> Dependencies;
 
-    virtual void reflectProperties() {}
-    virtual void reflectAttributes() {}
-
-    // === Lifecycle Helpers ===
-    
+    // === Property & Reflection ===
     /**
      * @brief Initialize a specific property
      * @return true if initialization succeeded
@@ -333,6 +334,10 @@ protected:
         return true; // Base implementation assumes properties don't need initialization
     }
 
+    virtual void reflectProperties() {}
+    virtual void reflectAttributes() {}
+
+    // === Processing ===
     /**
      * @brief Update properties that need regular updates
      */
@@ -340,6 +345,10 @@ protected:
         // Base implementation assumes properties don't need updates
     }
 
+    // === Dependency Management ===
+    std::vector<std::shared_ptr<Object>> dependencies;
+
+    // === Cleanup ===
     /**
      * @brief Cleanup specific property resources
      */
@@ -348,9 +357,20 @@ protected:
     }
 
 private:
+    // === Initialization ===
     bool m_initialized;
 
-    // Utility functions for serialization
+    // === Validation ===
+    bool validateProperty(PropertyId id, const std::unique_ptr<PropertyBase>& prop) const {
+        if (!prop) return false;
+        
+        // Additional property validation logic
+        const auto& info = PropertyRegistry::getInfo(id);
+        return prop->getType() == info.type;
+    }
+
+    // === Serialization & Versioning ===
+    // Utility functions
     template<typename T>
     static void writeToStream(std::ostream& stream, const T& value) {
         stream.write(reinterpret_cast<const char*>(&value), sizeof(T));
@@ -364,14 +384,6 @@ private:
     static bool isVersionCompatible(const std::string& v1, const std::string& v2) {
         // Implement version compatibility check
         return v1 == v2; // Simplified for now
-    }
-
-    bool validateProperty(PropertyId id, const std::unique_ptr<PropertyBase>& prop) const {
-        if (!prop) return false;
-        
-        // Additional property validation logic
-        const auto& info = PropertyRegistry::getInfo(id);
-        return prop->getType() == info.type;
     }
 };
 

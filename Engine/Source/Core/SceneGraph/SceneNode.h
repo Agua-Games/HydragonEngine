@@ -3,14 +3,24 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @file SceneNode.h
- * @brief Base class for all scenes in Hydragon
+ * @brief Base class for all scenes in Hydragon.
  * 
  * ARCHITECTURAL NOTES:
- * - Scene nodes are the primary scene representation entities in the system.
+ * - Scene nodes are the primary scene representation entities in the system, and are used to represent and process scene content.
  * - By design, both levels, sub-levels, "game objects", attached components, etc. are all scene nodes - because we conceptually view scenes as visual hierarchical 
  * representation trees.
  * - Scene nodes can be connected to form complex systems.
- * - As much as possible, scene nodes implement functionality akin to openUSD's UsdStage, though optimized for realtime.
+ * - As much as possible, scene nodes implement functionality akin to openUSD's UsdStage, though optimized for realtime use. Like:
+ *      - USD-based scene composition
+ *      - Standanrd and custom schemas
+ *      - Procedural generation
+ *      - Caching
+ *      - Asynchronous loading and streaming
+ *      - Instancing
+ *      - Referencing, Layering
+ *      - Scene graph manipulation
+ *      - Transform propagation
+ *      - Variants/variations ("seeds")
  * 
  * TODO:
  * - Create .cpp file and move the implementation there.
@@ -64,7 +74,7 @@ struct SceneInfo : public NodeInfo {
 };
 
 /**
- * @brief Base class for all scenes in Hydragon
+ * @brief Base class for all scenes in Hydragon.
  * 
  * Provides scene management functionality including:
  * - USD-based scene composition
@@ -77,93 +87,7 @@ class SceneNode : public Node<> {  // Empty template params if no types needed
     // class SceneNode : public Node<Transform, Material, Geometry>
 public:
     // === Port Management ===
-    class SceneNodePort {
-    public:
-        // Built-in primitive types.
-        // TODO: Refactor after properly studying usd and beta testing SceneNode's use in Hydragon
-        enum class PrimitiveType {
-            Transform,
-            Material,
-            Geometry,
-            Variant,
-            Performance,
-            Float,
-            Int,
-            Bool,
-            Vector2,
-            Vector3,
-            Vector4,
-            Matrix4,
-            String,
-            Custom  // Marker for custom types
-        };
-
-        struct TypeInfo {
-            std::string name;
-            size_t hash;
-            std::function<bool(const std::any&)> validator;
-            
-            bool operator==(const TypeInfo& other) const {
-                return hash == other.hash;
-            }
-        };
-
-        SceneNodePort(const std::string& name, PrimitiveType type)
-            : name(name), primitiveType(type), customTypeInfo(nullptr) {}
-
-        SceneNodePort(const std::string& name, const TypeInfo& customType)
-            : name(name), primitiveType(PrimitiveType::Custom), 
-              customTypeInfo(std::make_shared<TypeInfo>(customType)) {}
-
-        template<typename T>
-        static TypeInfo createCustomType(const std::string& typeName) {
-            return TypeInfo{
-                typeName,
-                typeid(T).hash_code(),
-                [](const std::any& value) -> bool {
-                    try {
-                        std::any_cast<T>(value);
-                        return true;
-                    } catch (const std::bad_any_cast&) {
-                        return false;
-                    }
-                }
-            };
-        }
-
-        bool isValid(const std::any& value) const {
-            if (primitiveType == PrimitiveType::Custom && customTypeInfo) {
-                return customTypeInfo->validator(value);
-            }
-            // Validate primitive types
-            switch (primitiveType) {
-                case PrimitiveType::Float: return validateType<float>(value);
-                case PrimitiveType::Int: return validateType<int>(value);
-                // ... add other primitive type validations
-                default: return false;
-            }
-        }
-
-        const std::string& getName() const { return name; }
-        PrimitiveType getPrimitiveType() const { return primitiveType; }
-        const TypeInfo* getCustomTypeInfo() const { return customTypeInfo.get(); }
-
-    private:
-        std::string name;
-        PrimitiveType primitiveType;
-        std::shared_ptr<TypeInfo> customTypeInfo;
-        std::any value;
-
-        template<typename T>
-        static bool validateType(const std::any& value) {
-            try {
-                std::any_cast<T>(value);
-                return true;
-            } catch (const std::bad_any_cast&) {
-                return false;
-            }
-        }
-    };
+    //(...)
 
     explicit SceneNode(const SceneInfo& info)
         : Node(info), SceneInfo(info) {

@@ -9,6 +9,8 @@
  * - Property is a type-safe property class for enhanced object metadata.
  * 
  * TODO:
+ * - Check with assistant: explain it and check if this is the right place for this class, how much it overlaps with Object and Node, how much of its 
+ * functionality is actually needed considering the other core classes (Object, Node, etc.)
  * - Flesh out the class and its methods, structs, enums, etc.
  * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.

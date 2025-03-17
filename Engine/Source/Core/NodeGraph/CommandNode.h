@@ -3,13 +3,15 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @file CommandNode.h
- * @brief CommandNode represents a command node in the engine's node graph.
+ * @brief CommandNode is used to execute a function with inputs and outputs.
  * 
  * ARCHITECTURAL NOTES:
- * - Command nodes are used to execute functions with inputs and outputs.
- * - They can be synchronous or asynchronous.
+ * - It can be synchronous or asynchronous, and can be executed in parallel threads.
+ * - CommandNode takes loose inspiration from Vulkan's single-time command buffer concept.
+ * - For a node which executes an array of commands, use CommandsNode.
  * 
  * TODO:
+ * - Check with assistant if caching functions are compatible with caching in Node, not conflicting with it - should simply override and extend it.
  * - Create .cpp file and move the implementation there.
  * - Organize the existing code into logical sections and functions.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
@@ -29,11 +31,12 @@
 namespace hd {
 
 /**
- * @brief Command node for executing functions with inputs and outputs
+ * @brief CommandNode is used to execute a function with inputs and outputs.
  */
 template<typename... Inputs>
 class CommandNode : public Node<Inputs...> {
 public:
+    // === Initialization ===
     using CommandFunc = std::function<void(Inputs...)>;
     using AsyncCommandFunc = std::function<std::future<void>(Inputs...)>;
 
@@ -57,14 +60,23 @@ public:
         , inputNames(std::move(inNames))
         , isAsynchronous(true) {}
 
-    void processNodeGraph() override {
-        if (isAsynchronous) {
-            executeAsyncCommand(std::index_sequence_for<Inputs...>{});
-        } else {
-            executeCommand(std::index_sequence_for<Inputs...>{});
-        }
+    // === Caching & Optimization ===
+    /**
+     * @brief Determine if this node can cache results.
+     * Cache system integration. We must decide if command nodes should cache results by default. Because despite their dynamic nature, being able to cache may be 
+     * beneficial in many situations. e.g. a transform node which scales a mesh, and we want to cache the result of the whole node chain before it, to avoiding unnecessary 
+     * recomputation. The other design choice would be to have a dedicated "cache checkpoint" node, dedicated to marking cache checkpoints, but this venue would lead to
+     * more verbosity.
+     */
+    bool canCache() const override { return true; }
+    
+    uint64_t computeCacheKey() const override {
+        return 0;
     }
 
+    // === Streaming ===
+    // TODO: Study wether to nest processNodeGraph() and other processing functions here in load time. If so, conform the architecture in the other nodes to
+    // be unified, follow the same pattern
     std::future<void> loadAsync() override {
         if (isAsynchronous) {
             return std::async(std::launch::async, [this]() {
@@ -74,6 +86,16 @@ public:
         return Node::loadAsync();
     }
 
+    // === Processing ===
+    void processNodeGraph() override {
+        if (isAsynchronous) {
+            executeAsyncCommand(std::index_sequence_for<Inputs...>{});
+        } else {
+            executeCommand(std::index_sequence_for<Inputs...>{});
+        }
+    }
+
+    // === Execution ===
     // Required overrides
     void onResume() override {
         if (!pendingTasks.empty()) {
@@ -91,20 +113,7 @@ public:
         pendingTasks.clear();
     }
 
-    /**
-     * @brief Determine if this node can cache results.
-     * Cache system integration. We must decide if command nodes should cache results by default. Because despite their dynamic nature, being able to cache may be 
-     * beneficial in many situations. e.g. a transform node which scales a mesh, and we want to cache the result of the whole node chain before it, to avoiding unnecessary 
-     * recomputation. The other design choice would be to have a dedicated "cache checkpoint" node, dedicated to marking cache checkpoints, but this venue would lead to
-     * more verbosity.
-     */
-    bool canCache() const override { return true; }
-    
-    uint64_t computeCacheKey() const override {
-        return 0;
-    }
-
-    // AI integration
+    // === AI Agent Integration ===
     AIInterface getAIInterface() const override {
         AIInterface interface;
         interface.taskDesc.intent = "Execute parameterized commands";
@@ -124,9 +133,34 @@ public:
     }
 
 private:
+    // === Initialization ===
+    // Factory functions for cleaner syntax
+    template<typename... Inputs>
+    std::shared_ptr<CommandNode<Inputs...>> makeCommandNode(
+        const std::string& name,
+        std::function<void(Inputs...)> cmd,
+        std::tuple<std::string...> inputNames) {
+        NodeInfo info(name, true, true, "Command", {}, {}, false);  // streaming disabled
+        return std::make_shared<CommandNode<Inputs...>>(
+            info, std::move(cmd), std::move(inputNames));
+    }
+
+template<typename... Inputs>
+std::shared_ptr<CommandNode<Inputs...>> makeAsyncCommandNode(
+    const std::string& name,
+    std::function<std::future<void>(Inputs...)> cmd,
+    std::tuple<std::string...> inputNames) {
+    NodeInfo info(name);
+    info.IsAsyncLoadable = true;
+    return std::make_shared<CommandNode<Inputs...>>(
+        info, std::move(cmd), std::move(inputNames));
+}
+
+    // === Execution ===
+    // Command and input
     CommandFunc command;
     AsyncCommandFunc asyncCommand;
-    std::tuple<std::string...> inputNames;
+    std::tuple<std::string...> inputNames;      // ?
     bool isAsynchronous = false;
     std::vector<std::future<void>> pendingTasks;
 
@@ -151,27 +185,5 @@ private:
         pendingTasks.push_back(std::move(future));
     }
 };
-
-// Factory functions for cleaner syntax
-template<typename... Inputs>
-std::shared_ptr<CommandNode<Inputs...>> makeCommandNode(
-    const std::string& name,
-    std::function<void(Inputs...)> cmd,
-    std::tuple<std::string...> inputNames) {
-    NodeInfo info(name, true, true, "Command", {}, {}, false);  // streaming disabled
-    return std::make_shared<CommandNode<Inputs...>>(
-        info, std::move(cmd), std::move(inputNames));
-}
-
-template<typename... Inputs>
-std::shared_ptr<CommandNode<Inputs...>> makeAsyncCommandNode(
-    const std::string& name,
-    std::function<std::future<void>(Inputs...)> cmd,
-    std::tuple<std::string...> inputNames) {
-    NodeInfo info(name);
-    info.IsAsyncLoadable = true;
-    return std::make_shared<CommandNode<Inputs...>>(
-        info, std::move(cmd), std::move(inputNames));
-}
 
 } // namespace hd
