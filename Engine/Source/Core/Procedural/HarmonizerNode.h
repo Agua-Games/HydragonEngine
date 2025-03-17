@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ProceduralHarmonizerNode.h
+ * @file HarmonizerNode.h
  * @brief HarmonizerNode represents a harmonizer node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -38,36 +38,36 @@ struct HarmonizerInfo : public NodeInfo {
             "HarmonyMetrics"
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
     }
 };
 
-class ProceduralHarmonizerNode : public Node {
+class HarmonizerNode : public Node {
 public:
-    explicit ProceduralHarmonizerNode(const HarmonizerInfo& info = HarmonizerInfo())
+    explicit HarmonizerNode(const HarmonizerInfo& info = HarmonizerInfo())
         : Node(info) {}
 
-    void ProcessNodeGraph() override {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void processNodeGraph() override {
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
-        auto patternA = GetInputValue<ProceduralPatternData>("PatternA");
-        auto patternB = GetInputValue<ProceduralPatternData>("PatternB");
-        float blend = GetInputValue<float>("BlendFactor");
-        auto rules = GetInputValue<HarmonyParams>("HarmonyRules");
+        auto patternA = getInputValue<ProceduralPatternData>("PatternA");
+        auto patternB = getInputValue<ProceduralPatternData>("PatternB");
+        float blend = getInputValue<float>("BlendFactor");
+        auto rules = getInputValue<HarmonyParams>("HarmonyRules");
 
         ProceduralStructureParams harmonizedParams;
-        harmonizedParams.type = ProceduralStructureType::Harmonized;
+        harmonizedParams.type = ProceduralStructureType::harmonized;
         harmonizedParams.sourcePatterns = {patternA, patternB};
         harmonizedParams.blendFactor = blend;
         harmonizedParams.harmonyRules = rules;
 
-        std::string harmonizedId = orchestrator.CreateMaterialPattern(harmonizedParams);
-        auto harmonizedPattern = orchestrator.GetProceduralPattern(harmonizedId);
+        std::string harmonizedId = orchestrator.createMaterialPattern(harmonizedParams);
+        auto harmonizedPattern = orchestrator.getProceduralPattern(harmonizedId);
         
-        SetOutputValue("HarmonizedPattern", harmonizedPattern);
-        SetOutputValue("HarmonyMetrics", CalculateHarmonyMetrics(harmonizedPattern));
+        setOutputValue("harmonizedPattern", harmonizedPattern);
+        setOutputValue("HarmonyMetrics", calculateHarmonyMetrics(harmonizedPattern));
     }
 };
 

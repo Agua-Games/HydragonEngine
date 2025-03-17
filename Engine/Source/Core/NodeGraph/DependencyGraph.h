@@ -21,13 +21,13 @@ struct CompiledSubgraph {
 
 class DependencyGraph {
 public:
-    void AddDependency(Node* dependent, Node* dependency) {
+    void addDependency(Node* dependent, Node* dependency) {
         std::unique_lock lock(graphMutex);
         dependencies[dependent].insert(dependency);
         reverseDependencies[dependency].insert(dependent);
     }
 
-    std::vector<Node*> GetExecutionOrder() {
+    std::vector<Node*> getExecutionOrder() {
         std::shared_lock lock(graphMutex);
         std::vector<Node*> order;
         std::unordered_set<Node*> visited;
@@ -35,24 +35,24 @@ public:
 
         for (const auto& [node, _] : dependencies) {
             if (!visited.contains(node)) {
-                TopologicalSort(node, visited, processing, order);
+                topologicalSort(node, visited, processing, order);
             }
         }
         return order;
     }
 
     // Marks a subgraph for compilation
-    void MarkCompilationBoundary(const std::vector<Node*>& subgraphNodes, 
+    void markCompilationBoundary(const std::vector<Node*>& subgraphNodes, 
                                 const std::string& cacheIdentifier) {
         std::unique_lock lock(graphMutex);
         
         // Validate subgraph boundary
         for (auto* node : subgraphNodes) {
             // Check if all required inputs are available within the subgraph
-            for (const auto& input : node->GetInputPorts()) {
-                if (!node->IsPortValid(input)) {
+            for (const auto& input : node->getInputPorts()) {
+                if (!node->isPortValid(input)) {
                     throw std::runtime_error("Invalid port in subgraph boundary: " + 
-                                           node->GetName() + ":" + input);
+                                           node->getName() + ":" + input);
                 }
             }
         }
@@ -64,30 +64,30 @@ public:
     }
 
     // Compiles marked subgraphs and updates execution strategy
-    void CompileMarkedSubgraphs() {
+    void compileMarkedSubgraphs() {
         std::unique_lock lock(graphMutex);
         for (const auto& boundary : compilationBoundaries) {
-            if (auto compiled = TryLoadFromCache(boundary.identifier)) {
+            if (auto compiled = tryLoadFromCache(boundary.identifier)) {
                 compiledSubgraphs[boundary.identifier] = std::move(*compiled);
             } else {
-                auto newCompiled = CompileSubgraph(boundary);
-                CacheCompiledSubgraph(boundary.identifier, newCompiled);
+                auto newCompiled = compileSubgraph(boundary);
+                cacheCompiledSubgraph(boundary.identifier, newCompiled);
                 compiledSubgraphs[boundary.identifier] = std::move(newCompiled);
             }
         }
-        UpdateExecutionStrategy();
+        updateExecutionStrategy();
     }
 
-    void ProcessGraphParallel() {
-        auto executionPlan = GetExecutionPlan();
+    void processGraphParallel() {
+        auto executionPlan = getExecutionPlan();
         
         for (const auto& task : executionPlan) {
             std::visit(overloaded{
                 [](const SingleNode& node) {
-                    node.ptr->Process();
+                    node.ptr->process();
                 },
                 [](const CompiledSubgraphTask& subgraph) {
-                    subgraph.Execute();
+                    subgraph.execute();
                 }
             }, task);
         }
@@ -107,7 +107,7 @@ private:
         CompiledSubgraph* subgraph;
         std::vector<std::any> inputs;
         std::vector<std::any> outputs;
-        void Execute() { subgraph->executeFunc(inputs, outputs); }
+        void execute() { subgraph->executeFunc(inputs, outputs); }
     };
 
     using ExecutionTask = std::variant<SingleNode, CompiledSubgraphTask>;
@@ -118,7 +118,7 @@ private:
     std::vector<CompilationBoundary> compilationBoundaries;
     std::unordered_map<std::string, CompiledSubgraph> compiledSubgraphs;
 
-    void TopologicalSort(Node* node, 
+    void topologicalSort(Node* node, 
                         std::unordered_set<Node*>& visited,
                         std::unordered_set<Node*>& processing,
                         std::vector<Node*>& order) {
@@ -129,7 +129,7 @@ private:
                 throw std::runtime_error("Cyclic dependency detected");
             }
             if (!visited.contains(dep)) {
-                TopologicalSort(dep, visited, processing, order);
+                topologicalSort(dep, visited, processing, order);
             }
         }
 
@@ -138,7 +138,7 @@ private:
         order.push_back(node);
     }
 
-    void GroupNodesIntoLayers(const std::vector<Node*>& order,
+    void groupNodesIntoLayers(const std::vector<Node*>& order,
                              std::vector<std::vector<Node*>>& layers) {
         std::unordered_map<Node*, size_t> nodeLayer;
         
@@ -157,30 +157,30 @@ private:
         }
     }
 
-    CompiledSubgraph CompileSubgraph(const CompilationBoundary& boundary) {
+    CompiledSubgraph compileSubgraph(const CompilationBoundary& boundary) {
         CompiledSubgraph result;
         
         // Analyze subgraph inputs/outputs
-        AnalyzeSubgraphBoundaries(boundary, result);
+        analyzeSubgraphBoundaries(boundary, result);
         
         // Generate optimized execution code
-        result.executeFunc = GenerateOptimizedExecutionCode(boundary);
+        result.executeFunc = generateOptimizedExecutionCode(boundary);
         
         // Pack required data into compiled representation
-        PackCompiledData(boundary, result);
+        packCompiledData(boundary, result);
         
         return result;
     }
 
-    void UpdateExecutionStrategy() {
+    void updateExecutionStrategy() {
         // Rebuild execution plan considering compiled subgraphs
-        auto order = GetExecutionOrder();
+        auto order = getExecutionOrder();
         executionPlan.clear();
         
         for (auto* node : order) {
-            if (auto subgraph = FindContainingSubgraph(node)) {
-                if (IsSubgraphEntryPoint(node, *subgraph)) {
-                    executionPlan.push_back(CreateSubgraphTask(*subgraph));
+            if (auto subgraph = findContainingSubgraph(node)) {
+                if (isSubgraphEntryPoint(node, *subgraph)) {
+                    executionPlan.push_back(createSubgraphTask(*subgraph));
                 }
             } else {
                 executionPlan.push_back(SingleNode{node});
@@ -188,20 +188,20 @@ private:
         }
     }
 
-    std::vector<ExecutionTask> GetExecutionPlan() const {
+    std::vector<ExecutionTask> getExecutionPlan() const {
         std::shared_lock lock(graphMutex);
         return executionPlan;
     }
 
     // Cache management
-    std::optional<CompiledSubgraph> TryLoadFromCache(const std::string& identifier);
-    void CacheCompiledSubgraph(const std::string& identifier, const CompiledSubgraph& compiled);
+    std::optional<CompiledSubgraph> tryLoadFromCache(const std::string& identifier);
+    void cacheCompiledSubgraph(const std::string& identifier, const CompiledSubgraph& compiled);
     
     // Compilation helpers
-    void AnalyzeSubgraphBoundaries(const CompilationBoundary& boundary, CompiledSubgraph& result);
+    void analyzeSubgraphBoundaries(const CompilationBoundary& boundary, CompiledSubgraph& result);
     std::function<void(const std::vector<std::any>&, std::vector<std::any>&)> 
-    GenerateOptimizedExecutionCode(const CompilationBoundary& boundary);
-    void PackCompiledData(const CompilationBoundary& boundary, CompiledSubgraph& result);
+    generateOptimizedExecutionCode(const CompilationBoundary& boundary);
+    void packCompiledData(const CompilationBoundary& boundary, CompiledSubgraph& result);
 
     std::vector<ExecutionTask> executionPlan;
 };

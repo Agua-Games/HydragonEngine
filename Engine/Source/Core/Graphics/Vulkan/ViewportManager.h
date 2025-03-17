@@ -32,7 +32,7 @@ class ViewportManager {
         VkFence inFlightFence;
     };
     
-    void SynchronizeViewports() {
+    void synchronizeViewports() {
         // Ensure all viewports complete rendering before presentation
         VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
         for (auto& viewport : m_viewports) {

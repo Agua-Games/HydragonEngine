@@ -4,6 +4,12 @@
  * 
  * @file UIManager.cpp
  * @brief Wrapper for window creation, input and UI functionality.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Wrapper for window creation, input and UI functionality. Leverages glfw, Dear imgui, imgui-node-editor and other third-party libraries.
+ * - Unfortunately, imgui uses capital letter for function names. This is why you may see mixed capitalization in this file and other files which
+ * use imgui.
+ * 
  */
 #pragma once
 #include <chrono>
@@ -83,77 +89,77 @@ static std::chrono::steady_clock::time_point s_lastInteractionTime;
 // rendering vars
 
 // =========== Initialization ===========
-void InitializeWindows(EditorWindowData* windowData){
+void initializeWindows(EditorWindowData* windowData){
     #if 0
     // TODO: Refactor all these initializations to a class-based approach.
-    Editor::Initialize();
-    MainMenu::Initialize();
-    TopToolbar::Initialize();
-    LeftToolbar::Initialize();
-    RighToolbar::Initialize();
-    BottomToolbar::Initialize();
-    ScriptsPalette::Initialize();
-    CommandsPalette::Initialize();
-    ConsoleEditor::Initialize();
-    ScriptEditor::Initialize();
-    Viewport3D::Initialize();
-    Viewport3DTools::Initialize();
-    Viewport2D::Initialize();
-    Viewport2DTools::Initialize();
-    ImageTools::Initialize();
-    SceneGraphEditor::Initialize();
+    Editor::initialize();
+    MainMenu::initialize();
+    TopToolbar::initialize();
+    LeftToolbar::initialize();
+    RighToolbar::initialize();
+    BottomToolbar::initialize();
+    ScriptsPalette::initialize();
+    CommandsPalette::initialize();
+    ConsoleEditor::initialize();
+    ScriptEditor::initialize();
+    Viewport3D::initialize();
+    Viewport3DTools::initialize();
+    Viewport2D::initialize();
+    Viewport2DTools::initialize();
+    ImageTools::initialize();
+    SceneGraphEditor::initialize();
     #endif
-    hd::InitializeNodeGraphEditor(windowData);     // To be changed to class-based approach. Methods.
+    hd::initializeNodeGraphEditor(windowData);     // To be changed to class-based approach. Methods.
     #if 0
-    MacroEditor::Initialize();
-    PropertyEditor::Initialize();
-    AssetManager::Initialize();
-    ChimeraPipelineEditor::Initialize();
-    AgentsEditor::Initialize();
-    LightingEditor::Initialize();
-    PhysicsEditor::Initialize();
-    BottomStatusBar::Initialize();
-    FileExplorer::Initialize();
-    ProcOrchestrator::Initialize();
-    Profiler::Initialize();
-    StreamingEditor::Initialize();
-    ImageTools::Initialize();
-    AudioEditor::Initialize();
-    MontageEditor::Initialize();
-    FontEditor::Initialize();
-    PluginEditor::Initialize();
-    ExtensionsEditor::Initialize();
-    MacrosEditor::Initialize();
-    DramaEditor::Initialize();
-    UIEditor::Initialize();
-    NetworkingEditor::Initialize();
-    PerformanceScalabilityEditor::Initialize();
-    ReflectionEditor::Initialize();
-    CollaborationEditor::Initialize();
-    CommunityEditor::Initialize();
-    MonetizationEditor::Initialize();
-    ProjectInsightsEditor::Initialize();
-    InputEditor::Initialize();
-    PropertiesMatrixEditor::Initialize();
-    LocalizationEditor::Initialize();
-    SetttingsEditor::Initialize();
-    MeshEditor::Initialize();
-    VolumeEditor::Initialize();
-    PresetsEditor::Initialize();
-    DebugEditor::Initialize();
-    AITaskEditor::Initialize();
+    MacroEditor::initialize();
+    PropertyEditor::initialize();
+    AssetManager::initialize();
+    ChimeraPipelineEditor::initialize();
+    AgentsEditor::initialize();
+    LightingEditor::initialize();
+    PhysicsEditor::initialize();
+    BottomStatusBar::initialize();
+    FileExplorer::initialize();
+    ProcOrchestrator::initialize();
+    Profiler::initialize();
+    StreamingEditor::initialize();
+    ImageTools::initialize();
+    AudioEditor::initialize();
+    MontageEditor::initialize();
+    FontEditor::initialize();
+    PluginEditor::initialize();
+    ExtensionsEditor::initialize();
+    MacrosEditor::initialize();
+    DramaEditor::initialize();
+    UIEditor::initialize();
+    NetworkingEditor::initialize();
+    PerformanceScalabilityEditor::initialize();
+    ReflectionEditor::initialize();
+    CollaborationEditor::initialize();
+    CommunityEditor::initialize();
+    MonetizationEditor::initialize();
+    ProjectInsightsEditor::initialize();
+    InputEditor::initialize();
+    PropertiesMatrixEditor::initialize();
+    LocalizationEditor::initialize();
+    SetttingsEditor::initialize();
+    MeshEditor::initialize();
+    VolumeEditor::initialize();
+    PresetsEditor::initialize();
+    DebugEditor::initialize();
+    AITaskEditor::initialize();
     #endif
 }
 
-bool Initialize(GLFWwindow* window, EditorWindowData* windowData) {
+bool initialize(GLFWwindow* window, EditorWindowData* windowData) {
     if (!window) return false;
 
-    //InitializeImgui(window);                         // imgui is the main UI library
-    //InitializeImguiNodeEditor(windowData);           // imgui-node-editor is an imgui extension
-    InitializeIconFont(windowData);                  // Initialize icon font
+    //initializeImgui(window);                         // imgui is the main UI library
+    //initializeImguiNodeEditor(windowData);           // imgui-node-editor is an imgui extension
+    initializeIconFont(windowData);                  // Initialize icon font
 
     // Set default style
-    StyleColorsHydragonDark();
+    styleColorsHydragonDark();
 
     // === Idle sleep ===
     // Initialize last interaction time - used for idle sleep
@@ -161,12 +167,12 @@ bool Initialize(GLFWwindow* window, EditorWindowData* windowData) {
     
     // === Windows, sub-editors ===
     // Initialize each ImGui window (Editor windows, sub-editors, etc.)
-    InitializeWindows(windowData);
+    initializeWindows(windowData);
 
     return true;
 }
 
-void Cleanup() {
+void cleanup() {
     // Cleanup imgui-node-editor context (before imgui). This is the reverse of initialization.
     if (nodeEditorContext) {
         nodeEd::DestroyEditor(nodeEditorContext);
@@ -178,7 +184,7 @@ void Cleanup() {
     ImGui::DestroyContext();
 }
 
-void InitializeImgui(GLFWwindow* window) {
+void initializeImgui(GLFWwindow* window) {
     if (!window) return;
 
     // Initialize ImGui
@@ -195,16 +201,16 @@ void InitializeImgui(GLFWwindow* window) {
     ImGui_ImplGlfw_InitForVulkan(window, true);
 }
 
-void InitializeIconFont(EditorWindowData* windowData) {
+void initializeIconFont(EditorWindowData* windowData) {
     if (!windowData) return;
 
     // Get the singleton instance of ResourceManager
-    auto& resourceManager = hd::ResourceManager::GetInstance();
+    auto& resourceManager = hd::ResourceManager::getInstance();
     // Set the icon font pointer in the window data
-    windowData->iconFont = resourceManager.GetIconFont();
+    windowData->iconFont = resourceManager.getIconFont();
 }
 
-void InitializeImguiNodeEditor(EditorWindowData* windowData) {
+void initializeImguiNodeEditor(EditorWindowData* windowData) {
     if (!windowData) return;
 
     config.SettingsFile = "NodeEditorSettings.json"; // Optional: save layout to file
@@ -216,14 +222,14 @@ void InitializeImguiNodeEditor(EditorWindowData* windowData) {
 }
 
 // =========== Styling ===========
-void StyleColorsHydragonDark(){
+void styleColorsHydragonDark(){
     // Start with ImGui's default dark style
     ImGui::StyleColorsDark();
 
     // Get references to the style structures
     ImGuiStyle& style = ImGui::GetStyle();
 
-    // Need to figure out how to use EnsureNodeEditorContext() here (the variables and functions there
+    // Need to figure out how to use ensureNodeEditorContext() here (the variables and functions there
     // in NodeGraphEditor.cpp are static)
     //nodeEd::Style& nodesStyle = nodeEd::GetStyle();
 
@@ -332,7 +338,7 @@ void StyleColorsHydragonClassic() {
 
 void StyleColorsHydragonModern() {
     // Start with a base style (e.g., dark)
-    StyleColorsHydragonDark();
+    styleColorsHydragonDark();
 
     // Get a reference to the style structure
     ImGuiStyle& style = ImGui::GetStyle();
@@ -358,7 +364,7 @@ void LoadFonts(const std::string& defaultFontPath, float defaultFontSize) {
     io.Fonts->Build();
 }
 #if 0
-void LoadIconFonts(const std::string& iconFontPath, float iconFontSize) {
+void loadIconFonts(const std::string& iconFontPath, float iconFontSize) {
     ImGuiIO& io = ImGui::GetIO();
 
     // Load icon font (e.g., FontAwesome)
@@ -372,159 +378,159 @@ void LoadIconFonts(const std::string& iconFontPath, float iconFontSize) {
 }
 
 // =========== Input handling ===========
-void Sleep(EditorWindowData.enable) {
+void sleep(EditorWindowData.enable) {
     s_isSleeping = enable;
 }
 
-void AutoSleepAfterInactivity(float idleTimeSeconds) {
+void autoSleepAfterInactivity(float idleTimeSeconds) {
     auto now = std::chrono::steady_clock::now();
     auto idleDuration = std::chrono::duration_cast<std::chrono::seconds>(now - s_lastInteractionTime).count();
 
     if (idleDuration >= idleTimeSeconds) {
-        Sleep(true);
+        sleep(true);
     }
 }
 
-EditorWindowData.IsSleeping() {
+bool isSleeping() {
     return s_isSleeping;
 }
 
 // Function to reset interaction time and wake up the application
-void ResetInteractionTime() {
+void resetInteractionTime() {
     s_lastInteractionTime = std::chrono::steady_clock::now();
     if (s_isSleeping) {
-        Sleep(false);  // Wake up
+        sleep(false);  // Wake up
     }
 }
 
 // GLFW key callback
-void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-        ResetInteractionTime();
+        resetInteractionTime();
     }
 }
 
 // GLFW mouse button callback
-void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (action == GLFW_PRESS) {
-        ResetInteractionTime();
+        resetInteractionTime();
     }
 }
 #endif
 // =========== Rendering ===================
-void RenderHydragonEditor(EditorWindowData* windowData) {
+void renderHydragonEditor(EditorWindowData* windowData) {
     // Create docking space
     ImGui::DockSpaceOverViewport(ImGui::GetID("MainDockSpace"));
 
     // === Render each window ===
     // Main Menu Bar
-    if (windowData->isMainMenuBarWindowOpen) { hd::ShowMainMenuBar(&windowData->isMainMenuBarWindowOpen, windowData); }
+    if (windowData->isMainMenuBarWindowOpen) { hd::showMainMenuBar(&windowData->isMainMenuBarWindowOpen, windowData); }
     // Top Toolbar
-    if (windowData->isTopToolbarWindowOpen) { hd::ShowTopToolbar(&windowData->isTopToolbarWindowOpen, windowData); }
+    if (windowData->isTopToolbarWindowOpen) { hd::showTopToolbar(&windowData->isTopToolbarWindowOpen, windowData); }
     // Left Toolbar
-    if (windowData->isLeftToolbarWindowOpen) { hd::ShowLeftToolbar(&windowData->isLeftToolbarWindowOpen, windowData); }
+    if (windowData->isLeftToolbarWindowOpen) { hd::showLeftToolbar(&windowData->isLeftToolbarWindowOpen, windowData); }
     // Right Toolbar
-    if (windowData->isRightToolbarWindowOpen) { hd::ShowRightToolbar(&windowData->isRightToolbarWindowOpen, windowData); }
+    if (windowData->isRightToolbarWindowOpen) { hd::showRightToolbar(&windowData->isRightToolbarWindowOpen, windowData); }
     // Bottom Toolbar
-    if (windowData->isBottomToolbarWindowOpen) { hd::ShowBottomToolbar(&windowData->isBottomToolbarWindowOpen, windowData); }
+    if (windowData->isBottomToolbarWindowOpen) { hd::showBottomToolbar(&windowData->isBottomToolbarWindowOpen, windowData); }
     // Scripts Palette
-    if (windowData->isScriptsPaletteWindowOpen) { hd::ShowScriptsPalette(&windowData->isScriptsPaletteWindowOpen, windowData); }
+    if (windowData->isScriptsPaletteWindowOpen) { hd::showScriptsPalette(&windowData->isScriptsPaletteWindowOpen, windowData); }
     // Commands Palette
-    if (windowData->isCommandsPaletteWindowOpen) { hd::ShowCommandsPalette(&windowData->isCommandsPaletteWindowOpen, windowData); }
+    if (windowData->isCommandsPaletteWindowOpen) { hd::showCommandsPalette(&windowData->isCommandsPaletteWindowOpen, windowData); }
     // Console Editor
-    if (windowData->isConsoleWindowOpen) { hd::ShowConsoleEditor(&windowData->isConsoleWindowOpen, windowData); }
+    if (windowData->isConsoleWindowOpen) { hd::showConsoleEditor(&windowData->isConsoleWindowOpen, windowData); }
     // Script Editor
-    if (windowData->isScriptWindowOpen) { hd::ShowScriptEditor(&windowData->isScriptWindowOpen, windowData); }
+    if (windowData->isScriptWindowOpen) { hd::showScriptEditor(&windowData->isScriptWindowOpen, windowData); }
     // Viewport 3D
-    if (windowData->isViewport3DWindowOpen) { hd::ShowViewport3D(&windowData->isViewport3DWindowOpen, windowData); }
+    if (windowData->isViewport3DWindowOpen) { hd::showViewport3D(&windowData->isViewport3DWindowOpen, windowData); }
     // Viewport 3D Tools
-    if (windowData->isViewport3DToolsWindowOpen) { hd::ShowViewport3DTools(&windowData->isViewport3DToolsWindowOpen, windowData); }
+    if (windowData->isViewport3DToolsWindowOpen) { hd::showViewport3DTools(&windowData->isViewport3DToolsWindowOpen, windowData); }
     // Viewport 2D
-    if (windowData->isViewport2DWindowOpen) { hd::ShowViewport2D(&windowData->isViewport2DWindowOpen, windowData); }
+    if (windowData->isViewport2DWindowOpen) { hd::showViewport2D(&windowData->isViewport2DWindowOpen, windowData); }
     // Viewport 2D Tools
-    if (windowData->isViewport2DToolsWindowOpen) { hd::ShowViewport2DTools(&windowData->isViewport2DToolsWindowOpen, windowData); }
+    if (windowData->isViewport2DToolsWindowOpen) { hd::showViewport2DTools(&windowData->isViewport2DToolsWindowOpen, windowData); }
     // Scene Graph Editor
-    if (windowData->isSceneGraphWindowOpen) { hd::ShowSceneGraphEditor(&windowData->isSceneGraphWindowOpen, windowData); }
+    if (windowData->isSceneGraphWindowOpen) { hd::showSceneGraphEditor(&windowData->isSceneGraphWindowOpen, windowData); }
     // Node Graph Editor
-    if (windowData->isNodeGraphWindowOpen) { hd::ShowNodeGraphEditor(&windowData->isNodeGraphWindowOpen, windowData); }
+    if (windowData->isNodeGraphWindowOpen) { hd::showNodeGraphEditor(&windowData->isNodeGraphWindowOpen, windowData); }
     // Properties Editor
-    if (windowData->isPropertiesWindowOpen) { hd::ShowPropertyEditor(&windowData->isPropertiesWindowOpen, windowData); }
+    if (windowData->isPropertiesWindowOpen) { hd::showPropertyEditor(&windowData->isPropertiesWindowOpen, windowData); }
     // Asset Manager
-    if (windowData->isAssetManagerWindowOpen) { hd::ShowAssetManager(&windowData->isAssetManagerWindowOpen, windowData); }
+    if (windowData->isAssetManagerWindowOpen) { hd::showAssetManager(&windowData->isAssetManagerWindowOpen, windowData); }
     // Chimera Pipeline Editor
-    if (windowData->isChimeraPipelineWindowOpen) { hd::ShowChimeraPipelineEditor(&windowData->isChimeraPipelineWindowOpen, windowData); }
+    if (windowData->isChimeraPipelineWindowOpen) { hd::showChimeraPipelineEditor(&windowData->isChimeraPipelineWindowOpen, windowData); }
     // Agents Editor
-    if (windowData->isAgentsWindowOpen) { hd::ShowAgentsEditor(&windowData->isAgentsWindowOpen, windowData); }
+    if (windowData->isAgentsWindowOpen) { hd::showAgentsEditor(&windowData->isAgentsWindowOpen, windowData); }
     // Lighting Editor
-    if (windowData->isLightingWindowOpen) { hd::ShowLightingEditor(&windowData->isLightingWindowOpen, windowData); }
+    if (windowData->isLightingWindowOpen) { hd::showLightingEditor(&windowData->isLightingWindowOpen, windowData); }
     // Physics Editor
-    if (windowData->isPhysicsWindowOpen) { hd::ShowPhysicsEditor(&windowData->isPhysicsWindowOpen, windowData); }
+    if (windowData->isPhysicsWindowOpen) { hd::showPhysicsEditor(&windowData->isPhysicsWindowOpen, windowData); }
     // Bottom status bar
-    if (windowData->isBottomStatusBarWindowOpen) { hd::ShowBottomStatusBar(&windowData->isBottomStatusBarWindowOpen, windowData); }
+    if (windowData->isBottomStatusBarWindowOpen) { hd::showBottomStatusBar(&windowData->isBottomStatusBarWindowOpen, windowData); }
     // File Explorer
-    if (windowData->isFileExplorerWindowOpen) { hd::ShowFileExplorer(&windowData->isFileExplorerWindowOpen, windowData); }
+    if (windowData->isFileExplorerWindowOpen) { hd::showFileExplorer(&windowData->isFileExplorerWindowOpen, windowData); }
     // Procedural (Pattern) Orchestrator
-    if (windowData->isProcOrchestratorWindowOpen) { hd::ShowProcOrchestrator(&windowData->isProcOrchestratorWindowOpen, windowData); }
+    if (windowData->isProcOrchestratorWindowOpen) { hd::showProcOrchestrator(&windowData->isProcOrchestratorWindowOpen, windowData); }
     // Profiler
-    if (windowData->isProfilerWindowOpen) { hd::ShowProfiler(&windowData->isProfilerWindowOpen, windowData); }
+    if (windowData->isProfilerWindowOpen) { hd::showProfiler(&windowData->isProfilerWindowOpen, windowData); }
     // Streaming Editor
-    if (windowData->isStreamingWindowOpen) { hd::ShowStreamingEditor(&windowData->isStreamingWindowOpen, windowData); }
+    if (windowData->isStreamingWindowOpen) { hd::showStreamingEditor(&windowData->isStreamingWindowOpen, windowData); }
     // Image Editor
     // Used to display and edit textures, texture settings, edit UVs, packed textures, apply adjustments,
     // configure procedurals, use AI-assisted texture generation etc.
-    if (windowData->isImageWindowOpen) { hd::ShowImageTools(&windowData->isImageWindowOpen, windowData); }
+    if (windowData->isImageWindowOpen) { hd::showImageTools(&windowData->isImageWindowOpen, windowData); }
     // Audio Editor
-    if (windowData->isAudioWindowOpen) { hd::ShowAudioEditor(&windowData->isAudioWindowOpen, windowData); }
+    if (windowData->isAudioWindowOpen) { hd::showAudioEditor(&windowData->isAudioWindowOpen, windowData); }
     // Montage Editor
     // Timeline with tracks, blending, transitions, etc. Used to compose animations, cutscenes, video clips, 
     // audio clips, images and other time varying media.
     // Whereas DCC apps usually rely on a simple timeline by default, Hydragon uses a more advanced montage editor,
     // with two visualization modes: collapsed and expanded (defaults to expanded).
-    if (windowData->isMontageWindowOpen) { hd::ShowMontageEditor(&windowData->isMontageWindowOpen, windowData); }
+    if (windowData->isMontageWindowOpen) { hd::showMontageEditor(&windowData->isMontageWindowOpen, windowData); }
     // Font Editor
-    if (windowData->isFontWindowOpen) { hd::ShowFontEditor(&windowData->isFontWindowOpen, windowData); }
+    if (windowData->isFontWindowOpen) { hd::showFontEditor(&windowData->isFontWindowOpen, windowData); }
     // Plugin Editor
-    if (windowData->isPluginWindowOpen) { hd::ShowPluginEditor(&windowData->isPluginWindowOpen, windowData); }
+    if (windowData->isPluginWindowOpen) { hd::showPluginEditor(&windowData->isPluginWindowOpen, windowData); }
     // Extensions Editor
-    if (windowData->isExtensionsWindowOpen) { hd::ShowExtensionsEditor(&windowData->isExtensionsWindowOpen, windowData); }
+    if (windowData->isExtensionsWindowOpen) { hd::showExtensionsEditor(&windowData->isExtensionsWindowOpen, windowData); }
     // Macros Editor
-    if (windowData->isMacrosWindowOpen) { hd::ShowMacrosEditor(&windowData->isMacrosWindowOpen, windowData); }
+    if (windowData->isMacrosWindowOpen) { hd::showMacrosEditor(&windowData->isMacrosWindowOpen, windowData); }
     // Drama Editor
-    if (windowData->isDramaWindowOpen) { hd::ShowDramaEditor(&windowData->isDramaWindowOpen, windowData); }
+    if (windowData->isDramaWindowOpen) { hd::showDramaEditor(&windowData->isDramaWindowOpen, windowData); }
     // UI Editor
-    if (windowData->isUIEditorWindowOpen) { hd::ShowUIEditor(&windowData->isUIEditorWindowOpen, windowData); }
+    if (windowData->isUIEditorWindowOpen) { hd::showUIEditor(&windowData->isUIEditorWindowOpen, windowData); }
     // Networking Editor
-    if (windowData->isNetworkingWindowOpen) { hd::ShowNetworkingEditor(&windowData->isNetworkingWindowOpen, windowData); }
+    if (windowData->isNetworkingWindowOpen) { hd::showNetworkingEditor(&windowData->isNetworkingWindowOpen, windowData); }
     // Performance Scalability Editor
-    if (windowData->isPerformanceScalabilityWindowOpen) { hd::ShowPerformanceScalabilityEditor(&windowData->isPerformanceScalabilityWindowOpen, windowData); }
+    if (windowData->isPerformanceScalabilityWindowOpen) { hd::showPerformanceScalabilityEditor(&windowData->isPerformanceScalabilityWindowOpen, windowData); }
     // Reflection Editor
-    if (windowData->isReflectionWindowOpen) { hd::ShowReflectionEditor(&windowData->isReflectionWindowOpen, windowData); }
+    if (windowData->isReflectionWindowOpen) { hd::showReflectionEditor(&windowData->isReflectionWindowOpen, windowData); }
     // Collaboration Editor
-    if (windowData->isCollaborationWindowOpen) { hd::ShowCollaborationEditor(&windowData->isCollaborationWindowOpen, windowData); }
+    if (windowData->isCollaborationWindowOpen) { hd::showCollaborationEditor(&windowData->isCollaborationWindowOpen, windowData); }
     // Community Editor
-    if (windowData->isCommunityWindowOpen) { hd::ShowCommunityEditor(&windowData->isCommunityWindowOpen, windowData); }
+    if (windowData->isCommunityWindowOpen) { hd::showCommunityEditor(&windowData->isCommunityWindowOpen, windowData); }
     // Monetization Editor
-    if (windowData->isMonetizationWindowOpen) { hd::ShowMonetizationEditor(&windowData->isMonetizationWindowOpen, windowData); }
+    if (windowData->isMonetizationWindowOpen) { hd::showMonetizationEditor(&windowData->isMonetizationWindowOpen, windowData); }
     // Project Insights Editor
-    if (windowData->isProjectInsightsWindowOpen) { hd::ShowProjectInsightsEditor(&windowData->isProjectInsightsWindowOpen, windowData); }
+    if (windowData->isProjectInsightsWindowOpen) { hd::showProjectInsightsEditor(&windowData->isProjectInsightsWindowOpen, windowData); }
     // Input Editor
-    if (windowData->isInputWindowOpen) { hd::ShowInputEditor(&windowData->isInputWindowOpen, windowData); }
+    if (windowData->isInputWindowOpen) { hd::showInputEditor(&windowData->isInputWindowOpen, windowData); }
     // Properties Matrix Editor
-    if (windowData->isPropertiesMatrixWindowOpen) { hd::ShowPropertiesMatrixEditor(&windowData->isPropertiesMatrixWindowOpen, windowData); }
+    if (windowData->isPropertiesMatrixWindowOpen) { hd::showPropertiesMatrixEditor(&windowData->isPropertiesMatrixWindowOpen, windowData); }
     // Localization Editor
-    if (windowData->isLocalizationWindowOpen) { hd::ShowLocalizationEditor(&windowData->isLocalizationWindowOpen, windowData); }
+    if (windowData->isLocalizationWindowOpen) { hd::showLocalizationEditor(&windowData->isLocalizationWindowOpen, windowData); }
     // Settings Editor
-    if (windowData->isSettingsWindowOpen) { hd::ShowSettingsEditor(&windowData->isSettingsWindowOpen, windowData); }
+    if (windowData->isSettingsWindowOpen) { hd::showSettingsEditor(&windowData->isSettingsWindowOpen, windowData); }
     // Mesh Editor
-    if (windowData->isMeshWindowOpen) { hd::ShowMeshEditor(&windowData->isMeshWindowOpen, windowData); }
+    if (windowData->isMeshWindowOpen) { hd::showMeshEditor(&windowData->isMeshWindowOpen, windowData); }
     // Volume Editor
-    if (windowData->isVolumeWindowOpen) { hd::ShowVolumeEditor(&windowData->isVolumeWindowOpen, windowData); }
+    if (windowData->isVolumeWindowOpen) { hd::showVolumeEditor(&windowData->isVolumeWindowOpen, windowData); }
     // Preset Editor
-    if (windowData->isPresetsWindowOpen) { hd::ShowPresetEditor(&windowData->isPresetsWindowOpen, windowData); }
+    if (windowData->isPresetsWindowOpen) { hd::showPresetEditor(&windowData->isPresetsWindowOpen, windowData); }
     // Debug Editor
-    if (windowData->isDebugWindowOpen) { hd::ShowDebugEditor(&windowData->isDebugWindowOpen, windowData); }
+    if (windowData->isDebugWindowOpen) { hd::showDebugEditor(&windowData->isDebugWindowOpen, windowData); }
     // AI Task Editor
-    if (windowData->isAITaskWindowOpen) { hd::ShowAITaskEditor(&windowData->isAITaskWindowOpen, windowData); }
+    if (windowData->isAITaskWindowOpen) { hd::showAITaskEditor(&windowData->isAITaskWindowOpen, windowData); }
 
     // === Temporary, for referencing the components' names in imgui code files ===
     ImGui::ShowDemoWindow();

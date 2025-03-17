@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowPropertiesMatrixEditor(bool* p_open, EditorWindowData* windowData);
+void showPropertiesMatrixEditor(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

@@ -15,7 +15,7 @@
 
 namespace hd {
 
-void ShowViewport2D(bool* p_open, EditorWindowData* windowData) 
+void showViewport2D(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Viewport 2D", p_open, ImGuiWindowFlags_MenuBar))

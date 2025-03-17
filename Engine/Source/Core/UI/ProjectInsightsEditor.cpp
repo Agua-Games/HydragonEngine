@@ -13,7 +13,7 @@
 
 namespace hd {
 
-void ShowProjectInsightsEditor(bool* p_open, EditorWindowData* windowData) 
+void showProjectInsightsEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static ProjectInsightsState state;
 

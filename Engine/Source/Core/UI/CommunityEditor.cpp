@@ -49,7 +49,7 @@ struct CommunityState {
     } currentView = ViewMode::Overview;
 };
 
-void ShowCommunityEditor(bool* p_open, EditorWindowData* windowData) 
+void showCommunityEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static CommunityState state{};
     

@@ -44,9 +44,9 @@ public:
         , getter([this]() -> const std::any& { return value; })
         , setter([this](const std::any& v) { value = std::any_cast<T>(v); }) {}
 
-    const std::type_index& GetType() const { return typeInfo; }
-    const std::any& Get() const { return getter(); }
-    void Set(const std::any& v) { setter(v); }
+    const std::type_index& getType() const { return typeInfo; }
+    const std::any& get() const { return getter(); }
+    void set(const std::any& v) { setter(v); }
 
 private:
     std::any value;
@@ -95,8 +95,78 @@ struct ObjectInfo {
  */
 class Object {
 public:
-    explicit Object(const ObjectInfo& info) : info(info) {}
-    virtual ~Object() = default;
+    explicit Object(const ObjectInfo& info) : info(info), m_initialized(false) {}
+    virtual ~Object() {
+        if (m_initialized) {
+            cleanup();
+        }
+    }
+
+    // === Core Lifecycle Methods ===
+    
+    /**
+     * @brief Initialize the object and its resources
+     * @return true if initialization succeeded
+     */
+    virtual bool initialize() {
+        if (m_initialized) return true;
+        
+        // Initialize properties
+        for (auto& [name, prop] : info.properties) {
+            if (!initializeProperty(name, prop)) {
+                return false;
+            }
+        }
+
+        // Initialize dependencies
+        for (auto& dep : Dependencies) {
+            if (!dep->initialize()) {
+                return false;
+            }
+        }
+
+        m_initialized = true;
+        return true;
+    }
+
+    /**
+     * @brief Update the object's state
+     * @param deltaTime Time elapsed since last update in seconds
+     */
+    virtual void update(float deltaTime) {
+        if (!m_initialized) return;
+
+        // Update properties if needed
+        updateProperties(deltaTime);
+
+        // Update dependencies
+        for (auto& dep : Dependencies) {
+            dep->update(deltaTime);
+        }
+    }
+
+    /**
+     * @brief Clean up resources and prepare for destruction
+     */
+    virtual void cleanup() {
+        if (!m_initialized) return;
+
+        // Cleanup dependencies first (reverse order)
+        for (auto it = Dependencies.rbegin(); it != Dependencies.rend(); ++it) {
+            (*it)->cleanup();
+        }
+        Dependencies.clear();
+
+        // Cleanup properties
+        cleanupProperties();
+
+        m_initialized = false;
+    }
+
+    /**
+     * @brief Check if object is properly initialized
+     */
+    bool isInitialized() const { return m_initialized; }
 
     // Prevent copying but allow moving
     Object(const Object&) = delete;
@@ -105,87 +175,87 @@ public:
     Object& operator=(Object&&) noexcept = default;
 
     // Enhanced metadata access
-    const ObjectInfo& GetInfo() const { return info; }
+    const ObjectInfo& getInfo() const { return info; }
     
     // Type-safe property management
     template<typename T>
-    void SetProperty(const std::string& name, T&& value) {
+    void setProperty(const std::string& name, T&& value) {
         info.properties[name] = Property(std::forward<T>(value));
     }
 
     template<typename T>
-    T GetProperty(const std::string& name) const {
+    T getProperty(const std::string& name) const {
         auto it = info.properties.find(name);
         if (it != info.properties.end()) {
-            return std::any_cast<T>(it->second.Get());
+            return std::any_cast<T>(it->second.get());
         }
         throw std::runtime_error("Property not found: " + name);
     }
 
     // Enhanced reflection system
-    virtual void Reflect() {
-        ReflectProperties();
-        ReflectAttributes();
+    virtual void reflect() {
+        reflectProperties();
+        reflectAttributes();
     }
 
     // Dependency management
-    void AddDependency(const std::shared_ptr<Object>& dep) {
+    void addDependency(const std::shared_ptr<Object>& dep) {
         Dependencies.push_back(dep);
     }
 
-    const std::vector<std::shared_ptr<Object>>& GetDependencies() const {
+    const std::vector<std::shared_ptr<Object>>& getDependencies() const {
         return Dependencies;
     }
 
     // Enhanced serialization with version support
-    virtual void Serialize(std::ostream& stream) const {
+    virtual void serialize(std::ostream& stream) const {
         if (!info.isSerializable) return;
         
         // Write version and basic info
-        WriteToStream(stream, info.version);
-        WriteToStream(stream, info.name);
+        writeToStream(stream, info.version);
+        writeToStream(stream, info.name);
         
-        // Serialize properties
+        // serialize properties
         for (const auto& [name, prop] : info.properties) {
-            WriteToStream(stream, name);
-            WriteToStream(stream, prop.Get());
+            writeToStream(stream, name);
+            writeToStream(stream, prop.get());
         }
     }
 
-    virtual void Deserialize(std::istream& stream) {
+    virtual void deserialize(std::istream& stream) {
         if (!info.isSerializable) return;
         
         // Read and verify version
         std::string version;
-        ReadFromStream(stream, version);
-        if (!IsVersionCompatible(version, info.version)) {
+        readFromStream(stream, version);
+        if (!isVersionCompatible(version, info.version)) {
             throw std::runtime_error("Version mismatch during deserialization");
         }
 
         // Read basic info and properties
-        ReadFromStream(stream, info.name);
+        readFromStream(stream, info.name);
         
         std::string propName;
-        while (ReadFromStream(stream, propName)) {
+        while (readFromStream(stream, propName)) {
             std::any value;
-            ReadFromStream(stream, value);
+            readFromStream(stream, value);
             info.properties[propName].Set(value);
         }
     }
 
     // Enhanced logging with categories
-    void Log(const std::string& message, const std::string& category = "Info") const {
+    void log(const std::string& message, const std::string& category = "Info") const {
         std::cout << "[" << category << "][" << info.name << "] " << message << std::endl;
     }
 
     // Enhanced debug info
-    virtual void DebugInfo() const {
+    virtual void debugInfo() const {
         std::cout << "=== Debug Info for " << info.name << " ===" << std::endl;
         std::cout << "Category: " << info.category << std::endl;
         std::cout << "Version: " << info.version << std::endl;
         std::cout << "Properties:" << std::endl;
         for (const auto& [name, prop] : info.properties) {
-            std::cout << "  " << name << ": " << prop.Get().type().name() << std::endl;
+            std::cout << "  " << name << ": " << prop.get().type().name() << std::endl;
         }
     }
 
@@ -194,14 +264,14 @@ public:
      * @param deepCopy If true, also clones all dependencies
      * @return New instance with copied properties but unique identity
      */
-    virtual std::shared_ptr<Object> Clone(bool deepCopy = false) const {
+    virtual std::shared_ptr<Object> clone(bool deepCopy = false) const {
         auto clone = std::make_shared<Object>(info);
         clone->info.properties = info.properties;  // Properties are copied
         clone->info.attributes = info.attributes;  // Attributes are copied
         
         if (deepCopy) {
             for (const auto& dep : Dependencies) {
-                clone->Dependencies.push_back(dep->Clone(true));
+                clone->Dependencies.push_back(dep->clone(true));
             }
         }
         return clone;
@@ -218,26 +288,26 @@ public:
      * 
      * @return true if object generates content procedurally
      */
-    virtual bool IsProcedural() const { return info.isProcedural; }
+    virtual bool isProcedural() const { return info.isProcedural; }
 
     // Helper method to check if content needs regeneration
-    virtual bool NeedsRegeneration() const {
-        return IsProcedural() && HasInputsChanged();
+    virtual bool needsRegeneration() const {
+        return isProcedural() && hasInputsChanged();
     }
 
     /**
      * @brief Validates object state and connections
      */
-    virtual bool Validate() const {
+    virtual bool validate() const {
         // Check property validity
         for (const auto& [id, prop] : properties) {
-            if (!ValidateProperty(id, prop)) return false;
+            if (!validateProperty(id, prop)) return false;
         }
 
         // Check dependency validity
         for (const auto& dep : dependencies) {
             if (auto ptr = dep.lock()) {
-                if (!ptr->Validate()) return false;
+                if (!ptr->validate()) return false;
             } else {
                 return false; // Invalid weak_ptr
             }
@@ -250,32 +320,58 @@ protected:
     ObjectInfo info;
     std::vector<std::shared_ptr<Object>> Dependencies;
 
-    virtual void ReflectProperties() {}
-    virtual void ReflectAttributes() {}
+    virtual void reflectProperties() {}
+    virtual void reflectAttributes() {}
+
+    // === Lifecycle Helpers ===
+    
+    /**
+     * @brief Initialize a specific property
+     * @return true if initialization succeeded
+     */
+    virtual bool initializeProperty(const std::string& name, Property& prop) {
+        return true; // Base implementation assumes properties don't need initialization
+    }
+
+    /**
+     * @brief Update properties that need regular updates
+     */
+    virtual void updateProperties(float deltaTime) {
+        // Base implementation assumes properties don't need updates
+    }
+
+    /**
+     * @brief Cleanup specific property resources
+     */
+    virtual void cleanupProperties() {
+        info.properties.clear();
+    }
 
 private:
+    bool m_initialized;
+
     // Utility functions for serialization
     template<typename T>
-    static void WriteToStream(std::ostream& stream, const T& value) {
+    static void writeToStream(std::ostream& stream, const T& value) {
         stream.write(reinterpret_cast<const char*>(&value), sizeof(T));
     }
 
     template<typename T>
-    static bool ReadFromStream(std::istream& stream, T& value) {
+    static bool readFromStream(std::istream& stream, T& value) {
         return stream.read(reinterpret_cast<char*>(&value), sizeof(T)).good();
     }
 
-    static bool IsVersionCompatible(const std::string& v1, const std::string& v2) {
+    static bool isVersionCompatible(const std::string& v1, const std::string& v2) {
         // Implement version compatibility check
         return v1 == v2; // Simplified for now
     }
 
-    bool ValidateProperty(PropertyId id, const std::unique_ptr<PropertyBase>& prop) const {
+    bool validateProperty(PropertyId id, const std::unique_ptr<PropertyBase>& prop) const {
         if (!prop) return false;
         
         // Additional property validation logic
-        const auto& info = PropertyRegistry::GetInfo(id);
-        return prop->GetType() == info.type;
+        const auto& info = PropertyRegistry::getInfo(id);
+        return prop->getType() == info.type;
     }
 };
 

@@ -52,7 +52,7 @@ struct MatrixState {
     } sortMode = SortMode::ByName;
 };
 
-void ShowPropertiesMatrixEditor(bool* p_open, EditorWindowData* windowData) 
+void showPropertiesMatrixEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static MatrixState state{};
     

@@ -1,12 +1,25 @@
-#include "Core/Particles/ParticleSystem.h"
-#include "Core/Procedural/ProceduralOrchestrator.h"
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
+#include "Core/Engine.h"
+#include "ParticleSystemNode.h"
+#include "ProceduralOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProceduralEvolutionNode.h"
+#include "ProceduralNode.h"
+#include "PatternNode.h"
+#include "ProceduralStructureNode.h"
+#include "NoiseNode.h"
 
 namespace hd {
 
-class ParticleEvolutionExample {
+class ParticleEvolutionExample_01 {
 public:
     void evolveParticleSystem() {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Create base particle system
         auto particleSystem = std::make_shared<ParticleSystem>();
@@ -20,11 +33,11 @@ public:
         // Register for procedural evolution
         auto pattern = orchestrator.registerPattern(particleSystem);
         
-        // Evolve the system
+        // evolve the system
         pattern->setIntent("VisualComplexity", evolutionParams);
         
         // Process evolution
-        orchestrator.ProcessNodeGraph();
+        orchestrator.processNodeGraph();
         
         // The particle system will now evolve based on:
         // 1. System harmony requirements
@@ -34,7 +47,7 @@ public:
     }
 
     void handleEvolutionFeedback() {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Get evolution metrics
         auto metrics = orchestrator.GetOutputValue<EvolutionMetrics>("EvolutionMetrics");
@@ -44,7 +57,7 @@ public:
             // Reduce complexity
             OctaveParams newParams;
             newParams.complexity = 0.6f;
-            orchestrator.ModulateSystem(SystemDomain::Particles, newParams);
+            orchestrator.modulateSystem(SystemDomain::Particles, newParams);
         }
     }
 };

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
  * @file Property.h
@@ -31,35 +31,35 @@ using PropertyId = uint32_t;
 class PropertyBase {
 public:
     virtual ~PropertyBase() = default;
-    virtual const std::type_info& GetType() const = 0;
-    virtual void* GetRawPtr() = 0;
-    virtual const void* GetRawPtr() const = 0;
+    virtual const std::type_info& getType() const = 0;
+    virtual void* getRawPtr() = 0;
+    virtual const void* getRawPtr() const = 0;
 };
 
 /**
  * @brief Type-safe property implementation
  */
 template<typename T>
-class TypedProperty : public PropertyBase {
+class Property : public PropertyBase {
 public:
-    explicit TypedProperty(T&& defaultValue) 
+    explicit Property(T&& defaultValue) 
         : value(std::forward<T>(defaultValue)) {}
 
-    const std::type_info& GetType() const override { 
+    const std::type_info& getType() const override { 
         return typeid(T); 
     }
 
-    void* GetRawPtr() override { 
+    void* getRawPtr() override { 
         return &value; 
     }
 
-    const void* GetRawPtr() const override { 
+    const void* getRawPtr() const override { 
         return &value; 
     }
 
-    T& Get() { return value; }
-    const T& Get() const { return value; }
-    void Set(T&& newValue) { value = std::forward<T>(newValue); }
+    T& get() { return value; }
+    const T& get() const { return value; }
+    void set(T&& newValue) { value = std::forward<T>(newValue); }
 
 private:
     T value;
@@ -71,7 +71,7 @@ private:
 class PropertyRegistry {
 public:
     template<typename T>
-    static PropertyId Register(std::string_view name) {
+    static PropertyId register(std::string_view name) {
         static PropertyId nextId = 0;
         PropertyId id = nextId++;
         registeredProperties[id] = PropertyInfo{
@@ -79,6 +79,10 @@ public:
             .type = typeid(T)
         };
         return id;
+    }
+
+    static const PropertyInfo& getInfo(PropertyId id) {
+        return registeredProperties[id];
     }
 
 private:
@@ -92,6 +96,6 @@ private:
 
 // Macro for property registration
 #define REGISTER_PROPERTY(Type, Name) \
-    static const PropertyId Name##Id = PropertyRegistry::Register<Type>(#Name)
+    static const PropertyId Name##Id = PropertyRegistry::register<Type>(#Name)
 
 } // namespace hd

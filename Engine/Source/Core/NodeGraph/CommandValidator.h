@@ -24,7 +24,7 @@ struct ValidationRule {
 class CommandValidator {
 public:
     template<typename T>
-    void AddRule(const std::string& inputName, 
+    void addRule(const std::string& inputName, 
                 std::function<bool(const T&)> rule,
                 const std::string& errorMsg) {
         rules[inputName].push_back({
@@ -35,7 +35,7 @@ public:
         });
     }
 
-    bool Validate(const std::string& inputName, const std::any& value) {
+    bool validate(const std::string& inputName, const std::any& value) {
         if (auto it = rules.find(inputName); it != rules.end()) {
             for (const auto& rule : it->second) {
                 if (!rule.validate(value)) {
@@ -47,7 +47,7 @@ public:
         return true;
     }
 
-    const std::string& GetLastError() const { return lastError; }
+    const std::string& getLastError() const { return lastError; }
 
 private:
     std::unordered_map<std::string, std::vector<ValidationRule>> rules;

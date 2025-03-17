@@ -34,7 +34,7 @@ struct AtmosphereInfo : public NodeInfo {
             "OpticalDepth"      // Light transmission
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
     }
@@ -46,30 +46,30 @@ public:
     explicit ProcAtmosphereNode(const AtmosphereInfo& info = AtmosphereInfo())
         : Node(info) {}
 
-    void ProcessNodeGraph() override {
+    void processNodeGraph() override {
         // Process inputs
-        auto temperature = GetInputValue<float>("Temperature");
-        auto humidity = GetInputValue<float>("Humidity");
-        auto pressure = GetInputValue<float>("Pressure");
-        auto timeOfDay = GetInputValue<float>("TimeOfDay");
-        auto season = GetInputValue<SeasonData>("Season");
-        auto location = GetInputValue<glm::vec3>("Location");
+        auto temperature = getInputValue<float>("Temperature");
+        auto humidity = getInputValue<float>("Humidity");
+        auto pressure = getInputValue<float>("Pressure");
+        auto timeOfDay = getInputValue<float>("TimeOfDay");
+        auto season = getInputValue<SeasonData>("Season");
+        auto location = getInputValue<glm::vec3>("Location");
 
         // Compute atmospheric state
-        AtmosphereState state = ComputeAtmosphereState(
+        AtmosphereState state = computeAtmosphereState(
             temperature, humidity, pressure, timeOfDay, season, location
         );
 
         // Calculate derived parameters
-        ScatteringParams scattering = ComputeScatteringParams(state);
-        DensityProfile density = ComputeDensityProfile(state);
-        float opticalDepth = ComputeOpticalDepth(density);
+        ScatteringParams scattering = computeScatteringParams(state);
+        DensityProfile density = computeDensityProfile(state);
+        float opticalDepth = computeOpticalDepth(density);
 
         // Set outputs
-        SetOutputValue("AtmosphereState", state);
-        SetOutputValue("ScatteringParams", scattering);
-        SetOutputValue("DensityProfile", density);
-        SetOutputValue("OpticalDepth", opticalDepth);
+        setOutputValue("AtmosphereState", state);
+        setOutputValue("ScatteringParams", scattering);
+        setOutputValue("DensityProfile", density);
+        setOutputValue("OpticalDepth", opticalDepth);
     }
 
 private:

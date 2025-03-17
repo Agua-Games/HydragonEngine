@@ -14,7 +14,7 @@ namespace hd {
 
 static VolumeToolSettings g_volumeToolSettings;
 
-void ShowVolumeEditor(bool* p_open, EditorWindowData* windowData) 
+void showVolumeEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Volume", p_open, ImGuiWindowFlags_MenuBar))

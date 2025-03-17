@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowProfiler(bool* p_open, EditorWindowData* windowData);
+void showProfiler(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

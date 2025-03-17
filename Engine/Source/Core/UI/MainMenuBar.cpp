@@ -20,7 +20,7 @@ namespace hd {
  * @param p_open A pointer to a boolean variable. If not NULL, the main menu bar will display a close button in the upper-right corner, and clicking it 
  * will set the variable to false.
  */
-void ShowMainMenuBar(bool* p_open, EditorWindowData* windowData) {
+void showMainMenuBar(bool* p_open, EditorWindowData* windowData) {
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))

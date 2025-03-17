@@ -26,7 +26,7 @@ static bool s_isSearchFocused = false;
 static char s_searchBuffer[256] = "";
 static int s_selectedIndex = 0;
 
-void ShowCommandsPalette(bool* p_open, EditorWindowData* windowData) 
+void showCommandsPalette(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;

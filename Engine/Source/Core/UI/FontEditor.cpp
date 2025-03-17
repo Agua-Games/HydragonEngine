@@ -16,7 +16,7 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowFontEditor(bool* p_open, EditorWindowData* windowData) 
+void showFontEditor(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;

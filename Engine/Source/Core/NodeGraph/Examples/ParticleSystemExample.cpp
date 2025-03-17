@@ -1,7 +1,16 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
+#include "Core/Engine.h"
+#include "Core/NodeGraph/Node.h"
+
 using namespace hd;
 
 // Example 1: Particle system chain
-auto particles = NodeGraph::Create("effects")
+auto particles = NodeGraph::create("effects")
     .add<ParticleEmitterNode>("mainEmitter")
         .emissionRate(50.0f, runtime)
         .initialVelocity({0.0f, 1.0f, 0.0f})
@@ -16,7 +25,7 @@ auto particles = NodeGraph::Create("effects")
         .connect("output", "renderer.input");
 
 // Example 2: Audio processing chain
-auto audio = NodeGraph::Create("audio")
+auto audio = NodeGraph::create("audio")
     .add<AudioSourceNode>("musicTrack")
         .volume(0.8f, runtime)
         .pitch(1.0f, runtime)
@@ -30,7 +39,7 @@ auto audio = NodeGraph::Create("audio")
         .ratio(4.0f, runtime);
 
 // Example 3: Post-processing chain
-auto post = NodeGraph::Create("post")
+auto post = NodeGraph::create("post")
     .add<BloomNode>("bloom")
         .intensity(1.0f, runtime)
         .threshold(1.0f, runtime)

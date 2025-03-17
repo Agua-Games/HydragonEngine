@@ -14,7 +14,7 @@
 
 namespace hd {
 
-void ShowScriptsPalette(bool* p_open, EditorWindowData* windowData) 
+void showScriptsPalette(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Scripts Palette", p_open, ImGuiWindowFlags_MenuBar))

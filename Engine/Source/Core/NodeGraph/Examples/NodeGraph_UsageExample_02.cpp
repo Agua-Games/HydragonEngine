@@ -1,15 +1,14 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file NodeGraph_UsageExample_02.cpp
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
 using namespace hd;
 
 // Example 1: Complete game level setup
-auto& level = Scene::Current()
+auto& level = Scene::current()
     .add<Environment>("main_level")
         .skybox("textures/sky_day.hdr")
         .ambient({0.1f, 0.1f, 0.12f})
@@ -27,7 +26,7 @@ auto& level = Scene::Current()
             .types({"grass", "trees", "rocks"});
 
 // Example 2: Character controller with animation system
-auto& player = Scene::Current()
+auto& player = Scene::current()
     .add<Transform>("player")
         .position({0, 0, 0})
     .add<CharacterController>()
@@ -47,7 +46,7 @@ auto& player = Scene::Current()
             .addSound("jump", "sfx/jump.wav");
 
 // Example 3: Procedural weapon generation system
-auto& weaponGen = Factory::Create<WeaponGenerator>()
+auto& weaponGen = Factory::create<WeaponGenerator>()
     .add<MeshGenerator>()
         .baseGeometry("models/weapon_base.fbx")
         .connect<VariationGenerator>()
@@ -71,7 +70,7 @@ auto& weaponGen = Factory::Create<WeaponGenerator>()
         .rateOfFire({0.5f, 2.0f});
 
 // Example 4: Post-processing chain
-auto& postProcess = Renderer::Get()
+auto& postProcess = Renderer::get()
     .add<RenderPass>("main")
         .connect<BloomEffect>()
             .threshold(1.0f)
@@ -87,7 +86,7 @@ auto& postProcess = Renderer::Get()
         .connect<FXAAEffect>();
 
 // Example 5: AI behavior tree using nodes
-auto& npc = Scene::Current()
+auto& npc = Scene::current()
     .add<AIController>("guard")
         .add<BehaviorTree>()
             .sequence("patrol")
@@ -109,7 +108,7 @@ auto& npc = Scene::Current()
                     .damage(10.0f);
 
 // Example 6: Particle system setup
-auto& particles = Scene::Current()
+auto& particles = Scene::current()
     .add<ParticleSystem>("magic_effect")
         .maxParticles(1000)
         .emission()
@@ -129,7 +128,7 @@ auto& particles = Scene::Current()
                 .addKey(1.0f, 0.0f);
 
 // Example 7: Shader graph setup
-auto& shader = ShaderGraph::Create("custom_pbr")
+auto& shader = ShaderGraph::create("custom_pbr")
     .add<TextureInput>("albedo")
         .default("textures/default_albedo.png")
     .add<TextureInput>("normal")

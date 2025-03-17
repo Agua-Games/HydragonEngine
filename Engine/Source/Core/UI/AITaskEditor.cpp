@@ -107,7 +107,7 @@ static void ShowTaskDetails() {
     }
 }
 
-void ShowAITaskEditor(bool* p_open, EditorWindowData* windowData) {
+void showAITaskEditor(bool* p_open, EditorWindowData* windowData) {
     if (!p_open || !*p_open)
         return;
 

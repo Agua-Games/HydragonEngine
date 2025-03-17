@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
  * @file AddSceneLayerCommand.h
@@ -18,7 +18,7 @@
 #pragma once
 
 #include "CommandNode.h"
-#include "CommandValidation.h"
+#include "CommandValidator.h"
 #include "SceneNode.h"
 
 namespace hd {
@@ -28,12 +28,12 @@ namespace hd {
  * @return Shared pointer to the command node
  */
 inline std::shared_ptr<CommandNode<SceneNode*, std::string>> 
-CreateAddSceneLayerCommand() {
+createAddSceneLayerCommand() {
     // Create validator
     auto validator = std::make_shared<CommandValidator>();
     
     // Add validation rules
-    validator->AddRule<std::string>("LayerPath",
+    validator->addRule<std::string>("LayerPath",
         [](const std::string& path) { 
             return !path.empty() && path.ends_with(".usd"); 
         },
@@ -45,11 +45,11 @@ CreateAddSceneLayerCommand() {
         return std::async(std::launch::async, [scene, path]() {
             // Simulate async operation
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            scene->AddLayer(path);
+            scene->addLayer(path);
         });
     };
 
-    return MakeAsyncCommandNode<SceneNode*, std::string>(
+    return makeAsyncCommandNode<SceneNode*, std::string>(
         "AddSceneLayer",
         asyncCmd,
         std::make_tuple("Scene", "LayerPath")

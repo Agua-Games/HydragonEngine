@@ -240,7 +240,7 @@ static void ShowTrackView(EditorWindowData* windowData, bool isCollapsed)
     ImGui::EndChild();
 }
 
-void ShowMontageEditor(bool* p_open, EditorWindowData* windowData) 
+void showMontageEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);

@@ -17,7 +17,7 @@ namespace hd {
 static const char* QualityLevels[] = { "Low", "Medium", "High", "Maximum" };
 static int CurrentPreset = 0;
 
-void ShowPerformanceScalabilityEditor(bool* p_open, EditorWindowData* windowData) 
+void showPerformanceScalabilityEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);

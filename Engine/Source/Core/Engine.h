@@ -49,29 +49,29 @@ namespace hd {
 class Engine {
 public:
     // Initialization and shutdown
-    static Engine& GetInstance();
-    bool Initialize();
-    void Shutdown();
+    static Engine& getInstance();
+    bool initialize();
+    void shutdown();
     
     // Core system access
-    NodeGraph& GetNodeGraph();
-    ProceduralOrchestrator& GetProceduralOrchestrator();
-    SystemOrchestrator& GetSystemOrchestrator();
+    NodeGraph& getNodeGraph();
+    ProceduralOrchestrator& getProceduralOrchestrator();
+    SystemOrchestrator& getSystemOrchestrator();
     
     // Runtime control
-    void Update(float deltaTime);
-    void ProcessSystems();
+    void update(float deltaTime);
+    void processSystems();
     
     // System configuration
-    void SetSystemIntent(const SystemIntent& intent);
-    void ConfigureHarmonyParameters(const HarmonyParams& params);
+    void setSystemIntent(const SystemIntent& intent);
+    void configureHarmonyParameters(const HarmonyParams& params);
     
     // Resource management
-    ResourceManager& GetResourceManager();
+    ResourceManager& getResourceManager();
     
     // Debug and development
-    void EnableDebugMode(bool enable);
-    void SetProfilerLevel(ProfilerLevel level);
+    void enableDebugMode(bool enable);
+    void setProfilerLevel(ProfilerLevel level);
 
 private:
     Engine() = default;
@@ -102,11 +102,11 @@ private:
     } m_state;
     
     // Internal methods
-    void InitializeSystems();
-    void SetupDefaultConfiguration();
-    void UpdateHarmonyMetrics();
-    void ProcessSystemIntents();
-    void MaintainSystemHarmony();
+    void initializeSystems();
+    void setupDefaultConfiguration();
+    void updateHarmonyMetrics();
+    void processSystemIntents();
+    void maintainSystemHarmony();
 };
 
 } // namespace hd

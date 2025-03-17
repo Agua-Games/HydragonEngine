@@ -18,6 +18,6 @@ namespace hd {
  *               will display a close button in the upper-right corner, and 
  *               clicking it will set the variable to false.
  */
-void ShowImageTools(bool* p_open, EditorWindowData* windowData);
+void showImageTools(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

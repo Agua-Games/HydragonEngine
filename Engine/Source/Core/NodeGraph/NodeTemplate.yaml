@@ -1,4 +1,4 @@
-# Deprecated. Maybe still used later for user-defined nodes.
+# Deprecated, in favour of C++ files using fluent syntax. Maybe still used later for user-defined nodes.
 
 node:
   # Base Object properties
@@ -48,12 +48,12 @@ node:
   implementation:
     language: "cpp"  # or "python", "lua"
     process_function: |
-      void Process() {
+      void process() {
         auto input = GetInput("input1");
         SetOutput("output1", ProcessValue(input));
       }
     initialize_function: |
-      void Initialize() {
+      void initialize() {
         // Setup code
       }
     cleanup_function: |

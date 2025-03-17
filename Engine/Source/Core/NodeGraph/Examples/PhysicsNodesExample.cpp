@@ -1,3 +1,14 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
+#include "Core/Engine.h"
+#include "Core/NodeGraph/Node.h"
+
+using namespace hd;
+
 // Physics setup
 auto physics = graph.create<PhysicsNode>("vehiclePhysics")
     .mass(1500.0f)

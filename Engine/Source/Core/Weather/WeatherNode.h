@@ -38,7 +38,7 @@ struct WeatherInfo : public NodeInfo {
             "PerformanceMetrics"
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
     }
@@ -48,23 +48,23 @@ class WeatherNode : public Node<WeatherState, AtmosphereParams, CloudData, Preci
 public:
     explicit WeatherNode(const WeatherInfo& info = WeatherInfo())
         : Node(info) {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
-        weatherPatternId = orchestrator.RegisterPattern(CreateDefaultWeatherPattern());
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        weatherPatternId = orchestrator.registerPattern(createDefaultWeatherPattern());
     }
 
-    void ProcessNodeGraph() override {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void processNodeGraph() override {
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Process inputs
-        auto time = GetInputValue<float>("Time");
-        auto location = GetInputValue<glm::vec3>("Location");
-        auto temperature = GetInputValue<float>("Temperature");
-        auto humidity = GetInputValue<float>("Humidity");
-        auto windDir = GetInputValue<glm::vec3>("WindDirection");
-        auto windSpeed = GetInputValue<float>("WindSpeed");
-        auto intent = GetInputValue<OctaveParams>("ProceduralIntent");
-        auto fogParams = GetInputValue<FogParams>("FogParams");
-        auto precipParams = GetInputValue<PrecipitationParams>("PrecipParams");
+        auto time = getInputValue<float>("Time");
+        auto location = getInputValue<glm::vec3>("Location");
+        auto temperature = getInputValue<float>("Temperature");
+        auto humidity = getInputValue<float>("Humidity");
+        auto windDir = getInputValue<glm::vec3>("WindDirection");
+        auto windSpeed = getInputValue<float>("WindSpeed");
+        auto intent = getInputValue<OctaveParams>("ProceduralIntent");
+        auto fogParams = getInputValue<FogParams>("FogParams");
+        auto precipParams = getInputValue<PrecipitationParams>("PrecipParams");
         
         // Create weather pattern parameters
         ProceduralStructureParams params;
@@ -75,35 +75,35 @@ public:
         params.vectorParams = {windDir, windSpeed};
         
         // Update weather pattern
-        weatherPatternId = orchestrator.CreateWeatherPattern(params);
-        auto weatherData = orchestrator.GetProceduralPattern(weatherPatternId);
+        weatherPatternId = orchestrator.createWeatherPattern(params);
+        auto weatherData = orchestrator.getProceduralPattern(weatherPatternId);
         
         // Update outputs
-        SetOutputValue("WeatherState", ComputeWeatherState(weatherData));
-        SetOutputValue("AtmosphereParams", ComputeAtmosphereParams(weatherData));
-        SetOutputValue("CloudData", GenerateCloudData(weatherData));
-        SetOutputValue("PrecipitationData", GeneratePrecipitationData(weatherData));
-        SetOutputValue("WeatherEvents", GenerateWeatherEvents(weatherData));
-        SetOutputValue("PerformanceMetrics", ComputePerformanceMetrics());
+        setOutputValue("WeatherState", computeWeatherState(weatherData));
+        setOutputValue("AtmosphereParams", computeAtmosphereParams(weatherData));
+        setOutputValue("CloudData", generateCloudData(weatherData));
+        setOutputValue("PrecipitationData", generatePrecipitationData(weatherData));
+        setOutputValue("WeatherEvents", generateWeatherEvents(weatherData));
+        setOutputValue("PerformanceMetrics", computePerformanceMetrics());
     }
 
-    std::vector<std::string> GetInputPorts() const override {
-        return GetNodeInfo().Inputs;
+    std::vector<std::string> getInputPorts() const override {
+        return getNodeInfo().Inputs;
     }
 
-    std::vector<std::string> GetOutputPorts() const override {
-        return GetNodeInfo().Outputs;
+    std::vector<std::string> getOutputPorts() const override {
+        return getNodeInfo().Outputs;
     }
 
 private:
     std::string weatherPatternId;
     
-    WeatherState ComputeWeatherState(const ProceduralPattern& pattern);
-    AtmosphereParams ComputeAtmosphereParams(const ProceduralPattern& pattern);
-    CloudData GenerateCloudData(const ProceduralPattern& pattern);
-    PrecipitationData GeneratePrecipitationData(const ProceduralPattern& pattern);
-    WeatherEvents GenerateWeatherEvents(const ProceduralPattern& pattern);
-    PerformanceMetrics ComputePerformanceMetrics();
+    WeatherState computeWeatherState(const ProceduralPattern& pattern);
+    AtmosphereParams computeAtmosphereParams(const ProceduralPattern& pattern);
+    CloudData generateCloudData(const ProceduralPattern& pattern);
+    PrecipitationData generatePrecipitationData(const ProceduralPattern& pattern);
+    WeatherEvents generateWeatherEvents(const ProceduralPattern& pattern);
+    PerformanceMetrics computePerformanceMetrics();
 };
 
 } // namespace hd

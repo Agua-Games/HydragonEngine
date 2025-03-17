@@ -14,7 +14,7 @@
 
 namespace hd {
 
-void ShowViewport3DTools(bool* p_open, EditorWindowData* windowData) 
+void showViewport3DTools(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Viewport 3D Tools", p_open, ImGuiWindowFlags_MenuBar))

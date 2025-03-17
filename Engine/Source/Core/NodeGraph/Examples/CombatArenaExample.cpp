@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
+
 #include "Core/Engine.h"
 #include "Core/Scene/SceneNode.h"
 #include "Core/Effects/PostProcess.h"
@@ -5,13 +12,14 @@
 #include "Core/Particles/ParticleSystem.h"
 #include "Core/Physics/PhysicsNode.h"
 #include "Core/Gameplay/TriggerNode.h"
+#include "Core/NodeGraph/Node.h"
 
 namespace hd {
 
-class CombatArenaSetup {
+class CombatArenaSetup_Example_01 : public Node {
 public:
-    void setupLevel() {
-        auto& engine = Engine::GetInstance();
+    void setup() {                                  // Going to be replace with Initialize()
+        auto& engine = Engine::getInstance();
         auto& graph = engine.getNodeGraph();
 
         // Main scene setup

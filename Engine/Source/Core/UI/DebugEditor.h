@@ -17,6 +17,6 @@ namespace hd {
  * @param p_open Pointer to boolean controlling window visibility
  * @param windowData Editor window data containing global settings
  */
-void ShowDebugEditor(bool* p_open, EditorWindowData* windowData);
+void showDebugEditor(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

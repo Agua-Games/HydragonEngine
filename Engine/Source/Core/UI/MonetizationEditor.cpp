@@ -50,7 +50,7 @@ struct MonetizationState {
     } currentView = ViewMode::Dashboard;
 };
 
-void ShowMonetizationEditor(bool* p_open, EditorWindowData* windowData) 
+void showMonetizationEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static MonetizationState state{};
     

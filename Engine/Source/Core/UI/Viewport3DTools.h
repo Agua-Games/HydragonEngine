@@ -12,6 +12,6 @@
 
 namespace hd {
 
-void ShowViewport3DTools(bool* p_open, EditorWindowData* windowData);
+void showViewport3DTools(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

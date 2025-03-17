@@ -54,7 +54,7 @@ void RunApplication() {
 
     // === Initialize Resources Manager ===
     // Get the singleton instance of ResourceManager
-    hd::ResourceManager& resourceManager = hd::ResourceManager::GetInstance();
+    hd::ResourceManager& resourceManager = hd::ResourceManager::getInstance();
 
     // Call GetEngineRootPath() to get the engine root path
     fs::path rootPath = resourceManager.GetEngineRootPath();

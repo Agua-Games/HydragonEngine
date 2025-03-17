@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
+
 // Audio mixing/processing
 auto audio = graph.create<AudioMixerNode>("gameMixer")
     .connect<AudioTrackNode>("music")

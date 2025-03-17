@@ -47,7 +47,7 @@ struct PresetState {
     } currentView = ViewMode::Library;
 };
 
-void ShowPresetEditor(bool* p_open, EditorWindowData* windowData) 
+void showPresetEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static PresetState state{};
     

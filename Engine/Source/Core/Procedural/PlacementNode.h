@@ -2,11 +2,11 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ProcPlacementNode.h
- * @brief ProcPlacementNode represents a procedural placement node in the engine's node graph.
+ * @file PlacementNode.h
+ * @brief PlacementNode represents a procedural placement node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
- * - ProcPlacement nodes are used to place objects procedurally based on density fields and rules.
+ * - Placement nodes are used to place objects procedurally based on density fields and rules.
  * 
  * TODO:
  * - Update the whole content to match the latest Object and Node design.
@@ -46,31 +46,31 @@ struct PlacementInfo : public NodeInfo {
             "Metrics"            // Placement statistics
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
     }
 };
 
-class ProcPlacementNode : public Node {
+class PlacementNode : public Node {
 public:
-    explicit ProcPlacementNode(const PlacementInfo& info = PlacementInfo())
+    explicit PlacementNode(const PlacementInfo& info = PlacementInfo())
         : Node(info) {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
-        placementPatternId = orchestrator.RegisterPattern(CreateDefaultPlacementPattern());
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        placementPatternId = orchestrator.registerPattern(createDefaultPlacementPattern());
     }
 
-    void ProcessNodeGraph() override {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void processNodeGraph() override {
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Get inputs
-        auto densityMap = GetInputValue<DensityField>("DensityMap");
-        auto mask = GetInputValue<PlacementMask>("PlacementMask");
-        auto bounds = GetInputValue<BoundingVolume>("Bounds");
-        auto spacing = GetInputValue<SpacingRules>("SpacingRules");
-        auto orientRules = GetInputValue<OrientationRules>("Orientation");
-        auto scaleRules = GetInputValue<ScaleRules>("Scale");
-        auto seed = GetInputValue<uint32_t>("RandomSeed");
+        auto densityMap = getInputValue<DensityField>("DensityMap");
+        auto mask = getInputValue<PlacementMask>("PlacementMask");
+        auto bounds = getInputValue<BoundingVolume>("Bounds");
+        auto spacing = getInputValue<SpacingRules>("SpacingRules");
+        auto orientRules = getInputValue<OrientationRules>("Orientation");
+        auto scaleRules = getInputValue<ScaleRules>("Scale");
+        auto seed = getInputValue<uint32_t>("RandomSeed");
         
         // Create placement parameters
         ProceduralStructureParams params;
@@ -84,16 +84,16 @@ public:
         params.seed = seed;
         
         // Generate placement pattern
-        placementPatternId = orchestrator.CreatePlacementPattern(params);
-        auto placementData = orchestrator.GetProceduralPattern(placementPatternId);
+        placementPatternId = orchestrator.createPlacementPattern(params);
+        auto placementData = orchestrator.getProceduralPattern(placementPatternId);
         
         // Set outputs
-        SetOutputValue("Points", ExtractPoints(placementData));
-        SetOutputValue("Rotations", ExtractRotations(placementData));
-        SetOutputValue("Scales", ExtractScales(placementData));
-        SetOutputValue("InstanceData", ExtractInstanceData(placementData));
-        SetOutputValue("ClusterInfo", ExtractClusterInfo(placementData));
-        SetOutputValue("Metrics", ComputeMetrics(placementData));
+        setOutputValue("Points", extractPoints(placementData));
+        setOutputValue("Rotations", extractRotations(placementData));
+        setOutputValue("Scales", extractScales(placementData));
+        setOutputValue("InstanceData", extractInstanceData(placementData));
+        setOutputValue("ClusterInfo", extractClusterInfo(placementData));
+        setOutputValue("Metrics", computeMetrics(placementData));
     }
 
 private:

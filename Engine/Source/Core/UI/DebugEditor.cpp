@@ -17,7 +17,7 @@ namespace hd {
 
 float filter_InputTextWidth = 500.0f;
 
-void ShowDebugEditor(bool* p_open, EditorWindowData* windowData) 
+void showDebugEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Debug", p_open, ImGuiWindowFlags_MenuBar))

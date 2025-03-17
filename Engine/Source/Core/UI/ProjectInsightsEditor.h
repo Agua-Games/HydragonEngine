@@ -33,6 +33,6 @@ struct ProjectInsightsState {
 };
 
 struct EditorWindowData;
-void ShowProjectInsightsEditor(bool* p_open, EditorWindowData* windowData);
+void showProjectInsightsEditor(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

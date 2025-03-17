@@ -12,6 +12,6 @@
 
 namespace hd {
 
-void ShowSettingsEditor(bool* p_open, EditorWindowData* windowData);
+void showSettingsEditor(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

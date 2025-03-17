@@ -26,7 +26,7 @@ namespace hd {
 VulkanCore::~VulkanCore() {
     if (initialized) {
         try {
-            Shutdown();
+            shutdown();
         } catch (const std::exception& e) {
             std::cerr << "Error during shutdown: " << e.what() << std::endl;
         }

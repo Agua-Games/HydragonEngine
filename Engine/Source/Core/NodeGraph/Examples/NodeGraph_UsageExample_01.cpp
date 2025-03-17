@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
  * @file NodeGraph_UsageExample_01.cpp
@@ -9,7 +9,7 @@
 using namespace hd;
 
 // Example 1: Creating a simple render pipeline
-auto& renderer = Engine::Get().renderer()
+auto& renderer = Engine::get().renderer()
     .add<Camera>()
         .position({0, 5, -10})
         .target({0, 0, 0})
@@ -18,7 +18,7 @@ auto& renderer = Engine::Get().renderer()
         .material("materials/pbr.mat");
 
 // Example 2: Setting up a character with physics
-auto& character = Scene::Current()
+auto& character = Scene::current()
     .add<Transform>()
         .position({0, 0, 0})
         .connect<RigidBody>()
@@ -28,7 +28,7 @@ auto& character = Scene::Current()
                 .height(2.0f);
 
 // Example 3: Procedural building generation
-auto& building = Scene::Current()
+auto& building = Scene::current()
     .add<ProceduralBuilding>()
         .floors(5)
         .style("modern")
@@ -36,7 +36,7 @@ auto& building = Scene::Current()
             .connect<CollisionGenerator>();
 
 // Example 4: Audio system setup
-auto& audio = Engine::Get().audio()
+auto& audio = Engine::get().audio()
     .add<AudioSource>("background")
         .file("music/ambient.ogg")
         .loop(true)
@@ -45,7 +45,7 @@ auto& audio = Engine::Get().audio()
         .connect<Transform>();
 
 // Example 5: Processing chain
-auto& processor = ImageProcessor::Create()
+auto& processor = ImageProcessor::create()
     .add<ColorCorrection>()
         .contrast(1.2f)
         .saturation(1.1f)

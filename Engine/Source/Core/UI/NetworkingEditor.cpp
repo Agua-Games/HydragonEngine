@@ -13,7 +13,7 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowNetworkingEditor(bool* p_open, EditorWindowData* windowData) 
+void showNetworkingEditor(bool* p_open, EditorWindowData* windowData) 
 {
     // Static buffers for network statistics
     static float bandwidthHistory[100] = {};

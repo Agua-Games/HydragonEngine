@@ -1,15 +1,22 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
 #include "Core/Engine.h"
 #include "Core/Scene/OpenWorldScene.h"
 #include "Core/Streaming/ChunkManager.h"
 #include "Core/Environment/BiomeSystem.h"
 #include "Core/AI/EcosystemAI.h"
+#include "Core/NodeGraph/Node.h"
 
 namespace hd {
 
-class OpenWorldSetup {
+class OpenWorldSetupExample_01 : public Node {
 public:
-    void setupWorld() {
-        auto& engine = Engine::GetInstance();
+    void setup() {
+        auto& engine = Engine::getInstance();
         auto& graph = engine.getNodeGraph();
 
         // Main world setup with streaming

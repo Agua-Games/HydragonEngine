@@ -20,63 +20,63 @@ namespace hd {
 class SelfModifyingNode : public Node {
 public:
     // Node modification interface
-    virtual bool CanModifyStructure() const { return m_allowStructuralChanges; }
-    virtual bool CanModifyBehavior() const { return m_allowBehaviorChanges; }
+    virtual bool canModifyStructure() const { return m_allowStructuralChanges; }
+    virtual bool canModifyBehavior() const { return m_allowBehaviorChanges; }
     
     // Runtime code generation
-    void GenerateImplementation() {
-        auto context = CreateCodeGenContext();
-        context.AddProcessTemplate(GetProcessTemplate());
+    void generateImplementation() {
+        auto context = createCodeGenContext();
+        context.addProcessTemplate(getProcessTemplate());
         
-        if (auto generatedCode = context.GenerateCode()) {
-            if (ValidateGeneratedCode(*generatedCode)) {
-                ApplyGeneratedCode(*generatedCode);
+        if (auto generatedCode = context.generateCode()) {
+            if (validateGeneratedCode(*generatedCode)) {
+                applyGeneratedCode(*generatedCode);
             }
         }
     }
     
     // Node graph modification
-    void ModifyNodeStructure(const NodeModification& mod) {
-        if (!CanModifyStructure()) return;
+    void modifyNodeStructure(const NodeModification& mod) {
+        if (!canModifyStructure()) return;
         
         // Create modification transaction
-        auto transaction = BeginModification();
+        auto transaction = beginModification();
         
         // Apply structural changes
         for (const auto& change : mod.structuralChanges) {
-            if (ValidateStructuralChange(change)) {
-                ApplyStructuralChange(change);
+            if (validateStructuralChange(change)) {
+                applyStructuralChange(change);
             }
         }
         
         // Commit if all changes are valid
-        if (transaction.ValidateAll()) {
-            transaction.Commit();
+        if (transaction.validateAll()) {
+            transaction.commit();
         }
     }
 
 protected:
     // Safe modification helpers
-    bool ValidateStructuralChange(const StructuralChange& change) {
+    bool validateStructuralChange(const StructuralChange& change) {
         // Check if change maintains graph integrity
-        if (!ValidateGraphIntegrity(change)) return false;
+        if (!validateGraphIntegrity(change)) return false;
         
         // Check if change preserves core functionality
-        if (!ValidateCoreFunctionality(change)) return false;
+        if (!validateCoreFunctionality(change)) return false;
         
         // Check if change maintains type safety
-        return ValidateTypeSafety(change);
+        return validateTypeSafety(change);
     }
     
-    bool ValidateGeneratedCode(const std::string& code) {
+    bool validateGeneratedCode(const std::string& code) {
         // Syntax validation
-        if (!ValidateSyntax(code)) return false;
+        if (!validateSyntax(code)) return false;
         
         // Security validation
-        if (!ValidateSecurity(code)) return false;
+        if (!validateSecurity(code)) return false;
         
         // Runtime validation in sandbox
-        return ValidateInSandbox(code);
+        return validateInSandbox(code);
     }
 
 private:

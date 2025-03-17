@@ -19,7 +19,7 @@ namespace hd {
 static bool showStats = true;
 static bool showGrid = true;
 
-void ShowViewport3D(bool* p_open, EditorWindowData* windowData) 
+void showViewport3D(bool* p_open, EditorWindowData* windowData) 
 {
     // Configure window to maximize space for 3D content
     ImGui::SetNextWindowBgAlpha(1.0f);

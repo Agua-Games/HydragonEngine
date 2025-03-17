@@ -69,7 +69,7 @@ struct StreamingControlState {
 
 static StreamingControlState s_streamingState;
 
-void ShowStreamingEditor(bool* p_open, EditorWindowData* windowData) 
+void showStreamingEditor(bool* p_open, EditorWindowData* windowData) 
 {
     // Store the current padding to restore it later
     const ImVec2 originalPadding = ImGui::GetStyle().WindowPadding;

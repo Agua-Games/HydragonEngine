@@ -1,3 +1,17 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
+#include "Core/Engine.h"
+#include "ParticleSystemNode.h"
+#include "ProcOrchestrator.h"
+#include "ProceduralTypes.h"
+#include "ProcEvolutionNode.h"
+#include "PatternNode.h"
+
+using namespace hd;
 // Particle system
 auto particles = graph.create<ParticleSystemNode>("fire")
     .maxParticles(1000)

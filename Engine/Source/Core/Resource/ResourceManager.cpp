@@ -1,9 +1,13 @@
 /**
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
+ * 
+ * @file ResourceManager.cpp
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Note for coders: Unfortunately, imgui uses capital letter for function names. This is why you may see mixed capitalization in this file and other files which
+ * use imgui.
  */
-#pragma once
-
 #include <string>
 #include <filesystem>
 #include <stdexcept>
@@ -17,12 +21,12 @@
 #include "IconsMaterialSymbols.h"
 
 namespace hd {
-ResourceManager& ResourceManager::GetInstance() {
+ResourceManager& ResourceManager::getInstance() {
     static ResourceManager instance;
     return instance;
 }
 
-fs::path ResourceManager::GetEngineRootPath() {
+fs::path ResourceManager::getEngineRootPath() {
     // Get the path to the executable, using a different approach for each platform
     char buffer[1024]; // Fixed-size path buffer for all platforms
 
@@ -56,13 +60,13 @@ fs::path ResourceManager::GetEngineRootPath() {
     return executablePath.parent_path().parent_path().parent_path();
 }
 
-std::string ResourceManager::GetFontPath(const std::string& fontName) {
-    fs::path engineRoot = ResourceManager::GetInstance().GetEngineRootPath();
+std::string ResourceManager::getFontPath(const std::string& fontName) {
+    fs::path engineRoot = ResourceManager::getInstance().getEngineRootPath();
     return (engineRoot / "Engine" / "Assets" / "Fonts" / fontName).string();
 }
 
-std::string ResourceManager::GetIconFontPath(const std::string& iconFontName) {
-    fs::path engineRoot = ResourceManager::GetInstance().GetEngineRootPath();
+std::string ResourceManager::getIconFontPath(const std::string& iconFontName) {
+    fs::path engineRoot = ResourceManager::getInstance().getEngineRootPath();
     fs::path fullPath = engineRoot / "Engine "/ "Assets" / "Fonts" / "Icons" / iconFontName;
     
     // Debug prints
@@ -73,7 +77,7 @@ std::string ResourceManager::GetIconFontPath(const std::string& iconFontName) {
     return fullPath.string();
 }
 
-void ResourceManager::LoadFonts() {
+void ResourceManager::loadFonts() {
     ImGuiIO& io = ImGui::GetIO();
 
     // Load font
@@ -84,7 +88,7 @@ void ResourceManager::LoadFonts() {
     }
 
     // Load Font Awesome icon font
-    std::string iconFontPath = GetIconFontPath(FONT_ICON_FILE_NAME_FAR);
+    std::string iconFontPath = getIconFontPath(FONT_ICON_FILE_NAME_FAR);
     
     // Debug print
     printf("Loading icon font from: %s\n", iconFontPath.c_str());

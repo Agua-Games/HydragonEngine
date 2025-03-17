@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowAudioEditor(bool* p_open, EditorWindowData* windowData);
+void showAudioEditor(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

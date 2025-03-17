@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowMontageEditor(bool* p_open, EditorWindowData* windowData);
+void showMontageEditor(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

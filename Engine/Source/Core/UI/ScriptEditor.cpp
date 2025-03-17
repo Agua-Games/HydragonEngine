@@ -15,7 +15,7 @@
 
 namespace hd {
 
-void ShowScriptEditor(bool* p_open, EditorWindowData* windowData) 
+void showScriptEditor(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;
@@ -312,7 +312,7 @@ void ShowScriptEditor(bool* p_open, EditorWindowData* windowData)
                         {
                             static char cppText1[4096] = 
                                 "#include \"PlayerController.h\"\n\n"
-                                "void PlayerController::Update(float deltaTime)\n"
+                                "void PlayerController::update(float deltaTime)\n"
                                 "{\n"
                                 "    // Handle player input\n"
                                 "    HandleMovement(deltaTime);\n"

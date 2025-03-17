@@ -36,7 +36,7 @@ struct PrecipitationInfo : public NodeInfo {
             "AccumulationData"     // Snow/water accumulation
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
         IsStreamable = true;
@@ -47,28 +47,28 @@ class ProcPrecipitationNode : public Node<ParticleData, SurfaceEffects, AudioDat
 public:
     explicit ProcPrecipitationNode(const PrecipitationInfo& info = PrecipitationInfo())
         : Node(info) {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
-        precipPatternId = orchestrator.RegisterPattern(CreateDefaultPrecipitationPattern());
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        precipPatternId = orchestrator.registerPattern(createDefaultPrecipitationPattern());
     }
 
     ~ProcPrecipitationNode() {
         if (!precipPatternId.empty()) {
-            auto& orchestrator = ProceduralOrchestrator::GetInstance();
-            orchestrator.UnregisterPattern(precipPatternId);
+            auto& orchestrator = ProceduralOrchestrator::getInstance();
+            orchestrator.unregisterPattern(precipPatternId);
         }
     }
 
-    void ProcessNodeGraph() override {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void processNodeGraph() override {
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
 
         // Get input values
-        auto atmosphereState = GetPortValue<AtmosphereState>("AtmosphereState");
-        auto cloudData = GetPortValue<CloudData>("CloudData");
-        auto windVector = GetPortValue<glm::vec3>("WindVector");
-        auto intensity = GetPortValue<float>("Intensity");
-        auto temperature = GetPortValue<float>("Temperature");
-        auto particleParams = GetPortValue<ParticleParameters>("ParticleParams");
-        auto collisionMask = GetPortValue<CollisionData>("CollisionMask");
+        auto atmosphereState = getPortValue<AtmosphereState>("AtmosphereState");
+        auto cloudData = getPortValue<CloudData>("CloudData");
+        auto windVector = getPortValue<glm::vec3>("WindVector");
+        auto intensity = getPortValue<float>("Intensity");
+        auto temperature = getPortValue<float>("Temperature");
+        auto particleParams = getPortValue<ParticleParameters>("ParticleParams");
+        auto collisionMask = getPortValue<CollisionData>("CollisionMask");
 
         // Update procedural pattern
         ProceduralStructureParams patternParams;
@@ -76,44 +76,44 @@ public:
         patternParams.temperature = temperature;
         patternParams.windInfluence = glm::length(windVector);
         
-        precipPatternId = orchestrator.CreateMaterialPattern(patternParams);
-        auto precipPattern = orchestrator.GetProceduralPattern(precipPatternId);
+        precipPatternId = orchestrator.createMaterialPattern(patternParams);
+        auto precipPattern = orchestrator.getProceduralPattern(precipPatternId);
 
         // Process precipitation using pattern data
-        auto particleData = GenerateParticleData(cloudData, precipPattern, particleParams);
-        auto surfaceEffects = ProcessSurfaceEffects(particleData, collisionMask);
-        auto audioData = GenerateAudioData(particleData, surfaceEffects);
-        auto wetnessMap = UpdateWetnessMap(surfaceEffects, temperature);
-        auto accumulationData = ProcessAccumulation(particleData, temperature);
+        auto particleData = generateParticleData(cloudData, precipPattern, particleParams);
+        auto surfaceEffects = processSurfaceEffects(particleData, collisionMask);
+        auto audioData = generateAudioData(particleData, surfaceEffects);
+        auto wetnessMap = updateWetnessMap(surfaceEffects, temperature);
+        auto accumulationData = processAccumulation(particleData, temperature);
 
         // Set outputs
-        SetPortValue("ParticleData", particleData);
-        SetPortValue("SurfaceEffects", surfaceEffects);
-        SetPortValue("AudioData", audioData);
-        SetPortValue("WetnessMap", wetnessMap);
-        SetPortValue("AccumulationData", accumulationData);
+        setPortValue("ParticleData", particleData);
+        setPortValue("SurfaceEffects", surfaceEffects);
+        setPortValue("AudioData", audioData);
+        setPortValue("WetnessMap", wetnessMap);
+        setPortValue("AccumulationData", accumulationData);
     }
 
-    std::vector<std::string> GetInputPorts() const override {
-        return GetNodeInfo().Inputs;
+    std::vector<std::string> getInputPorts() const override {
+        return getNodeInfo().Inputs;
     }
 
-    std::vector<std::string> GetOutputPorts() const override {
-        return GetNodeInfo().Outputs;
+    std::vector<std::string> getOutputPorts() const override {
+        return getNodeInfo().Outputs;
     }
 
-    void OnResume() override {}
-    void OnPause() override {}
-    void OnDirty() override {
-        MarkDirty();
+    void onResume() override {}
+    void onPause() override {}
+    void onDirty() override {
+        markDirty();
     }
 
-    uint64_t ComputeCacheKey() const override {
+    uint64_t computeCacheKey() const override {
         std::size_t seed = 0;
-        HashCombine(seed, GetPortValue<AtmosphereState>("AtmosphereState"));
-        HashCombine(seed, GetPortValue<CloudData>("CloudData"));
-        HashCombine(seed, GetPortValue<float>("Intensity"));
-        HashCombine(seed, GetPortValue<float>("Temperature"));
+        HashCombine(seed, getPortValue<AtmosphereState>("AtmosphereState"));
+        HashCombine(seed, getPortValue<CloudData>("CloudData"));
+        HashCombine(seed, getPortValue<float>("Intensity"));
+        HashCombine(seed, getPortValue<float>("Temperature"));
         HashCombine(seed, precipPatternId);
         return seed;
     }

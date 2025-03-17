@@ -38,7 +38,7 @@ void RunApplication() {
 
     try {
         // Initialize Vulkan backend
-        hd::Graphics::VulkanCore& vulkan = hd::Graphics::VulkanCore::GetInstance();
+        hd::Graphics::VulkanCore& vulkan = hd::Graphics::VulkanCore::getInstance();
         if (!vulkan.initialize(window)) {
             throw std::runtime_error("Failed to initialize Vulkan backend");
         }
@@ -49,7 +49,7 @@ void RunApplication() {
         }
 
         // Initialize Resource Manager
-        hd::ResourceManager& resourceManager = hd::ResourceManager::GetInstance();
+        hd::ResourceManager& resourceManager = hd::ResourceManager::getInstance();
         fs::path rootPath = resourceManager.GetEngineRootPath();
 
         // Main loop

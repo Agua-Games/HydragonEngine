@@ -32,23 +32,23 @@ struct ConnectionValidationResult {
 class ConnectionValidator {
 public:
     // Basic validation
-    static ConnectionValidationResult ValidateConnection(
+    static ConnectionValidationResult validateConnection(
         Node* sourceNode, const std::string& outputPort,
         Node* targetNode, const std::string& inputPort);
     
     // Advanced validation
-    static ConnectionValidationResult ValidateGraphIntegrity(const std::vector<Node*>& nodes);
-    static bool DetectCycles(const std::vector<Node*>& nodes);
-    static std::vector<Node*> FindDisconnectedNodes(const std::vector<Node*>& nodes);
+    static ConnectionValidationResult validateGraphIntegrity(const std::vector<Node*>& nodes);
+    static bool detectCycles(const std::vector<Node*>& nodes);
+    static std::vector<Node*> findDisconnectedNodes(const std::vector<Node*>& nodes);
     
     // Validation visualization
-    static ImColor GetCompatibilityColor(float compatibilityScore);
-    static std::string GetCompatibilityTooltip(const ConnectionValidationResult& result);
+    static ImColor getCompatibilityColor(float compatibilityScore);
+    static std::string getCompatibilityTooltip(const ConnectionValidationResult& result);
     
     // Suggestion system
-    static std::vector<std::pair<Node*, std::string>> SuggestCompatibleOutputs(
+    static std::vector<std::pair<Node*, std::string>> suggestCompatibleOutputs(
         Node* targetNode, const std::string& inputPort);
-    static std::vector<std::pair<Node*, std::string>> SuggestCompatibleInputs(
+    static std::vector<std::pair<Node*, std::string>> suggestCompatibleInputs(
         Node* sourceNode, const std::string& outputPort);
 };
 

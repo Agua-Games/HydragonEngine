@@ -46,6 +46,6 @@ struct Task {
 };
 
 // Main editor function
-void ShowAITaskEditor(bool* p_open, EditorWindowData* windowData);
+void showAITaskEditor(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

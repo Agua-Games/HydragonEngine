@@ -36,36 +36,36 @@ public:
      * @brief Get the singleton instance of ResourceManager
      * @returns The singleton instance
      */
-    static ResourceManager& GetInstance();
+    static ResourceManager& getInstance();
 
     /**
      * @brief Get the engine root path
      * @returns The engine root path
      */
-    fs::path GetEngineRootPath();
+    fs::path getEngineRootPath();
 
     /**
      * @brief Get the path to a font
      * @param fontName The name of the font
      * @returns The path to the font
      */
-    static std::string GetFontPath(const std::string& fontName);
+    static std::string getFontPath(const std::string& fontName);
     
     /**
      * @brief Get the path to an icon font
      * @param iconFontName The name of the icon font
      * @returns The path to the icon font
      */
-    static std::string GetIconFontPath(const std::string& iconFontName);
+    static std::string getIconFontPath(const std::string& iconFontName);
     
     /**
      * @brief Load fonts for ImGui
      */
-    void LoadFonts();
+    void loadFonts();
 
     // Getters for fonts
-    ImFont* GetDefaultFont() const { return m_defaultFont; }
-    ImFont* GetIconFont() const { return m_iconFont; }
+    ImFont* getDefaultFont() const { return m_defaultFont; }
+    ImFont* getIconFont() const { return m_iconFont; }
 
 private:
     // Private constructor to prevent instantiation

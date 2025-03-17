@@ -21,7 +21,7 @@ const char* GetAssetTypeIcon(int index);
 // Static variables for persistent state
 static float s_thumbnailScale = 1.0f;
 
-void ShowAssetManager(bool* p_open, EditorWindowData* windowData) 
+void showAssetManager(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;

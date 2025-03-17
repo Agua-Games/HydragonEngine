@@ -25,7 +25,7 @@ static float toolbarMaxHeight = 50.0f;
  *               will display a close button in the upper-right corner, and 
  *               clicking it will set the variable to false.
  */
-void ShowTopToolbar(bool* p_open, EditorWindowData* windowData)
+void showTopToolbar(bool* p_open, EditorWindowData* windowData)
 {
     // Set the toolbar to a horizontal strip layout
     ImGuiWindowClass window_class;

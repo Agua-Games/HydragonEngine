@@ -17,6 +17,6 @@ namespace hd {
  *               will display a close button in the upper-right corner, and 
  *               clicking it will set the variable to false.
  */
-void ShowRightToolbar(bool* p_open, EditorWindowData* windowData);
+void showRightToolbar(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

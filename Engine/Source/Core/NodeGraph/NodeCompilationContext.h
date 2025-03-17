@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  */
 #pragma once
@@ -14,17 +14,17 @@ class Node;
 
 class NodeCompilationContext {
 public:
-    void AddDefaultNodeCompilation(Node* node);
-    void AddOptimizedNodeCompilation(Node* node, const std::string& optimizationHint);
-    void AddInlinedNodeCompilation(Node* node);
+    void addDefaultNodeCompilation(Node* node);
+    void addOptimizedNodeCompilation(Node* node, const std::string& optimizationHint);
+    void addInlinedNodeCompilation(Node* node);
     
-    bool ValidateCompilation() const;
-    void GenerateCompiledOutput(const std::string& targetPath);
+    bool validateCompilation() const;
+    void generateCompiledOutput(const std::string& targetPath);
 
     // Optimization settings
-    void SetOptimizationLevel(int level) { optimizationLevel = level; }
-    void EnableInlining(bool enable) { inliningEnabled = enable; }
-    void SetMemoryLimit(size_t bytes) { memoryLimit = bytes; }
+    void setOptimizationLevel(int level) { optimizationLevel = level; }
+    void enableInlining(bool enable) { inliningEnabled = enable; }
+    void setMemoryLimit(size_t bytes) { memoryLimit = bytes; }
 
 private:
     struct CompilationUnit {

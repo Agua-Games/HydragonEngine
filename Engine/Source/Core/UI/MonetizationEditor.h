@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowMonetizationEditor(bool* p_open, EditorWindowData* windowData);
+void showMonetizationEditor(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

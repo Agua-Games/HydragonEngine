@@ -12,6 +12,6 @@
 
 namespace hd {
 
-void ShowTopToolbar(bool* p_open, EditorWindowData* windowData);
+void showTopToolbar(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

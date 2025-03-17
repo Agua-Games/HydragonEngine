@@ -48,7 +48,7 @@ public:
     explicit SkeletonNode(const SkeletonInfo& info = SkeletonInfo())
         : Node(info) {}
 
-    void ProcessNodeGraph() override;
+    void processNodeGraph() override;
 };
 
 } // namespace hd

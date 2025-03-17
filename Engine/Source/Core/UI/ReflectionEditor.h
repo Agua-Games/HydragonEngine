@@ -12,6 +12,6 @@
 
 namespace hd {
 
-void ShowReflectionEditor(bool* p_open, EditorWindowData* windowData);
+void showReflectionEditor(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

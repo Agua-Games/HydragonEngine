@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowPresetEditor(bool* p_open, EditorWindowData* windowData);
+void showPresetEditor(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

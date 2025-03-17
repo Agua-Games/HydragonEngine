@@ -57,37 +57,37 @@ public:
         , inputNames(std::move(inNames))
         , isAsynchronous(true) {}
 
-    void ProcessNodeGraph() override {
+    void processNodeGraph() override {
         if (isAsynchronous) {
-            ExecuteAsyncCommand(std::index_sequence_for<Inputs...>{});
+            executeAsyncCommand(std::index_sequence_for<Inputs...>{});
         } else {
-            ExecuteCommand(std::index_sequence_for<Inputs...>{});
+            executeCommand(std::index_sequence_for<Inputs...>{});
         }
     }
 
-    std::future<void> LoadAsync() override {
+    std::future<void> loadAsync() override {
         if (isAsynchronous) {
             return std::async(std::launch::async, [this]() {
-                ProcessNodeGraph();
+                processNodeGraph();
             });
         }
-        return Node::LoadAsync();
+        return Node::loadAsync();
     }
 
     // Required overrides
-    void OnResume() override {
+    void onResume() override {
         if (!pendingTasks.empty()) {
             // Resume pending async tasks
         }
     }
     
-    void OnPause() override {
+    void onPause() override {
         if (!pendingTasks.empty()) {
             // Pause/suspend pending async tasks
         }
     }
     
-    void OnDirty() override {
+    void onDirty() override {
         pendingTasks.clear();
     }
 
@@ -98,14 +98,14 @@ public:
      * recomputation. The other design choice would be to have a dedicated "cache checkpoint" node, dedicated to marking cache checkpoints, but this venue would lead to
      * more verbosity.
      */
-    bool CanCache() const override { return true; }
+    bool canCache() const override { return true; }
     
-    uint64_t ComputeCacheKey() const override {
+    uint64_t computeCacheKey() const override {
         return 0;
     }
 
     // AI integration
-    AIInterface GetAIInterface() const override {
+    AIInterface getAIInterface() const override {
         AIInterface interface;
         interface.taskDesc.intent = "Execute parameterized commands";
         interface.capabilities.canModifyProperties = false;
@@ -115,7 +115,7 @@ public:
         return interface;
     }
 
-    std::vector<std::string> GetOptimizationSuggestions() const override {
+    std::vector<std::string> getOptimizationSuggestions() const override {
         return {
             "Consider batching similar commands",
             "Evaluate async execution opportunities",
@@ -131,30 +131,30 @@ private:
     std::vector<std::future<void>> pendingTasks;
 
     // Helper to check if all inputs are ready
-    bool AreInputsReady() const {
-        return CheckInputsReady(std::index_sequence_for<Inputs...>{});
+    bool areInputsReady() const {
+        return checkInputsReady(std::index_sequence_for<Inputs...>{});
     }
 
     template<size_t... Is>
-    bool CheckInputsReady(std::index_sequence<Is...>) const {
-        return (... && HasInput<Inputs>(std::get<Is>(inputNames)));
+    bool checkInputsReady(std::index_sequence<Is...>) const {
+        return (... && hasInput<Inputs>(std::get<Is>(inputNames)));
     }
 
     template<size_t... Is>
-    void ExecuteCommand(std::index_sequence<Is...>) {
-        command(GetInput<Inputs>(std::get<Is>(inputNames))...);
+    void executeCommand(std::index_sequence<Is...>) {
+        command(getInput<Inputs>(std::get<Is>(inputNames))...);
     }
 
     template<size_t... Is>
-    void ExecuteAsyncCommand(std::index_sequence<Is...>) {
-        auto future = asyncCommand(GetInput<Inputs>(std::get<Is>(inputNames))...);
+    void executeAsyncCommand(std::index_sequence<Is...>) {
+        auto future = asyncCommand(getInput<Inputs>(std::get<Is>(inputNames))...);
         pendingTasks.push_back(std::move(future));
     }
 };
 
 // Factory functions for cleaner syntax
 template<typename... Inputs>
-std::shared_ptr<CommandNode<Inputs...>> MakeCommandNode(
+std::shared_ptr<CommandNode<Inputs...>> makeCommandNode(
     const std::string& name,
     std::function<void(Inputs...)> cmd,
     std::tuple<std::string...> inputNames) {
@@ -164,7 +164,7 @@ std::shared_ptr<CommandNode<Inputs...>> MakeCommandNode(
 }
 
 template<typename... Inputs>
-std::shared_ptr<CommandNode<Inputs...>> MakeAsyncCommandNode(
+std::shared_ptr<CommandNode<Inputs...>> makeAsyncCommandNode(
     const std::string& name,
     std::function<std::future<void>(Inputs...)> cmd,
     std::tuple<std::string...> inputNames) {

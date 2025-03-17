@@ -12,6 +12,6 @@
 
 namespace hd {
 
-void ShowScriptsPalette(bool* p_open, EditorWindowData* windowData);
+void showScriptsPalette(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

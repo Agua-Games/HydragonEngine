@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
  * @file RuntimeVariants.h
@@ -45,16 +45,16 @@ public:
                        const VariantCriteria& criteria = VariantCriteria())
         : name(name), criteria(criteria) {}
 
-    const std::string& GetName() const { return name; }
-    const VariantCriteria& GetCriteria() const { return criteria; }
-    void SetCriteria(const VariantCriteria& newCriteria) { criteria = newCriteria; }
+    const std::string& getName() const { return name; }
+    const VariantCriteria& getCriteria() const { return criteria; }
+    void setCriteria(const VariantCriteria& newCriteria) { criteria = newCriteria; }
 
     // Custom criteria management
-    void AddCustomCriterion(const std::string& name, float value) {
+    void addCustomCriterion(const std::string& name, float value) {
         criteria.customCriteria[name] = value;
     }
 
-    float GetCustomCriterion(const std::string& name) const {
+    float getCustomCriterion(const std::string& name) const {
         auto it = criteria.customCriteria.find(name);
         return it != criteria.customCriteria.end() ? it->second : 0.0f;
     }
@@ -69,17 +69,17 @@ private:
  */
 class VariantSet {
 public:
-    void AddVariant(const std::string& name, const VariantCriteria& criteria) {
+    void addVariant(const std::string& name, const VariantCriteria& criteria) {
         variants.emplace_back(std::make_shared<Variant>(name, criteria));
     }
 
-    std::shared_ptr<Variant> GetVariant(const std::string& name) {
+    std::shared_ptr<Variant> getVariant(const std::string& name) {
         auto it = std::find_if(variants.begin(), variants.end(),
-            [&name](const auto& variant) { return variant->GetName() == name; });
+            [&name](const auto& variant) { return variant->getName() == name; });
         return it != variants.end() ? *it : nullptr;
     }
 
-    std::shared_ptr<Variant> SelectBestVariant(
+    std::shared_ptr<Variant> selectBestVariant(
         float performanceMetric,
         float distance,
         const std::unordered_map<std::string, float>& customMetrics = {}) 
@@ -88,11 +88,11 @@ public:
         float bestScore = std::numeric_limits<float>::lowest();
 
         for (const auto& variant : variants) {
-            const auto& criteria = variant->GetCriteria();
+            const auto& criteria = variant->getCriteria();
             if (!criteria.isActive) continue;
 
             // Calculate score based on multiple factors
-            float score = CalculateVariantScore(
+            float score = calculateVariantScore(
                 criteria, performanceMetric, distance, customMetrics);
 
             if (score > bestScore) {
@@ -105,22 +105,22 @@ public:
     }
 
     // Runtime optimization: pre-sort variants by criteria
-    void OptimizeForRuntime() {
+    void optimizeForRuntime() {
         std::sort(variants.begin(), variants.end(),
             [](const auto& a, const auto& b) {
-                return a->GetCriteria().performanceThreshold < 
-                       b->GetCriteria().performanceThreshold;
+                return a->getCriteria().performanceThreshold < 
+                       b->getCriteria().performanceThreshold;
             });
     }
 
-    const std::vector<std::shared_ptr<Variant>>& GetVariants() const { 
+    const std::vector<std::shared_ptr<Variant>>& getVariants() const { 
         return variants; 
     }
 
 private:
     std::vector<std::shared_ptr<Variant>> variants;
 
-    float CalculateVariantScore(
+    float calculateVariantScore(
         const VariantCriteria& criteria,
         float performanceMetric,
         float distance,

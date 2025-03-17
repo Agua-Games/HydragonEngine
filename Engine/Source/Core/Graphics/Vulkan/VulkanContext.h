@@ -17,7 +17,7 @@ namespace hd {
 class VulkanContext {
 public:
     // Wrap existing ImGui Vulkan globals/state
-    void Initialize(const ImGui_ImplVulkan_InitInfo& init_info) {
+    void initialize(const ImGui_ImplVulkan_InitInfo& init_info) {
         // Store existing Vulkan handles
         m_device = init_info.Device;
         m_physical_device = init_info.PhysicalDevice;
@@ -28,8 +28,8 @@ public:
     }
     
     // Getter methods to access Vulkan handles
-    VkDevice GetDevice() const { return m_device; }
-    VkPhysicalDevice GetPhysicalDevice() const { return m_physical_device; }
+    VkDevice getDevice() const { return m_device; }
+    VkPhysicalDevice getPhysicalDevice() const { return m_physical_device; }
     
 private:
     VkDevice m_device = VK_NULL_HANDLE;

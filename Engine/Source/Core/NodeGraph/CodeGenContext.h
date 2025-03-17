@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  */
 #pragma once
@@ -13,15 +13,15 @@ class Node;
 
 class CodeGenContext {
 public:
-    void AddProcessCall(Node* node);
-    void AddInlinedCode(Node* node, const std::string& code);
-    void AddDependency(const std::string& header);
+    void addProcessCall(Node* node);
+    void addInlinedCode(Node* node, const std::string& code);
+    void addDependency(const std::string& header);
     
-    void SetTargetLanguage(const std::string& lang) { targetLanguage = lang; }
-    void EnableDebugInfo(bool enable) { debugInfoEnabled = enable; }
+    void setTargetLanguage(const std::string& lang) { targetLanguage = lang; }
+    void enableDebugInfo(bool enable) { debugInfoEnabled = enable; }
     
-    std::string GenerateCode() const;
-    bool ValidateGeneratedCode() const;
+    std::string generateCode() const;
+    bool validateGeneratedCode() const;
 
 private:
     struct CodeUnit {

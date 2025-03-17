@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
  * @file TransformNode.h
@@ -7,9 +7,10 @@
  * 
  * ARCHITECTURAL NOTES:
  * - Transform nodes are used to apply transformations to objects.
+ * - Transformations can be extended and customized. e.g. to add deformations, custom dimensions, etc.
  * 
  * TODO:
- * - Update the whole content to match the latest Object and Node design.
+ * - Update the whole content to match the latest Object and Node design, implementation.
  * - Create .cpp file and move the implementation there.
  * - Organize the existing code into logical sections and functions.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
@@ -28,13 +29,13 @@ public:
     virtual ~Transformation() = default;
 
     // Apply the transformation (e.g., update matrices)
-    virtual void Apply() = 0;
+    virtual void apply() = 0;
 
     // Draw this transformation in the Inspector
-    virtual void DrawInInspector() = 0;
+    virtual void drawInInspector() = 0;
 
     // Get the name of the transformation
-    virtual std::string GetName() const = 0;
+    virtual std::string getName() const = 0;
 };
 
 // Default Position Transformation
@@ -43,19 +44,19 @@ public:
     ImVec3 position = {0, 0, 0};
     ImVec3 velocity = {0, 0, 0};
 
-    void Apply() override {
+    void apply() override {
         // Update position based on velocity
         position.x += velocity.x * deltaTime;
         position.y += velocity.y * deltaTime;
         position.z += velocity.z * deltaTime;
     }
 
-    void DrawInInspector() override {
+    void drawInInspector() override {
         ImGui::DragFloat3("Position", &position.x);
         ImGui::DragFloat3("Velocity", &velocity.x);
     }
 
-    std::string GetName() const override {
+    std::string getName() const override {
         return "Position";
     }
 };
@@ -73,12 +74,12 @@ public:
         rotation.z += angularVelocity.z * deltaTime;
     }
 
-    void DrawInInspector() override {
+    void drawInInspector() override {
         ImGui::DragFloat3("Rotation", &rotation.x);
         ImGui::DragFloat3("Angular Velocity", &angularVelocity.x);
     }
 
-    std::string GetName() const override {
+    std::string getName() const override {
         return "Orientation";
     }
 };
@@ -88,15 +89,15 @@ class ScaleTransformation : public Transformation {
 public:
     ImVec3 scale = {1, 1, 1}; // Default scale is 1x
 
-    void Apply() override {
+    void apply() override {
         // No dynamic scaling logic here, but you could add it if needed
     }
 
-    void DrawInInspector() override {
+    void drawInInspector() override {
         ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.0f, 10.0f);
     }
 
-    std::string GetName() const override {
+    std::string getName() const override {
         return "Scale";
     }
 };
@@ -107,39 +108,39 @@ public:
     // Constructor with default transformations
     TransformNode(const NodeInfo& info)
         : Node(info) {
-        AddDefaultTransformations();
+        addDefaultTransformations();
     }
 
     // Add a custom transformation
-    void AddTransformation(std::shared_ptr<Transformation> transformation) {
+    void addTransformation(std::shared_ptr<Transformation> transformation) {
         Transformations.push_back(transformation);
     }
 
     // Remove a transformation by name
-    void RemoveTransformation(const std::string& name) {
+    void removeTransformation(const std::string& name) {
         Transformations.erase(std::remove_if(Transformations.begin(), Transformations.end(),
                                                 [&name](const std::shared_ptr<Transformation>& t) {
-                                                    return t->GetName() == name;
+                                                    return t->getName() == name;
                                                 }),
                                 Transformations.end());
     }
 
     // Update all transformations
-    void Update() override {
+    void update() override {
         for (auto& transformation : Transformations) {
             transformation->Apply();
         }
     }
 
     // Draw this node in the Inspector
-    void DrawInInspector() override {
+    void drawInInspector() override {
         for (auto& transformation : Transformations) {
-            transformation->DrawInInspector();
+            transformation->drawInInspector();
         }
     }
 
     // Draw this node in the Node Graph Editor
-    void DrawInNodeGraph() override {
+    void drawInNodeGraph() override {
         ImGui::BeginGroup();
         ImGui::Text("Transform Node");
         for (auto& transformation : Transformations) {
@@ -149,19 +150,19 @@ public:
     }
 
     // Get input ports (e.g., velocity, angular velocity)
-    std::vector<std::string> GetInputPorts() const override {
+    std::vector<std::string> getInputPorts() const override {
         std::vector<std::string> inputs;
         for (auto& transformation : Transformations) {
-            inputs.push_back(transformation->GetName() + " Input");
+            inputs.push_back(transformation->getName() + " Input");
         }
         return inputs;
     }
 
     // Get output ports (e.g., position, rotation, scale)
-    std::vector<std::string> GetOutputPorts() const override {
+    std::vector<std::string> getOutputPorts() const override {
         std::vector<std::string> outputs;
         for (auto& transformation : Transformations) {
-            outputs.push_back(transformation->GetName() + " Output");
+            outputs.push_back(transformation->getName() + " Output");
         }
         return outputs;
     }
@@ -170,7 +171,7 @@ private:
     std::vector<std::shared_ptr<Transformation>> Transformations; // List of transformations
 
     // Add default transformations (position, orientation, scale)
-    void AddDefaultTransformations() {
+    void addDefaultTransformations() {
         Transformations.push_back(std::make_shared<PositionTransformation>());
         Transformations.push_back(std::make_shared<OrientationTransformation>());
         Transformations.push_back(std::make_shared<ScaleTransformation>());

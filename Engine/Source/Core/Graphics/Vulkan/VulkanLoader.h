@@ -18,19 +18,19 @@ namespace hd {
 
 class VulkanLoader {                // Not present in ImGui's Vulkan backend. Remove this comment later.
     public:
-        static bool LoadVulkanLibrary();
-        static void FreeVulkanLibrary();
-        static bool LoadExportedEntryPoints();
-        static bool LoadGlobalLevelEntryPoints();
-        static bool LoadInstanceLevelEntryPoints(VkInstance instance);
-        static bool LoadDeviceLevelEntryPoints(VkDevice device);
+        static bool loadVulkanLibrary();
+        static void freeVulkanLibrary();
+        static bool loadExportedEntryPoints();
+        static bool loadGlobalLevelEntryPoints();
+        static bool loadInstanceLevelEntryPoints(VkInstance instance);
+        static bool loadDeviceLevelEntryPoints(VkDevice device);
     private:
         static void* vulkanLibrary;
         // Function pointers for core Vulkan commands
         static PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
         static PFN_vkCreateInstance vkCreateInstance;
         // etc...
-    };
+    };  // class VulkanLoader
 
 } // namespace hd
 

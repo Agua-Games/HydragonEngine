@@ -75,7 +75,7 @@ static void ShowPluginToolbar(PluginSettings& settings)
     ImGui::PopStyleVar(4);
 }
 
-void ShowPluginEditor(bool* p_open, EditorWindowData* windowData)
+void showPluginEditor(bool* p_open, EditorWindowData* windowData)
 {
     static PluginSettings settings;
     static float leftPanelWidth = 250.0f;

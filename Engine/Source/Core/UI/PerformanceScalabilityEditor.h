@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowPerformanceScalabilityEditor(bool* p_open, EditorWindowData* windowData);
+void showPerformanceScalabilityEditor(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

@@ -12,6 +12,6 @@
 
 namespace hd {
 
-void ShowStreamingEditor(bool* p_open, EditorWindowData* windowData);
+void showStreamingEditor(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

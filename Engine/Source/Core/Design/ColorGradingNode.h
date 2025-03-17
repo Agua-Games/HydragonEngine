@@ -51,48 +51,48 @@ public:
     explicit ColorGradingNode(const ColorGradingInfo& info = ColorGradingInfo())
         : Node(info), GradingInfo(info) {}
 
-    void ProcessNodeGraph() override {
-        auto source = GetInputValue<RenderTarget>("SourceImage");
-        auto lut = GetInputValue<RenderTarget>("LUT");
+    void processNodeGraph() override {
+        auto source = getInputValue<RenderTarget>("SourceImage");
+        auto lut = getInputValue<RenderTarget>("LUT");
         
         // Get adjustment values
-        float exposure = GetInputValue<float>("Exposure");
-        float contrast = GetInputValue<float>("Contrast");
-        float saturation = GetInputValue<float>("Saturation");
-        float temperature = GetInputValue<float>("Temperature");
-        float tint = GetInputValue<float>("Tint");
-        float vibrance = GetInputValue<float>("Vibrance");
-        auto colorBalance = GetInputValue<glm::vec3>("ColorBalance");
+        float exposure = getInputValue<float>("Exposure");
+        float contrast = getInputValue<float>("Contrast");
+        float saturation = getInputValue<float>("Saturation");
+        float temperature = getInputValue<float>("Temperature");
+        float tint = getInputValue<float>("Tint");
+        float vibrance = getInputValue<float>("Vibrance");
+        auto colorBalance = getInputValue<glm::vec3>("ColorBalance");
 
         // Process image
-        auto result = ProcessImage(source, lut, exposure, contrast, 
+        auto result = processImage(source, lut, exposure, contrast, 
                                  saturation, temperature, tint, 
                                  vibrance, colorBalance);
 
         // Generate analysis data
-        auto histogram = GenerateHistogram(result);
-        auto waveform = GenerateWaveform(result);
+        auto histogram = generateHistogram(result);
+        auto waveform = generateWaveform(result);
 
         // Set outputs
-        SetOutputValue("ProcessedImage", result);
-        SetOutputValue("Histogram", histogram);
-        SetOutputValue("Waveform", waveform);
+        setOutputValue("ProcessedImage", result);
+        setOutputValue("Histogram", histogram);
+        setOutputValue("Waveform", waveform);
     }
 
-    void DrawInNodeGraph() override {
+    void drawInNodeGraph() override {
         ImGui::BeginGroup();
         ImGui::Text("Color Grading");
         
-        DrawInputPort("SourceImage", "Source");
-        DrawInputPort("LUT", "LUT");
+        drawInputPort("SourceImage", "Source");
+        drawInputPort("LUT", "LUT");
         
         // Draw sliders for adjustments
-        float exposure = GetInputValue<float>("Exposure");
+        float exposure = getInputValue<float>("Exposure");
         ImGui::SliderFloat("Exposure", &exposure, -5.0f, 5.0f);
-        SetInputValue("Exposure", exposure);
+        setInputValue("Exposure", exposure);
         
-        DrawOutputPort("ProcessedImage", "Result");
-        DrawOutputPort("Histogram", "Histogram");
+        drawOutputPort("ProcessedImage", "Result");
+        drawOutputPort("Histogram", "Histogram");
         
         ImGui::EndGroup();
     }

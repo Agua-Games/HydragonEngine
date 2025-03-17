@@ -18,7 +18,7 @@ static bool s_isPaused = false;
 static char s_macroName[256] = "";
 static int s_selectedCommandIndex = -1;
 
-void ShowMacrosEditor(bool* p_open, EditorWindowData* windowData) 
+void showMacrosEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Macros##Editor", p_open, ImGuiWindowFlags_MenuBar))

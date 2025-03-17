@@ -50,27 +50,27 @@ public:
     explicit LayoutNode(const LayoutInfo& info = LayoutInfo())
         : Node(info), LayoutInfo(info) {}
 
-    void ProcessNodeGraph() override {
-        auto elements = GetInputValue<std::vector<LayoutElement>>("Elements");
-        auto container = GetInputValue<ContainerConstraints>("Container");
-        auto grid = GetInputValue<GridSystem>("GridSystem");
-        float spacing = GetInputValue<float>("Spacing");
-        LayoutAlignment alignment = GetInputValue<LayoutAlignment>("Alignment");
-        Distribution distribution = GetInputValue<Distribution>("Distribution");
-        auto responsive = GetInputValue<ResponsiveConfig>("Responsive");
-        auto background = GetInputValue<RenderTarget>("Background");
+    void processNodeGraph() override {
+        auto elements = getInputValue<std::vector<LayoutElement>>("Elements");
+        auto container = getInputValue<ContainerConstraints>("Container");
+        auto grid = getInputValue<GridSystem>("GridSystem");
+        float spacing = getInputValue<float>("Spacing");
+        LayoutAlignment alignment = getInputValue<LayoutAlignment>("Alignment");
+        Distribution distribution = getInputValue<Distribution>("Distribution");
+        auto responsive = getInputValue<ResponsiveConfig>("Responsive");
+        auto background = getInputValue<RenderTarget>("Background");
 
         // Process layout
-        auto composition = ComposeLayout(elements, container, grid, 
+        auto composition = composeLayout(elements, container, grid, 
                                        spacing, alignment, distribution, 
                                        responsive, background);
-        auto bounds = CalculateElementBounds(elements, grid);
-        auto guides = GenerateGridGuides(grid, container);
+        auto bounds = calculateElementBounds(elements, grid);
+        auto guides = generateGridGuides(grid, container);
 
         // Set outputs
-        SetOutputValue("ComposedLayout", composition);
-        SetOutputValue("ElementBounds", bounds);
-        SetOutputValue("GridGuides", guides);
+        setOutputValue("ComposedLayout", composition);
+        setOutputValue("ElementBounds", bounds);
+        setOutputValue("GridGuides", guides);
     }
 
 private:

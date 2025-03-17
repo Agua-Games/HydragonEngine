@@ -105,7 +105,7 @@ static void ShowSolverPanel(EditorWindowData* windowData)
     ImGui::EndChild();
 }
 
-void ShowPhysicsEditor(bool* p_open, EditorWindowData* windowData) 
+void showPhysicsEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (!ImGui::Begin("Physics", p_open, ImGuiWindowFlags_MenuBar))

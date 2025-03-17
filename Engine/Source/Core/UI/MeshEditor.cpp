@@ -14,7 +14,7 @@ namespace hd {
 
 static MeshToolSettings g_meshToolSettings;
 
-void ShowMeshEditor(bool* p_open, EditorWindowData* windowData) 
+void showMeshEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Mesh", p_open, ImGuiWindowFlags_MenuBar))
@@ -90,7 +90,7 @@ void ShowMeshEditor(bool* p_open, EditorWindowData* windowData)
             {
                 if (ImGui::MenuItem("Boolean Operations")) {}
                 if (ImGui::MenuItem("Procedural Effects")) {}
-                if (ImGui::MenuItem("Batch Process")) {}
+                if (ImGui::MenuItem("Batch process")) {}
                 ImGui::Separator();
                 if (ImGui::MenuItem("Generate LODs")) {}
                 if (ImGui::MenuItem("Bake Maps")) {}

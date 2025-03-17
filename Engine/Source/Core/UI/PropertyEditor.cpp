@@ -14,7 +14,7 @@
 
 namespace hd {
 
-void ShowPropertyEditor(bool* p_open, EditorWindowData* windowData) 
+void showPropertyEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Properties", p_open, ImGuiWindowFlags_MenuBar))

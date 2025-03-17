@@ -2,8 +2,8 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ProceduralOrchestrator.h
- * @brief ProceduralOrchestrator is a singleton class that manages the orchestration of procedural patterns.
+ * @file ProcOrchestratorNode.h
+ * @brief ProcOrchestratorNode is a singleton class that manages the orchestration of procedural patterns.
  * 
  * ARCHITECTURAL NOTES:
  * 
@@ -23,8 +23,8 @@
 
 namespace hd {
 
-struct ProceduralOrchestratorInfo : public NodeInfo {
-    ProceduralOrchestratorInfo() {
+struct ProcOrchestratorInfo : public NodeInfo {
+    ProcOrchestratorInfo() {
         NodeType = "Procedural/Orchestrator";
         Name = "Procedural Orchestrator";
         
@@ -39,13 +39,13 @@ struct ProceduralOrchestratorInfo : public NodeInfo {
         
         // Orchestrated outputs
         Outputs = {
-            "HarmonizedPatterns",    // Collection of harmonized patterns
+            "harmonizedPatterns",    // Collection of harmonized patterns
             "SystemStates",          // Current state of all systems
             "EvolutionMetrics",      // Pattern evolution metrics
             "PerformanceMetrics"     // Performance monitoring data
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
     }
@@ -59,170 +59,170 @@ struct IntentTask {
     bool propagate;
 };
 
-class ProceduralOrchestrator : public Node {
+class ProcOrchestratorNode : public Node {
 public:
-    static ProceduralOrchestrator& GetInstance() {
-        static ProceduralOrchestrator instance;
+    static ProcOrchestratorNode& getInstance() {
+        static ProcOrchestratorNode instance;
         return instance;
     }
 
-    std::vector<std::string> GetInputPorts() const override {
-        return GetNodeInfo().Inputs;
+    std::vector<std::string> getInputPorts() const override {
+        return getNodeInfo().Inputs;
     }
 
-    std::vector<std::string> GetOutputPorts() const override {
-        return GetNodeInfo().Outputs;
+    std::vector<std::string> getOutputPorts() const override {
+        return getNodeInfo().Outputs;
     }
 
-    void ProcessNodeGraph() override {
+    void processNodeGraph() override {
         // Process input intents and parameters
-        auto globalIntent = GetInputValue<OctaveParams>("GlobalIntent");
-        auto harmonyParams = GetInputValue<HarmonyParams>("HarmonyParams");
-        float timeScale = GetInputValue<float>("TimeScale");
-        uint32_t seed = GetInputValue<uint32_t>("Seed");
+        auto globalIntent = getInputValue<OctaveParams>("GlobalIntent");
+        auto harmonyParams = getInputValue<HarmonyParams>("HarmonyParams");
+        float timeScale = getInputValue<float>("TimeScale");
+        uint32_t seed = getInputValue<uint32_t>("Seed");
         
         // Update internal state
-        SetIntent(globalIntent);
-        SetHarmonyParams(harmonyParams);
+        setIntent(globalIntent);
+        setHarmonyParams(harmonyParams);
         
         // Process pending intent tasks
-        ProcessIntentQueue(timeScale);
+        processIntentQueue(timeScale);
         
         // Balance and harmonize patterns
-        BalanceSystems();
+        balanceSystems();
         
         // Update outputs for connected nodes
-        SetOutputValue("HarmonizedPatterns", GetHarmonizedPatterns());
-        SetOutputValue("SystemStates", GetSystemStates());
-        SetOutputValue("EvolutionMetrics", ComputeEvolutionMetrics());
-        SetOutputValue("PerformanceMetrics", GatherPerformanceMetrics());
+        setOutputValue("harmonizedPatterns", getharmonizedPatterns());
+        setOutputValue("SystemStates", getSystemStates());
+        setOutputValue("EvolutionMetrics", computeEvolutionMetrics());
+        setOutputValue("PerformanceMetrics", gatherPerformanceMetrics());
     }
 
     // Pattern Management (now supports node graph integration)
-    std::string RegisterPattern(std::unique_ptr<IPattern> pattern) {
-        std::string id = GeneratePatternId();
+    std::string registerPattern(std::unique_ptr<IPattern> pattern) {
+        std::string id = generatePatternId();
         patterns[id] = std::move(pattern);
-        NotifyPatternChanged(id);
+        notifyPatternChanged(id);
         return id;
     }
 
-    void UnregisterPattern(const std::string& patternId) {
+    void unregisterPattern(const std::string& patternId) {
         patterns.erase(patternId);
-        NotifyPatternRemoved(patternId);
+        notifyPatternRemoved(patternId);
     }
 
     // Maestro Control
-    void SetIntent(const OctaveParams& intent) {
+    void setIntent(const OctaveParams& intent) {
         globalIntent = intent;
     }
 
-    void PropagateIntent(const IntentTask& task) {
+    void propagateIntent(const IntentTask& task) {
         intentQueue.push(task);
     }
 
-    void UpdateHarmony(float deltaTime) {
+    void updateHarmony(float deltaTime) {
         // Update harmony parameters
-        // This is now handled in ProcessNodeGraph
+        // This is now handled in processNodeGraph
     }
 
     // System Orchestration
-    void SetHarmonyParams(const HarmonyParams& params) {
+    void setHarmonyParams(const HarmonyParams& params) {
         harmonyParams = params;
     }
 
-    void ModulateSystem(SystemDomain domain, const OctaveParams& octaves) {
+    void modulateSystem(SystemDomain domain, const OctaveParams& octaves) {
         // Modulate system parameters
-        // This is now handled in ProcessNodeGraph
+        // This is now handled in processNodeGraph
     }
 
-    void BalanceSystems() {
+    void balanceSystems() {
         // Balance systems
-        // This is now handled in ProcessNodeGraph
+        // This is now handled in processNodeGraph
     }
 
     // Procedural Pattern Interface
-    ProceduralPatternData GetProceduralPattern(const std::string& patternId) {
+    ProceduralPatternData getProceduralPattern(const std::string& patternId) {
         auto it = patterns.find(patternId);
-        if (it != patterns.end() && it->second->IsProceduralPattern()) {
-            return it->second->GetProceduralData();
+        if (it != patterns.end() && it->second->isProceduralPattern()) {
+            return it->second-getProceduralData();
         }
         return {};
     }
 
     // Create procedural pattern helpers (now return pattern IDs for node connections)
-    std::string CreateMaterialPattern(const ProceduralStructureParams& params) {
+    std::string createMaterialPattern(const ProceduralStructureParams& params) {
         auto pattern = std::make_unique<ProceduralPattern>(
             ProceduralPatternType::Material, 
             params
         );
-        return RegisterPattern(std::move(pattern));
+        return registerPattern(std::move(pattern));
     }
 
-    std::string CreateVolumeTexturePattern(const ProceduralStructureParams& params) {
+    std::string createVolumeTexturePattern(const ProceduralStructureParams& params) {
         auto pattern = std::make_unique<ProceduralPattern>(
             ProceduralPatternType::VolumeTexture, 
             params
         );
-        return RegisterPattern(std::move(pattern));
+        return registerPattern(std::move(pattern));
     }
 
-    void DrawInNodeGraph() override {
+    void drawInNodeGraph() override {
         ImGui::BeginGroup();
         ImGui::Text("Procedural Orchestrator");
         
         // Draw input ports
-        DrawInputPort("GlobalIntent", "Intent");
-        DrawInputPort("HarmonyParams", "Harmony");
-        DrawInputPort("TimeScale", "Time");
-        DrawInputPort("Seed", "Seed");
-        DrawInputPort("SystemWeights", "Weights");
+        drawInputPort("GlobalIntent", "Intent");
+        drawInputPort("HarmonyParams", "Harmony");
+        drawInputPort("TimeScale", "Time");
+        drawInputPort("Seed", "Seed");
+        drawInputPort("SystemWeights", "Weights");
         
         // Draw output ports
-        DrawOutputPort("HarmonizedPatterns", "Patterns");
-        DrawOutputPort("SystemStates", "States");
-        DrawOutputPort("EvolutionMetrics", "Evolution");
-        DrawOutputPort("PerformanceMetrics", "Performance");
+        drawOutputPort("harmonizedPatterns", "Patterns");
+        drawOutputPort("SystemStates", "States");
+        drawOutputPort("EvolutionMetrics", "Evolution");
+        drawOutputPort("PerformanceMetrics", "Performance");
         
         ImGui::EndGroup();
     }
 
 private:
-    ProceduralOrchestrator() 
-        : Node(ProceduralOrchestratorInfo()) {}
+    ProcOrchestratorNode() 
+        : Node(ProcOrchestratorInfo()) {}
     
     std::unordered_map<std::string, std::unique_ptr<IPattern>> patterns;
     std::queue<IntentTask> intentQueue;
     HarmonyParams harmonyParams;
     OctaveParams globalIntent;
 
-    void ProcessIntentQueue(float timeScale) {
+    void processIntentQueue(float timeScale) {
         while (!intentQueue.empty()) {
             auto task = intentQueue.front();
             intentQueue.pop();
             
             if (task.propagate) {
-                PropagateIntent(task);
+                propagateIntent(task);
             }
         }
     }
 
-    std::string GeneratePatternId() {
+    std::string generatePatternId() {
         return "pattern_" + std::to_string(patterns.size());
     }
 
-    void NotifyPatternChanged(const std::string& patternId) {
+    void notifyPatternChanged(const std::string& patternId) {
         // Notify connected nodes about pattern updates
-        MarkOutputDirty("HarmonizedPatterns");
+        markOutputDirty("harmonizedPatterns");
     }
 
-    void NotifyPatternRemoved(const std::string& patternId) {
+    void notifyPatternRemoved(const std::string& patternId) {
         // Notify connected nodes about pattern removal
-        MarkOutputDirty("HarmonizedPatterns");
+        markOutputDirty("harmonizedPatterns");
     }
 
     // Prevent copying of singleton
-    ProceduralOrchestrator(const ProceduralOrchestrator&) = delete;
-    ProceduralOrchestrator& operator=(const ProceduralOrchestrator&) = delete;
+    ProcOrchestratorNode(const ProcOrchestratorNode&) = delete;
+    ProcOrchestratorNode& operator=(const ProcOrchestratorNode&) = delete;
 };
 
 } // namespace hd

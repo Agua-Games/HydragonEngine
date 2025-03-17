@@ -51,28 +51,28 @@ public:
     explicit TypographyNode(const TypographyInfo& info = TypographyInfo())
         : Node(info), TypoInfo(info) {}
 
-    void ProcessNodeGraph() override {
-        auto text = GetInputValue<std::string>("Text");
-        auto font = GetInputValue<FontAsset>("Font");
-        float fontSize = GetInputValue<float>("FontSize");
-        float lineHeight = GetInputValue<float>("LineHeight");
-        float letterSpacing = GetInputValue<float>("LetterSpacing");
-        TextAlignment alignment = GetInputValue<TextAlignment>("Alignment");
-        glm::vec4 color = GetInputValue<glm::vec4>("Color");
-        TextShadow shadow = GetInputValue<TextShadow>("Shadow");
-        float maxWidth = GetInputValue<float>("MaxWidth");
+    void processNodeGraph() override {
+        auto text = getInputValue<std::string>("Text");
+        auto font = getInputValue<FontAsset>("Font");
+        float fontSize = getInputValue<float>("FontSize");
+        float lineHeight = getInputValue<float>("LineHeight");
+        float letterSpacing = getInputValue<float>("LetterSpacing");
+        TextAlignment alignment = getInputValue<TextAlignment>("Alignment");
+        glm::vec4 color = getInputValue<glm::vec4>("Color");
+        TextShadow shadow = getInputValue<TextShadow>("Shadow");
+        float maxWidth = getInputValue<float>("MaxWidth");
 
         // Process typography
-        auto textImage = RenderText(text, font, fontSize, lineHeight, 
+        auto textImage = renderText(text, font, fontSize, lineHeight, 
                                   letterSpacing, alignment, color, 
                                   shadow, maxWidth);
-        auto metrics = CalculateMetrics(text, font, fontSize);
-        auto bounds = CalculateBounds(metrics, maxWidth);
+        auto metrics = calculateMetrics(text, font, fontSize);
+        auto bounds = calculateBounds(metrics, maxWidth);
 
         // Set outputs
-        SetOutputValue("TextImage", textImage);
-        SetOutputValue("TextMetrics", metrics);
-        SetOutputValue("TextBounds", bounds);
+        setOutputValue("TextImage", textImage);
+        setOutputValue("TextMetrics", metrics);
+        setOutputValue("TextBounds", bounds);
     }
 
 private:

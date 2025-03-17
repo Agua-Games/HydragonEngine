@@ -36,7 +36,7 @@ public:
         pool.reserve(initialSize);
     }
 
-    T* Allocate() {
+    T* allocate() {
         if (freeList.empty()) {
             pool.emplace_back();
             return &pool.back();
@@ -46,7 +46,7 @@ public:
         return &pool[index];
     }
 
-    void Deallocate(T* ptr) {
+    void deallocate(T* ptr) {
         size_t index = ptr - pool.data();
         freeList.push_back(index);
     }
@@ -90,36 +90,36 @@ public:
         size_t size;
     };
 
-    GeometryAllocation AllocateGeometry(size_t size) {
+    GeometryAllocation allocateGeometry(size_t size) {
         if (size > LARGE_ALLOCATION_THRESHOLD) {
-            return AllocateViaVMA(size);
+            return allocateViaVMA(size);
         }
-        return AllocateFromPool(size);
+        return allocateFromPool(size);
     }
 
-    void DeallocateGeometry(GeometryAllocation& allocation) {
+    void deallocateGeometry(GeometryAllocation& allocation) {
         if (allocation.gpuAllocation) {
             vmaDestroyBuffer(vmaAllocator, allocation.buffer, allocation.gpuAllocation);
         } else {
-            geometryPool.Deallocate(static_cast<uint8_t*>(allocation.cpuData));
+            geometryPool.deallocate(static_cast<uint8_t*>(allocation.cpuData));
         }
         allocation = GeometryAllocation{};
     }
 
-    glm::mat4* AllocateTransform() {
-        return transformPool.Allocate();
+    glm::mat4* allocateTransform() {
+        return transformPool.allocate();
     }
 
-    MaterialData* AllocateMaterial() {
-        return materialPool.Allocate();
+    MaterialData* allocateMaterial() {
+        return materialPool.allocate();
     }
 
-    void DeallocateTransform(glm::mat4* ptr) {
-        transformPool.Deallocate(ptr);
+    void deallocateTransform(glm::mat4* ptr) {
+        transformPool.deallocate(ptr);
     }
 
-    void DeallocateMaterial(MaterialData* ptr) {
-        materialPool.Deallocate(ptr);
+    void deallocateMaterial(MaterialData* ptr) {
+        materialPool.deallocate(ptr);
     }
 
 private:
@@ -128,7 +128,7 @@ private:
     PoolAllocator<uint8_t> geometryPool;
     VmaAllocator vmaAllocator;
 
-    GeometryAllocation AllocateViaVMA(size_t size) {
+    GeometryAllocation allocateViaVMA(size_t size) {
         VkBufferCreateInfo bufferInfo = {};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         bufferInfo.size = size;
@@ -151,9 +151,9 @@ private:
         return allocation;
     }
 
-    GeometryAllocation AllocateFromPool(size_t size) {
+    GeometryAllocation allocateFromPool(size_t size) {
         GeometryAllocation allocation = {};
-        allocation.cpuData = geometryPool.Allocate();
+        allocation.cpuData = geometryPool.allocate();
         allocation.size = size;
         return allocation;
     }

@@ -63,7 +63,7 @@ struct DramaEditorState {
 
 static DramaEditorState* state = nullptr;
 
-void ShowDramaEditor(bool* p_open, EditorWindowData* windowData) 
+void showDramaEditor(bool* p_open, EditorWindowData* windowData) 
 {
     if (!state) {
         state = new DramaEditorState();

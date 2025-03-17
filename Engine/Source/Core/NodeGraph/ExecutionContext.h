@@ -40,89 +40,89 @@ public:
     ExecutionContext() = default;
     
     // Timeout control
-    void SetTimeout(std::chrono::milliseconds timeout) {
+    void setTimeout(std::chrono::milliseconds timeout) {
         this->timeout = timeout;
     }
 
-    const std::chrono::milliseconds& GetTimeout() const { 
+    const std::chrono::milliseconds& getTimeout() const { 
         return timeout; 
     }
 
-    bool HasTimedOut() const {
+    bool hasTimedOut() const {
         if (startTime.time_since_epoch().count() == 0) return false;
         auto now = std::chrono::steady_clock::now();
         return (now - startTime) > timeout;
     }
 
     // Cancellation control
-    bool ShouldCancel() const { 
+    bool shouldCancel() const { 
         return cancelRequested.load(std::memory_order_relaxed); 
     }
     
-    void RequestCancel() { 
+    void requestCancel() { 
         cancelRequested.store(true, std::memory_order_release); 
     }
 
-    void ResetCancel() {
+    void resetCancel() {
         cancelRequested.store(false, std::memory_order_release);
     }
 
     // Frame management
-    void SetFrameNumber(uint64_t frame) { 
+    void setFrameNumber(uint64_t frame) { 
         frameNumber = frame; 
     }
     
-    uint64_t GetFrameNumber() const { 
+    uint64_t getFrameNumber() const { 
         return frameNumber; 
     }
 
     // Execution state
-    void BeginExecution() {
+    void beginExecution() {
         startTime = std::chrono::steady_clock::now();
         executionDepth++;
     }
 
-    void EndExecution() {
+    void endExecution() {
         executionDepth--;
         if (executionDepth == 0) {
             startTime = std::chrono::steady_clock::time_point();
         }
     }
 
-    bool IsExecuting() const {
+    bool isExecuting() const {
         return executionDepth > 0;
     }
 
     // Execution mode control
-    void SetExecutionMode(ExecutionMode mode) {
+    void setExecutionMode(ExecutionMode mode) {
         executionMode = mode;
     }
 
-    ExecutionMode GetExecutionMode() const {
+    ExecutionMode getExecutionMode() const {
         return executionMode;
     }
 
     // Error handling
-    void SetLastError(const std::string& error) {
+    void setLastError(const std::string& error) {
         lastError = error;
     }
 
-    const std::string& GetLastError() const {
+    const std::string& getLastError() const {
         return lastError;
     }
 
     // Context stack management
-    void PushNodeId(const std::string& nodeId) {
+    void pushNodeId(const std::string& nodeId) {
         nodeStack.push(nodeId);
     }
 
-    void PopNodeId() {
+    void popNodeId() {
         if (!nodeStack.empty()) {
             nodeStack.pop();
         }
     }
 
-    std::string GetCurrentNodeId() const {
+    std::string getCurrentNodeId() const {
         return nodeStack.empty() ? "" : nodeStack.top();
     }
 

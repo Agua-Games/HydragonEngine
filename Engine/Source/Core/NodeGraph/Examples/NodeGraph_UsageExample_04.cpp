@@ -1,8 +1,7 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file NodeGraph_UsageExample_04.cpp
  * @brief This file contains examples of how to setup a node graph in code.
  */
 #include "Core/Engine.h"
@@ -13,12 +12,12 @@
 
 namespace hd {
 
-class SystemIntegrationExample {
+class SystemIntegrationExample_01 {
 public:
-    void setupScene() {
-        auto& engine = Engine::GetInstance();
-        auto& nodeGraph = engine.GetNodeGraph();
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void setup() {
+        auto& engine = Engine::getInstance();
+        auto& nodeGraph = engine.getNodeGraph();
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
 
         // Create a procedural particle system
         auto particleSystem = std::make_shared<ParticleSystem>();
@@ -44,35 +43,35 @@ public:
     }
 
     void update(float deltaTime) {
-        auto& engine = Engine::GetInstance();
+        auto& engine = Engine::getInstance();
         
         // Process the node graph
-        engine.GetNodeGraph().process();
+        engine.getNodeGraph().process();
 
         // Update procedural systems
-        engine.GetProceduralOrchestrator().ProcessNodeGraph();
+        engine.getProceduralOrchestrator().processNodeGraph();
 
         // Example of system harmony maintenance
         HarmonyParams harmonyParams;
         harmonyParams.particleComplexity = 0.7f;
         harmonyParams.visualFidelity = 0.8f;
         
-        engine.ConfigureHarmonyParameters(harmonyParams);
-        engine.ProcessSystems();
+        engine.configureHarmonyParameters(harmonyParams);
+        engine.processSystems();
     }
 
     void handleSystemIntent() {
-        auto& engine = Engine::GetInstance();
+        auto& engine = Engine::getInstance();
         
         // Set system-wide intent
         SystemIntent intent;
         intent.evolutionTarget = EvolutionTarget::Performance;
         intent.complexityPreference = 0.6f;
         
-        engine.SetSystemIntent(intent);
+        engine.setSystemIntent(intent);
 
         // Process the changes
-        engine.ProcessSystems();
+        engine.processSystems();
     }
 };
 
@@ -81,7 +80,7 @@ void demonstrateUsage() {
     SystemIntegrationExample example;
     
     // Initial setup
-    example.setupScene();
+    example.setup();
 
     // Main loop
     float deltaTime = 1.0f / 60.0f;

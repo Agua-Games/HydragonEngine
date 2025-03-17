@@ -1,16 +1,23 @@
-#include "Core/Engine.h"
-#include "Core/Scene/SceneNode.h"
-#include "Core/Physics/VehiclePhysics.h"
-#include "Core/Effects/WeatherSystem.h"
-#include "Core/Audio/AudioNode.h"
-#include "Core/Gameplay/RaceManager.h"
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
+#include "Engine.h"
+#include "SceneNode.h"
+#include "VehiclePhysics.h"
+#include "WeatherSystem.h"
+#include "AudioNode.h"
+#include "RaceManager.h"
+#include "NodeGraph/Node.h"
 
 namespace hd {
 
-class RaceTrackSetup {
+class RaceTrackSetup_Example_01 : public Node {
 public:
-    void setupLevel() {
-        auto& graph = Engine::GetInstance().getNodeGraph();
+    void initialize() {
+        auto& graph = Engine::getInstance().getNodeGraph();
 
         // Track and environment
         auto scene = std::make_shared<SceneNode>("MountainCircuit");

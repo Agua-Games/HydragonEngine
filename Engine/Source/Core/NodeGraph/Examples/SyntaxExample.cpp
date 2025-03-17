@@ -1,3 +1,14 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
+#include "Core/Engine.h"
+#include "Core/NodeGraph/Node.h"
+
+using namespace hd;
+
 auto node = graph.create<TransformNode>("worldRoot")
     .position({0, 5, -10})
     .rotation({0, 45, 0})

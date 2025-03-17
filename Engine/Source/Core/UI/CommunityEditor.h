@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowCommunityEditor(bool* p_open, EditorWindowData* windowData);
+void showCommunityEditor(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

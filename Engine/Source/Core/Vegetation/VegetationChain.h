@@ -18,10 +18,10 @@ namespace hd {
 // Example of how to chain vegetation nodes
 inline void CreateVegetationChain(Node& graph) {
     // Create nodes
-    auto densityNode = graph.CreateNode<ProcVegetationDensityNode>();
-    auto placementNode = graph.CreateNode<ProcVegetationPlacementNode>();
-    auto growthNode = graph.CreateNode<ProcVegetationGrowthNode>();
-    auto windNode = graph.CreateNode<ProcVegetationWindNode>();
+    auto densityNode = graph.createNode<ProcVegetationDensityNode>();
+    auto placementNode = graph.createNode<ProcVegetationPlacementNode>();
+    auto growthNode = graph.createNode<ProcVegetationGrowthNode>();
+    auto windNode = graph.createNode<ProcVegetationWindNode>();
     
     // Connect nodes
     graph.Connect(densityNode, "DensityMap", 

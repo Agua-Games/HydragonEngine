@@ -59,21 +59,21 @@ public:
     explicit NoiseNode(const NoiseInfo& info = NoiseInfo())
         : Node(info) {}
 
-    std::vector<std::string> GetInputPorts() const override {
+    std::vector<std::string> getInputPorts() const override {
         return NoiseInfo.Inputs;
     }
 
-    std::vector<std::string> GetOutputPorts() const override {
+    std::vector<std::string> getOutputPorts() const override {
         return NoiseInfo.Outputs;
     }
 
-    void ProcessNodeGraph() override {
-        auto noiseType = GetInputValue<NoiseType>("NoiseType");
-        uint32_t seed = GetInputValue<uint32_t>("Seed");
-        float scale = GetInputValue<float>("Scale");
-        int octaves = GetInputValue<int>("Octaves");
-        float persistence = GetInputValue<float>("Persistence");
-        float lacunarity = GetInputValue<float>("Lacunarity");
+    void processNodeGraph() override {
+        auto noiseType = getInputValue<NoiseType>("NoiseType");
+        uint32_t seed = getInputValue<uint32_t>("Seed");
+        float scale = getInputValue<float>("Scale");
+        int octaves = getInputValue<int>("Octaves");
+        float persistence = getInputValue<float>("Persistence");
+        float lacunarity = getInputValue<float>("Lacunarity");
         
         NoiseParams params{
             .seed = seed,
@@ -83,13 +83,13 @@ public:
             .lacunarity = lacunarity
         };
         
-        auto noiseData = GenerateNoise(noiseType, params);
-        auto derivatives = ComputeNoiseDerivatives(noiseData);
-        auto metrics = AnalyzeNoiseProperties(noiseData);
+        auto noiseData = generateNoise(noiseType, params);
+        auto derivatives = computeNoiseDerivatives(noiseData);
+        auto metrics = analyzeNoiseProperties(noiseData);
         
-        SetOutputValue("NoiseValue", noiseData);
-        SetOutputValue("Derivatives", derivatives);
-        SetOutputValue("NoiseMetrics", metrics);
+        setOutputValue("NoiseValue", noiseData);
+        setOutputValue("Derivatives", derivatives);
+        setOutputValue("NoiseMetrics", metrics);
     }
 
 protected:

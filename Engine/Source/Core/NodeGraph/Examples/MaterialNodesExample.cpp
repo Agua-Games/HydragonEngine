@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ */
+
 // Material nodes showing texture/shader workflow
 auto metallic = graph.create<MaterialNode>("brushedMetal")
     .baseColor({0.9f, 0.9f, 0.9f})

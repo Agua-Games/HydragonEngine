@@ -14,7 +14,7 @@
 
 namespace hd {
   
-void ShowProcOrchestrator(bool* p_open, EditorWindowData* windowData) 
+void showProcOrchestrator(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Pattern Orchestrator", p_open, ImGuiWindowFlags_MenuBar))

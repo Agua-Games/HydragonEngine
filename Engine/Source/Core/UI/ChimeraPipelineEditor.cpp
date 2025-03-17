@@ -13,7 +13,7 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowChimeraPipelineEditor(bool* p_open, EditorWindowData* windowData) 
+void showChimeraPipelineEditor(bool* p_open, EditorWindowData* windowData) 
 {
     // Early out if window is not open
     if (!p_open || !*p_open)

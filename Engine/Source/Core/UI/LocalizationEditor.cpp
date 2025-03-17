@@ -49,7 +49,7 @@ struct LocalizationState {
     } currentView = ViewMode::Translations;
 };
 
-void ShowLocalizationEditor(bool* p_open, EditorWindowData* windowData) 
+void showLocalizationEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static LocalizationState state{};
     

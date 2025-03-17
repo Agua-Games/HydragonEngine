@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ProceduralEvolutionNode.h
+ * @file EvolutionNode.h
  * @brief EvolutionNode represents an evolution node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
@@ -20,8 +20,8 @@
 #pragma once
 
 #include "ProceduralTypes.h"
-#include "ProceduralOrchestrator.h"
-#include "Core/NodeGraph/Node.h"
+#include "ProcOrchestratorNode.h"
+#include "Node.h"
 
 namespace hd {
 
@@ -42,39 +42,39 @@ struct EvolutionInfo : public NodeInfo {
             "TransitionMetrics"
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
     }
 };
 
-class ProceduralEvolutionNode : public Node {
+class EvolutionNode : public Node {
 public:
-    explicit ProceduralEvolutionNode(const EvolutionInfo& info = EvolutionInfo())
+    explicit EvolutionNode(const EvolutionInfo& info = EvolutionInfo())
         : Node(info) {
         // Register with orchestrator on creation
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
-        m_evolutionPatternId = orchestrator.RegisterPattern(
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        m_evolutionPatternId = orchestrator.registerPattern(
             std::make_unique<ProceduralPattern>(
                 ProceduralPatternType::Evolution,
-                CreateInitialEvolutionParams()
+                createInitialEvolutionParams()
             )
         );
     }
 
-    ~ProceduralEvolutionNode() {
+    ~EvolutionNode() {
         // Cleanup registration
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
-        orchestrator.UnregisterPattern(m_evolutionPatternId);
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        orchestrator.unregisterPattern(m_evolutionPatternId);
     }
 
-    void ProcessNodeGraph() override {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void processNodeGraph() override {
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Get inputs
-        auto sourcePattern = GetInputValue<ProceduralPatternData>("SourcePattern");
-        auto evolutionRules = GetInputValue<OctaveParams>("EvolutionRules");
-        auto constraints = GetInputValue<HarmonyParams>("Constraints");
+        auto sourcePattern = getInputValue<ProceduralPatternData>("SourcePattern");
+        auto evolutionRules = getInputValue<OctaveParams>("EvolutionRules");
+        auto constraints = getInputValue<HarmonyParams>("Constraints");
         
         // Initialize evolution if needed
         if (!m_evolutionState.currentGeneration) {
@@ -82,19 +82,19 @@ public:
         }
 
         // Get orchestrator's fine-tuning parameters
-        auto orchestratorPattern = orchestrator.GetProceduralPattern(m_evolutionPatternId);
-        UpdateEvolutionParams(orchestratorPattern);
+        auto orchestratorPattern = orchestrator.getProceduralPattern(m_evolutionPatternId);
+        updateEvolutionParams(orchestratorPattern);
 
-        // Evolve pattern with orchestrator guidance
-        EvolvePattern(evolutionRules, constraints);
+        // evolve pattern with orchestrator guidance
+        evolvePattern(evolutionRules, constraints);
         
         // Update orchestrator about evolution progress
-        NotifyOrchestrator();
+        eotifyOrchestrator();
         
         // Set outputs
-        SetOutputValue("EvolvedPattern", m_evolutionState.bestPattern);
-        SetOutputValue("EvolutionState", GetEvolutionMetrics());
-        SetOutputValue("TransitionMetrics", CalculateTransitionMetrics());
+        setOutputValue("EvolvedPattern", m_evolutionState.bestPattern);
+        setOutputValue("EvolutionState", getEvolutionMetrics());
+        setOutputValue("TransitionMetrics", calculateTransitionMetrics());
     }
 
 private:
@@ -102,7 +102,7 @@ private:
     EvolutionParameters m_params;
     std::string m_evolutionPatternId;
 
-    void UpdateEvolutionParams(const ProceduralPatternData& orchestratorPattern) {
+    void updateEvolutionParams(const ProceduralPatternData& orchestratorPattern) {
         // Update evolution parameters based on orchestrator's guidance
         if (orchestratorPattern.parameters.contains("mutationRate")) {
             m_params.mutationRate = orchestratorPattern.parameters.at("mutationRate");
@@ -115,8 +115,8 @@ private:
         }
     }
 
-    void NotifyOrchestrator() {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void notifyOrchestrator() {
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Propagate evolution state to orchestrator
         IntentTask evolutionIntent{
@@ -130,35 +130,35 @@ private:
             true   // Propagate to connected systems
         };
         
-        orchestrator.PropagateIntent(evolutionIntent);
+        orchestrator.propagateIntent(evolutionIntent);
     }
 
-    void InitializeEvolution(const ProceduralPatternData& source) {
+    void initializeEvolution(const ProceduralPatternData& source) {
         m_evolutionState.populationPool.clear();
         m_evolutionState.populationPool.push_back(source);
         
         // Generate initial population variations
         for (size_t i = 0; i < INITIAL_POPULATION_SIZE; ++i) {
-            auto variant = CreateVariant(source, m_params.mutationRate);
-            if (ValidatePattern(variant)) {
+            auto variant = createVariant(source, m_params.mutationRate);
+            if (validatePattern(variant)) {
                 m_evolutionState.populationPool.push_back(variant);
             }
         }
     }
 
-    void EvolvePattern(const OctaveParams& rules, const HarmonyParams& constraints) {
+    void evolvePattern(const OctaveParams& rules, const HarmonyParams& constraints) {
         while (m_evolutionState.currentGeneration < m_params.generationLimit) {
             // Create new generation
             std::vector<ProceduralPatternData> newGeneration;
             
             // Selection
-            auto parents = SelectParents(m_evolutionState.populationPool);
+            auto parents = selectParents(m_evolutionState.populationPool);
             
             // Crossover
             for (const auto& pair : parents) {
                 if (Random::Float() < m_params.crossoverRate) {
-                    auto offspring = Crossover(pair.first, pair.second);
-                    if (ValidatePattern(offspring)) {
+                    auto offspring = crossover(pair.first, pair.second);
+                    if (validatePattern(offspring)) {
                         newGeneration.push_back(offspring);
                     }
                 }
@@ -167,34 +167,34 @@ private:
             // Mutation
             for (auto& pattern : newGeneration) {
                 if (Random::Float() < m_params.mutationRate) {
-                    Mutate(pattern, rules);
+                    mutate(pattern, rules);
                 }
             }
             
             // Environmental Adaptation
-            AdaptToEnvironment(newGeneration, constraints);
+            adaptToEnvironment(newGeneration, constraints);
             
             // Evaluate Fitness
-            EvaluatePopulation(newGeneration);
+            evaluatePopulation(newGeneration);
             
             // Update State
-            UpdateEvolutionState(newGeneration);
+            updateEvolutionState(newGeneration);
             
             // Check for convergence
-            if (HasConverged()) break;
+            if (hasConverged()) break;
             
             m_evolutionState.currentGeneration++;
         }
     }
 
-    ProceduralPatternData Crossover(
+    ProceduralPatternData crossover(
         const ProceduralPatternData& parent1, 
         const ProceduralPatternData& parent2) 
     {
         ProceduralPatternData offspring;
         
         // Blend structural parameters
-        offspring.structureParams = BlendStructureParams(
+        offspring.structureParams = blendStructureParams(
             parent1.structureParams,
             parent2.structureParams,
             m_params.crossoverRate
@@ -203,7 +203,7 @@ private:
         // Combine pattern-specific parameters
         for (const auto& [key, value] : parent1.parameters) {
             float blendFactor = Random::Float();
-            offspring.parameters[key] = Lerp(
+            offspring.parameters[key] = lerp(
                 value,
                 parent2.parameters[key],
                 blendFactor
@@ -213,7 +213,7 @@ private:
         return offspring;
     }
 
-    void Mutate(ProceduralPatternData& pattern, const OctaveParams& rules) {
+    void mutate(ProceduralPatternData& pattern, const OctaveParams& rules) {
         // Apply random variations based on octave parameters
         pattern.structureParams.regularity += 
             Random::Gaussian() * rules.lowEnd * m_params.mutationRate;
@@ -227,11 +227,11 @@ private:
         // Mutate pattern-specific parameters
         for (auto& [key, value] : pattern.parameters) {
             value += Random::Gaussian() * rules.coherence * m_params.mutationRate;
-            value = Clamp(value, 0.0f, 1.0f);
+            value = clamp(value, 0.0f, 1.0f);
         }
     }
 
-    void AdaptToEnvironment(
+    void adaptToEnvironment(
         std::vector<ProceduralPatternData>& population,
         const HarmonyParams& constraints) 
     {
@@ -239,20 +239,20 @@ private:
             // Adjust pattern based on environmental constraints
             float adaptationFactor = m_params.adaptationRate * constraints.influence;
             
-            // Adapt to system balance
+            // adapt to system balance
             pattern.structureParams.regularity = 
-                Lerp(pattern.structureParams.regularity, 
+                lerp(pattern.structureParams.regularity, 
                      constraints.balance, 
                      adaptationFactor);
             
             // Apply domain-specific adaptations
             for (const auto& [domain, weight] : constraints.weights) {
-                ApplyDomainAdaptation(pattern, domain, weight, adaptationFactor);
+                applyDomainAdaptation(pattern, domain, weight, adaptationFactor);
             }
         }
     }
 
-    bool HasConverged() {
+    bool hasConverged() {
         // Check if we've reached optimal fitness
         if (m_evolutionState.currentFitness >= m_params.stabilityThreshold) {
             return true;

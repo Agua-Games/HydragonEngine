@@ -120,7 +120,7 @@ struct PinIdCompare {
 // Use the custom comparator with std::map
 static std::map<nodeEd::PinId, PinPositionData, PinIdCompare> g_PinPositions;
 
-static bool EnsureNodeEditorContext() {     // Helper function to avoid silently failing by lack of context
+static bool ensureNodeEditorContext() {     // Helper function to avoid silently failing by lack of context
     if (g_NodeEditorContext == nullptr) {
         return false;
     }
@@ -129,7 +129,7 @@ static bool EnsureNodeEditorContext() {     // Helper function to avoid silently
     return true;
 }
 
-void InitializeNodeGraphEditor(EditorWindowData* windowData) {
+void initializeNodeGraphEditor(EditorWindowData* windowData) {
     // Only initialize if not already done
     if (g_NodeEditorContext == nullptr) {
         // Initialize node graph state
@@ -143,9 +143,9 @@ void InitializeNodeGraphEditor(EditorWindowData* windowData) {
         config.DragButtonIndex = ImGuiMouseButton_Left;        // Left mouse button for dragging nodes
         g_NodeEditorContext = nodeEd::CreateEditor(&config);
 
-        if (EnsureNodeEditorContext())
+        if (ensureNodeEditorContext())
         {
-            // Temporary implementation here - move to StyleColorsHydragonDark(), in UIManager.cpp later.
+            // Temporary implementation here - move to styleColorsHydragonDark(), in UIManager.cpp later.
 
             // Style
             nodeEd::Style& nodesStyle = nodeEd::GetStyle();
@@ -167,7 +167,7 @@ void InitializeNodeGraphEditor(EditorWindowData* windowData) {
     }
 }
 
-void ShutdownNodeGraphEditor() {
+void shutdownNodeGraphEditor() {
     if (g_NodeEditorContext) {
         nodeEd::DestroyEditor(g_NodeEditorContext);
         g_NodeEditorContext = nullptr;
@@ -175,7 +175,7 @@ void ShutdownNodeGraphEditor() {
 }
 
 // Improved node with title bar that aligns perfectly with node borders
-void BeginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, ImColor titleBarColor, ImColor nodeColor) {
+void beginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, ImColor titleBarColor, ImColor nodeColor) {
     // Begin the node
     nodeEd::BeginNode(nodeId);
     
@@ -224,7 +224,7 @@ void BeginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, ImColor tit
 }
 
 // Helper to create an input pin with custom styling
-void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
+void beginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     const float iconSize = nodeStyle.pinIconSize;
     
     nodeEd::BeginPin(pinId, nodeEd::PinKind::Input);
@@ -260,7 +260,7 @@ void BeginInputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
 }
 
 // Helper to create an output pin with custom styling
-void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
+void beginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     ImGui::BeginGroup();
     const float iconSize = nodeStyle.pinIconSize;
     
@@ -299,7 +299,7 @@ void BeginOutputPin(nodeEd::PinId pinId, const char* label, ImColor pinColor) {
     ImGui::EndGroup();
 }
 
-ImVec2 GetStoredPinPosition(nodeEd::PinId pinId) {
+ImVec2 getStoredPinPosition(nodeEd::PinId pinId) {
     auto it = g_PinPositions.find(pinId);
     if (it != g_PinPositions.end() && it->second.isValid) {
         return it->second.position;
@@ -308,24 +308,24 @@ ImVec2 GetStoredPinPosition(nodeEd::PinId pinId) {
 }
 
 // You might want to add this at the beginning of your frame:
-void ClearPinPositions() {
+void clearPinPositions() {
     g_PinPositions.clear();
 }
 
 // Forward declare internal helper functions
-static void RenderNodeLibrary();
-static void RenderNodeLibraryContent();
-static void RenderGraphCanvasContent(EditorWindowData* windowData);
-static void RenderMiniMapContent();
-static void RenderTopToolbar(bool* p_open, EditorWindowData* windowData);
-static void RenderRightSidebar();
-static void RenderStatusBar();
-static void RenderGraphCanvas(EditorWindowData* windowData);
+static void renderNodeLibrary();
+static void renderNodeLibraryContent();
+static void renderGraphCanvasContent(EditorWindowData* windowData);
+static void renderMiniMapContent();
+static void renderTopToolbar(bool* p_open, EditorWindowData* windowData);
+static void renderRightSidebar();
+static void renderStatusBar();
+static void renderGraphCanvas(EditorWindowData* windowData);
 
 // Forward declarations
-static bool IsInputConnected(const char* inputName);
+static bool isInputConnected(const char* inputName);
 
-void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData) 
+void showNodeGraphEditor(bool* p_open, EditorWindowData* windowData) 
 {   
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     
@@ -367,20 +367,20 @@ void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData)
             {
                 switch (s_linkShape) {
                     case 0:
-                        if (EnsureNodeEditorContext())
+                        if (ensureNodeEditorContext())
                         {
                             linkStyle.linkShape = LinkShape::Hydragon; break;
                         };
                         break;
                     case 1:
-                        if (EnsureNodeEditorContext())
+                        if (ensureNodeEditorContext())
                         {
                             linkStyle.linkShape = LinkShape::Straight;
                             nodeEd::GetStyle().LinkStrength = 0.0f;
                         };
                         break;
                     case 2:
-                        if (EnsureNodeEditorContext())
+                        if (ensureNodeEditorContext())
                         {
                             linkStyle.linkShape = LinkShape::Bezier; 
                             nodeEd::GetStyle().LinkStrength = 100.0f;
@@ -390,14 +390,14 @@ void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData)
                 }
             }
             if (ImGui::MenuItem("Reset View")) {
-               if (EnsureNodeEditorContext()) 
+               if (ensureNodeEditorContext()) 
                {
                    nodeEd::NavigateToContent();
                }
             }
             if (ImGui::MenuItem("Frame All")) {}
             if (ImGui::MenuItem("Frame Selected")) {
-                if (EnsureNodeEditorContext()) 
+                if (ensureNodeEditorContext()) 
                 {
                     nodeEd::NavigateToSelection(true);
                 }
@@ -414,7 +414,7 @@ void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData)
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
     // Top Toolbar
-    RenderTopToolbar(p_open, windowData);
+    renderTopToolbar(p_open, windowData);
 
     // Main Content Area - removed spacing before status bar
     ImGui::BeginChild("NodeGraphContent", ImVec2(0, -ImGui::GetFrameHeight())); 
@@ -427,7 +427,7 @@ void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData)
     // Left panel for node library - with inner padding
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
     ImGui::BeginChild("NodeLibrary", ImVec2(libraryWidth, 0), true);
-    RenderNodeLibrary();
+    renderNodeLibrary();
     ImGui::EndChild();
     ImGui::PopStyleVar();
 
@@ -449,13 +449,13 @@ void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData)
     
     // Main graph canvas
     ImGui::BeginChild("GraphCanvas", ImVec2(0, 0), true);
-    RenderGraphCanvas(windowData);
+    renderGraphCanvas(windowData);
     ImGui::EndChild();
 
     ImGui::EndChild(); // End NodeGraphContent
 
     // Status Bar
-    RenderStatusBar();
+    renderStatusBar();
 
     // Pop the style modifications for main layout
     ImGui::PopStyleVar(5); // Pop WindowPadding, WindowRounding, ChildRounding, ItemSpacing
@@ -463,7 +463,7 @@ void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData)
     ImGui::End(); // End Node Graph
 }
 
-static void RenderNodeLibrary() 
+static void renderNodeLibrary() 
 {
     // Add padding inside the library window
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
@@ -480,13 +480,13 @@ static void RenderNodeLibrary()
     ImGui::Separator();
 
     // Library content
-    RenderNodeLibraryContent();
+    renderNodeLibraryContent();
 
     // Make sure to pop all style vars
     ImGui::PopStyleVar(3);  // Pop all three style vars
 }
 
-static void RenderNodeLibraryContent() 
+static void renderNodeLibraryContent() 
 {
     // Node Categories
     if (ImGui::CollapsingHeader("Flow Control", ImGuiTreeNodeFlags_DefaultOpen))
@@ -511,7 +511,7 @@ static void RenderNodeLibraryContent()
     }
 }
 
-void RenderGraphCanvas(EditorWindowData* windowData)
+void renderGraphCanvas(EditorWindowData* windowData)
 {
     // Check if editor context exists
     if (g_NodeEditorContext == nullptr) {
@@ -546,42 +546,42 @@ void RenderGraphCanvas(EditorWindowData* windowData)
     }
     
     // === Begin first node with custom title bar ===
-    BeginNodeWithTitleBar(nodeId1, "Transform", nodeStyle.titleBarColor, ImColor(60, 60, 60, 200));
+    beginNodeWithTitleBar(nodeId1, "Transform", nodeStyle.titleBarColor, ImColor(60, 60, 60, 200));
     
     // Add some spacing
     ImGui::Dummy(ImVec2(0, 5));
     
     // Input pins with custom styling
-    BeginInputPin(inputPinId1, "Speed", nodeStyle.pinColor);
+    beginInputPin(inputPinId1, "Speed", nodeStyle.pinColor);
     
     ImGui::SameLine(150); // Fixed position for output pins
     
     // Output pins with custom styling
-    BeginOutputPin(outputPinId1, "Result1", nodeStyle.pinColor);
+    beginOutputPin(outputPinId1, "Result1", nodeStyle.pinColor);
     
     ImGui::Dummy(ImVec2(0, 5)); // Spacing between pins
     
-    BeginInputPin(inputPinId2, "Orientation", nodeStyle.pinColor);
+    beginInputPin(inputPinId2, "Orientation", nodeStyle.pinColor);
     
     ImGui::SameLine(150); // Fixed position for output pins
     
-    BeginOutputPin(outputPinId2, "Result2", nodeStyle.pinColor);
+    beginOutputPin(outputPinId2, "Result2", nodeStyle.pinColor);
     
     nodeEd::EndNode();
     
     // === Begin second node with custom title bar ===
-    BeginNodeWithTitleBar(nodeId2, "Material", nodeStyle.titleBarColor, ImColor(60, 60, 60, 200));
+    beginNodeWithTitleBar(nodeId2, "Material", nodeStyle.titleBarColor, ImColor(60, 60, 60, 200));
     
     // Add some spacing
     ImGui::Dummy(ImVec2(0, 5));
     
     // Input pin with custom styling
-    BeginInputPin(inputPinId3, "Albedo", nodeStyle.pinColor);
+    beginInputPin(inputPinId3, "Albedo", nodeStyle.pinColor);
     
     ImGui::SameLine(150); // Fixed position for output pins
     
     // Output pin with custom styling
-    BeginOutputPin(outputPinId3, "Mat Result", nodeStyle.pinColor);
+    beginOutputPin(outputPinId3, "Mat Result", nodeStyle.pinColor);
     
     nodeEd::EndNode();
     
@@ -595,19 +595,19 @@ void RenderGraphCanvas(EditorWindowData* windowData)
                 // Get the start pin position during dragging
                 nodeEd::PinId startPinId, endPinId;
                 if (nodeEd::QueryNewLink(&startPinId, &endPinId)) {
-                    startPos = GetStoredPinPosition(startPinId);
+                    startPos = getStoredPinPosition(startPinId);
                     endPos = ImGui::GetMousePos();
                 }
             } else {
                 // Normal connected link case
                 if (nodeEd::GetLinkPins(link.Id, &link.InputId, &link.OutputId)) {
-                    startPos = GetStoredPinPosition(link.OutputId);
-                    endPos = GetStoredPinPosition(link.InputId);
+                    startPos = getStoredPinPosition(link.OutputId);
+                    endPos = getStoredPinPosition(link.InputId);
                 }
             }
             
             // Draw the Hydragon line
-            ImSteppedLineRenderer::DrawHydragonLine(
+            SteppedLineRenderer::drawHydragonLine(
                 ImGui::GetWindowDrawList(),
                 startPos,
                 endPos,
@@ -622,19 +622,19 @@ void RenderGraphCanvas(EditorWindowData* windowData)
                 // Get the start pin position during dragging
                 nodeEd::PinId startPinId, endPinId;
                 if (nodeEd::QueryNewLink(&startPinId, &endPinId)) {
-                    startPos = GetStoredPinPosition(startPinId);
+                    startPos = getStoredPinPosition(startPinId);
                     endPos = ImGui::GetMousePos();
                 }
             } else {
                 // Normal connected link case
                 if (nodeEd::GetLinkPins(link.Id, &link.InputId, &link.OutputId)) {
-                    startPos = GetStoredPinPosition(link.OutputId);
-                    endPos = GetStoredPinPosition(link.InputId);
+                    startPos = getStoredPinPosition(link.OutputId);
+                    endPos = getStoredPinPosition(link.InputId);
                 }
             }
             
             // Draw the stepped line
-            ImSteppedLineRenderer::DrawSteppedLine(
+            SteppedLineRenderer::drawSteppedLine(
                 ImGui::GetWindowDrawList(),
                 startPos,
                 endPos,
@@ -775,18 +775,18 @@ void RenderGraphCanvas(EditorWindowData* windowData)
     nodeEd::SetCurrentEditor(nullptr);
 }
 
-void RenderGraphCanvasContent(EditorWindowData* windowData) 
+void renderGraphCanvasContent(EditorWindowData* windowData) 
 { 
 
 }
 
 // Placeholder function - to be implemented properly later
-static bool IsInputConnected(const char* inputName) 
+static bool isInputConnected(const char* inputName) 
 {
     return false;  // For now, always show widgets
 }
 
-void RenderMiniMap() 
+void renderMiniMap() 
 {
     // Position and size the minimap window
     ImGui::SetNextWindowPos(
@@ -802,18 +802,18 @@ void RenderMiniMap()
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoScrollbar))
     {
-        RenderMiniMapContent();
+        renderMiniMapContent();
     }
     ImGui::End();
 }
 
-static void RenderMiniMapContent() 
+static void renderMiniMapContent() 
 {
     // TODO: Render miniature version of the graph
     ImGui::Text("Mini Map");
 }
 
-static void RenderTopToolbar(bool* p_open, EditorWindowData* windowData) 
+static void renderTopToolbar(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;
@@ -853,7 +853,7 @@ static void RenderTopToolbar(bool* p_open, EditorWindowData* windowData)
             // Frame Selected button
             if (ImGui::Button(ICON_MS_CROP_FREE "##Frame", windowData->iconDefaultSize)) {
                 // Use NavigateToSelection to frame selected nodes
-                if (EnsureNodeEditorContext()) {
+                if (ensureNodeEditorContext()) {
                     nodeEd::NavigateToSelection(true);
                 }
             }
@@ -863,7 +863,7 @@ static void RenderTopToolbar(bool* p_open, EditorWindowData* windowData)
             // Reset View button
             if (ImGui::Button(ICON_MS_RESTART_ALT "##ResetView", windowData->iconDefaultSize)) {
                 // Use NavigateToContent to reset view
-                if (EnsureNodeEditorContext()) {
+                if (ensureNodeEditorContext()) {
                     nodeEd::NavigateToContent();
                 }
             }
@@ -878,7 +878,7 @@ static void RenderTopToolbar(bool* p_open, EditorWindowData* windowData)
                 windowData->nodeGraphEditor_GridOpacity = showGrid ? 0.5f : 0.0f;
                 
                 // Apply the grid opacity to the editor
-                if (EnsureNodeEditorContext()) {
+                if (ensureNodeEditorContext()) {
                     nodeEd::GetStyle().Colors[nodeEd::StyleColor_Grid] = ImColor(0.27f, 0.28f, 0.28f, windowData->nodeGraphEditor_GridOpacity);   // Temporary hardcoded values. Fix later!
                 }
             }
@@ -943,7 +943,7 @@ static void RenderTopToolbar(bool* p_open, EditorWindowData* windowData)
     ImGui::PopStyleVar(); // Pop ChildRounding
 }
 
-static void RenderRightSidebar() 
+static void renderRightSidebar() 
 {
     ImGui::BeginChild("RightSidebar", ImVec2(40, 0), true);
     
@@ -977,7 +977,7 @@ static void RenderRightSidebar()
     ImGui::EndChild();
 }
 
-static void RenderStatusBar() 
+static void renderStatusBar() 
 {
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 4));
     ImGui::BeginChild("StatusBar", ImVec2(0, 24), true);

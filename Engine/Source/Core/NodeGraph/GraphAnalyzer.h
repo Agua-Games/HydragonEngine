@@ -40,22 +40,22 @@ struct GraphIssue {
 class GraphAnalyzer {
 public:
     // Core analysis
-    static std::vector<GraphIssue> AnalyzeGraph(const std::vector<Node*>& nodes);
+    static std::vector<GraphIssue> analyzeGraph(const std::vector<Node*>& nodes);
     
     // Specific analyses
-    static std::vector<GraphIssue> FindDeadEnds(const std::vector<Node*>& nodes);
-    static std::vector<GraphIssue> FindUnusedOutputs(const std::vector<Node*>& nodes);
-    static std::vector<GraphIssue> FindMissingInputs(const std::vector<Node*>& nodes);
-    static std::vector<GraphIssue> FindPerformanceBottlenecks(const std::vector<Node*>& nodes);
+    static std::vector<GraphIssue> findDeadEnds(const std::vector<Node*>& nodes);
+    static std::vector<GraphIssue> findUnusedOutputs(const std::vector<Node*>& nodes);
+    static std::vector<GraphIssue> findMissingInputs(const std::vector<Node*>& nodes);
+    static std::vector<GraphIssue> findPerformanceBottlenecks(const std::vector<Node*>& nodes);
     
     // Graph metrics
-    static int CalculateGraphComplexity(const std::vector<Node*>& nodes);
-    static std::map<std::string, int> GetNodeTypeDistribution(const std::vector<Node*>& nodes);
-    static int GetMaxGraphDepth(const std::vector<Node*>& nodes);
+    static int calculateGraphComplexity(const std::vector<Node*>& nodes);
+    static std::map<std::string, int> getNodeTypeDistribution(const std::vector<Node*>& nodes);
+    static int getMaxGraphDepth(const std::vector<Node*>& nodes);
     
     // Visualization helpers
-    static void HighlightIssues(const std::vector<GraphIssue>& issues);
-    static void GenerateGraphReport(const std::vector<Node*>& nodes, const std::string& outputPath);
+    static void highlightIssues(const std::vector<GraphIssue>& issues);
+    static void generateGraphReport(const std::vector<Node*>& nodes, const std::string& outputPath);
 };
 
 } // namespace hd

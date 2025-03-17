@@ -371,7 +371,7 @@ static ExampleTreeNode* ExampleTree_CreateDemoTree()
 struct ImGuiDemoWindowData
 {
     // Examples Apps (accessible from the "Examples" menu)
-    bool ShowMainMenuBar = false;
+    bool showMainMenuBar = false;
     bool ShowAppAssetsBrowser = false;
     bool ShowAppConsole = false;
     bool ShowAppCustomRendering = false;
@@ -416,7 +416,7 @@ void ImGui::ShowDemoWindow(bool* p_open)
     static ImGuiDemoWindowData demo_data;
 
     // Examples Apps (accessible from the "Examples" menu)
-    if (demo_data.ShowMainMenuBar)          { ShowExampleAppMainMenuBar(); }
+    if (demo_data.showMainMenuBar)          { ShowExampleAppMainMenuBar(); }
     if (demo_data.ShowAppDockSpace)         { ShowExampleAppDockSpace(&demo_data.ShowAppDockSpace); } // Important: Process the Docking app first, as explicit DockSpace() nodes needs to be submitted early (read comments near the DockSpace function)
     if (demo_data.ShowAppDocuments)         { ShowExampleAppDocuments(&demo_data.ShowAppDocuments); } // ...process the Document app next, as it may also use a DockSpace()
     if (demo_data.ShowAppAssetsBrowser)     { ShowExampleAppAssetsBrowser(&demo_data.ShowAppAssetsBrowser); }
@@ -771,7 +771,7 @@ static void ShowDemoWindowMenuBar(ImGuiDemoWindowData* demo_data)
         if (ImGui::BeginMenu("Examples"))
         {
             IMGUI_DEMO_MARKER("Menu/Examples");
-            ImGui::MenuItem("Main menu bar", NULL, &demo_data->ShowMainMenuBar);
+            ImGui::MenuItem("Main menu bar", NULL, &demo_data->showMainMenuBar);
 
             ImGui::SeparatorText("Mini apps");
             ImGui::MenuItem("Assets Browser", NULL, &demo_data->ShowAppAssetsBrowser);

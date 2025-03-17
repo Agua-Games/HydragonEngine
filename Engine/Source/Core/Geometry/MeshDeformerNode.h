@@ -49,28 +49,28 @@ public:
     explicit MeshDeformerNode(const MeshDeformerInfo& info = MeshDeformerInfo())
         : DeformerNode(info) {}
 
-    void BakeForRuntime() override {
+    void bakeForRuntime() override {
         // Optimize for runtime performance
         RuntimeMeshData data;
         
         // Pre-compute and optimize vertex transformations
-        data.vertexTransformLUT = PrecomputeVertexTransforms();
+        data.vertexTransformLUT = precomputeVertexTransforms();
         
         // Pack weights and indices for SIMD
-        data.packedWeights = PackWeightsForSIMD();
+        data.packedWeights = packWeightsForSIMD();
         
         // Generate optimized normal/tangent update tables
-        data.normalUpdateTable = GenerateNormalUpdateLUT();
+        data.normalUpdateTable = generateNormalUpdateLUT();
         
-        StoreRuntimeData(std::move(data));
+        storeRuntimeData(std::move(data));
     }
 
 protected:
-    void ApplyDeformation(const ProceduralDeformationData& data) override {
-        if (IsRuntimeBaked()) {
-            ApplyBakedDeformation();
+    void applyDeformation(const ProceduralDeformationData& data) override {
+        if (isRuntimeBaked()) {
+            applyBakedDeformation();
         } else {
-            ApplyDynamicDeformation(data);
+            applyDynamicDeformation(data);
         }
     }
 
@@ -81,11 +81,11 @@ private:
         std::vector<uint32_t> normalUpdateTable;
     };
 
-    void ApplyBakedDeformation();
-    void ApplyDynamicDeformation(const ProceduralDeformationData& data);
-    std::vector<glm::mat4> PrecomputeVertexTransforms();
-    std::vector<float> PackWeightsForSIMD();
-    std::vector<uint32_t> GenerateNormalUpdateLUT();
+    void applyBakedDeformation();
+    void applyDynamicDeformation(const ProceduralDeformationData& data);
+    std::vector<glm::mat4> precomputeVertexTransforms();
+    std::vector<float> packWeightsForSIMD();
+    std::vector<uint32_t> generateNormalUpdateLUT();
 };
 
 } // namespace hd

@@ -49,7 +49,7 @@ struct MeshToolSettings {
     } uvParams;
 };
 
-void ShowMeshEditor(bool* p_open, EditorWindowData* windowData);
+void showMeshEditor(bool* p_open, EditorWindowData* windowData);
 void ShowMeshToolsPanel(MeshToolSettings& settings);
 void ShowUVPanel(MeshToolSettings& settings);
 void ShowProceduralPanel(MeshToolSettings& settings);

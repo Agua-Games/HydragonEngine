@@ -49,7 +49,7 @@ struct ReflectionState {
     } currentView = ViewMode::Types;
 };
 
-void ShowReflectionEditor(bool* p_open, EditorWindowData* windowData) 
+void showReflectionEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static ReflectionState state{};
     

@@ -34,7 +34,7 @@ struct FogInfo : public NodeInfo {
             "VisibilityData"      // Visibility reduction info
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
         IsStreamable = true;
@@ -46,15 +46,15 @@ public:
     explicit FogNode(const FogInfo& info = FogInfo())
         : Node(info) {}
 
-    void ProcessNodeGraph() override {
+    void processNodeGraph() override {
         // Get input values
-        auto atmosphereState = GetPortValue<AtmosphereState>("AtmosphereState");
-        auto windVector = GetPortValue<glm::vec3>("WindVector");
-        auto density = GetPortValue<float>("Density");
-        auto height = GetPortValue<float>("Height");
-        auto temperature = GetPortValue<float>("Temperature");
-        auto humidity = GetPortValue<float>("Humidity");
-        auto noiseParams = GetPortValue<NoiseParameters>("NoiseParams");
+        auto atmosphereState = getPortValue<AtmosphereState>("AtmosphereState");
+        auto windVector = getPortValue<glm::vec3>("WindVector");
+        auto density = getPortValue<float>("Density");
+        auto height = getPortValue<float>("Height");
+        auto temperature = getPortValue<float>("Temperature");
+        auto humidity = getPortValue<float>("Humidity");
+        auto noiseParams = getPortValue<NoiseParameters>("NoiseParams");
 
         // Process fog simulation
         auto volumetricData = GenerateVolumetricData(atmosphereState, density, height);
@@ -63,32 +63,32 @@ public:
         auto visibilityData = CalculateVisibilityData(densityField, atmosphereState);
 
         // Set outputs
-        SetPortValue("VolumetricData", volumetricData);
-        SetPortValue("DensityField", densityField);
-        SetPortValue("ScatteringParams", scatteringParams);
-        SetPortValue("VisibilityData", visibilityData);
+        setPortValue("VolumetricData", volumetricData);
+        setPortValue("DensityField", densityField);
+        setPortValue("ScatteringParams", scatteringParams);
+        setPortValue("VisibilityData", visibilityData);
     }
 
-    std::vector<std::string> GetInputPorts() const override {
-        return GetNodeInfo().Inputs;
+    std::vector<std::string> getInputPorts() const override {
+        return getNodeInfo().Inputs;
     }
 
-    std::vector<std::string> GetOutputPorts() const override {
-        return GetNodeInfo().Outputs;
+    std::vector<std::string> getOutputPorts() const override {
+        return getNodeInfo().Outputs;
     }
 
-    void OnResume() override {}
-    void OnPause() override {}
-    void OnDirty() override {
-        MarkDirty();
+    void onResume() override {}
+    void onPause() override {}
+    void onDirty() override {
+        markDirty();
     }
 
-    uint64_t ComputeCacheKey() const override {
+    uint64_t computeCacheKey() const override {
         std::size_t seed = 0;
-        HashCombine(seed, GetPortValue<AtmosphereState>("AtmosphereState"));
-        HashCombine(seed, GetPortValue<glm::vec3>("WindVector"));
-        HashCombine(seed, GetPortValue<float>("Density"));
-        HashCombine(seed, GetPortValue<float>("Height"));
+        HashCombine(seed, getPortValue<AtmosphereState>("AtmosphereState"));
+        HashCombine(seed, getPortValue<glm::vec3>("WindVector"));
+        HashCombine(seed, getPortValue<float>("Density"));
+        HashCombine(seed, getPortValue<float>("Height"));
         return seed;
     }
 

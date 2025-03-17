@@ -53,7 +53,7 @@ struct VolumeToolSettings {
     } operation = OperationType::Union;
 };
 
-void ShowVolumeEditor(bool* p_open, EditorWindowData* windowData);
+void showVolumeEditor(bool* p_open, EditorWindowData* windowData);
 void ShowVolumeToolsPanel(VolumeToolSettings& settings);
 void ShowPointCloudPanel(VolumeToolSettings& settings);
 void ShowProceduralPanel(VolumeToolSettings& settings);

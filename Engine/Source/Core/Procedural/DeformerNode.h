@@ -51,38 +51,38 @@ public:
     explicit DeformerNode(const DeformerInfo& info = DeformerInfo())
         : Node(info) {}
 
-    virtual void ProcessNodeGraph() override {
+    virtual void processNodeGraph() override {
         // Cache validation
-        auto cacheKey = GenerateCacheKey();
-        if (TryLoadFromCache(cacheKey)) {
+        auto cacheKey = generateCacheKey();
+        if (tryLoadFromCache(cacheKey)) {
             return;
         }
 
         // Procedural generation
-        auto noiseParams = GetInputValue<ProceduralNoiseParams>("NoiseParams");
-        auto structure = GetInputValue<ProceduralStructureParams>("Structure");
+        auto noiseParams = getInputValue<ProceduralNoiseParams>("NoiseParams");
+        auto structure = getInputValue<ProceduralStructureParams>("Structure");
         
         // Generate and apply procedural deformation
-        auto proceduralData = GenerateProceduralDeformation(noiseParams, structure);
+        auto proceduralData =generateProceduralDeformation(noiseParams, structure);
         
         // Apply final deformation
-        ApplyDeformation(proceduralData);
+        applyDeformation(proceduralData);
         
         // Cache results
-        CacheDeformation(cacheKey);
+        cacheDeformation(cacheKey);
     }
 
     // Runtime optimization interface
-    virtual void BakeForRuntime() {
+    virtual void bakeForRuntime() {
         // Bake procedural parameters and cache for runtime
         RuntimeBakedData data;
-        data.proceduralParams = SerializeProceduralParams();
-        data.optimizedBuffers = PrecomputeDeformationData();
-        StoreRuntimeData(std::move(data));
+        data.proceduralParams = serializeProceduralParams();
+        data.optimizedBuffers = precomputeDeformationData();
+        storeRuntimeData(std::move(data));
     }
 
 protected:
-    virtual void ApplyDeformation(const ProceduralDeformationData& data) = 0;
+    virtual void applyDeformation(const ProceduralDeformationData& data) = 0;
 
     struct RuntimeBakedData {
         std::vector<uint8_t> proceduralParams;
@@ -91,10 +91,10 @@ protected:
     };
 
 private:
-    std::string GenerateCacheKey();
-    bool TryLoadFromCache(const std::string& key);
-    void CacheDeformation(const std::string& key);
-    ProceduralDeformationData GenerateProceduralDeformation(
+    std::string generateCacheKey();
+    bool tryLoadFromCache(const std::string& key);
+    void cacheDeformation(const std::string& key);
+    ProceduralDeformationData generateProceduralDeformation(
         const ProceduralNoiseParams& noise,
         const ProceduralStructureParams& structure);
 };

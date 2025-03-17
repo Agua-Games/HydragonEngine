@@ -59,22 +59,22 @@ public:
     explicit BlendNode(const BlendInfo& info = BlendInfo())
         : Node(info) {}
 
-    std::vector<std::string> GetInputPorts() const override {
+    std::vector<std::string> getInputPorts() const override {
         return BlendInfo.Inputs;
     }
 
-    std::vector<std::string> GetOutputPorts() const override {
+    std::vector<std::string> getOutputPorts() const override {
         return BlendInfo.Outputs;
     }
 
-    void ProcessNodeGraph() override {
-        auto sourceA = GetInputValue<ProceduralPatternData>("SourceA");
-        auto sourceB = GetInputValue<ProceduralPatternData>("SourceB");
-        auto mode = GetInputValue<BlendMode>("BlendMode");
-        float factor = GetInputValue<float>("BlendFactor");
+    void processNodeGraph() override {
+        auto sourceA = getInputValue<ProceduralPatternData>("SourceA");
+        auto sourceB = getInputValue<ProceduralPatternData>("SourceB");
+        auto mode = getInputValue<BlendMode>("BlendMode");
+        float factor = getInputValue<float>("BlendFactor");
         
-        auto mask = GetInputValue<ProceduralPatternData>("Mask");
-        auto curve = GetInputValue<BlendCurve>("BlendCurve");
+        auto mask = getInputValue<ProceduralPatternData>("Mask");
+        auto curve = getInputValue<BlendCurve>("BlendCurve");
         
         BlendParams params{
             .mode = mode,
@@ -83,13 +83,13 @@ public:
             .curve = curve
         };
         
-        auto blendedResult = BlendPatterns(sourceA, sourceB, params);
-        auto metrics = CalculateBlendMetrics(blendedResult);
-        auto transitionMap = GenerateTransitionMap(sourceA, sourceB, params);
+        auto blendedResult = blendPatterns(sourceA, sourceB, params);
+        auto metrics = calculateBlendMetrics(blendedResult);
+        auto transitionMap = generateTransitionMap(sourceA, sourceB, params);
         
-        SetOutputValue("BlendedResult", blendedResult);
-        SetOutputValue("BlendMetrics", metrics);
-        SetOutputValue("TransitionMap", transitionMap);
+        setOutputValue("BlendedResult", blendedResult);
+        setOutputValue("BlendMetrics", metrics);
+        setOutputValue("TransitionMap", transitionMap);
     }
 
 protected:

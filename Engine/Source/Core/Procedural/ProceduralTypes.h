@@ -100,7 +100,7 @@ public:
     virtual ~IPattern() = default;
     virtual void Extract() = 0;
     virtual void Apply(const OctaveParams& octaves) = 0;
-    virtual void Harmonize(const HarmonyParams& harmony) = 0;
+    virtual void harmonize(const HarmonyParams& harmony) = 0;
     virtual PatternType GetType() const = 0;
     virtual SystemDomain GetDomain() const = 0;
     

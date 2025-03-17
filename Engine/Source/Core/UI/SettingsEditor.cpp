@@ -14,7 +14,7 @@
 
 namespace hd {
 
-void ShowSettingsEditor(bool* p_open, EditorWindowData* windowData) 
+void showSettingsEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Settings", p_open, ImGuiWindowFlags_MenuBar))

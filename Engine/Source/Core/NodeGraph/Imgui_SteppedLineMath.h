@@ -17,15 +17,15 @@
 #include "imgui_extra_math.h"
 #include "imgui.h"
 
-class ImSteppedLineRenderer {
+class SteppedLineRenderer {
 public:
-    static void ImSteppedLineRenderer::DrawLinkShapeHandle(
+    static void SteppedLineRenderer::drawLinkShapeHandle(
         ImVec2 ratioPoint, 
         ImDrawList* drawList, 
         float size, ImU32 
         color);
 
-    static void DrawHydragonLine(
+    static void drawHydragonLine(
         ImDrawList* drawList,
         const ImVec2& start,
         const ImVec2& end,
@@ -33,7 +33,7 @@ public:
         float thickness,
         bool enableHandle);
     
-    static void DrawSteppedLine(
+    static void drawSteppedLine(
         ImDrawList* drawList,
         const ImVec2& start,
         const ImVec2& end,
@@ -44,7 +44,7 @@ public:
 
 // Template version for modern C++ callbacks
 template <typename F>
-inline void ImSteppedLineFixedStep(
+inline void steppedLineFixedStep(
     F& callback,
     const ImVec2& start,
     const ImVec2& end,

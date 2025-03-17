@@ -39,7 +39,7 @@ struct ProceduralPatternInfo : public NodeInfo {
             "PatternMetrics"
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
     }
@@ -49,25 +49,25 @@ class PatternNode : public Node {
 public:
     explicit PatternNode(const ProceduralPatternInfo& info = ProceduralPatternInfo())
         : Node(info) {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
-        patternId = orchestrator.RegisterPattern(CreateDefaultPattern());
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        patternId = orchestrator.registerPattern(createDefaultPattern());
     }
 
     ~PatternNode() {
         if (!patternId.empty()) {
-            auto& orchestrator = ProceduralOrchestrator::GetInstance();
-            orchestrator.UnregisterPattern(patternId);
+            auto& orchestrator = ProceduralOrchestrator::getInstance();
+            orchestrator.unregisterPattern(patternId);
         }
     }
 
-    void ProcessNodeGraph() override {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void processNodeGraph() override {
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
-        uint32_t seed = GetInputValue<uint32_t>("Seed");
-        float scale = GetInputValue<float>("Scale");
-        float complexity = GetInputValue<float>("Complexity");
-        float evolution = GetInputValue<float>("Evolution");
-        auto intent = GetInputValue<OctaveParams>("OrchestratorIntent");
+        uint32_t seed = getInputValue<uint32_t>("Seed");
+        float scale = getInputValue<float>("Scale");
+        float complexity = getInputValue<float>("Complexity");
+        float evolution = getInputValue<float>("Evolution");
+        auto intent = getInputValue<OctaveParams>("OrchestratorIntent");
 
         ProceduralStructureParams params;
         params.seed = seed;
@@ -75,11 +75,11 @@ public:
         params.complexity = complexity;
         params.evolutionRate = evolution;
 
-        patternId = orchestrator.CreateMaterialPattern(params);
-        auto patternData = orchestrator.GetProceduralPattern(patternId);
+        patternId = orchestrator.createMaterialPattern(params);
+        auto patternData = orchestrator.getProceduralPattern(patternId);
         
-        SetOutputValue("PatternData", patternData);
-        SetOutputValue("PatternMetrics", ComputePatternMetrics(patternData));
+        setOutputValue("PatternData", patternData);
+        setOutputValue("PatternMetrics", computePatternMetrics(patternData));
     }
 
 private:

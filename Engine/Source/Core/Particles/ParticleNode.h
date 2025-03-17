@@ -48,9 +48,9 @@ struct ParticleInfo : public NodeInfo {
             "PerformanceMetrics"
         };
 
-        IsSerializable = true;
-        IsEditableInEditor = true;
-        IsProcedural = true;
+        isSerializable = true;
+        isEditableInEditor = true;
+        isProcedural = true;
     }
 };
 
@@ -58,19 +58,19 @@ class ParticleNode : public Node {
 public:
     explicit ParticleNode(const ParticleInfo& info = ParticleInfo())
         : Node(info) {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
-        particlePatternId = orchestrator.RegisterPattern(CreateDefaultParticlePattern());
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        particlePatternId = orchestrator.registerPattern(createDefaultParticlePattern());
     }
 
-    void ProcessNodeGraph() override {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void processNodeGraph() override {
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Process inputs
-        auto emitter = GetInputValue<EmitterData>("Emitter");
-        auto particleProps = GetInputValue<ParticleProperties>("ParticleProps");
-        auto forces = GetInputValue<std::vector<ForceField>>("Forces");
-        auto collisions = GetInputValue<CollisionParams>("Collisions");
-        auto intent = GetInputValue<OctaveParams>("ProceduralIntent");
+        auto emitter = getInputValue<EmitterData>("Emitter");
+        auto particleProps = getInputValue<ParticleProperties>("ParticleProps");
+        auto forces = getInputValue<std::vector<ForceField>>("Forces");
+        auto collisions = getInputValue<CollisionParams>("Collisions");
+        auto intent = getInputValue<OctaveParams>("ProceduralIntent");
         
         // Create particle pattern parameters
         ProceduralStructureParams params;
@@ -81,16 +81,16 @@ public:
         params.collisionParams = collisions;
         
         // Update particle pattern
-        particlePatternId = orchestrator.CreateParticlePattern(params);
-        auto particleData = orchestrator.GetProceduralPattern(particlePatternId);
+        particlePatternId = orchestrator.createParticlePattern(params);
+        auto particleData = orchestrator.getProceduralPattern(particlePatternId);
         
         // Update outputs
-        SetOutputValue("ParticleData", particleData);
-        SetOutputValue("SimulationState", ComputeSimulationState(particleData));
-        SetOutputValue("CollisionEvents", ProcessCollisions(particleData));
-        SetOutputValue("EmitterState", UpdateEmitterState(particleData));
-        SetOutputValue("VisualData", GenerateVisualData(particleData));
-        SetOutputValue("PerformanceMetrics", ComputePerformanceMetrics());
+        setOutputValue("ParticleData", particleData);
+        setOutputValue("SimulationState", computeSimulationState(particleData));
+        setOutputValue("CollisionEvents", processCollisions(particleData));
+        setOutputValue("EmitterState", updateEmitterState(particleData));
+        setOutputValue("VisualData", generateVisualData(particleData));
+        setOutputValue("PerformanceMetrics", computePerformanceMetrics());
     }
 
 private:

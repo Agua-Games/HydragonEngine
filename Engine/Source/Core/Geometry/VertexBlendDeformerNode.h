@@ -44,7 +44,7 @@ public:
         : DeformerNode(info) {}
 
 protected:
-    void ApplyDeformation() override;
+    void applyDeformation() override;
 };
 
 } // namespace hd

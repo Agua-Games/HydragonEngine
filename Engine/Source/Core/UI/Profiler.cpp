@@ -53,13 +53,13 @@ struct ProfilerTimelineData {
 };
 
 // Forward declarations of helper functions
-static void ShowProfilerToolbar(ProfilerSettings& settings);
-static void ShowProfilerTimeline(const ProfilerTimelineData& data, const ProfilerSettings& settings);
-static void ShowProfilerDetails(const ProfilerSettings& settings);
-static void ShowProfilerOverlay(const ProfilerSettings& settings);
+static void showProfilerToolbar(ProfilerSettings& settings);
+static void showProfilerTimeline(const ProfilerTimelineData& data, const ProfilerSettings& settings);
+static void showProfilerDetails(const ProfilerSettings& settings);
+static void showProfilerOverlay(const ProfilerSettings& settings);
 
 // Implementation of helper functions
-static void ShowProfilerToolbar(ProfilerSettings& settings)
+static void showProfilerToolbar(ProfilerSettings& settings)
 {
     // Match TopToolbar's style settings
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -117,23 +117,23 @@ static void ShowProfilerToolbar(ProfilerSettings& settings)
     ImGui::PopStyleVar(4);
 }
 
-static void ShowProfilerTimeline(const ProfilerTimelineData& data, const ProfilerSettings& settings)
+static void showProfilerTimeline(const ProfilerTimelineData& data, const ProfilerSettings& settings)
 {
     ImGui::Text("Timeline visualization coming soon...");
 }
 
-static void ShowProfilerDetails(const ProfilerSettings& settings)
+static void showProfilerDetails(const ProfilerSettings& settings)
 {
     ImGui::Text("Details view coming soon...");
 }
 
-static void ShowProfilerOverlay(const ProfilerSettings& settings)
+static void showProfilerOverlay(const ProfilerSettings& settings)
 {
     ImGui::Text("Overlay coming soon...");
 }
 
 // Main Profiler implementation
-void ShowProfiler(bool* p_open, EditorWindowData* windowData)
+void showProfiler(bool* p_open, EditorWindowData* windowData)
 {
     static ProfilerSettings settings;
     static float leftPanelWidth = 250.0f;
@@ -169,7 +169,7 @@ void ShowProfiler(bool* p_open, EditorWindowData* windowData)
         ImGui::EndMenuBar();
     }
 
-    ShowProfilerToolbar(settings);
+    showProfilerToolbar(settings);
     ImGui::Separator();
 
     // Left Panel - Categories and Filters

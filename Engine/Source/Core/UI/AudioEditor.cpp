@@ -44,7 +44,7 @@ struct AudioEditorState {
 
 static AudioEditorState s_audioState;
 
-void ShowAudioEditor(bool* p_open, EditorWindowData* windowData) 
+void showAudioEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     

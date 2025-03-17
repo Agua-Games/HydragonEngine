@@ -13,7 +13,7 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowImageTools(bool* p_open, EditorWindowData* windowData) 
+void showImageTools(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Image Tools", p_open, ImGuiWindowFlags_MenuBar))

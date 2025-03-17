@@ -40,37 +40,37 @@ struct EditorWindowData;
 /**
  * @brief Ensure the node editor context is set.
  */
-static bool EnsureNodeEditorContext();
+static bool ensureNodeEditorContext();
 
 /**
  * @brief Initialize the node graph editor.
  * Should be called once during application startup.
  * @param windowData Editor window data containing global settings
  */
-void InitializeNodeGraphEditor(EditorWindowData* windowData);
+void initializeNodeGraphEditor(EditorWindowData* windowData);
 
 /**
  * @brief Shutdown the node graph editor and releases resources.
  */
-void ShutdownNodeGraphEditor();
+void shutdownNodeGraphEditor();
 
 /**
  * @brief Renders the main node graph editor window.
  * @param p_open Pointer to boolean controlling window visibility
  * @param windowData Editor window data containing global settings
  */
-void ShowNodeGraphEditor(bool* p_open, EditorWindowData* windowData);
+void showNodeGraphEditor(bool* p_open, EditorWindowData* windowData);
 
 /**
  * @brief Renders the graph canvas area.
  * @param windowData Editor window data containing global settings
  */
-void RenderGraphCanvas(EditorWindowData* windowData);
+void renderGraphCanvas(EditorWindowData* windowData);
 
 /**
  * @brief Renders the minimap overlay.
  */
-void RenderMiniMap();
+void renderMiniMap();
 
 /**
  * @brief Creates a node with a styled title bar.
@@ -79,7 +79,7 @@ void RenderMiniMap();
  * @param titleBarColor Color of the title bar
  * @param nodeColor Color of the node body
  */
-void BeginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, 
+void beginNodeWithTitleBar(nodeEd::NodeId nodeId, const char* title, 
     ImColor titleBarColor, ImColor nodeColor);
 
 } // namespace hd

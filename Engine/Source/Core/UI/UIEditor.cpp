@@ -155,7 +155,7 @@ static void ShowProperties()
     }
 }
 
-void ShowUIEditor(bool* p_open, EditorWindowData* windowData) 
+void showUIEditor(bool* p_open, EditorWindowData* windowData) 
 {
     if (!state.isInitialized) {
         if (!InitializeUIEditor()) {

@@ -12,6 +12,6 @@
 
 namespace hd {
 
-void ShowSceneGraphEditor(bool* p_open, EditorWindowData* windowData);
+void showSceneGraphEditor(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

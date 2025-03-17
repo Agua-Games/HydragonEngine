@@ -3,10 +3,10 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @file Serialization.h
- * @brief Header file for the VersionedSerializer class.
+ * @brief Header file for the Versionedserializer class.
  * 
  * ARCHITECTURAL NOTES:
- * - VersionedSerializer is a utility class for handling versioned serialization and migration of objects.
+ * - Versionedserializer is a utility class for handling versioned serialization and migration of objects.
  * 
  * TODO:
  * - Flesh out the class and its methods, structs, enums, etc.
@@ -32,19 +32,19 @@ struct Version {
     }
 };
 
-class VersionedSerializer {
+class Versionedserializer {
 public:
     using MigrationFunc = std::function<void(Object&)>;
 
-    static void RegisterMigration(Version from, Version to, MigrationFunc func) {
+    static void registerMigration(Version from, Version to, MigrationFunc func) {
         migrations[{from, to}] = std::move(func);
     }
 
-    static void Migrate(Object& obj, Version from, Version to) {
+    static void migrate(Object& obj, Version from, Version to) {
         if (from == to) return;
 
         // Find migration path
-        auto path = FindMigrationPath(from, to);
+        auto path = findMigrationPath(from, to);
         if (path.empty()) {
             throw std::runtime_error("No migration path found");
         }
@@ -81,7 +81,7 @@ private:
 
     static inline std::unordered_map<VersionPair, MigrationFunc, VersionPairHash> migrations;
 
-    static std::vector<Version> FindMigrationPath(Version from, Version to) {
+    static std::vector<Version> findMigrationPath(Version from, Version to) {
         // Implement A* or Dijkstra's algorithm to find shortest migration path
         // This is a simplified placeholder
         return {from, to};
@@ -93,7 +93,7 @@ private:
                          ToMajor, ToMinor, ToPatch, \
                          MigrationFunction) \
     static bool registered_##FromMajor##_##FromMinor##_##FromPatch##_to_##ToMajor##_##ToMinor##_##ToPatch = \
-        (VersionedSerializer::RegisterMigration( \
+        (Versionedserializer::registerMigration( \
             Version{FromMajor, FromMinor, FromPatch}, \
             Version{ToMajor, ToMinor, ToPatch}, \
             MigrationFunction), true)

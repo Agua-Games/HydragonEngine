@@ -12,7 +12,7 @@
 
 namespace hd {
 
-void ShowLightingEditor(bool* p_open, EditorWindowData* windowData) 
+void showLightingEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     

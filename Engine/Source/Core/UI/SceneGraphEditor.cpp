@@ -14,7 +14,7 @@
 
 namespace hd {
 
-void ShowSceneGraphEditor(bool* p_open, EditorWindowData* windowData)
+void showSceneGraphEditor(bool* p_open, EditorWindowData* windowData)
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("SceneGraph ", p_open, ImGuiWindowFlags_MenuBar))

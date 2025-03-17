@@ -13,7 +13,7 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowBottomToolbar(bool* p_open, EditorWindowData* windowData) 
+void showBottomToolbar(bool* p_open, EditorWindowData* windowData) 
 {
     if (ImGui::Begin("Bottom Toolbar", p_open))
     {

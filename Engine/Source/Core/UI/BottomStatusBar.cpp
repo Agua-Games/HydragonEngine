@@ -27,7 +27,7 @@ static float statusBarHeight = 9.0f;
  *               will display a close button in the upper-right corner, and 
  *               clicking it will set the variable to false.
  */
-void ShowBottomStatusBar(bool* p_open, EditorWindowData* windowData) 
+void showBottomStatusBar(bool* p_open, EditorWindowData* windowData) 
 {
     // Set the toolbar to a horizontal strip layout
     ImGuiWindowClass window_class;

@@ -83,7 +83,7 @@ public:
     }
 
     // Node Graph Integration
-    std::vector<std::string> GetInputPorts() const override {
+    std::vector<std::string> getInputPorts() const override {
         std::vector<std::string> ports = {
             "BaseColor",
             "Metallic",
@@ -106,16 +106,16 @@ public:
         return ports;
     }
 
-    std::vector<std::string> GetOutputPorts() const override {
+    std::vector<std::string> getOutputPorts() const override {
         return {"SurfaceOutput", "CustomData1", "CustomData2"};
     }
 
     // USD Integration
-    void ConvertToUsdMaterial(pxr::UsdShadeMaterial& usdMaterial) {
+    void convertToUsdMaterial(pxr::UsdShadeMaterial& usdMaterial) {
         // Implementation for USD material conversion
     }
 
-    void LoadFromUsdMaterial(const pxr::UsdShadeMaterial& usdMaterial) {
+    void loadFromUsdMaterial(const pxr::UsdShadeMaterial& usdMaterial) {
         // Implementation for loading from USD material
     }
 
@@ -126,7 +126,7 @@ public:
         std::vector<VkDescriptorSetLayout> descriptorLayouts;
     };
 
-    void CompileShaderVariants() {
+    void compileShaderVariants() {
         for (const auto& config : MaterialInfo.VariantConfigs) {
             CompileVariant(config);
         }
@@ -140,24 +140,24 @@ public:
         uint32_t currentVariantIndex;
     };
 
-    void BakeForRuntime() {
+    void bakeForRuntime() {
         // Bake material data for optimal runtime performance
     }
 
     // Procedural Generation
-    void GenerateProceduralTextures() {
+    void generateProceduralTextures() {
         if (!MaterialInfo.UsesProcedural) return;
         
         // Get structure algorithm parameters from input port
         ProceduralStructureParams structureParams;
-        if (HasConnectedInput("StructureAlgorithm")) {
-            structureParams = GetInputValue<ProceduralStructureParams>("StructureAlgorithm");
+        if (hasConnectedInput("StructureAlgorithm")) {
+            structureParams = getInputValue<ProceduralStructureParams>("StructureAlgorithm");
         }
 
         // Apply structure algorithm to noise generation
-        float noiseScale = GetInputValue<float>("NoiseScale");
-        int octaves = GetInputValue<int>("NoiseOctaves");
-        float persistence = GetInputValue<float>("NoisePersistence");
+        float noiseScale = getInputValue<float>("NoiseScale");
+        int octaves = getInputValue<int>("NoiseOctaves");
+        float persistence = getInputValue<float>("NoisePersistence");
 
         // Generate base noise with structure influence
         auto structuredNoise = [&](float x, float y, float z) {
@@ -165,16 +165,16 @@ public:
             
             switch (structureParams.type) {
                 case ProceduralStructureType::Geometric:
-                    baseNoise = GenerateGeometricNoise(x, y, z, structureParams);
+                    baseNoise = generateGeometricNoise(x, y, z, structureParams);
                     break;
                 case ProceduralStructureType::Voronoi:
-                    baseNoise = GenerateVoronoiNoise(x, y, z, structureParams);
+                    baseNoise = generateVoronoiNoise(x, y, z, structureParams);
                     break;
                 case ProceduralStructureType::Organic:
-                    baseNoise = GenerateOrganicNoise(x, y, z, structureParams);
+                    baseNoise = generateOrganicNoise(x, y, z, structureParams);
                     break;
                 case ProceduralStructureType::Fractal:
-                    baseNoise = GenerateFractalNoise(x, y, z, structureParams);
+                    baseNoise = generateFractalNoise(x, y, z, structureParams);
                     break;
                 case ProceduralStructureType::Custom:
                     if (structureParams.customAlgorithm) {
@@ -195,7 +195,7 @@ public:
                 maxValue += amplitude;
                 
                 // Blend structure with octaves
-                float octaveNoise = GenerateStructuredOctave(
+                float octaveNoise = generateStructuredOctave(
                     x * frequency, 
                     y * frequency, 
                     z * frequency, 
@@ -213,10 +213,10 @@ public:
     }
 
     // Performance-based LOD
-    void UpdateLODLevel(float performanceMetric) {
+    void updateLODLevel(float performanceMetric) {
         for (size_t i = 0; i < MaterialInfo.VariantConfigs.size(); ++i) {
             if (performanceMetric <= MaterialInfo.VariantConfigs[i].performanceThreshold) {
-                SwitchToVariant(i);
+                switchToVariant(i);
                 break;
             }
         }
@@ -227,15 +227,15 @@ protected:
     std::unordered_map<uint32_t, ShaderVariant> ShaderVariants;
     RuntimeMaterialData RuntimeData;
 
-    void InitializeDefaultPorts() {
+    void initializeDefaultPorts() {
         // Setup default PBR ports
     }
 
-    void InitializeShaderCache() {
+    void initializeShaderCache() {
         // Initialize shader caching system
     }
 
-    void CompileVariant(const MaterialVariantConfig& config) {
+    void compileVariant(const MaterialVariantConfig& config) {
         // Async shader compilation
         std::async(std::launch::async, [this, config]() {
             // Compile shader variant
@@ -243,7 +243,7 @@ protected:
         });
     }
 
-    void SwitchToVariant(uint32_t variantIndex) {
+    void switchToVariant(uint32_t variantIndex) {
         // Implementation for runtime variant switching
     }
 
@@ -259,7 +259,7 @@ private:
     std::thread CompilationThread;
     std::mutex CompilationMutex;
     
-    void ProcessShaderCompilationQueue() {
+    void processShaderCompilationQueue() {
         while (true) {
             ShaderCompilationTask task;
             {
@@ -290,11 +290,11 @@ private:
     };
 
     // Helper functions for different structure types
-    float GenerateGeometricNoise(float x, float y, float z, const ProceduralStructureParams& params);
-    float GenerateVoronoiNoise(float x, float y, float z, const ProceduralStructureParams& params);
-    float GenerateOrganicNoise(float x, float y, float z, const ProceduralStructureParams& params);
-    float GenerateFractalNoise(float x, float y, float z, const ProceduralStructureParams& params);
-    float GenerateStructuredOctave(float x, float y, float z, const ProceduralStructureParams& params);
+    float generateGeometricNoise(float x, float y, float z, const ProceduralStructureParams& params);
+    float generateVoronoiNoise(float x, float y, float z, const ProceduralStructureParams& params);
+    float generateOrganicNoise(float x, float y, float z, const ProceduralStructureParams& params);
+    float generateFractalNoise(float x, float y, float z, const ProceduralStructureParams& params);
+    float generateStructuredOctave(float x, float y, float z, const ProceduralStructureParams& params);
 };
 
 } // namespace hd

@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowLeftToolbar(bool* p_open, EditorWindowData* windowData);
+void showLeftToolbar(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

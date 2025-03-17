@@ -11,7 +11,7 @@
  * - Added code to initialize the engine's resource manager, load resources - fonts etc.
  * - Added includes for UIManager, ResourceManager, and filesystem.
  * - Switched main() to WinMain() to be able to use the Windows API.
- * - Turned off StyleColorsDark(), to use our own style - UIManager::StyleColorsHydragonDark().
+ * - Turned off StyleColorsDark(), to use our own style - UIManager::styleColorsHydragonDark().
  */
 #pragma once
 #include <windows.h>
@@ -349,8 +349,6 @@ static void FramePresent(ImGui_ImplVulkanH_Window* wd)
     wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->SemaphoreCount; // Now we can use the next set of semaphores
 }
 
-// end of Hydragon Code ==============
-
 // Main code
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -397,14 +395,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
     // 3. Initialize ResourceManager and load fonts
-    auto& resourceManager = hd::ResourceManager::GetInstance();
-    resourceManager.LoadFonts();  // This will load both default and icon fonts
+    auto& resourceManager = hd::ResourceManager::getInstance();
+    resourceManager.loadFonts();  // This will load both default and icon fonts
 
     // 4. Create and initialize window data structure
     hd::EditorWindowData EditorWindowData;
-    EditorWindowData.defaultFont = resourceManager.GetDefaultFont();
-    EditorWindowData.iconFont = resourceManager.GetIconFont();
-    hd::Initialize(window, &EditorWindowData);
+    EditorWindowData.defaultFont = resourceManager.getDefaultFont();
+    EditorWindowData.iconFont = resourceManager.getIconFont();
+    hd::initialize(window, &EditorWindowData);
 
     // 5. Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForVulkan(window, true);
@@ -463,7 +461,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         // too much code in UIManager.h)
         if (show_Hydragon_window)
         {
-            hd::RenderHydragonEditor(&EditorWindowData);
+            hd::renderHydragonEditor(&EditorWindowData);
         }
         // End of Hydragon main window ===========
 
@@ -494,7 +492,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     err = vkDeviceWaitIdle(g_Device);
     check_vk_result(err);
     ImGui_ImplVulkan_Shutdown();    // Remove this later, after migrating backend: Shutdown will be called from backend
-    hd::Cleanup();             // Wraps imgui_impl_glfw Shutdown cleanup for ImGui and imgui-node-editor
+    hd::cleanup();                  // Wraps imgui_impl_glfw Shutdown cleanup for ImGui and imgui-node-editor
 
     CleanupVulkanWindow();    // Remove this later, after migrating backend: Cleanup, DestroyWindow, Shutdown will be called from backend
     CleanupVulkan();          // Same comment as above

@@ -21,17 +21,17 @@ public:
     DataType(const std::string& name, const std::string& category);
     
     // Type compatibility
-    bool IsCompatibleWith(const DataType& other) const;
-    bool CanConvertTo(const DataType& other) const;
-    float GetConversionCost(const DataType& other) const;
+    bool isCompatibleWith(const DataType& other) const;
+    bool canConvertTo(const DataType& other) const;
+    float getConversionCost(const DataType& other) const;
     
     // Type information
-    const std::string& GetName() const { return m_name; }
-    const std::string& GetCategory() const { return m_category; }
+    const std::string& getName() const { return m_name; }
+    const std::string& getCategory() const { return m_category; }
     
     // Type visualization
-    ImColor GetTypeColor() const { return m_color; }
-    const std::string& GetIcon() const { return m_icon; }
+    ImColor getTypeColor() const { return m_color; }
+    const std::string& getIcon() const { return m_icon; }
     
 private:
     std::string m_name;
@@ -47,23 +47,23 @@ private:
  */
 class TypeRegistry {
 public:
-    static TypeRegistry& Get();
+    static TypeRegistry& get();
     
     // Type registration
-    void RegisterType(const DataType& type);
-    void RegisterTypeConversion(const std::string& fromType, 
+    void registerType(const DataType& type);
+    void registerTypeConversion(const std::string& fromType, 
                                const std::string& toType, 
                                float conversionCost,
                                std::function<void(const void*, void*)> converter);
     
     // Type lookup
-    DataType* GetType(const std::string& name);
-    bool AreTypesCompatible(const std::string& sourceType, const std::string& targetType);
-    float GetConversionCost(const std::string& sourceType, const std::string& targetType);
+    DataType* getType(const std::string& name);
+    bool areTypesCompatible(const std::string& sourceType, const std::string& targetType);
+    float getConversionCost(const std::string& sourceType, const std::string& targetType);
     
     // Type conversion
-    bool CanConvert(const std::string& sourceType, const std::string& targetType);
-    void* ConvertValue(const std::string& sourceType, const std::string& targetType, const void* value);
+    bool canConvert(const std::string& sourceType, const std::string& targetType);
+    void* convertValue(const std::string& sourceType, const std::string& targetType, const void* value);
     
 private:
     std::map<std::string, DataType> m_types;

@@ -399,7 +399,7 @@ public:
      * @brief Get the singleton instance of the VulkanCore class.
      * @return The singleton instance.
      */
-    static VulkanCore& GetInstance() {
+    static VulkanCore& getInstance() {
         static VulkanCore instance;
         return instance;
     }
@@ -409,25 +409,25 @@ public:
      * @param info The initialization information.
      * @return True if initialization is successful, false otherwise.
      */
-    bool Initialize(const InitInfo& info) { }   // In imgui the signature is bool Init(ImGui_ImplVulkan_InitInfo* info)
+    bool initialize(const InitInfo& info) { }   // In imgui the signature is bool Init(ImGui_ImplVulkan_InitInfo* info)
 
     /**
      * @brief Shutdown the Vulkan backend.
      */
-    void Shutdown() { }
+    void shutdown() { }
 
     /**
      * @brief Check if the Vulkan backend is initialized.
      * @return True if initialized, false otherwise.
      */
-    bool IsInitialized() const noexcept { return initialized; }
+    bool isInitialized() const noexcept { return initialized; }
 
     // === Error handling ===
     /**
      * @brief Get the last error encountered by the Vulkan backend.
      * @return The last error encountered.
      */
-    VkResult GetLastError() const noexcept { return lastError; }
+    VkResult getLastError() const noexcept { return lastError; }
 
     // === Device & Queue management ===
     /**
@@ -435,43 +435,43 @@ public:
      * @param instance The Vulkan instance.
      * @return The selected physical device.
      */
-    VkPhysicalDevice SelectPhysicalDevice(VkInstance instance) {}
+    VkPhysicalDevice selectPhysicalDevice(VkInstance instance) {}
 
     /**
      * @brief Get the Vulkan device handle.
      * @return The Vulkan device handle.
      */
-    VkDevice GetDevice() const noexcept { return device; }
+    VkDevice getDevice() const noexcept { return device; }
     
     /**
      * @brief Select the queue family index for the Vulkan backend.
      * @param physical_device The physical device.
      * @return The selected queue family index.
      */
-    uint32_t SelectQueueFamilyIndex(VkPhysicalDevice physical_device) { }
+    uint32_t selectQueueFamilyIndex(VkPhysicalDevice physical_device) { }
 
     // === Command & Frame management ===
     /**
      * @brief Begin single-time command buffer recording.
      * @return The command buffer for recording.
      */
-    VkCommandBuffer BeginSingleTimeCommands() { }
+    VkCommandBuffer beginSingleTimeCommands() { }
 
     /**
      * @brief End single-time command buffer recording and submit it.
      * @param command_buffer The command buffer to end and submit.
      */
-    void EndSingleTimeCommands(VkCommandBuffer command_buffer) { }
+    void endSingleTimeCommands(VkCommandBuffer command_buffer) { }
     
     /**
      * @brief Begin a new frame for rendering.
      */
-    void BeginFrame() { }                         // In imgui the signature is void NewFrame()
+    void beginFrame() { }                         // In imgui the signature is void NewFrame()
     
     /**
      * @brief End the current frame and present the rendered content.
      */
-    void EndFrame() { }                           // Not present in imgui's example code
+    void endFrame() { }                           // Not present in imgui's example code
     
     /**
      * @brief Render the ImGui draw data using the provided command buffer and pipeline.
@@ -479,9 +479,9 @@ public:
      * @param command_buffer The command buffer to use for rendering.
      * @param pipeline The pipeline to use for rendering.
      */
-    void RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE) {}
-    void CreateBuffer(VkBufferUsageFlags usage, VkDeviceSize size, VkBuffer* buffer, VmaAllocation* allocation) { }
-    void DestroyBuffer(VkBuffer buffer, VmaAllocation allocation) { }
+    void renderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE) {}
+    void createBuffer(VkBufferUsageFlags usage, VkDeviceSize size, VkBuffer* buffer, VmaAllocation* allocation) { }
+    void destroyBuffer(VkBuffer buffer, VmaAllocation allocation) { }
 
     // === Resource management - Textures, Fonts, Shaders, etc ===
     /**
@@ -491,24 +491,24 @@ public:
      * @param image_layout The image layout of the texture.
      * @return The descriptor set representing the added texture.
      */
-    VkDescriptorSet AddTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout) {}
+    VkDescriptorSet addTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout) {}
     
     /**
      * @brief Remove a texture from the Vulkan backend.
      * @param descriptor_set The descriptor set representing the texture to remove.
      */
-    void RemoveTexture(VkDescriptorSet descriptor_set) { }
+    void removeTexture(VkDescriptorSet descriptor_set) { }
     
     /**
      * @brief Create the font texture for ImGui.
      * @return True if font texture creation is successful, false otherwise.
      */
-    bool CreateFontsTexture() { }   // Should we handle it here or in ResourceManager?
+    bool createFontsTexture() { }   // Should we handle it here or in ResourceManager?
     
     /**
      * @brief Destroy the font texture for ImGui.
      */
-    void DestroyFontsTexture() { }
+    void destroyFontsTexture() { }
 
     // === Window and surface management ===
     /**
@@ -523,7 +523,7 @@ public:
      * @param h The height of the window.
      * @param min_image_count The minimum number of images in the swapchain.
      */
-    void CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, 
+    void createOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, 
         Window* wd, uint32_t queue_family, const VkAllocationCallbacks* allocator,
         int w, int h, uint32_t min_image_count) {}
 
@@ -534,7 +534,7 @@ public:
      * @param wd The window data structure to destroy.
      * @param allocator The allocation callbacks.
      */
-        void DestroyWindow(VkInstance instance, VkDevice device, Window* wd,
+        void destroyWindow(VkInstance instance, VkDevice device, Window* wd,
     const VkAllocationCallbacks* allocator) {}
 
     /**
@@ -546,7 +546,7 @@ public:
      * @param request_color_space The requested color space.
      * @return The selected surface format.
      */
-    VkSurfaceFormatKHR SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
+    VkSurfaceFormatKHR selectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
         const VkFormat* request_formats, int request_formats_count,
         VkColorSpaceKHR request_color_space) {}
 
@@ -558,7 +558,7 @@ public:
      * @param request_modes_count The number of requested present modes.
      * @return The selected present mode.
      */
-        VkPresentModeKHR SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
+        VkPresentModeKHR selectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
         const VkPresentModeKHR* request_modes, int request_modes_count) {}
 
     // === Configuration ===
@@ -566,13 +566,13 @@ public:
      * @brief Set the minimum image count for the swapchain.
      * @param min_image_count The minimum image count.
      */
-    void SetMinImageCount(uint32_t min_image_count) { }
+    void setMinImageCount(uint32_t min_image_count) { }
     
     /**
      * @brief Enable or disable dynamic rendering.
      * @param enable True to enable dynamic rendering, false to disable.
      */
-    void SetDynamicRendering(bool enable) noexcept { }
+    void setDynamicRendering(bool enable) noexcept { }
     
     /**
      * @brief Load Vulkan functions using a custom function loader.
@@ -580,14 +580,14 @@ public:
      * @param user_data The user data to pass to the function loader.
      * @return True if function loading is successful, false otherwise.
      */
-    bool LoadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data = nullptr) {}
+    bool loadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data = nullptr) {}
 
     /**
      * @brief Get the minimum image count from the given present mode.
      * @param present_mode The present mode.
      * @return The minimum image count.
      */
-    int GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode) { }
+    int getMinImageCountFromPresentMode(VkPresentModeKHR present_mode) { }
 
     ~VulkanCore();
 
@@ -605,8 +605,8 @@ private:
     // Private Methods
     bool validateDevice() const noexcept;
     void setLastError(VkResult error) noexcept { lastError = error; }
-    void CreateCommandPools();
-    void SetupDescriptorPool();
+    void createCommandPools();
+    void setupDescriptorPool();
 
     // 3. Singleton Implementation
     VulkanCore() noexcept;

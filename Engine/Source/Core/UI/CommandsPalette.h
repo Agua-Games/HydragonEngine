@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowCommandsPalette(bool* p_open, EditorWindowData* windowData);
+void showCommandsPalette(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

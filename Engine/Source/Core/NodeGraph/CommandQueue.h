@@ -26,13 +26,13 @@ public:
         bool isAsync;
     };
 
-    void EnqueueCommand(Command cmd) {
+    void enqueueCommand(Command cmd) {
         std::lock_guard<std::mutex> lock(queueMutex);
         commandQueue.push(std::move(cmd));
         queueCV.notify_one();
     }
 
-    void ProcessQueue() {
+    void processQueue() {
         std::lock_guard<std::mutex> lock(queueMutex);
         while (!commandQueue.empty()) {
             auto& cmd = commandQueue.front();
@@ -47,7 +47,7 @@ public:
         }
     }
 
-    void WaitForAsyncCommands() {
+    void waitForAsyncCommands() {
         for (auto& future : asyncCommands) {
             future.wait();
         }
@@ -55,7 +55,7 @@ public:
     }
 
     // Undo last command
-    void Undo() {
+    void undo() {
         if (!history.empty()) {
             auto& cmd = history.back();
             cmd.undo();

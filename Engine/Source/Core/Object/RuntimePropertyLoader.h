@@ -20,14 +20,14 @@
 
 class RuntimePropertyLoader {
 public:
-    static void LoadFromFile(Object* obj, const std::string& filepath) {
+    static void loadFromFile(Object* obj, const std::string& filepath) {
         // Load property values from JSON/YAML file
         // and update them at runtime
-        auto values = LoadJSON(filepath);
+        auto values = loadJSON(filepath);
         for (const auto& [name, value] : values.items()) {
-            if (obj->GetRuntimeProperties().contains(name)) {
+            if (obj->getRuntimeProperties().contains(name)) {
                 // Update property based on type...
-                UpdatePropertyFromJSON(obj, name, value);
+                updatePropertyFromJSON(obj, name, value);
             }
         }
     }

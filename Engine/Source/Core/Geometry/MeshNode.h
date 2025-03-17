@@ -55,24 +55,24 @@ public:
     explicit MeshNode(const MeshInfo& info = MeshInfo())
         : Node(info) {}
 
-    void ProcessNodeGraph() override {
+    void processNodeGraph() override {
         // Process base transform
-        auto transform = GetInputValue<std::shared_ptr<TransformNode>>("Transform");
+        auto transform = getInputValue<std::shared_ptr<TransformNode>>("Transform");
         
         // Process deformers in sequence
-        auto deformers = GetInputValue<std::vector<std::shared_ptr<DeformerNode>>>("Deformers");
-        ProcessDeformerChain(deformers);
+        auto deformers = getInputValue<std::vector<std::shared_ptr<DeformerNode>>>("Deformers");
+        processDeformerChain(deformers);
         
         // Apply material and finish processing
-        auto material = GetInputValue<std::shared_ptr<MaterialNode>>("Material");
-        ApplyMaterial(material);
+        auto material = getInputValue<std::shared_ptr<MaterialNode>>("Material");
+        applyMaterial(material);
         
-        UpdateOutputs();
+        updateOutputs();
     }
 
 private:
-    void ProcessDeformerChain(const std::vector<std::shared_ptr<DeformerNode>>& deformers);
-    void UpdateOutputs();
+    void processDeformerChain(const std::vector<std::shared_ptr<DeformerNode>>& deformers);
+    void updateOutputs();
 };
 
 } // namespace hd

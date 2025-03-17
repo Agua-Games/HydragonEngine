@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowMacrosEditor(bool* p_open, EditorWindowData* windowData);
+void showMacrosEditor(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

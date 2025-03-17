@@ -12,5 +12,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowFileExplorer(bool* p_open, EditorWindowData* windowData);
+void showFileExplorer(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

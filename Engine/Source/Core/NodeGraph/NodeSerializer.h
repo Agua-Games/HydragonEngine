@@ -1,18 +1,19 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
  * @file NodeSerializer.h
- * @brief NodeSerializer is responsible for serializing and deserializing nodes in the engine's node graph.
+ * @brief Nodeserializer is responsible for serializing and deserializing nodes in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
- * - NodeSerializer handles the conversion of nodes to and from various formats.
+ * - Nodeserializer handles the conversion of nodes to and from various formats.
  * 
  * TODO:
  * - This is a placeholder for the actual implementation, practically a design sketch. We must, before anything,
  * check how it relates to, integrates to the Object and Node design, and the whole Node Graph subsystem. Starting
  * with:
  *      - How will be the final design and implementation of the reflection and serialization subsystems.
+ *      - A node serializer should probably be like a node factory (no hardcoded names, etc).
  * - Flesh out the class and its methods, structs, enums, etc.
  * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.

@@ -14,7 +14,7 @@
 #include "IconsMaterialSymbols.h"
 
 namespace hd {
-void ShowLeftToolbar(bool* p_open, EditorWindowData* windowData) 
+void showLeftToolbar(bool* p_open, EditorWindowData* windowData) 
 {
     ImGuiWindowClass window_class;
     window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;

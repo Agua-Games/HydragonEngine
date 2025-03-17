@@ -11,5 +11,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowMainMenuBar(bool* p_open, EditorWindowData* windowData);
+void showMainMenuBar(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

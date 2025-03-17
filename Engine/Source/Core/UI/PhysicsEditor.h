@@ -20,5 +20,5 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowPhysicsEditor(bool* p_open, EditorWindowData* windowData);
+void showPhysicsEditor(bool* p_open, EditorWindowData* windowData);
 } // namespace hd

@@ -9,7 +9,8 @@
  * Wrapper for window creation, input and UI functionality. Leverages glfw, Dear imgui, imgui-node-editor and other third-party libraries.
  * 
  * TODO:
- * - Change the name of the files to better reflect its broader purpose: hdEditor.h and hdEditor.cpp? HydragonEditor? MainEditor?
+ * - Change UIManager to be a class (EditorUIManager), which inherits from a base UIManager class.
+ * - Study if it's the case of wrapping Imgui's main functions into methods to avoid the lower capital case mess imgui uses for functions.
  * - Refactor the architecture to use classes, inheritance, encapsulation, more well-structured code, instead of namespace + free-functions.
  * - Also use classes & methods for the sub-editors.
  * - Move here the initialization, update and cleanup code blocks currently in main.cpp responsible for glfw, imgui, steps.
@@ -32,7 +33,7 @@ struct EditorWindowData
 {
     // Layout
     float globalWindowBgAlpha = 0.35f;
-    // Font pointers are initialized as nullptr and set during UIManager::Initialize()
+    // Font pointers are initialized as nullptr and set during UIManager::initialize()
     // after ImGui context and ResourceManager are available
     ImFont* iconFont = nullptr;
     ImFont* defaultFont = nullptr;
@@ -152,62 +153,62 @@ struct EditorWindowData
     float tempFloat = 0.0f; // Temporary float for UI prototyping
 };
 
-// =========== Initialization & Cleanup ============
+// =========== Initialization & cleanup ============
 /** 
  * @brief Initializes UIManager.
  * @param window The GLFW window to initialize ImGui for.
  */
-bool Initialize(GLFWwindow* window, EditorWindowData* windowData);
-void Cleanup();
+bool initialize(GLFWwindow* window, EditorWindowData* windowData);
+void cleanup();
 
 /**
  * @brief Initializes ImGui.
  * @param window The GLFW window to initialize ImGui for.
  */
-void InitializeImgui(GLFWwindow* window);
+void initializeImgui(GLFWwindow* window);
 
 /**
  * @brief Initializes the icon font.
  */
-void InitializeIconFont(EditorWindowData* windowData);
+void initializeIconFont(EditorWindowData* windowData);
 
 /**
  * @brief Initializes the imgui-node-editor context, load and setup configuration.
  * imgui-node-editor is a third-party extension, external to imgui's repo.
  * @param windowData Editor window data containing global settings
  */
-void InitializeImguiNodeEditor(EditorWindowData* windowData);
+void initializeImguiNodeEditor(EditorWindowData* windowData);
 
 #if 0
 void InitializeWindows();
 #endif
 // =========== Styling ===========  
-void StyleColorsHydragonDark();
-void StyleColorsHydragonLight();
-void StyleColorsHydragonClassic();
-void StyleColorsHydragonModern();
+void styleColorsHydragonDark();
+void styleColorsHydragonLight();
+void styleColorsHydragonClassic();
+void styleColorsHydragonModern();
 
 // Custom font loading
-void LoadFonts(const std::string& defaultFontPath = "", float defaultFontSize = 13.0f);
+void loadFonts(const std::string& defaultFontPath = "", float defaultFontSize = 13.0f);
 
 // Icon font loading
-void LoadIconFonts(const std::string& iconFontPath = "", float iconFontSize = 13.0f);
+void loadIconFonts(const std::string& iconFontPath = "", float iconFontSize = 13.0f);
 #if 0
 // =========== Input handling ===========
 /**
  * @brief Sleeps the ImGui window, pausing rendering and processing of most events.
  */
-void Sleep(bool enable);
-void AutoSleepAfterInactivity(float idleTimeSeconds = 60.0f);
+void sleep(bool enable);
+void autoSleepAfterInactivity(float idleTimeSeconds = 60.0f);
 
 // Utility to check if ImGui is sleeping
-bool IsSleeping();
+bool isSleeping();
 
 // Function to reset interaction time and wake up the application
-void ResetInteractionTime();
+void resetInteractionTime();
 
 // =========== Input handling ===========
-void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 #endif
 
@@ -215,7 +216,7 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 /**
  * @brief Renders the ImGui user interface.
  */
-void RenderHydragonEditor(EditorWindowData* windowData);
+void renderHydragonEditor(EditorWindowData* windowData);
 
 } // namespace hd
 

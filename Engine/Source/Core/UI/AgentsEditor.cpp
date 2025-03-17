@@ -10,7 +10,7 @@
 #include "UIManager.h"
 
 namespace hd {
-void ShowAgentsEditor(bool* p_open, EditorWindowData* windowData) 
+void showAgentsEditor(bool* p_open, EditorWindowData* windowData) 
 {
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
     if (ImGui::Begin("Agents", p_open, ImGuiWindowFlags_MenuBar))

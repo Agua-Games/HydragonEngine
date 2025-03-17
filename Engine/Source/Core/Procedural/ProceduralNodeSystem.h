@@ -22,39 +22,39 @@ namespace hd {
 class ProceduralNodeSystem {
 public:
     // Create a self-modifying procedural pattern
-    std::unique_ptr<Node> CreateProceduralPattern() {
+    std::unique_ptr<Node> createProceduralPattern() {
         auto pattern = std::make_unique<ProceduralEvolutionNode>();
         
         // Connect to orchestrator
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Setup self-modification capabilities
-        pattern->EnableSelfModification(true);
+        pattern->enableSelfModification(true);
         
         // Add procedural modification nodes
-        auto modifier = pattern->AddChild<SelfModifyingNode>();
-        modifier->ConnectToOrchestrator(&orchestrator);
+        auto modifier = pattern->addChild<SelfModifyingNode>();
+        modifier->connectToOrchestrator(&orchestrator);
         
         // Setup validation and safety
-        auto validator = pattern->AddChild<ValidationNode>();
-        validator->SetValidationRules(GetSafetyRules());
+        auto validator = pattern->addChild<ValidationNode>();
+        validator->setValidationRules(getSafetyRules());
         
         return pattern;
     }
 
     // Example of safe self-modification
-    void EvolveProcedualSystem() {
+    void evolveProcedualSystem() {
         // Create evolution parameters
         ProceduralStructureParams params;
         params.type = ProceduralStructureType::Evolving;
         
         // Generate new pattern with self-modification
-        auto pattern = CreateProceduralPattern();
-        pattern->ProcessNodeGraph();
+        auto pattern = createProceduralPattern();
+        pattern->processNodeGraph();
         
         // Validate and apply changes
-        if (pattern->ValidateEvolution()) {
-            pattern->ApplyEvolution();
+        if (pattern->validateEvolution()) {
+            pattern->applyEvolution();
         }
     }
 };

@@ -41,7 +41,7 @@ struct CollaborationState {
     } currentMode = Mode::Realtime;
 };
 
-void ShowCollaborationEditor(bool* p_open, EditorWindowData* windowData) 
+void showCollaborationEditor(bool* p_open, EditorWindowData* windowData) 
 {
     static CollaborationState state{};
     

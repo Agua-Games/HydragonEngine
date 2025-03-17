@@ -101,7 +101,7 @@ static void ShowExtensionCard(const char* name, const char* description, const c
     ImGui::PopStyleVar();
 }
 
-void ShowExtensionsEditor(bool* p_open, EditorWindowData* windowData)
+void showExtensionsEditor(bool* p_open, EditorWindowData* windowData)
 {
     static ExtensionSettings settings;
     static float leftPanelWidth = 250.0f;

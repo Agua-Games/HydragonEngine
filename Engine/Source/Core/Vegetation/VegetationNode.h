@@ -37,7 +37,7 @@ struct VegetationInfo : public NodeInfo {
             "PerformanceMetrics"
         };
 
-        IsSerializable = true;
+        isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
     }
@@ -47,20 +47,20 @@ class VegetationNode : public Node {
 public:
     explicit VegetationNode(const VegetationInfo& info = VegetationInfo())
         : Node(info) {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
-        vegetationPatternId = orchestrator.RegisterPattern(CreateDefaultVegetationPattern());
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        vegetationPatternId = orchestrator.registerPattern(createDefaultVegetationPattern());
     }
 
-    void ProcessNodeGraph() override {
-        auto& orchestrator = ProceduralOrchestrator::GetInstance();
+    void processNodeGraph() override {
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Process inputs
-        auto terrain = GetInputValue<TerrainData>("Terrain");
-        auto climate = GetInputValue<ClimateData>("Climate");
-        auto density = GetInputValue<float>("Density");
-        auto biomeType = GetInputValue<BiomeType>("BiomeType");
-        auto growthParams = GetInputValue<GrowthParams>("GrowthParams");
-        auto intent = GetInputValue<OctaveParams>("ProceduralIntent");
+        auto terrain = getInputValue<TerrainData>("Terrain");
+        auto climate = getInputValue<ClimateData>("Climate");
+        auto density = getInputValue<float>("Density");
+        auto biomeType = getInputValue<BiomeType>("BiomeType");
+        auto growthParams = getInputValue<GrowthParams>("GrowthParams");
+        auto intent = getInputValue<OctaveParams>("ProceduralIntent");
         
         // Create vegetation pattern parameters
         ProceduralStructureParams params;
@@ -72,16 +72,16 @@ public:
         params.growthParams = growthParams;
         
         // Update vegetation pattern
-        vegetationPatternId = orchestrator.CreateVegetationPattern(params);
-        auto vegetationData = orchestrator.GetProceduralPattern(vegetationPatternId);
+        vegetationPatternId = orchestrator.createVegetationPattern(params);
+        auto vegetationData = orchestrator.getProceduralPattern(vegetationPatternId);
         
         // Update outputs
-        SetOutputValue("VegetationData", vegetationData);
-        SetOutputValue("DensityMap", ComputeDensityMap(vegetationData));
-        SetOutputValue("GrowthStates", ComputeGrowthStates(vegetationData));
-        SetOutputValue("WindResponse", ComputeWindResponse(vegetationData));
-        SetOutputValue("LODData", GenerateLODData(vegetationData));
-        SetOutputValue("PerformanceMetrics", ComputePerformanceMetrics());
+        setOutputValue("VegetationData", vegetationData);
+        setOutputValue("DensityMap", computeDensityMap(vegetationData));
+        setOutputValue("GrowthStates", computeGrowthStates(vegetationData));
+        setOutputValue("WindResponse", computeWindResponse(vegetationData));
+        setOutputValue("LODData", generateLODData(vegetationData));
+        setOutputValue("PerformanceMetrics", computePerformanceMetrics());
     }
 
 private:

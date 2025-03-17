@@ -1,15 +1,14 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file NodeGraph_UsageExample_03.cpp
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
 using namespace hd;
 
 // Example 1: Material creation with precise typing
-auto material = ResourceManager::Get().create<Material>("metal")
+auto material = ResourceManager::get().create<Material>("metal")
     .setProperty<Vector3>("baseColor", {0.8f, 0.8f, 0.8f})
     .setProperty<float>("roughness", 0.5f)
     .setProperty<float>("metallic", 1.0f)
@@ -29,7 +28,7 @@ auto& collider = rigidBody.connect<BoxCollider>()
     .setTrigger(false);
 
 // Example 3: Audio mixer with strongly typed parameters
-auto& audioMixer = Engine::Get().audio().createMixer("sfx")
+auto& audioMixer = Engine::get().audio().createMixer("sfx")
     .addTrack<AudioTrack>("music")
         .setVolume(0.8f)
         .setFadeTime(2.0f)
@@ -42,7 +41,7 @@ auto& audioMixer = Engine::Get().audio().createMixer("sfx")
             .setCutoff(1000.0f);
 
 // Example 4: Shader pipeline with type checking
-auto& shader = ShaderCompiler::Create("terrain")
+auto& shader = ShaderCompiler::create("terrain")
     .addStage<VertexShader>("shaders/terrain.vert")
         .define("MAX_LIGHTS", "4")
         .include("shaders/common.glsl")
@@ -53,7 +52,7 @@ auto& shader = ShaderCompiler::Create("terrain")
     .compile();
 
 // Example 5: UI layout with strong typing and constraints
-auto& ui = UIManager::Get().createWindow("inventory")
+auto& ui = UIManager::get().createWindow("inventory")
     .setSize<Pixels>(800, 600)
     .add<UIPanel>("background")
         .setColor(Color{0.2f, 0.2f, 0.2f, 0.9f})
@@ -84,7 +83,7 @@ auto& animator = entity.add<Animator>()
         });
 
 // Example 7: Particle system with templated emitters and modifiers
-auto& particles = Scene::Current().create<ParticleSystem>()
+auto& particles = Scene::current().create<ParticleSystem>()
     .setMaxParticles(1000)
     .addEmitter<SphereEmitter>()
         .setRadius(1.0f)
@@ -100,7 +99,7 @@ auto& particles = Scene::Current().create<ParticleSystem>()
         .setGravity(Vector3{0, -9.81f, 0});
 
 // Example 8: Network replication with type safety
-auto& netObj = Scene::Current().create<NetworkObject>("player")
+auto& netObj = Scene::current().create<NetworkObject>("player")
     .addReplicatedVar<Vector3>("position")
         .setUpdateRate(60)
         .setInterpolation(InterpolationType::Linear)

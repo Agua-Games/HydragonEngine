@@ -189,7 +189,7 @@ static void RenderSettingsPanel()
 }
 
 // Main function implementation
-void ShowFileExplorer(bool* p_open, EditorWindowData* windowData) 
+void showFileExplorer(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !windowData) return;
 

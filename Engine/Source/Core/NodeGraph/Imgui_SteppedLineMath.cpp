@@ -8,7 +8,7 @@
 #include "Imgui_SteppedLineMath.h"
 #include <algorithm>
 
-void ImSteppedLineRenderer::DrawLinkShapeHandle(ImVec2 ratioPoint, ImDrawList* drawList, float size, ImU32 color)
+void SteppedLineRenderer::drawLinkShapeHandle(ImVec2 ratioPoint, ImDrawList* drawList, float size, ImU32 color)
 {
     float squareSize = 5.0f;
     ImVec2 squareMin(ratioPoint.x - squareSize, ratioPoint.y - squareSize);
@@ -16,7 +16,7 @@ void ImSteppedLineRenderer::DrawLinkShapeHandle(ImVec2 ratioPoint, ImDrawList* d
     drawList->AddRect(squareMin, squareMax, color);
 }
 
-void ImSteppedLineRenderer::DrawHydragonLine(
+void SteppedLineRenderer::drawHydragonLine(
     ImDrawList* drawList,
     const ImVec2& start,
     const ImVec2& end,
@@ -42,12 +42,12 @@ void ImSteppedLineRenderer::DrawHydragonLine(
     // Draw the ratio point as a square handle, so user can move the ratioPoint?
     if (enableHandle)
     {
-        DrawLinkShapeHandle(ratioPoint, drawList, 5.0f, color);
+        drawLinkShapeHandle(ratioPoint, drawList, 5.0f, color);
     }
     
 }
 
-void ImSteppedLineRenderer::DrawSteppedLine(
+void SteppedLineRenderer::drawSteppedLine(
     ImDrawList* drawList,
     const ImVec2& start,
     const ImVec2& end,
@@ -78,6 +78,6 @@ void ImSteppedLineRenderer::DrawSteppedLine(
     // Draw the ratio point as a square handle, so user can move the ratioPoint?
     if (enableHandle)
     {
-        DrawLinkShapeHandle(ratioPoint, drawList, 5.0f, color);
+        drawLinkShapeHandle(ratioPoint, drawList, 5.0f, color);
     }
 }

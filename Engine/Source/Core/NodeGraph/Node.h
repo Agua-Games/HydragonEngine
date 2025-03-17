@@ -15,6 +15,9 @@
  * - Node inherits Object's features and also supports custom nodes, scripting interchange (code/UI), streaming, AI tasks.
  * 
  * TODO:
+ * - Fix capital letters for variables - should start with lowercase.
+ * - Fix capital letters for functions - should start with lowercase.
+ * - Move implementation (of functions) to .cpp file.
  * - Move Debugging features (DebugInfo, functions) to Object. Override as needed, here.
  * - Move Streaming features to object? *Consult assistant.
  * - Move AI features to Object?
@@ -25,16 +28,17 @@
  * - Flesh out the class and its methods, structs, enums, etc.
  */
 #pragma once
-
+#include <memory>
 #include <string>
+#include <vector>
+#include <mutex>
 #include <unordered_map>
 #include <any>
-#include <memory>
-#include <vector>
 #include <future>
-#include <mutex>
+#include <chrono>
 
 #include "Object.h"
+#include "NodeManager.h"
 #include "NodeCompilationContext.h"
 #include "CodeGenContext.h"
 #include "DependencyGraph.h"
@@ -74,20 +78,163 @@ struct NodeInfo : public ObjectInfo {
  * represent all functionality, whether visual, logical,
  * or data-oriented.
  */
-template<typename... Types>
 class Node : public Object {
 public:
-    // Creation methods
-    static std::shared_ptr<Node> Create(const std::string& name) {
-        return NodeManager::Get().CreateNode(name);
+    // === Structure definitions ===
+    // For properties
+    struct PropertyDefinition {
+        std::string name;
+        std::string type;
+        std::string defaultValue;
+        std::string description;
+        std::string validation;
+        std::string uiHints;        // How to display in UI/property panel
+        
+        // Core flags
+        bool isInput = false;       // Can receive values from other nodes
+        bool isOutput = false;      // Can send values to other nodes
+        bool isRuntime = false;     // Can change during runtime
+        
+        // UI/Editor flags
+        bool isRequired = false;    // Must have a value/connection
+        bool isAdvanced = false;    // Hidden by default in UI
+        bool isExposed = false;     // Available to external scripts
+        
+        // System flags
+        bool isSerializable = true; // Should be saved/loaded
+        bool isConnectable = false; // Can be connected in node graph
+    };
+    std::vector<PropertyDefinition> properties;
+
+    // For ports (input/output)
+    struct PortValidationState {
+        bool isValid = true;
+        std::string lastError;
+    };
+    std::unordered_map<std::string, PortValidationState> portValidationState;
+
+    // === Core Lifecycle Methods ===
+    // Constructor and destructor
+    explicit Node(const std::string& name = "");
+    virtual ~Node() = default;
+
+    /**
+     * @brief Create a node of the specified type.
+     * It's basically a wrapper around NodeManager::createNode. Used for setting up node graphs in code, in fluent style, among other things.
+     * @param name The name of the node.
+     */
+    static std::shared_ptr<Node> create(const std::string& name) {
+        return NodeManager::get().createNode(name);
     }
     
+    /**
+     * @brief Create a node of the specified type.
+     * It's basically a wrapper around NodeManager::createNode. Used for setting up node graphs in code, in fluent style, among other things.
+     * @param name The name of the node.
+     */
     template<typename T>
     static std::shared_ptr<T> Create(const std::string& name = "") {
-        return NodeManager::Get().CreateNode<T>(name);
+        return NodeManager::get().createNode<T>(name);
     }
 
-    // Fluent property interface
+    bool initialize() override {
+        if (!Object::initialize()) return false;
+
+        // Initialize node-specific resources
+        if (!initializeNodeResources()) return false;
+
+        // Initialize cache if supported
+        if (canCache()) {
+            resultCache = CacheEntry{};
+            resultCache.isValid = false;
+        }
+
+        // Call onResume as part of initialization
+        onResume();
+
+        return true;
+    }
+
+    void update(float deltaTime) override {
+        if (!IsInitialized()) return;
+
+        // Base class update
+        Object::update(deltaTime);
+
+        // update node state
+        if (isDirty) {
+            onDirty();
+            isDirty = false;
+        }
+
+        // Try using cache if available
+        if (canCache() && tryUseCache()) {
+            return;
+        }
+
+        // Process node
+        process();
+
+        // Update cache if needed
+        if (canCache()) {
+            updateCache();
+        }
+    }
+
+    void Cleanup() override {
+        if (!IsInitialized()) return;
+
+        // Call onPause before cleanup
+        onPause();
+
+        // Cleanup node-specific resources
+        cleanupNodeResources();
+
+        // Clear cache
+        resultCache = CacheEntry{};
+
+        // Base class cleanup
+        Object::Cleanup();
+    }
+
+    // === Node Graph Management ===
+    const NodeInfo& getNodeInfo() const { return nodeInfo; }
+
+    template<typename T>
+    std::shared_ptr<T> add(const std::string& name = "") {
+        auto node = NodeManager::get().createNode<T>(name);
+        children.push_back(node);
+        return node;
+    }
+
+    /**
+     * @brief Add a child node to this node.
+     * @param child The child node to add.
+     */
+    void addChild(const std::shared_ptr<Node>& child);
+
+    /**
+     * @brief Remove a child node by name.
+     * TODO: if we're going to allow instances with the same name, we need to use a different approach, like remove a child by unique ID (probably automatically generated)
+     * or remove a child by pointer.
+     * @param childName The name of the child node to remove.
+     * @return True if the child was found and removed, false otherwise.
+     */
+    bool removeChild(const std::string& childName);
+
+    /**
+     * @brief Get all child nodes of this node.
+     * @return A vector of shared pointers to child nodes.
+     */
+    const std::vector<std::shared_ptr<Node>>& getChildren() const;
+
+    // === Property & Reflection Management ===
+    // TODO: This may be refactored after we properly design and test the Reflection subsystem
+
+    /**
+     * @brief Set a property value.
+     * Fluent property interface - for setting up node graphs in code, using fluent style.
+     */
     template<typename T>
     Node& property(const std::string& name, const T& value, bool runtime = false) {
         if (runtime) {
@@ -121,7 +268,7 @@ public:
             throw std::runtime_error("Source property not found or not connectable");
         }
 
-        auto [targetNode, targetProperty] = NodeManager::Get().ParsePortPath(targetPath);
+        auto [targetNode, targetProperty] = NodeManager::get().parsePortPath(targetPath);
         
         // Verify target property exists and is connectable
         auto targetMetadataIt = targetNode->propertyDefs.find(targetProperty);
@@ -130,113 +277,27 @@ public:
         }
 
         // Use existing connection system
-        NodeManager::Get().Connect(shared_from_this(), targetNode, sourceProperty, targetProperty);
+        NodeManager::get().connect(shared_from_this(), targetNode, sourceProperty, targetProperty);
         return *this;
     }
-
-    // Add child node
-    template<typename T>
-    std::shared_ptr<T> add(const std::string& name = "") {
-        auto node = NodeManager::Get().CreateNode<T>(name);
-        Children.push_back(node);
-        return node;
-    }
-
-    // Core functionality
-    explicit Node(const NodeInfo& info);
-    virtual ~Node() = default;
-
-    // Getters for attributes & metadata
-    const NodeInfo& GetNodeInfo() const { return NodeInfo; }
-
-    // === Procedural Generation ===
-    // Every node can:
-    virtual void Evolve();        // Change over time
-    virtual void Adapt();         // Respond to context
-    virtual void SelfModify();    // Modify its own behavior
-    virtual void Harmonize();     // Maintain system balance
-
-    // === Node Graph Interface ===
-
-    // Core virtual methods - to be implemented only in derived classes
-    virtual void OnResume() = 0;
-    virtual void OnPause() = 0;
-    virtual void OnDirty() = 0;
-    virtual bool CanCache() const { return true; }
-    virtual uint64_t ComputeCacheKey() const = 0;
-    virtual void GenerateRuntimeCode(CodeGenContext& context);
-
-    // === Node Graph Management ===
-    /**
-     * @brief Add a child node to this node.
-     * @param child The child node to add.
-     */
-    void AddChild(const std::shared_ptr<Node>& child);
-
-    /**
-     * @brief Remove a child node by name.
-     * TODO: if we're going to allow instances with the same name, we need to use a different approach, like remove a child by unique ID (probably automatically generated)
-     * or remove a child by pointer.
-     * @param childName The name of the child node to remove.
-     * @return True if the child was found and removed, false otherwise.
-     */
-    bool RemoveChild(const std::string& childName);
-
-    /**
-     * @brief Get all child nodes of this node.
-     * @return A vector of shared pointers to child nodes.
-     */
-    const std::vector<std::shared_ptr<Node>>& GetChildren() const;
-
-    // === Property & Reflection Management ===
-    // *This may be refactored after we properly design and test the Reflection subsystem
-    struct PropertyDefinition {
-        std::string name;
-        std::string type;
-        std::string defaultValue;
-        std::string description;
-        std::string validation;
-        std::string uiHints;        // How to display in UI/property panel
-        
-        // Core flags
-        bool isInput = false;       // Can receive values from other nodes
-        bool isOutput = false;      // Can send values to other nodes
-        bool isRuntime = false;     // Can change during runtime
-        
-        // UI/Editor flags
-        bool isRequired = false;    // Must have a value/connection
-        bool isAdvanced = false;    // Hidden by default in UI
-        bool isExposed = false;     // Available to external scripts
-        
-        // System flags
-        bool isSerializable = true; // Should be saved/loaded
-        bool isConnectable = false; // Can be connected in node graph
-    };
-    std::vector<PropertyDefinition> properties;
 
     // === Validation Support ===
     std::shared_ptr<CommandValidator> validator;
 
-    void SetValidator(std::shared_ptr<CommandValidator> v) { validator = std::move(v); }
-    const std::shared_ptr<CommandValidator>& GetValidator() const { return validator; }
+    void setValidator(std::shared_ptr<CommandValidator> v) { validator = std::move(v); }
+    const std::shared_ptr<CommandValidator>& getValidator() const { return validator; }
 
     template<typename T>
-    bool SetInputValue(const std::string& name, const T& value);
+    bool setInputValue(const std::string& name, const T& value);
 
-    bool IsPortValid(const std::string& name) const;
+    bool isPortValid(const std::string& name) const;
 
-    std::string GetPortError(const std::string& name) const;
+    std::string getPortError(const std::string& name) const;
 
     template<typename T>
-    void AddPortValidationRule(const std::string& portName,
+    void addPortValidationRule(const std::string& portName,
                              std::function<bool(const T&)> rule,
                              const std::string& errorMsg);
-    
-    struct PortValidationState {
-        bool isValid = true;
-        std::string lastError;
-    };
-    std::unordered_map<std::string, PortValidationState> portValidationState;
 
     // === Streaming Support ===
     struct StreamingState {
@@ -251,16 +312,16 @@ public:
     /**
      * @brief Asynchronously load this node's data.
      */
-    virtual std::future<void> LoadAsync();
-    virtual void Stream();
-    virtual bool ShouldStream() const;
-    virtual void UpdateStreamingPriority();
+    virtual std::future<void> loadAsync();
+    virtual void stream();
+    virtual bool shouldStream() const;
+    virtual void updateStreamingPriority();
 
     /**
      * @brief Synchronously stream this node's data. This is the default implementation, but derived classes can override it.
      */
-    virtual void StreamSync();
-    virtual void StreamAsync();
+    virtual void streamSync();
+    virtual void streamAsync();
     
     // === Execution Support ===
     struct ExecutionState {
@@ -278,27 +339,41 @@ public:
     /**
      * @brief Mark this node as dirty, indicating that its state has changed.
      */
-    virtual void MarkDirty();
+    virtual void markDirty();
     
     /**
      * @brief Modify this node in play mode.
      * @param modifier Function to apply modifications.
      */
-    virtual void ModifyInPlayMode(const std::function<void(Node*)>& modifier);
-    virtual void PauseExecution();
-    virtual void ResumeExecution();
-
-    // Update logic for this node (can be overridden by derived classes)
-    virtual void Update();
+    virtual void modifyInPlayMode(const std::function<void(Node*)>& modifier);
+    virtual void pauseExecution();
+    virtual void resumeExecution();
 
     // === Compilation Support ===
-    virtual bool CanCompile() const { return false; }
-    virtual void ContributeToCompilation(CompilationContext& context);
+    virtual bool canCompile() const { return false; }
+    virtual void contributeToCompilation(CompilationContext& context);
 
     // Optimization hints
-    virtual bool HasConstantOutput() const { return false; }
-    virtual bool CanInline() const { return false; }
-    virtual bool RequiresFullPrecision() const { return true; }
+    virtual bool hasConstantOutput() const { return false; }
+    virtual bool canInline() const { return false; }
+    virtual bool requiresFullPrecision() const { return true; }
+
+    // === Node Graph Interface, Event Handlers ===
+    // Core virtual methods - to be implemented only in derived classes
+    virtual void process() = 0;
+    virtual void onResume() = 0;
+    virtual void onPause() = 0;
+    virtual void onDirty() = 0;
+    virtual bool canCache() const { return true; }
+    virtual uint64_t computeCacheKey() const = 0;
+    virtual void generateRuntimeCode(CodeGenContext& context);
+
+    // === Procedural Generation ===
+    // Every node can:
+    virtual void evolve();        // Change over time
+    virtual void adapt();         // Respond to context
+    virtual void selfModify();    // Modify its own behavior
+    virtual void harmonize();     // Maintain system balance
 
     // === Custom Node Support ===
     struct CustomizableElements {
@@ -309,8 +384,8 @@ public:
         std::string cacheFunction;        // Custom caching logic
         std::string optimizeFunction;     // Custom optimization hints
     };
-    virtual CustomizableElements ExportToCustomNode() const;            // Convert built-in node to custom
-    virtual void ImportCustomImplementation(const CustomizableElements& elements);
+    virtual CustomizableElements exportToCustomNode() const;            // Convert built-in node to custom
+    virtual void importCustomImplementation(const CustomizableElements& elements);
 
     // === Port Management ===
     // Ports are used for UI - visual node graph editor, state, sync, etc.
@@ -323,7 +398,7 @@ public:
      * @brief Get the input ports for this node. 
      * This method should be implemented in derived classes.
      */
-    virtual std::vector<std::string> GetInputPorts() const override {
+    virtual std::vector<std::string> getInputPorts() const override {
         std::vector<std::string> ports;
         for (const auto& [name, metadata] : propertyDefs) {
             if (metadata.isInput) ports.push_back(name);
@@ -335,7 +410,7 @@ public:
      * @brief Get the output ports for this node. 
      * This method should be implemented in derived classes.
      */
-    virtual std::vector<std::string> GetOutputPorts() const override {
+    virtual std::vector<std::string> getOutputPorts() const override {
         std::vector<std::string> ports;
         for (const auto& [name, metadata] : propertyDefs) {
             if (metadata.isOutput) ports.push_back(name);
@@ -349,36 +424,36 @@ public:
      * @param value Value to set.
      */
     template<typename T>
-    void SetPortValue(const std::string& portName, T&& value);
+    void setPortValue(const std::string& portName, T&& value);
 
     template<typename T>
-    T GetPortValue(const std::string& portName) const;
+    T getPortValue(const std::string& portName) const;
 
     // === Serialization ===
     /**
-     * @brief Serialize this node and its children.
+     * @brief serialize this node and its children.
      * @param stream Output stream for serialization.
      */
-    void Serialize(std::ostream& stream) const override;
+    void serialize(std::ostream& stream) const override;
 
     /**
-     * @brief Deserialize this node and its children.
+     * @brief deserialize this node and its children.
      * @param stream Input stream for deserialization.
      */
-    void Deserialize(std::istream& stream) override;
+    void deserialize(std::istream& stream) override;
 
     // === Visualization ===
     /**
      * @brief Draw this node in the Properties panel.
      * Ports will be automatically drawn based on their data types, etc. But for custom visualization logic, override this method in derived classes.
      */
-    virtual void DrawInPropertyEditor();
+    virtual void drawInPropertyEditor();
 
     /**
      * @brief Draw this node in the Node Graph Editor.
      * Nodes will be automatically drawn based on their data types, structure, etc. But for custom visualization logic, override this method in derived classes.
      */
-    virtual void DrawInNodeGraph();
+    virtual void drawInNodeGraph();
 
     // === Scripting Support ===        // Including support for Scripting Editor and external IDEs
     struct ScriptingInterface {
@@ -411,13 +486,13 @@ public:
     };
 
     // Scripting Editor methods
-    virtual ScriptingInterface GetScriptingInterface() const;
-    virtual void ExportToScriptingEditor();
-    virtual void ImportFromScriptingEditor(const std::string& code, const std::string& language);
+    virtual ScriptingInterface getScriptingInterface() const;
+    virtual void exportToScriptingEditor();
+    virtual void importFromScriptingEditor(const std::string& code, const std::string& language);
     
     // External IDE methods
-    virtual std::string GenerateExternalEditorFile() const;
-    virtual void ImportFromExternalEditor(const std::string& sourceCode);
+    virtual std::string generateExternalEditorFile() const;
+    virtual void importFromExternalEditor(const std::string& sourceCode);
 
     // === AI Agent Support ===
     struct AIInterface {
@@ -460,30 +535,30 @@ public:
         PerformanceMetrics metrics;
     };
 
-    virtual AIInterface GetAIInterface() const {
+    virtual AIInterface getAIInterface() const {
         AIInterface interface;
         // Populate interface based on node type
         return interface;
     }
 
-    virtual bool ValidateAITask(const std::string& taskIntent) {
+    virtual bool validateAITask(const std::string& taskIntent) {
         // Validate if the task is applicable to this node
         return true;
     }
 
-    virtual bool ApplyAITask(const std::string& taskIntent,
+    virtual bool applyAITask(const std::string& taskIntent,
                             const std::map<std::string, std::any>& parameters) {
         // Apply AI-suggested changes
         return true;
     }
 
     // AI-assisted optimization
-    virtual std::vector<std::string> GetOptimizationSuggestions() const {
+    virtual std::vector<std::string> getOptimizationSuggestions() const {
         return {}; // Return potential optimization opportunities
     }
 
     // AI safety and validation
-    virtual bool ValidateAIChanges(const std::vector<std::string>& changes) {
+    virtual bool validateAIChanges(const std::vector<std::string>& changes) {
         return true; // Validate proposed changes
     }
 
@@ -497,56 +572,80 @@ public:
 
 protected:
     // === Core Node Implementation ===
-    NodeInfo NodeInfo;                           // Metadata and attributes for the node
-    std::vector<std::shared_ptr<Node>> Children; // Child nodes (making this a node graph)
+    NodeInfo nodeInfo;                           // Metadata and attributes for the node
+    std::vector<std::shared_ptr<Node>> children; // Child nodes (making this a node graph)
     virtual void Load();                         // Load node-specific data
 
-    mutable std::mutex ChildrenMutex;         // Mutex for thread-safe access to children
-    mutable std::mutex SerializationMutex;    // Mutex for thread-safe serialization
+    mutable std::mutex childrenMutex;         // Mutex for thread-safe access to children
+    mutable std::mutex serializationMutex;    // Mutex for thread-safe serialization
 
-    // === Caching & Optimization Support ===
-    // Support for caching intermediate results
-    struct CacheEntry {
-        uint64_t inputHash;
-        std::vector<std::any> outputs;
-        bool isValid = false;
-    };
-    
-    mutable CacheEntry resultCache;
-    bool isDirty = true;
-
-    bool TryUseCache() const;
-    void UpdateCache();
-
-    // Add property storage
+    // === Property Management ===
     std::unordered_map<std::string, std::any> properties;
     std::unordered_map<std::string, std::any> runtimeProperties;
     std::unordered_map<std::string, PropertyDefinition> propertyDefs;
 
+    // === Node Resource Management ===
+    virtual bool initializeNodeResources() {
+        // Initialize any node-specific resources
+        return true;
+    }
+
+    virtual void cleanupNodeResources() {
+        // Cleanup any node-specific resources
+        children.clear();
+        properties.clear();
+        runtimeProperties.clear();
+    }
+
+    // === Caching & Optimization Support ===
+    // Support for caching intermediate results
+    struct CacheEntry {
+        bool isValid = false;
+        uint64_t inputHash = 0;
+        std::vector<std::any> outputs;
+        // Derived classes can add their specific output cache here
+    };
+    
+    mutable CacheEntry resultCache;
+    bool isDirty;
+
+    bool tryUseCache() const {
+        if (!resultCache.isValid) return false;
+        
+        uint64_t currentHash = computeCacheKey();
+        return currentHash == resultCache.inputHash;
+    }
+
+    void updateCache() {
+        resultCache.inputHash = computeCacheKey();
+        resultCache.isValid = true;
+        // Derived classes should update resultCache.outputs
+    }
+
 private:
     // === Caching & Optimization Support ===
-    uint64_t CalculateInputHash() const;
-    void StoreOutputsToCache();
-    void RestoreOutputsFromCache();
+    uint64_t calculateInputHash() const;
+    void storeOutputsToCache();
+    void restoreOutputsFromCache();
 
     // === Custom Node Support ===
-    virtual std::string GetProcessFunctionImpl() const = 0;
-    virtual std::string GetInitializeFunctionImpl() const = 0;
-    virtual std::string GetCleanupFunctionImpl() const = 0;
+    virtual std::string getProcessFunctionImpl() const = 0;
+    virtual std::string getInitializeFunctionImpl() const = 0;
+    virtual std::string getCleanupFunctionImpl() const = 0;
     
     // === Port Management ===
-    virtual std::string GetPortType(const std::string& portName) const = 0;
-    virtual std::string GetPortDefaultValue(const std::string& portName) const = 0;
-    virtual std::string GetPortValidation(const std::string& portName) const;
-    virtual bool ValidatePort(const std::string& portName, const std::any& value) const;
-    virtual std::string GetPortDescription(const std::string& portName) const = 0;
-    virtual bool IsPortRequired(const std::string& portName) const = 0;
+    virtual std::string getPortType(const std::string& portName) const = 0;
+    virtual std::string getPortDefaultValue(const std::string& portName) const = 0;
+    virtual std::string getPortValidation(const std::string& portName) const;
+    virtual bool validatePort(const std::string& portName, const std::any& value) const;
+    virtual std::string getPortDescription(const std::string& portName) const = 0;
+    virtual bool isPortRequired(const std::string& portName) const = 0;
 
     // === Custom Implementation Support ===
-    bool ValidateCustomImplementation(const CustomizableElements& elements);
-    void ApplyCustomImplementation(const CustomizableElements& elements);
-    std::string GenerateNodeSourceFile(const CustomizableElements& elements) const;
-    CustomizableElements ParseNodeSourceFile(const std::string& sourceCode);
+    bool validateCustomImplementation(const CustomizableElements& elements);
+    void applyCustomImplementation(const CustomizableElements& elements);
+    std::string generateNodeSourceFile(const CustomizableElements& elements) const;
+    CustomizableElements parseNodeSourceFile(const std::string& sourceCode);
 
     // === Scripting Support ===
     struct ScriptingState{                            // Scripting state tracking
@@ -556,9 +655,9 @@ private:
         std::vector<std::string> errorLog;
     } scriptingState;
 
-    virtual void GenerateLanguageSpecificCode(const std::string& language) = 0;
-    virtual void ValidateGeneratedCode(const std::string& code) = 0;
-    virtual void ApplyCodeChanges(const std::string& code) = 0;
+    virtual void generateLanguageSpecificCode(const std::string& language) = 0;
+    virtual void validateGeneratedCode(const std::string& code) = 0;
+    virtual void applyCodeChanges(const std::string& code) = 0;
 
     // === AI Support ===
     struct AIState{                                    // AI agent state tracking
@@ -568,9 +667,9 @@ private:
         bool isUnderAIModification = false;
     } aiState;
 
-    virtual bool IsAIManipulationAllowed() const { return true; }
-    virtual std::string GetNodeSemantics() const = 0;
-    virtual std::vector<std::string> GetSafetyConstraints() const = 0; 
+    virtual bool isAIManipulationAllowed() const { return true; }
+    virtual std::string getNodeSemantics() const = 0;
+    virtual std::vector<std::string> getSafetyConstraints() const = 0; 
 };
     
 } // namespace hd
