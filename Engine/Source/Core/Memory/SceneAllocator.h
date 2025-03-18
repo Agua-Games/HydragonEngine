@@ -1,16 +1,34 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file SceneAllocator.h
- * @brief Header file for the SceneAllocator class.
+ * This is still a sketch, on how to design the data structures and interfaces to allow for memory allocation and pooling.
  * 
  * ARCHITECTURAL NOTES:
  * - SceneAllocator is a singleton class that manages the allocation of scene data.
  * - It is responsible for allocating and deallocating scene data.
  * - It uses the Vulkan Memory Allocator (VMA) for GPU memory management.
+ * - PoolingStrategy:
+ *      - PoolingStrategy is a struct that defines the pooling strategy for the SceneAllocator class.
+ *      - Built around VMA as primary allocator and compatible with usd.
+ *      - Support different memory types (GPU, CPU, shared)
+ *      - Leverage VMA's built-in defragmentation
+ *      - Use VMA's pool categories for different resources
+ *      - Align with Vulkan's command pool concepts
+ *      - Enable custom allocation callbacks if needed
+ *      - Support for VMA's memory budgeting
+ *      - Utilization of VMA's debugging features, validation layers
+ *      - Maintain debug markers for validation layers
+ *      - Support for different allocation patterns
+ *      - Support for different pool sizes
+ *      - Integration with rendering backend
+ *      - Debug and profiling capabilities
+ *      - Thread-safe pool access
+ *      - Memory tracking and budgeting
  * 
  * TODO:
+ * - Refactor the code to integrate the struct PoolingStrategy into the SceneAllocator class and the whole file architecture.
+ * - Refactor the code to use the Vulkan Memory Allocator (VMA) for GPU memory management.
  * - Create .cpp file and move the implementation there.
  * - Organize the existing code into logical sections and functions.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
@@ -25,6 +43,50 @@
 #include <glm/glm.hpp>
 
 namespace hd {
+
+/**
+*/
+struct PoolingStrategy {
+    // VMA-based pool configuration
+    struct VMAPoolConfig {
+        VmaPoolCreateInfo poolInfo;      // Direct VMA pool configuration
+        VmaAllocationCreateFlags flags;  // VMA allocation flags
+        VkMemoryPropertyFlags required;  // Required memory properties
+        VkMemoryPropertyFlags preferred; // Preferred memory properties
+    };
+
+    // Resource categories mapped to VMA pools
+    struct ResourceCategories {
+        VMAPoolConfig staticResources;    // For static meshes, textures (GPU-only)
+        VMAPoolConfig dynamicResources;   // For dynamic data (CPU-visible)
+        VMAPoolConfig stagingResources;   // For transfer operations
+        VMAPoolConfig uniformBuffers;     // For uniform data (host-visible)
+    };
+
+    // Buffer management aligned with Vulkan concepts
+    struct BufferStrategy {
+        enum class BufferUsage {
+            VERTEX_INDEX,    // Vertex and index data
+            UNIFORM,         // Uniform buffers
+            STORAGE,         // Storage buffers
+            STAGING          // Transfer operations
+        };
+
+        struct AllocationParams {
+            VkDeviceSize blockSize;      // Size of memory blocks
+            bool createMapped;           // Keep memory persistently mapped
+            bool enableDefrag;           // Allow defragmentation
+        };
+    };
+
+    // Command pool strategy (Vulkan-specific)
+    struct CommandPoolStrategy {
+        VkCommandPoolCreateFlags poolFlags;  // Vulkan command pool flags
+        uint32_t initialSetSize;             // Initial command buffer count
+        bool perThreadPools;                 // One pool per thread
+        bool allowReset;                     // Allow individual buffer reset
+    };
+};
 
 /**
  * @brief Allocator for scene data
@@ -121,6 +183,19 @@ public:
     void deallocateMaterial(MaterialData* ptr) {
         materialPool.deallocate(ptr);
     }
+
+    // 4. Custom allocator for SceneNodes
+    struct PoolConfig {
+        static constexpr size_t POOL_BLOCK_SIZE = 16384;  // 16KB blocks
+        static constexpr size_t NODES_PER_BLOCK = 64;     // ~256 bytes per node
+    };
+
+    // 5. Separate pools for different data types
+    struct MemoryPools {
+        PoolAllocator<SceneNode> nodePool;
+        PoolAllocator<std::string> stringPool;
+        PoolAllocator<RuntimeVariant> variantPool;
+    };
 
 private:
     PoolAllocator<glm::mat4> transformPool;

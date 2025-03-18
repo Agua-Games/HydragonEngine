@@ -12,7 +12,7 @@
  * - Scene nodes can be connected to form complex systems.
  * - As much as possible, scene nodes implement functionality akin to openUSD's UsdStage, though optimized for realtime use. Like:
  *      - USD-based scene composition
- *      - Standanrd and custom schemas
+ *      - Standard and custom schemas
  *      - Procedural generation
  *      - Caching
  *      - Asynchronous loading and streaming
@@ -21,8 +21,32 @@
  *      - Scene graph manipulation
  *      - Transform propagation
  *      - Variants/variations ("seeds")
+ *      - Scene information and metadata:
+ *          - Leverage both USD and Vulkan strengths
+ *          - Enable efficient scene composition
+ *          - Support for USD's sophisticated features
+ *          - Optimize for real-time performance
+ *          - Enable GPU-driven scene management
+ *          - Maintain USD compatibility
+ *          - Support node-based scene manipulation
  * 
  * TODO:
+ * - Check and compare redundancy, conflicts and proper overrides in corresponding methods in Node and SceneNode. Clean and fix as necessary.
+ * - SceneInfo - optimize. Estimated SceneInfo struct size in memory (bytes) per instance, can be reduced from approx. 436 bytes
+ * to 128 bytes (436 bytes * 20,000 instances = 8.72 MB) (128 * 20,000 = 2.56 MB):
+ *      - Use StringID instead of std::string: ~20 bytes saved per string. Thread sync is needed for string table!
+ *      -  Bitfields for flags: ~30-40 bytes saved per node
+ *      - Use std::vector instead of std::unordered_map: ~100 bytes saved per map
+ *      - Unified enums: ~10-15 bytes saved per node
+ *      - Pool-based allocation: Better memory locality and less fragmentation
+ *      - Lazy loading: ~55% memory reduction for inactive nodes
+ * - SceneInfo - add more features:
+ *      - Add move constructor/assignment if performance is critical
+ *      - Add validation methods for the configuration
+ *      - Add serialization support
+ *      - Add methods to modify configurations in a controlled way
+ * - Check with assistant if the resulting struct should be moved inside of SceneNode and if it should be moved to SceneNode.cpp.
+ * - Refactor the code to use the Vulkan Memory Allocator (VMA) for GPU memory management.
  * - Create .cpp file and move the implementation there.
  * - Organize the existing code into logical sections and functions.
  * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
@@ -41,6 +65,8 @@
 #include "Node.h"
 #include "SceneAllocator.h"
 #include "RuntimeVariants.h"
+#include "StringID.h"
+#include "SceneFlags.h"
 
 namespace hd {
     
@@ -51,26 +77,211 @@ namespace hd {
  * and layering capabilities.
  * A note on USD: as usd was designed for offline pipelines, we repurpose standard USD features for realtime use. Like: repurposing standard schemas "in-place", to trim
  * any unnecessary data, add other useful features, etc.
+ * TODO:
+ * - Optimize the SceneInfo struct to reduce memory usage. (See TODO list at the top of this file for strategies).
  */
 struct SceneInfo : public NodeInfo {
     /** Path to the scene's USD layer file */
-    std::string layerPath;
+    StringID layerPath;
     /** Referenced USD files for composition */
-    std::vector<std::string> references;
+    std::vector<StringID> references;
     /** Controls USD layer-based composition */
     bool isLayered = true;
 
-    SceneInfo(const std::string& name = "", bool isSerializable = true,
-                 bool isEditableInEditor = true, const std::string& nodeType = "",
-                 const std::vector<std::string>& inputs = {},
-                 const std::vector<std::string>& outputs = {},
-                 bool isStreamable = true, bool isAsyncLoadable = true,
-                 const std::string& layerPath = "",
-                 const std::vector<std::string>& references = {},
-                 bool isLayered = true)
-        : NodeInfo(name, isSerializable, isEditableInEditor, nodeType,
-                     inputs, outputs, isStreamable, isAsyncLoadable),
-          layerPath(layerPath), references(references), isLayered(isLayered) {}
+    // Scene Composition & Streaming
+    struct Composition {
+        enum class CompositionMode {
+            FULL,           // Complete USD composition with full feature set
+            OPTIMIZED,      // Balanced mode for real-time performance
+            STREAM_HEAVY,   // Streaming composition for large scenes
+            HYBRID,         // Dynamic composition based on context
+            MINIMAL         // Minimal composition for maximum performance
+        };
+
+        // Layers are other composed/nested USD Stages
+        struct Layer {
+            bool flattenStaticLayers;     // Flatten non-varying layers
+            bool enableLayerMuting;        // Selective layer activation
+            bool cacheComposedResults;     // Cache composition results
+            float timeResolution;          // Time sampling resolution for clips
+        };
+
+        // USD's name for (level of) loaded data
+        struct Payload {
+            enum class LoadingMode {
+                REFERENCE_ONLY,    // Keep USD reference only
+                BOUNDS_ONLY,       // Load AABB data only
+                PROXY_MESH,        // Load low-res representation
+                FULL_GEOMETRY     // Load complete geometry
+            };
+
+            float distanceThreshold;      // Distance-based loading
+            bool enableStreamingLoad;      // Progressive loading
+            uint32_t maxConcurrentLoads;  // Parallel load limit
+        };
+    };
+
+    // Scene Traversal & Processing
+    struct Traversal {
+        enum class TraversalMode {
+            CPU_SINGLE,      // Single-threaded CPU traversal
+            CPU_MULTI,       // Multi-threaded CPU traversal
+            GPU_DRIVEN,      // Vulkan compute-based traversal
+            HYBRID          // Dynamic CPU/GPU split
+        };
+
+        struct Culling {
+            enum class CullingMode {
+                HYDRA_NATIVE,     // Use Hydra's culling
+                VULKAN_COMPUTE,   // GPU-driven culling via Vulkan
+                HYBRID           // Combined approach
+            };
+
+            bool enableFrustumCulling;    // View frustum culling
+            bool enableOcclusionCulling;   // GPU occlusion culling
+            bool enableDistanceCulling;    // LOD-based culling
+        };
+
+        struct Acceleration {
+            bool cacheTraversalResults;    // Cache hierarchy queries
+            bool enableParallelProcessing; // Parallel node processing
+            bool useGPUAcceleration;       // Use GPU for suitable tasks
+        };
+    };
+
+    struct Instance {
+        enum class Mode {
+            USD_NATIVE,      // Use USD's native instancing
+            VULKAN_DRIVEN,   // Pure Vulkan instancing
+            HYBRID          // Mixed mode based on context
+        };
+
+        uint32_t instanceThreshold;    // When to switch to instancing
+        bool enableGPUInstancing;      // Use GPU instancing when possible
+        bool maintainEditability;      // Keep instances editable
+    };
+
+    // Variants can also be used for LOD, proxies, etc
+    struct Variant {
+        enum class Mode {
+            FULL,          // Complete variant support
+            OPTIMIZED,     // Memory-optimized variants
+            STREAMING     // Stream variants as needed
+        };
+
+        bool inlineCommonVariants;    // Inline frequently used variants
+        bool enableVariantCaching;    // Cache variant data
+        bool allowDynamicSwitching;   // Runtime variant switching
+    };
+    
+    struct Reference {
+        bool inlineReferences;        // Inline frequently used refs
+        bool enablePayloadLoading;    // Dynamic payload loading
+        bool cacheResolvedRefs;       // Cache resolved references
+    };
+
+    // Value clips are time-varying data, like animation or material changes.
+    // They're optimized for real-time use, dynamically loading and caching.
+    struct Clips {
+        enum class Mode {
+            FULL_CLIPS,               // Complete USD value clips
+            SPARSE_CLIPS,             // Store only changed values
+            DELTA_CLIPS               // Store differences only
+        };
+
+        bool enableClipCaching;        // Cache clip data
+        bool enableDynamicClips;       // Runtime clip switching
+        bool enableClipCulling;        // Cull unused and not-visible clips
+        bool enableClipStreaming;      // Stream clips as needed
+        bool enableLayerFlattening;    // Flatten static layers
+        float timeResolution;          // Time sampling resolution
+        float clipSamplingRate;        // Clip sampling rate
+        bool enableClipCompression;    // Compress clip data
+    };
+
+    // Memory & Performance
+    struct Performance {
+        bool enableGPUDrivenPipeline;    // Use GPU-driven rendering
+        bool useVulkanMemoryAllocator;   // Use VMA for GPU resources
+        bool enableAsyncLoading;         // Asynchronous resource loading
+        uint32_t maxConcurrentTasks;     // Max parallel operations
+    };
+
+    struct Debug {
+        bool enableProfiling;          // Performance profiling
+        bool enableValidation;         // Validation layer checks
+        bool enableDebugMarkers;       // Debug markers for tools
+    };
+
+    // === Constructor with sensible defaults ===
+    SceneInfo(const std::string& name = "") 
+        : NodeInfo(name, true, true, "Scene", {}, {}, true)
+        , layerPath("")
+        , references{}
+        , isLayered(true)
+    {
+        // Initialize (scene) composition defaults
+        static const Composition::CompositionMode defaultCompMode = Composition::CompositionMode::OPTIMIZED;
+        static const Composition::Layer defaultLayer = {
+            .flattenStaticLayers = true,
+            .enableLayerMuting = true,
+            .cacheComposedResults = true,
+            .timeResolution = 1.0f
+        };
+        static const Composition::Payload defaultPayload = {
+            .distanceThreshold = 100.0f,
+            .enableStreamingLoad = true,
+            .maxConcurrentLoads = 4
+        };
+
+        // Initialize (scene) traversal defaults
+        static const Traversal::TraversalMode defaultTraversalMode = Traversal::TraversalMode::HYBRID;
+        static const Traversal::Culling defaultCulling = {
+            .enableFrustumCulling = true,
+            .enableOcclusionCulling = true,
+            .enableDistanceCulling = true
+        };
+
+        // Initialize instancing defaults
+        static const Instance::Mode defaultInstanceMode = Instance::Mode::HYBRID;
+        static const Instance defaultInstance = {
+            .instanceThreshold = 10,
+            .enableGPUInstancing = true,
+            .maintainEditability = false
+        };
+
+        // Initialize (time-varying value) clip defaults
+        static const Clips::Mode defaultClipMode = Clips::Mode::SPARSE_CLIPS;
+        static const Clips defaultClips = {
+            .enableClipCaching = true,
+            .enableDynamicClips = true,
+            .enableClipCulling = true,
+            .enableClipStreaming = true,
+            .enableLayerFlattening = true,
+            .timeResolution = 1.0f/30.0f,
+            .clipSamplingRate = 1.0f/60.0f,
+            .enableClipCompression = true
+        };
+
+        // Initialize mem alloc & threading defaults
+        static const Performance defaultPerformance = {
+            .enableGPUDrivenPipeline = true,
+            .useVulkanMemoryAllocator = true,
+            .enableAsyncLoading = true,
+            .maxConcurrentTasks = 8
+        };
+
+        // Initialize debug defaults
+        static const Debug defaultDebug = {
+            .enableProfiling = false,
+            .enableValidation = false,
+            .enableDebugMarkers = false
+        };
+    }
+
+    // Add copy constructor and assignment operator if needed
+    SceneInfo(const SceneInfo&) = default;
+    SceneInfo& operator=(const SceneInfo&) = default;
 };
 
 /**
@@ -86,26 +297,87 @@ class SceneNode : public Node<> {  // Empty template params if no types needed
     // or specify needed types:
     // class SceneNode : public Node<Transform, Material, Geometry>
 public:
-    // === Port Management ===
-    //(...)
+    // === Structure Definitions ===
+    // For deferring loading of USD data
+    struct DeferredData {
+        std::unique_ptr<USDData> usdData;
+        std::unique_ptr<VariantSet> variants;
+        std::unique_ptr<ClipData> clips;
+    };
 
-    explicit SceneNode(const SceneInfo& info)
-        : Node(info), SceneInfo(info) {
-        initializePorts();
-    }
+    // Lightweight proxy for inactive nodes
+    struct NodeProxy {
+        AABB bounds;
+        uint32_t nodeID;
+        OptimizationMode mode;
+    };
 
-    // === Core Scene Interface ===
+    struct SceneCache {
+        std::vector<glm::mat4> flattenedTransforms;
+        std::vector<uint32_t> activeVariants;
+        BoundingBox cachedBounds;
+        uint64_t lastCacheKey = 0;
+    };
+    
+    // Runtime-optimized scene data
+    struct RuntimeBakedData {
+        // Optimized flat arrays for cache-friendly access
+        std::vector<glm::mat4> worldTransforms;
+        std::vector<uint32_t> materialIndices;
+        std::vector<uint32_t> meshIndices;
+        
+        // Minimal variant data for runtime LOD/switching
+        struct RuntimeVariantSet {
+            uint32_t baseIndex;
+            uint32_t variantCount;
+            float* switchThresholds;  // Performance/distance thresholds
+        };
+        std::vector<RuntimeVariantSet> variantSets;
+        
+        // Optimized hierarchy for traversal
+        struct HierarchyNode {
+            uint32_t parentIndex;
+            uint32_t firstChildIndex;
+            uint32_t siblingCount;
+        };
+        std::vector<HierarchyNode> hierarchy;
+    };
+
+    // === Allocation, Initialization, Loading ===
     virtual ~SceneNode() = default;
 
     /** @return Current scene information and metadata */
     const SceneInfo& getSceneInfo() const { return sceneInfo; }
 
-    // === Core Scene Implementation ===
-    void onResume() override;
-    void onPause() override;
-    void onDirty() override { markChildrenDirty(); }
+    // Scene Loading, I/O
+    /**
+     * @brief Loads scene from a file
+     * @param filePath Path to the scene file
+     */
+    void loadFromFile(const std::string& filePath);
+
+    /**
+     * @brief Saves scene to a file
+     * @param filePath Destination path for the scene file
+     */
+    void saveToFile(const std::string& filePath);
+
+    /**
+     * @brief Loads a compiled runtime scene
+     * @param compiledScenePath Path to the compiled scene file
+     */
+    static std::shared_ptr<SceneNode> loadCompiledScene(const std::string& compiledScenePath);
+
+    // === Port Management ===
+    //(...)
+
+    // === Validation ===
+    void validateGeneratedCode(const std::string& code) override {
+        // Implementation
+    }
 
     // === Scene Graph Management ===
+    // Composition
     /** @return Root node of this scene graph */
     std::shared_ptr<Node> getRoot() const;
 
@@ -136,12 +408,6 @@ public:
     void removeNode(const std::string& nodeName);
 
     /**
-     * @brief References another scene graph for composition
-     * @param otherGraph Scene graph to reference
-     */
-    void referenceSceneGraph(const std::shared_ptr<SceneGraph>& otherGraph);
-
-    /**
      * @brief Clones a subtree of nodes
      * @param sourceNode Root of subtree to clone
      * @param deep If true, performs deep copy of all children
@@ -149,6 +415,7 @@ public:
      */
     std::shared_ptr<Node> cloneSubtree(const std::shared_ptr<Node>& sourceNode, bool deep = true);
 
+    // Instances
     /**
      * @brief Creates an instance of a subtree
      * @param sourceNode Root of subtree to instance
@@ -159,7 +426,7 @@ public:
     /** @brief Returns all instances of a given node */
     std::vector<std::shared_ptr<Node>> getInstances(const std::shared_ptr<Node>& sourceNode) const;
 
-    #if EDITOR_MODE
+    // Variants
     /**
      * @brief Creates a variant of a node or subtree (editor only)
      * @param node Node to create variant from
@@ -173,16 +440,14 @@ public:
     /** @brief Returns available variants (editor only) */
     std::vector<std::string> getVariants() const;
 
+    // Referencing
     /**
-     * @brief Compiles scene for runtime, baking selected variants
-     * @param targetPath Output path for compiled scene
-     * @param selectedVariants Map of nodes to their selected variant names
+     * @brief References another scene graph for composition
+     * @param otherGraph Scene graph to reference
      */
-    void compileForRuntime(const std::string& targetPath, 
-                          const std::unordered_map<std::string, std::string>& selectedVariants);
-#endif
+    void referenceSceneGraph(const std::shared_ptr<SceneGraph>& otherGraph);
 
-    // === Scene Streaming ===
+    // === Streaming ===
     /**
      * @brief Asynchronously loads scene content
      * @return Future that completes when loading finishes
@@ -203,6 +468,21 @@ public:
             streamScene();
         }
     }
+
+    // === Execution ===
+    void onResume() override;
+    void onPause() override;
+    void onDirty() override { markChildrenDirty(); }
+    void markChildrenDirty() { for (auto& child : children) child->markDirty(); }
+
+    // === Compilation ===
+    /**
+     * @brief Compiles scene for runtime, baking selected variants
+     * @param targetPath Output path for compiled scene
+     * @param selectedVariants Map of nodes to their selected variant names
+     */
+    void compileForRuntime(const std::string& targetPath, 
+                          const std::unordered_map<std::string, std::string>& selectedVariants);
 
     // === Scene Evaluation ===
     void processNodeGraph() override {
@@ -236,25 +516,6 @@ public:
     /** @brief Returns current evaluation time */
     float getCurrentTime() const { return CurrentTime; }
 
-    // === Scene I/O ===
-    /**
-     * @brief Loads scene from a file
-     * @param filePath Path to the scene file
-     */
-    void loadFromFile(const std::string& filePath);
-
-    /**
-     * @brief Saves scene to a file
-     * @param filePath Destination path for the scene file
-     */
-    void saveToFile(const std::string& filePath);
-
-    /**
-     * @brief Loads a compiled runtime scene
-     * @param compiledScenePath Path to the compiled scene file
-     */
-    static std::shared_ptr<SceneNode> loadCompiledScene(const std::string& compiledScenePath);
-
     // === Visualization ===
     /**
      * @brief Renders scene properties in the Inspector panel
@@ -268,10 +529,6 @@ public:
    
     // === Scripting Support ===
     void generateLanguageSpecificCode(const std::string& language) override {
-        // Implementation
-    }
-    
-    void validateGeneratedCode(const std::string& code) override {
         // Implementation
     }
     
@@ -293,14 +550,13 @@ public:
     }
 
 protected:
-    // === Core Scene Implementation ===
+    // === Allocation, Initialization, Loading ===
     /** Scene-specific metadata and attributes */
     SceneInfo sceneInfo;
 
     /** Current evaluation time */
     float currentTime = 0.0f;
 
-    // === Scene Composition & Streaming ===
     /**
      * @brief Loads scene content from USD layer
      */
@@ -310,11 +566,7 @@ protected:
         }
     }
 
-    /**
-     * @brief Implements scene streaming logic
-     */
-    virtual void streamScene();
-
+    // === Scene Graph Management ===
     /**
      * @brief Updates and propagates transformations through the scene hierarchy
      */
@@ -324,57 +576,28 @@ protected:
         }
     }
 
-#if EDITOR_MODE
     /** Editor-only variant storage */
     std::unordered_map<std::string, std::shared_ptr<Node>> variants;
+
+    // === Streaming ===
+    /**
+     * @brief Implements scene streaming logic
+     */
+    virtual void streamScene();
 
     /** @brief serializes variants to USD */
     void serializeVariantsToUSD();
 
     /** @brief deserializes variants from USD */
     void deserializeVariantsFromUSD();
-#endif
 
 private:
-    // === Runtime Optimization ===
-    /** Runtime-optimized scene data */
-    struct RuntimeBakedData {
-        // Optimized flat arrays for cache-friendly access
-        std::vector<glm::mat4> worldTransforms;
-        std::vector<uint32_t> materialIndices;
-        std::vector<uint32_t> meshIndices;
-        
-        // Minimal variant data for runtime LOD/switching
-        struct RuntimeVariantSet {
-            uint32_t baseIndex;
-            uint32_t variantCount;
-            float* switchThresholds;  // Performance/distance thresholds
-        };
-        std::vector<RuntimeVariantSet> variantSets;
-        
-        // Optimized hierarchy for traversal
-        struct HierarchyNode {
-            uint32_t parentIndex;
-            uint32_t firstChildIndex;
-            uint32_t siblingCount;
-        };
-        std::vector<HierarchyNode> hierarchy;
-    } runtimeData;
+    // === Allocation, Initialization, Loading ===
+    // Defer loading of heavy data
+    std::shared_ptr<DeferredData> m_heavyData;  // Only allocated when needed
 
-    /** @brief Optimized transform update for instanced geometry */
-    void batchTransformUpdate();
-
-    /** @brief Checks if scene contains instanced children */
-    bool hasInstancedChildren() const;
-
-    /** @brief Updates instance references */
-    void updateInstances();
-
-    /** @brief Validates compiled data integrity */
-    bool validateCompiledData() const;
-
-    /** Instance tracking */
-    std::unordered_map<std::shared_ptr<Node>, std::vector<std::weak_ptr<Node>>> instanceMap;
+    // Lightweight proxy for inactive nodes. Only populated when streaming
+    std::vector<NodeProxy> m_inactiveNodes;
 
     // === Port Management ===
     // TODO: Almost certainly refactor to be based on the actual use of node graphs (the core usage being implementing them in code, inside classes, be it instancing and
@@ -417,18 +640,16 @@ private:
         }
     }
 
-    // === Scene Evaluation & Caching ===
-    void updateTransforms(const glm::mat4& worldTransform) {
-        // Update transform hierarchy
-        runtimeData.worldTransforms[0] = worldTransform;  // Root transform
-        propagateTransformations();
-    }
+    // === Validation ===
+    /** @brief Validates compiled data integrity */
+    bool validateCompiledData() const;
 
-    void updateLODSelection(float performanceMetric) {
-        for (auto& variantSet : runtimeData.variantSets) {
-            selectAppropriateVariant(variantSet, performanceMetric);
-        }
-    }
+    // === Scene Graph Management ===
+    /** @brief Checks if scene contains instanced children */
+    bool hasInstancedChildren() const;
+
+    /** Instance tracking */
+    std::unordered_map<std::shared_ptr<Node>, std::vector<std::weak_ptr<Node>>> instanceMap;
 
     void selectAppropriateVariant(RuntimeBakedData::RuntimeVariantSet& variantSet, float metric) {
         for (uint32_t i = 0; i < variantSet.variantCount; ++i) {
@@ -439,12 +660,15 @@ private:
         }
     }
 
+    // === Caching & Optimization ===
+    SceneCache sceneCache;
+    bool isDirty = true;
+    
     uint64_t computeCacheKey() const override {
         // Will combine: scene structure hash, transform states, active variants
         return 0;
     }
 
-    // Cache system integration
     bool canCache() const override { return true; }
     
     void updateCache() override {
@@ -463,7 +687,38 @@ private:
         return false;
     }
 
-    // AI integration essentials
+    void markChildrenDirty() {
+        for (auto& child : children) {
+            if (auto sceneNode = std::dynamic_pointer_cast<SceneNode>(child)) {
+                sceneNode->onDirty();
+            }
+        }
+    }
+
+    // === Processing ===
+    /** @brief Optimized transform update for instanced geometry */
+    void batchTransformUpdate();
+
+    /** @brief Updates instance references */
+    void updateInstances();
+
+    void updateTransforms(const glm::mat4& worldTransform) {
+        // Update transform hierarchy
+        runtimeData.worldTransforms[0] = worldTransform;  // Root transform
+        propagateTransformations();
+    }
+
+    void updateLODSelection(float performanceMetric) {
+        for (auto& variantSet : runtimeData.variantSets) {
+            selectAppropriateVariant(variantSet, performanceMetric);
+        }
+    }
+
+    // === Execution ===
+    // Runtime data
+    RuntimeBakedData runtimeData;
+
+    // === AI Agent Integration ===
     AIInterface getAIInterface() const override {
         AIInterface interface;
         interface.taskDesc.intent = "Scene composition and management";
@@ -482,22 +737,6 @@ private:
             // - Variant consolidation
         };
     }
-
-    void markChildrenDirty() {
-        for (auto& child : children) {
-            if (auto sceneNode = std::dynamic_pointer_cast<SceneNode>(child)) {
-                sceneNode->onDirty();
-            }
-        }
-    }
-
-    // Cache-related members
-    struct SceneCache {
-        std::vector<glm::mat4> flattenedTransforms;
-        std::vector<uint32_t> activeVariants;
-        BoundingBox cachedBounds;
-        uint64_t lastCacheKey = 0;
-    } cache;
 };
 
 } // namespace hd
