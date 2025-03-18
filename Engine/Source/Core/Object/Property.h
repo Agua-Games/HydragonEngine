@@ -44,6 +44,14 @@ public:
 template<typename T>
 class Property : public PropertyBase {
 public:
+    // === Structure Definitions ===
+    struct PropertyInfo {
+        std::string name;
+        std::type_info const& type;
+    };
+
+    static inline std::unordered_map<PropertyId, PropertyInfo> registeredProperties;
+
     explicit Property(T&& defaultValue) 
         : value(std::forward<T>(defaultValue)) {}
 
@@ -88,12 +96,6 @@ public:
     }
 
 private:
-    struct PropertyInfo {
-        std::string name;
-        std::type_info const& type;
-    };
-    
-    static inline std::unordered_map<PropertyId, PropertyInfo> registeredProperties;
 };
 
 // Macro for property registration

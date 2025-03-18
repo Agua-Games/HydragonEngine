@@ -1,5 +1,5 @@
 /**
- * Tiled Texturing System Design Sketch
+ * Tiled Atlas Texturing System Design Sketch
  * 
  * ARCHITECTURAL NOTES:
  * - Uses Vulkan sparse binding/residency for (virtual) tiled textures
@@ -10,7 +10,7 @@
  * - Leverages VK_EXT_pageable_device_local_memory for residency priority
  * 
  * TODO:
- * - Refactor the code to integrate the struct PageRequest into the TiledTextureSystem class and the whole file architecture.
+ * - Refactor the code to integrate the struct PageRequest into the TiledAtlasTexturingSystem class and the whole file architecture.
  * - Cleanup the whole content, after the first version of the VulkanCore/Renderer is working in its definitive architecture, refactoring
  * it carefully, in steps, always testing.
  */
@@ -21,7 +21,7 @@
 
 namespace hd {
 
-struct TiledTextureSystem {
+struct TiledAtlasTexturingSystem {
     // Vulkan-specific sparse texture configuration
     struct SparseTextureConfig {
         VkFormat format;
