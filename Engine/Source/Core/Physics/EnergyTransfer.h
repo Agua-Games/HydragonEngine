@@ -1,3 +1,66 @@
+/*
+/**
+ * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @file EnergyTransfer.h
+ * @brief EnergyTransfer is a class that handles energy transfer and transformation in the engine.
+ * 
+ * ARCHITECTURAL NOTES:
+ * - Spatial Partitioning: Grid-based division for parallel compute, Local space calculations, Neighbor search optimization.
+ * - Selective Physics: Priority-based simulation. LOD for physics calculations, Distance-based activation.
+ * - Energy Conservation: Track energy states, Optimize transfer calculations, Handle dissipation efficiently.
+ * - Energy Manifestation: State transitions, Conservation rules, Dissipation patterns.
+ * - Constraint Solving: Parallel constraint resolution, Iterative refinement, Stability maintenance.
+ * - Coherent Memory Patterns: Buffer compaction, Cache optimization, Memory alignment.
+ * - Compute Scheduling: Load balancing, Work distribution, Dependency management.
+ * - Hybrid approach: Use Vulkan for real-time deformation, Taichi for complex scenarios, Blend between approaches based on needs.
+ * - Efficient parallel processing, Selective physics simulation, Visual accuracy over physical accuracy, Scalable performance, High-quality results.
+ * - Wave-Based Modeling: Uses wave functions as primary representation, Converts to particles only when needed, Maintains energy conservation.
+ * - Adaptive precision using exponential encoding, Dimension reduction where possible, Local space calculations, Wavelet compression.
+ * - Smart Memory Management: Compact struct layouts, Bit-field usage for quantized values, Adaptive grid refinement.
+ * - Physics Approximation: Energy-based approach instead of direct forces, Wave propagation for continuous effects, Local space optimization.
+ * - Energy Transfer System: Energy is never lost, only transformed, Automatic spawning of appropriate reactions based on thresholds, Different manifestation 
+ * types (kinetic, thermal, particles, etc.).
+ * - Adaptive Precision: Dynamic bit depth based on energy magnitude, Higher precision for high-energy regions, Memory optimization for low-energy areas.
+ * - Reaction System: Automatic effect spawning based on energy thresholds, Configurable reaction templates, Scale effects based on energy magnitude.
+ * - Optimization Features: Progressive quantization levels, Wavelet compression with variable precision, Efficient memory usage for different energy manifestations.
+ * - Sparse Particle System: Optimized storage with bit-packed flags, Distance-based culling, Minimum energy thresholds for early termination.
+ * - Energy Propagation: Sphere of influence calculation, Energy transfer through space, Customizable falloff curves, Wave/field contribution integration.
+ * - Multi-sampling System: Octave generation for detail enhancement, Energy scaling per generation: Controlled spawning based on importance. 
+ * - Trajectory System: Multiple path types (linear, ballistic, spiral), Field-guided motion, Collision energy transfer.
+ * - Optimization Features: Sparse sampling by default, Optional multi-sampling for important events, Early culling of low-energy particles, Packed data structures.
+ * - Wave-Centric Approach: Uses "particles" merely as computational markers for wavefront tracking, Focuses on wave properties (amplitude, frequency, phase) rather 
+ * than particle properties,Handles proper wave behavior (interference, superposition, attenuation).
+ * - Field Integration: Treats each "particle" as a wave contribution point, Computes field strength through wave superposition, Handles medium transitions and 
+ * field interactions.
+ * - Energy Propagation: Models energy transfer as wave propagation, Accounts for medium properties (attenuation, dispersion), Handles wave-field interactions.
+ * - Optimization: Uses short-lived markers to track wave peaks efficiently, Adapts precision based on energy levels, Maintains the sparse sampling approach while 
+ * modeling continuous phenomena.
+ * - Frequency Bands: Models the entire electromagnetic spectrum, Maps frequencies to physical effects, Includes thresholds for different interaction types.
+ * - Interaction Effects: Ionization potential, Mutation probability, Decay chain reactions, Material penetration depth.
+ * - Chain Reactions: Higher frequencies can trigger particle decay, Secondary radiation waves, Probability-based chain reactions.
+ * - This naturally models phenomena like: Radiation shielding (penetration depth), Nuclear decay chains, Ionizing vs non-ionizing radiation, Quantum effects at 
+ * high energies.
+ * - Dimensional Energy: Energy represented as a 4D vector (spectral components), Can project to scalar when needed for simple calculations, Rich interaction 
+ * possibilities between components.
+ * - Modulation Field: 4D noise field (3D space + energy dimension), Warping based on energy levels, Multi-octave sampling for different scales, Cached regions 
+ * for optimization.
+ * - Wave-Field Interaction: Non-linear modulation effects, Energy-dependent wave behavior, Quantum effects at high energy levels, Propagation through energy landscape.
+ * - Optimization Features: Cached sampling for frequently accessed regions, Adaptive step size based on energy levels, Scalar projection for simple calculations. 
+ * - This creates interesting emergent behaviors: Waves can "resonate" with certain energy levels in the field, High-energy waves can "tunnel" through low-energy regions, 
+ * Field modulation can create localized high-energy phenomena, Natural emergence of quantum-like behaviors at high energies.
+ * 
+ * Physics System Comparison:       Runtime Memory, MB	                    VRAM Usage, MB	            Binary Size, MB	            Relative Performance
+ * 
+ * Bullet Physics	                50-150	                                N/A	                        2-5	                        1.0x (baseline)
+ * PhysX	                        100-300	                                50-150	                    8-15	                    1.2x
+ * Havok	                        80-200                                  N/A	                        5-10	                    1.1x
+ * Wavelet PhaseShift	            30-120                                  20-80                       3-6                         1.5-2.5x
+*/
+#pragma once
+#include "ShortLivedParticle.h"
+
 namespace hd {
 
 // Energy manifestation types and thresholds
