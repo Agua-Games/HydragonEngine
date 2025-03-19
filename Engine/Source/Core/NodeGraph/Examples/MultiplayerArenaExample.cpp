@@ -5,6 +5,8 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+#if 0
+
 #include "Core/Engine.h"
 #include "Core/Network/NetworkManager.h"
 #include "Core/Physics/PhysicsWorld.h"
@@ -121,3 +123,5 @@ private:
 };
 
 } // namespace hd
+
+#endif

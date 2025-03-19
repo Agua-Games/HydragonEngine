@@ -5,6 +5,7 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+ #if  0
 // AI behavior tree
 auto ai = graph.create<BehaviorTreeNode>("enemyAI")
     .connect<SelectorNode>("root")
@@ -25,3 +26,5 @@ auto ai = graph.create<BehaviorTreeNode>("enemyAI")
                 .tolerance(0.5f)
             .connect<ActionNode>("wait")
                 .duration({1.0f, 3.0f});
+
+#endif

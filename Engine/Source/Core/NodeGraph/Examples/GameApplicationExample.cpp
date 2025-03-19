@@ -5,6 +5,8 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+#if 0
+
 class GameApplicationExample_01 {
 private:
     // Multiple node graphs can exist and interconnect
@@ -30,3 +32,5 @@ private:
         m_gameStateNode->update(dt);
     }
 };
+
+#endif

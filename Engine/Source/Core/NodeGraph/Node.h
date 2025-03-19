@@ -71,7 +71,8 @@
  *   (Remember to not implement in Node what is supposed to be in Object).
  * - Flesh out the class and its methods, structs, enums, etc.
  */
-#pragma once
+#if 0
+ #pragma once
 #include <memory>
 #include <string>
 #include <vector>
@@ -740,3 +741,5 @@ private:
 };
     
 } // namespace hd
+
+#endif

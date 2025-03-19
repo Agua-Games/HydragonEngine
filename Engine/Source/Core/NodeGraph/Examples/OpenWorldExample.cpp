@@ -4,12 +4,13 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  */
-#include "Core/Engine.h"
-#include "Core/Scene/OpenWorldScene.h"
-#include "Core/Streaming/ChunkManager.h"
-#include "Core/Environment/BiomeSystem.h"
-#include "Core/AI/EcosystemAI.h"
-#include "Core/NodeGraph/Node.h"
+#if 0
+#include "Engine.h"
+#include "OpenWorldScene.h"
+#include "ChunkManager.h"
+#include "BiomeSystem.h"
+#include "EcosystemAI.h"
+#include "Node.h"
 
 namespace hd {
 
@@ -121,3 +122,5 @@ private:
 };
 
 } // namespace hd
+
+#endif

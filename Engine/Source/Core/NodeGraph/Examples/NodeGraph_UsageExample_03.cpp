@@ -5,6 +5,7 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+#if 0
 using namespace hd;
 
 // Example 1: Material creation with precise typing
@@ -111,3 +112,5 @@ auto& netObj = Scene::current().create<NetworkObject>("player")
         .setHandler([](const Vector3& newPos) {
             // Handle position change
         });
+
+#endif

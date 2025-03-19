@@ -14,6 +14,7 @@
  * - Cleanup the whole content, after the first version of the VulkanCore/Renderer is working in its definitive architecture, refactoring
  * it carefully, in steps, always testing.
  */
+#if 0
 #pragma once
 #include <vulkan/vulkan.h>
 #include "Core/Graphics/TextureTypes.h"
@@ -114,3 +115,5 @@ struct TiledAtlasTexturingSystem {
 };
 
 } // namespace hd
+
+#endif

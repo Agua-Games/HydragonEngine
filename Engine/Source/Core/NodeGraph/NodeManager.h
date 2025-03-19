@@ -13,6 +13,7 @@
  * - The NodeManager, a singleton, should be responsible to keep track of and update all node graphs,
  * all nodes in the system.
  */
+#if 0
 #pragma once
 #include <memory>
 #include <vector>
@@ -141,3 +142,5 @@ public:
     };
     
 } // namespace hd
+
+#endif

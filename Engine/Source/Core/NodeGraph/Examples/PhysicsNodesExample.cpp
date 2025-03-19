@@ -4,6 +4,7 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  */
+#if 0
 #include "Core/Engine.h"
 #include "Core/NodeGraph/Node.h"
 
@@ -29,3 +30,5 @@ auto physics = graph.create<PhysicsNode>("vehiclePhysics")
             .suspension(0.2f)
             .damping(0.3f)
             .position({0.8f, 0.0f, 1.0f});
+
+#endif

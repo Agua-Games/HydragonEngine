@@ -17,6 +17,7 @@
  * - Create .cpp file and move the implementation there.
  * - Organize the existing code into logical sections and functions.
  */
+#if 0
 #pragma once
 #include <type_traits>
 #include <unordered_map>
@@ -103,3 +104,5 @@ private:
     static const PropertyId Name##Id = PropertyRegistry::register<Type>(#Name)
 
 } // namespace hd
+
+#endif

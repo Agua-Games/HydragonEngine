@@ -4,6 +4,7 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  */
+#if 0
 #include "Core/Engine.h"
 #include "Core/NodeGraph/Node.h"
 
@@ -21,3 +22,5 @@ auto material = graph.create<MaterialNode>("metal")
     .metallic(1.0f)
     .albedoMap("textures/metal_albedo.png")
     .normalMap("textures/metal_normal.png");
+
+#endif

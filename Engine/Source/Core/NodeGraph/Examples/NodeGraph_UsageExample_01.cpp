@@ -6,6 +6,7 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+ #if 0
 using namespace hd;
 
 // Example 1: Creating a simple render pipeline
@@ -51,3 +52,5 @@ auto& processor = ImageProcessor::create()
         .saturation(1.1f)
     .connect<Blur>(5.0f)
     .connect<Sharpen>(0.3f);
+
+    #endif

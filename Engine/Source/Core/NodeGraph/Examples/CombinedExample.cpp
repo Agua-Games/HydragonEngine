@@ -5,6 +5,7 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+ #if 0
 // Clean, fluent style for node creation
 auto scene = graph.create<SceneNode>("mainScene")
     .skybox("sky/hdri.exr")
@@ -34,3 +35,5 @@ auto physics = scene.add<PhysicsNode>("dynamic")
 if (physics.getMass() > 10.0f) {
     physics.setCollider<BoxShape>({1,1,1});
 }
+
+#endif

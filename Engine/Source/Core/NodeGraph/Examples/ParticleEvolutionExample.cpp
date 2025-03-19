@@ -4,6 +4,7 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  */
+#if 0
 #include "Core/Engine.h"
 #include "ParticleSystemNode.h"
 #include "ProceduralOrchestrator.h"
@@ -63,3 +64,5 @@ public:
 };
 
 } // namespace hd
+
+#endif

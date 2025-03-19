@@ -53,7 +53,8 @@
  * - Flesh out the class and its methods, structs, enums, etc.
  * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
-#pragma once
+#if 0
+ #pragma once
 #include <future>
 #include <memory>
 #include <string>
@@ -740,3 +741,5 @@ private:
 };
 
 } // namespace hd
+
+#endif

@@ -33,12 +33,13 @@
 * - Establish communication protocols between systems
 * - Create initial harmony maintenance systems
 */
+#if 0
 #pragma once
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "NodeGraph.h"                   // Foundation
+#include "Node.h"                   // Foundation
 #include "ProceduralOrchestrator.h"      // Evolution
 #include "SystemOrchestrator.h"             // Coordination
 #include "ResourceManager.h"                // Assets
@@ -110,3 +111,5 @@ private:
 };
 
 } // namespace hd
+
+#endif

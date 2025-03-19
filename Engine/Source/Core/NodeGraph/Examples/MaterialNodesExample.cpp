@@ -5,6 +5,7 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+ #if 0
 // Material nodes showing texture/shader workflow
 auto metallic = graph.create<MaterialNode>("brushedMetal")
     .baseColor({0.9f, 0.9f, 0.9f})
@@ -33,3 +34,5 @@ auto marble = graph.create<MaterialNode>("marble")
         .addStop(0.0f, {0.8f, 0.8f, 0.8f})
         .addStop(0.5f, {0.9f, 0.9f, 0.9f})
         .addStop(1.0f, {1.0f, 1.0f, 1.0f});
+
+#endif

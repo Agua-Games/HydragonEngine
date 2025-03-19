@@ -2,6 +2,7 @@
  * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  */
+#if 0
 #include "CreativeGameDevStrategies_Example_01.h"
 
 namespace hd {
@@ -69,3 +70,5 @@ private:
 };
 
 } // namespace hd
+
+#endif

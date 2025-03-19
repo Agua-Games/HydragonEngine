@@ -5,6 +5,7 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+#if 0
 using namespace hd;
 
 // Example 1: Complete game level setup
@@ -141,3 +142,5 @@ auto& shader = ShaderGraph::create("custom_pbr")
         .connect<LightingModel>()
             .type(LightingType::Physical)
     .connect<OutputColor>();
+
+#endif

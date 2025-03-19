@@ -4,6 +4,7 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  */
+#if 0
 #include "Core/Engine.h"
 #include "Core/NodeGraph/Node.h"
 
@@ -47,3 +48,5 @@ auto post = NodeGraph::create("post")
     .add<ColorGradingNode>("colorGrade")
         .contrast({1.0f, 1.0f, 1.0f}, runtime)
         .saturation(1.0f, runtime);
+
+#endif

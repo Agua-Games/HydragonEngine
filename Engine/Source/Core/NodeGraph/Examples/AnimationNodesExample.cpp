@@ -5,6 +5,7 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+ #if 0
 // Animation blend tree
 auto anim = graph.create<AnimatorNode>("characterAnim")
     .connect<BlendSpaceNode>("locomotion")
@@ -22,3 +23,5 @@ auto anim = graph.create<AnimatorNode>("characterAnim")
         .addTransition("idle", "attack")
             .condition("attack_trigger")
             .crossfade(0.2f);
+
+#endif

@@ -4,6 +4,7 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  */
+#if 0
 #include "Core/Engine.h"
 #include "ParticleSystemNode.h"
 #include "ProcOrchestrator.h"
@@ -33,3 +34,5 @@ auto particles = graph.create<ParticleSystemNode>("fire")
     .connect<SizeOverLifeNode>("size")
         .addKey(0.0f, 1.0f)
         .addKey(1.0f, 0.0f);
+
+#endif

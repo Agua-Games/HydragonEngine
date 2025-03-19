@@ -2,6 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  */
+#if 0
 #pragma once
 #include <atomic>
 #include <shared_mutex>
@@ -207,3 +208,5 @@ private:
 };
 
 } // namespace hd
+
+#endif

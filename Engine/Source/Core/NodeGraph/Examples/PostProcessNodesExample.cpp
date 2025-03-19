@@ -4,6 +4,7 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  */
+#if 0
 #include "Core/Engine.h"
 #include "Core/NodeGraph/Node.h"
 
@@ -27,3 +28,5 @@ auto post = graph.create<PostProcessNode>("mainPost")
         .focalDistance(10.0f)
         .focalRange(5.0f)
         .maxBlur(1.0f);
+
+#endif

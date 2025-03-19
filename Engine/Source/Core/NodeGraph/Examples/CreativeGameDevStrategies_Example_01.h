@@ -1,3 +1,5 @@
+#if 0
+
 #pragma once
 #include "Core/NodeGraph/Node.h"
 #include "Core/Materials/MaterialSystem.h"
@@ -78,3 +80,5 @@ private:
 };
 
 } // namespace hd
+
+#endif

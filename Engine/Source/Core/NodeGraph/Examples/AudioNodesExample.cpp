@@ -5,6 +5,7 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+ #if 0
 // Audio mixing/processing
 auto audio = graph.create<AudioMixerNode>("gameMixer")
     .connect<AudioTrackNode>("music")
@@ -32,3 +33,5 @@ auto audio = graph.create<AudioMixerNode>("gameMixer")
         .amount(0.5f)
         .attack(0.1f)
         .release(0.2f);
+
+#endif
