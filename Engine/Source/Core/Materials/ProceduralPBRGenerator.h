@@ -32,6 +32,8 @@
  *
  * TODO:
  * - Introduce BC7 and other aggressive compression techniques (see table above to understand why).
+ * - Study creative solution for procedurally generating much cheaper AO, or impression of AO. e.g. curvature + blur pass + very encoded and packed, 
+ * simplified spherical harmonics, maybe only in screen space, or even rely only in the fullscreen SSAO pass.
 */
 #pragma once
 

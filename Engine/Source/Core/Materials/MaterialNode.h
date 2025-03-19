@@ -24,6 +24,23 @@
  *      - MSAA buffer reuse
  *      - Efficient pattern storage
  * 
+| Texture Type      | Traditional (MB) | Our Method (MB)  | Savings % | Notes                                           |
+|-------------------|------------------|------------------|-----------|-------------------------------------------------|
+| Albedo (BC7)      | 21.33            | 5.33             | 75%       | MSAA from vertex color + procedural enhancement |
+| Normal (BC5)      | 16.00            | 4.00             | 75%       | Generated from height + pattern matching        |
+| Roughness (BC4)   | 8.00             | 2.00             | 75%       | Derived from albedo + procedural rules          |
+| Metallic (BC4)    | 8.00             | 2.00             | 75%       | Derived from albedo + material rules            |
+| Height (R8)       | 8.00             | 2.00             | 75%       | Delta-encoded, adaptive precision               |
+| AO (R8)           | 8.00             | 0.00             | 100%      | Fully procedural from geometry                  |
+|-------------------|------------------|------------------|-----------|-------------------------------------------------|
+| Total Per Mat.    | 69.33            | 15.33            | 77.9%     | Base 2K textures                                |
+|-------------------|------------------|------------------|-----------|-------------------------------------------------|
+| With Streaming    | 69.33            | 3.83             | 94.5%     | Using sparse binding + residency                |
+| With Pattern DB   | 69.33            | 2.87             | 95.9%     | Shared pattern library                          |
+| Max Compression   | 34.67            | 1.92             | 94.5%     | Using BC7/BC5/BC4 + pattern matching            |
+|-------------------|------------------|------------------|-----------|-------------------------------------------------|
+ *
+ * 
  * TODO:
  * - Update the whole content to match the latest Object and Node design.
  * - Create .cpp file and move the implementation there.

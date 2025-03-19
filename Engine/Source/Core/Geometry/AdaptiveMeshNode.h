@@ -41,27 +41,27 @@
  * - Minimal CPU overhead
  /*
 /*
-| Polycount | FBX (Binary) | USD (Binary) | glTF 2.0 | OBJ      | Adaptive Mesh | Adaptive + Prediction | Normal-Aligned + Prediction | With Huffman (Disk) |
-|-----------|--------------|--------------|-----------|----------|---------------|---------------------|---------------------------|-------------------|
-| 20K polys |             |              |           |          |               |                     |                           |                   |
-| Disk      | 1.8 MB      | 1.2 MB       | 980 KB    | 2.4 MB   | 280 KB        | 140-168 KB          | 60-72 KB                  | 42-50 KB          |
-| Memory    | 2.3 MB      | 1.9 MB       | 1.7 MB    | 2.8 MB   | 420 KB        | 210-252 KB          | 90-108 KB                 | 90-108 KB         |
-|           |             |              |           |          |               |                     |                           |                   |
-| 50K polys |             |              |           |          |               |                     |                           |                   |
-| Disk      | 4.5 MB      | 3.1 MB       | 2.4 MB    | 6.0 MB   | 600 KB        | 300-360 KB          | 150-180 KB                | 105-126 KB        |
-| Memory    | 5.8 MB      | 4.8 MB       | 4.2 MB    | 7.0 MB   | 840 KB        | 420-504 KB          | 210-252 KB                | 210-252 KB        |
-|           |             |              |           |          |               |                     |                           |                   |
-| 128K polys|             |              |           |          |               |                     |                           |                   |
-| Disk      | 11.5 MB     | 7.9 MB       | 6.2 MB    | 15.4 MB  | 1.2 MB        | 600-720 KB          | 300-360 KB                | 210-252 KB        |
-| Memory    | 14.8 MB     | 12.3 MB      | 10.8 MB   | 17.9 MB  | 1.8 MB        | 900-1080 KB         | 450-540 KB                | 450-540 KB        |
-|           |             |              |           |          |               |                     |                           |                   |
-| 512K polys|             |              |           |          |               |                     |                           |                   |
-| Disk      | 46.0 MB     | 31.6 MB      | 24.8 MB   | 61.6 MB  | 4.2 MB        | 2.1-2.52 MB         | 1.05-1.26 MB              | 735-882 KB        |
-| Memory    | 59.2 MB     | 49.2 MB      | 43.2 MB   | 71.6 MB  | 6.3 MB        | 3.15-3.78 MB        | 1.57-1.89 MB              | 1.57-1.89 MB      |
-|           |             |              |           |          |               |                     |                           |                   |
-| 1M polys  |             |              |           |          |               |                     |                           |                   |
-| Disk      | 92.0 MB     | 63.2 MB      | 49.6 MB   | 123.2 MB | 7.5 MB        | 3.75-4.5 MB         | 1.87-2.25 MB              | 1.31-1.57 MB      |
-| Memory    | 118.4 MB    | 98.4 MB      | 86.4 MB   | 143.2 MB | 11.7 MB       | 5.85-7.02 MB        | 2.92-3.51 MB              | 2.92-3.51 MB      |
+| Polycount | FBX (Binary) | USD (Binary) | glTF 2.0  | OBJ      | Adaptive Mesh | Adaptive + Prediction | Normal-Aligned + Prediction | With Huffman (Disk) |
+|-----------|--------------|--------------|-----------|----------|---------------|-----------------------|-----------------------------|---------------------|
+| 20K polys |              |              |           |          |               |                       |                             |                     |
+| Disk      | 1.8 MB       | 1.2 MB       | 980 KB    | 2.4 MB   | 280 KB        | 140-168 KB            | 60-72 KB                    | 42-50 KB            |
+| Memory    | 2.3 MB       | 1.9 MB       | 1.7 MB    | 2.8 MB   | 420 KB        | 210-252 KB            | 90-108 KB                   | 90-108 KB           |
+|           |              |              |           |          |               |                       |                             |                     |
+| 50K polys |              |              |           |          |               |                       |                             |                     |
+| Disk      | 4.5 MB       | 3.1 MB       | 2.4 MB    | 6.0 MB   | 600 KB        | 300-360 KB            | 150-180 KB                  | 105-126 KB          |
+| Memory    | 5.8 MB       | 4.8 MB       | 4.2 MB    | 7.0 MB   | 840 KB        | 420-504 KB            | 210-252 KB                  | 210-252 KB          |
+|           |              |              |           |          |               |                       |                             |                     |
+| 128K polys|              |              |           |          |               |                       |                             |                     |
+| Disk      | 11.5 MB      | 7.9 MB       | 6.2 MB    | 15.4 MB  | 1.2 MB        | 600-720 KB            | 300-360 KB                  | 210-252 KB          |
+| Memory    | 14.8 MB      | 12.3 MB      | 10.8 MB   | 17.9 MB  | 1.8 MB        | 900-1080 KB           | 450-540 KB                  | 450-540 KB          |
+|           |              |              |           |          |               |                       |                             |                     |
+| 512K polys|              |              |           |          |               |                       |                             |                     |
+| Disk      | 46.0 MB      | 31.6 MB      | 24.8 MB   | 61.6 MB  | 4.2 MB        | 2.1-2.52 MB           | 1.05-1.26 MB                | 735-882 KB          |
+| Memory    | 59.2 MB      | 49.2 MB      | 43.2 MB   | 71.6 MB  | 6.3 MB        | 3.15-3.78 MB          | 1.57-1.89 MB                | 1.57-1.89 MB        |
+|           |              |              |           |          |               |                       |                             |                     |
+| 1M polys  |              |              |           |          |               |                       |                             |                     |
+| Disk      | 92.0 MB      | 63.2 MB      | 49.6 MB   | 123.2 MB | 7.5 MB        | 3.75-4.5 MB           | 1.87-2.25 MB                | 1.31-1.57 MB        |
+| Memory    | 118.4 MB     | 98.4 MB      | 86.4 MB   | 143.2 MB | 11.7 MB       | 5.85-7.02 MB          | 2.92-3.51 MB                | 2.92-3.51 MB        |
 *
 Key improvements from previous version:
 1. Normal-Aligned + Prediction now uses ~50% less space due to int8_t optimization
