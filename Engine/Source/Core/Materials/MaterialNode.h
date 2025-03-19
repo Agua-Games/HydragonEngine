@@ -7,6 +7,22 @@
  * 
  * ARCHITECTURAL NOTES:
  * - Material nodes are used to define and manage material properties.
+ * - They can be used to create complex materials with procedural generation and variants.
+ * - Multi-sample processing: uses MSAA as virtual high-resolution buffer:
+ *      - Enables per-sample procedural patterns
+ *      - Maintains quality without vertex count increase
+ * - Procedural Patterns:
+ *      - Fragment-level displacement and noise
+ *      - Pattern-based detail enhancement
+ *      - Harmony parameters for consistent results
+ * - PBR Value Derivation:
+ *      - Multiple source options (vertex color, low-res texture, procedural)
+ *      - Rule-based channel generation
+ *      - Gradient and pattern-based processing
+ * - Memory Optimization:
+ *      - Texture size reduction
+ *      - MSAA buffer reuse
+ *      - Efficient pattern storage
  * 
  * TODO:
  * - Update the whole content to match the latest Object and Node design.
@@ -222,6 +238,29 @@ public:
         }
     }
 
+    struct ProceduralPBRConfig {
+        bool enableProceduralGeneration;
+        bool useVertexColorSource;
+        bool allowTextureReduction;
+
+        struct Quality {
+            float detailLevel;         // 0-1, affects pattern complexity
+            float msaaSampleCount;     // Multi-sample level
+            float patternDensity;      // Pattern frequency multiplier
+        };
+
+        struct MemoryOptimization {
+            bool enableLowResTextures;
+            uint32_t maxTextureSize;
+            float qualityThreshold;    // Acceptable quality loss
+        };
+    };
+
+    // New functions
+    void setupProceduralPBR(const ProceduralPBRConfig& config);
+    void generatePBRMaps();
+    void optimizeTextureMemory();
+
 protected:
     MaterialInfo MaterialInfo;
     std::unordered_map<uint32_t, ShaderVariant> ShaderVariants;
@@ -298,3 +337,4 @@ private:
 };
 
 } // namespace hd
+
