@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ */
+
 namespace hd {
 
 struct ShortLivedParticle {

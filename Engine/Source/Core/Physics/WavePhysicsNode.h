@@ -16,6 +16,13 @@
  * elegant whenever possible also.
  * 
  * ARCHITECTURAL NOTES:
+ * - We're fundamentally treating everything through an energy-based approach:
+ *      - Energy is the most fundamental quantity in physics, and everything else is derived from it.
+ *      - Fields, along with Waves, are the core building blocks in WavePhysics. and they're basically always representing energy distributions in space, be 
+ *       it potential or converted. So, basically, at the heart of our architecture we have:
+ * 
+ *          Energy (the quantity/data) --> Wave (the carrier pattern: excitation/perturbation/radiation in a field) --> Field (the set/system: energy distribution in space)
+ * 
  * - Main elements, entities in the WavePhysicsNode system:
  *          - Field: Energy distribution in space, be it potential or converted: kinetic/momentum, etc.
  *          - Dimensional Energy: Energy represented as a 4D vector (spectral components), which we can project to scalar when needed for simple calculations, 
@@ -114,13 +121,14 @@
  * Dynamic LOD System: Based on WaveletMeshNode.h's approach.
  * - Edge Case Opportunities: High-energy concentrations could create temporary "anomalies" (gameplay features), Solver boundary interactions might generate interesting 
  * interference patterns Numerical "instabilities" could be channeled into visual effects.
+ * - There's a lot more even more interesting notes about the WavePhysics system and node in Source/Core/Physics/WavePhysicsNode_README.md.
  * 
  * Physics System Comparison:       Runtime Memory, MB	                    VRAM Usage, MB	            Binary Size, MB	            Relative Performance
  * 
  * Bullet Physics	                50-150	                                N/A	                        2-5	                        1.0x (baseline)
  * PhysX	                        100-300	                                50-150	                    8-15	                    1.2x
  * Havok	                        80-200                                  N/A	                        5-10	                    1.1x
- * Hydragon WavePhysics	            15-60                                   10-40                       3-6                         2.0-3.0x
+ * WavePhysics	                    15-60                                   10-40                       3-6                         2.0-3.0x
  * 
  * Latest (theoretical) improvements shows:
  *
@@ -150,7 +158,137 @@
  * ↓
  * Level 4: Emergency fallbacks
  * 
+ * WAVE PHYSICS MEMORY ANALYSIS
+
+Current Wave Size: ~48 bytes
+Optimized Wave Size: ~24 bytes
+Current Field Cell: ~320 bytes
+Optimized Field Cell: ~64 bytes
+
+DELTA ENCODING SCHEME
+
+Base Values (Priority Zone):
+- Position: 32-bit float (xyz)
+- Energy: 32-bit float
+- Velocity: 32-bit float (xyz)
+- Properties: 32-bit packed
+
+Delta Encoding Tiers (similar to AdaptiveMeshNode's DeltaCompressionScheme):
+
+1. High-Energy Deltas (Level 1):
+    struct Level1Delta {
+        uint32_t cellIndex : 24;    // Up to 16M cells
+        uint8_t deltaE : 4;         // Energy delta
+        uint8_t deltaV : 4;         // Velocity magnitude delta
+    }; // 4 bytes total
+
+2. Mid-Energy Deltas (Level 2):
+    struct Level2Delta {
+        uint32_t cellIndex : 24;
+        uint8_t deltaE : 3;
+        uint8_t deltaV : 3;
+        uint8_t flags : 2;
+    }; // 4 bytes total
+
+3. Low-Energy Deltas (Level 3+):
+    struct Level3Delta {
+        uint32_t cellIndex : 24;
+        uint8_t deltaE : 2;
+        uint8_t deltaV : 2;
+        uint8_t flags : 4;
+    }; // 4 bytes total
+
+Storage Optimization:
+- High activity: Full values + Level1 deltas
+- Medium activity: Base values + Level2 deltas
+- Low activity: Minimal base + Level3 deltas
+- Dormant: Delta-only or disabled
+
+WAVE PHYSICS MEMORY ANALYSIS (OPTIMIZED WITH SELECTIVE FIELDS, STRUCT LOD & DELTA ENCODING, ADAPTIVE GRID & SPARSE STORAGE)
+
+Struct Sizes (Priority Zone):
+- Full Wave Info: ~24 bytes
+- Full Cell Info: ~64 bytes (base mechanical)
+
+Struct Sizes (Non-Priority):
+- Simplified Wave: ~8 bytes (essential properties + deltas)
+- Simplified Cell: ~16 bytes (core state + deltas)
+
+Delta Encoding (similar to AdaptiveMeshNode's approach):
+- High Precision: 32-bit base + 8-bit deltas
+- Medium Precision: 16-bit base + 4-bit deltas
+- Low Precision: 8-bit base + 2-bit deltas
+
+SIMD Batch Processing:
+- Wave Batches: 256 waves per compute dispatch
+- Cell Batches: 64x64x64 cell blocks
+- Memory Layout: AoS for CPU, SoA for GPU
+
+|--------------------|--------------|---------------|---------------|--------------|----------------|
+| Scale Tier         | Grid Size    | Active Waves  | Dense Memory  | Optimized    | Comparable To  |
+|--------------------|--------------|---------------|---------------|--------------|----------------|
+| Small Scene        | 16³ (4096)   | 100           | 1.3 MB        | 30-40 KB     | Small VFX      |
+| (4096 cells)       |              |               | (1.28 + 0.05) | (25 + 5)     |                |
+|--------------------|--------------|---------------|---------------|--------------|----------------|
+| Medium Scene       | 32³ (32768)  | 1000          | 10.5 MB       | 200-300 KB   | Typical Game   |
+| (32768 cells)      |              |               | (10.24 + 0.24)| (175 + 25)   | Physics Scene  |
+|--------------------|--------------|---------------|---------------|--------------|----------------|
+| Large Scene        | 64³ (262144) | 5000          | 84 MB         | 1-1.5 MB     | Open World     |
+| (262144 cells)     |              |               | (83.9 + 0.12) | (0.9 + 0.1)  | Section        |
+|--------------------|--------------|---------------|---------------|--------------|----------------|
+| Huge Scene         | 128³ (2.1M)  | 20000         | 671 MB        | 6-8 MB       | Full Open      |
+| (2.1M cells)       |              |               | (671 + 0.9)   | (5.5 + 0.5)  | World Area     |
+|--------------------|--------------|---------------|---------------|--------------|----------------|
+| Extreme            | 256³ (16.7M) | 100000        | 5.4 GB        | 40-50 MB     | Large Scale    |
+| (16.7M cells)      |              |               | (5.36 + 0.04) | (37.5 + 2.5) | Simulation     |
+|--------------------|--------------|---------------|---------------|--------------|----------------|
+
+Priority Zone Management:                                       Delta Optimization:                                     Adaptive Grid Resolution:
+    - Inner Zone (r < 32m): Full structs, 32-bit precision          - Store base values at lower precision                - High resolution in dense areas- High activity: Full resolution
+    - Mid Zone (32m-128m): Simplified structs, 16-bit + deltas      - Use relative deltas between adjacent cells          - Medium: 2x2x2 merged cells
+    - Outer Zone (>128m): Minimal structs, 8-bit + deltas           - Pack multiple deltas into single bytes              - Low: 4x4x4 merged cells
+    - Dormant: Delta-only or disabled                               - Progressive precision reduction with distance       - Result: 50-75% reduction in cell count
+
+Sparse Storage:                                     Compute Shader Strategy:                        Memory Layout:
+   - Only store active cells                            - Priority cells: Processed every frame         - GPU: SoA for SIMD efficiency
+   - Hash-based lookup for sparse regions               - Mid-priority: Every 2-4 frames                - CPU: AoS for cache coherency
+   - Occupancy maps for quick traversal                 - Low-priority: Every 8-16 frames               - Shared: Double-buffered for async updates
+                                                        - GPU occupancy-based CPU fallback
+
+Additional Savings:                                 Combined Impact:
+    - Delta encoding: 40-60% reduction                  - Dense areas: Full resolution + delta encoding
+    - Struct LOD: 50-70% reduction                      - Sparse areas: Reduced resolution + minimal storage
+    - SIMD batching: 20-30% processing speedup          - Empty areas: No storage (occupancy map only)
+    - Compute offload: 60-80% CPU load reduction        - Overall: 80-90% reduction from worst case
+
+(Memory shown as: (Grid Memory + Wave Memory)                                           COMPRESSION POTENTIAL:
+                                                                                            - Small/Medium scenes: Minimal compression needed
+    - Selective field enabling reduces base memory by 60-80%                                - Large scenes: 50-70% reduction with adaptive resolution               
+    - LOD system provides additional 40-60% reduction                                       - Huge/Extreme: Required aggressive optimization + streaming
+    - Adaptive precision (bit depth, etc) saves 30-50% in medium/low activity zones
+    - Adaptive resolution could reduce grid memory by 40-80%
+    - Sparse storage could save additional 30-60% in empty regions
+    - Dormant regions consume negligible memory
+    
+REAL-TIME CONSTRAINTS:
+    - Small/Medium: Can run at full precision
+    - Large: May need LOD system
+    - Huge/Extreme: Requires streaming and aggressive optimization
+
  * TODO:
+ * - Cleanup and organize the functionality and structs we introduced in the latest task session.
+ *      - Replace many or all of the structs definitions inside of OptimizationSystem struct with just assigment of variables from existing structs. e.g. 
+ *      FluidField settings already exist in its definition, so there's no need to create redundant structs there. It was a redundancy mistake introduced 
+ *      by the assistant. 
+ *      - Consider which classes other than WavePhysicsNode should be moved to dedicated files.
+ *      - Organize the existing code into logical sections and functions.
+ * - Check thoroughly, including with assistant, to eliminate redundancies, inconsistencies in the content, even it being in design sketch phase. A quick way to
+ * do this with the assistant is: 1) ask him to read and summarize the file 2) then, ask about inconsistencies, redundant code, etc.
+ * - We could move some of the content here related to setup of solid body to SceneNode.h, but by design we want to maintain separation of concerns and also try, to
+ * some degree, to keep the workflow for users parallel to using ECS - keeping specific functionality in components, adding components, etc. So we do the same but
+ * using nodes. So, the user will create and connect a BoxFieldNode pattern (as a user in Unity or Unreal would add a Collider Component), and then connect it to a 
+ * WavePhysicsNode.
+ * - Create the WavePhysics_README.md in the same folder as this file.
  * - We'll start from the core conceptual elements, data structures and dynamics (fields, potential wells, energy conservation principles, wave-field interaction,
  * excitation dynamics), but then later we'll gradually incorporated layers of physics features towards the more superficial layers - like rigid body dynamics,
  * character, environment, etc. In that moment, for instance for rigid bodies, we may incorporate Bullet Physics, if we deem appropriate enough.
@@ -196,9 +334,12 @@
 */
 #pragma once
 #include <memory>
+#include <vector>
+#include <string>
 
 #include "ShortLivedParticle.h"
 #include "Node.h"
+#include "PhysicsFields.h"
 
 namespace hd {
 
@@ -258,9 +399,243 @@ struct EnergyManifestationType {
     };
 };
 
+// Physics field implementations using the computational field
+class ElectromagneticField {
+    // Actual tensor fields for storing values
+    Field<vec3, 3> electricField;    // 3D vector field for E
+    Field<vec3, 3> magneticField;    // 3D vector field for B
+    Field<float, 3> chargeDensity;   // Scalar field for charge
+    Field<float, 3> currentDensity;  // Scalar field for current
+};
+
+class SolidBodyField {
+    // Solid body properties
+    Field<float, 3> density;         // Mass density
+    Field<vec3, 3> velocity;         // Velocity field
+    Field<float, 3> pressure;        // Pressure field
+    Field<vec3, 3> stress;           // Stress tensor field
+};
+
 class WavePhysicsNode : public Node {
 public:
     // === Structure Definitions ===
+    // Physics properties and states are represented as field interactions
+    struct PhysicsField {
+        // Field properties that affect solid bodies
+        struct SolidBodyField {
+            float energyDensity;      // Relates to mass and momentum
+            float fieldStiffness;     // Controls elasticity behavior
+            float waveImpedance;      // Material resistance to wave propagation
+            vec3 momentumField;       // Directional energy flow
+        };
+
+        // Universal interaction parameters
+        struct InteractionField {
+            float energyTransferRate;
+            float wavePropagationSpeed;
+            float fieldCoupling;      // How strongly fields interact
+        };
+    };
+
+    // TODO: In fact, this field type, FluidField and others possibly could derive from a base Field struct,
+    // for they already share many properties.
+    struct ElectromagneticField {
+        // Core field properties analogous to fluid fields
+        struct FieldProperties {
+            vec3 electricField;      // E-field vector
+            vec3 magneticField;      // B-field vector
+            float chargeDensity;     // Like fluid density
+            vec3 currentDensity;     // Analogous to fluid velocity field
+            float permeability;      // Similar to fluid viscosity
+            float permittivity;      // Like fluid compressibility
+        };
+    
+        // Field dynamics similar to fluid turbulence
+        struct FieldDynamics {
+            vec3 poyntingVector;     // EM energy flow (cf. fluid momentum)
+            float fieldEnergy;       // Energy density
+            vec3 magneticVorticity;  // Like fluid vorticity
+            float divergence;        // Field source/sink (Gauss's law)
+            
+            struct Currents {
+                vec3 eddyCurrent;    // Similar to fluid eddies
+                vec3 displacement;    // Changing E-field contribution
+                float conductivity;   // Material response to fields
+                float hallEffect;    // Charge carrier deflection
+            };
+        };
+    
+        // Interface behaviors (similar to fluid interfaces)
+        struct BoundaryBehavior {
+            float surfaceCharge;     // Like surface tension
+            vec3 boundaryNormal;     // Similar to fluid surface normal
+            float skinDepth;         // EM penetration (cf. fluid penetration)
+            
+            struct Discontinuity {
+                float impedance;     // Like fluid impedance
+                float reflection;    // Field reflection coefficient
+                float refraction;    // Field bending at interfaces
+            };
+        };
+    
+        // Wave characteristics (shared with fluid waves)
+        struct WaveProperties {
+            float frequency;         // Oscillation frequency
+            float wavelength;        // Spatial periodicity
+            vec3 propagation;        // Direction of wave travel
+            float phaseVelocity;    // Wave front speed
+            
+            struct Coupling {
+                float EMcoupling;    // E-B field interaction
+                float materialCoupling; // Field-matter interaction
+                float resonance;     // Natural frequencies
+            };
+        };
+    
+        // Material interaction (parallel to fluid-material interaction)
+        struct MaterialResponse {
+            struct Magnetic {
+                float susceptibility;  // Like fluid susceptibility
+                float remanence;      // Residual magnetization
+                float coercivity;     // Field resistance
+                bool isParamagnetic;  // Material type flag
+            };
+    
+            struct Electric {
+                float polarizability; // Like fluid polarizability
+                float capacitance;    // Charge storage
+                float resistance;     // Current opposition
+                bool isDielectric;    // Material type flag
+            };
+        };
+    
+        // Unified field effects (shared with fluid dynamics)
+        struct FieldEffects {
+            struct Forces {
+                vec3 lorentzForce;   // EM force on charges
+                vec3 magneticPressure; // Like fluid pressure
+                vec3 radiation;      // EM energy emission
+            };
+    
+            struct Instabilities {
+                float kinkInstability;   // Like K-H instability
+                float tearingMode;       // Field line breaking
+                float plasmoid;          // Bubble-like structure
+            };
+        };
+    
+        // Conservation laws (parallel to fluid conservation)
+        struct Conservation {
+            bool chargeConserved;    // Like mass conservation
+            bool fluxConserved;      // Like momentum conservation
+            float energyBalance;     // Energy conservation
+            
+            struct Constraints {
+                float divB;          // No magnetic monopoles
+                float divE;          // Gauss's law
+                vec3 curlE;         // Faraday's law
+                vec3 curlB;         // Ampère's law
+            };
+        };
+    };
+
+    struct FluidField {
+        float dynamicViscosity;      // Resistance to flow/shear
+        float kinematicViscosity;    // Dynamic viscosity / density
+        float compressibility;       // Volume change under pressure
+        vec3 velocityField;          // Flow direction and speed
+        float divergence;            // Flow source/sink strength
+        float vorticity;            // Local rotation/curl
+        
+        struct TurbulenceProperties {
+            float reynoldsNumber;    // Flow regime indicator
+            float eddyViscosity;     // Turbulent mixing effect
+            float turbulentKE;       // Turbulent kinetic energy
+            float dissipationRate;   // Energy cascade rate
+        };
+    };
+
+    // Field properties that affect surface tension - border layer between fluids
+    struct SurfaceField {
+        float surfaceTension;        // Surface energy density
+        float contactAngle;          // Fluid-surface interaction
+        vec3 normalField;           // Surface orientation
+        float curvature;            // Local surface bending
+        float interfacialEnergy;    // Between different fluids
+        
+        struct Capillarity {
+            float capillaryLength;   // Surface tension vs gravity
+            float meniscusHeight;    // Edge lifting effect
+            float spreadingCoeff;    // Wetting behavior
+        };
+    };
+
+    // Field properties that affect phase transitions
+    struct PhaseField {
+        float phaseFraction;        // Relative amount of each phase
+        float interfacialArea;      // Contact area between phases
+        float phaseTransitionRate;  // Phase change speed
+        float latentHeat;          // Energy for phase change
+        
+        struct MixingProperties {
+            float miscibility;      // How easily phases mix
+            float diffusivity;      // Mass transfer rate
+            float schmidtNumber;    // Momentum vs mass diffusion
+        };
+    };
+
+    // Field properties that affect (energy) transport processes
+    struct TransportField {
+        float thermalConductivity;  // Heat transfer ability
+        float diffusionCoeff;      // Mass transfer rate
+        float prandtlNumber;       // Momentum vs heat diffusion
+        float pecletNumber;        // Advection vs diffusion
+        
+        struct ConvectionProperties {
+            float rayleighNumber;   // Buoyancy-driven flow
+            float nusseltNumber;    // Convective heat transfer
+            float grashofNumber;    // Buoyancy vs viscosity
+        };
+    };
+
+    // Field properties that affect stability and instabilities
+    struct StabilityField {
+        float weberNumber;         // Surface tension vs inertia
+        float froideNumber;        // Inertia vs gravity
+        float machNumber;          // Flow speed vs sound speed
+        float cavitationNumber;    // Pressure vs vaporization
+        
+        struct InstabilityModes {
+            float kelvinHelmholtz;  // Shear instability
+            float rayleighTaylor;   // Density instability
+            float plateauRayleigh;  // Surface tension breakup
+        };
+    };
+
+    // Field patterns that emerge into familiar physics behaviors
+    struct EmergentBehaviors {
+        // Mass emerges from energy density patterns in the field
+        struct MassPattern {
+            float localEnergyDensity;    // Core mass property
+            float inertialResistance;    // Resistance to field changes
+            vec3 energyGradient;         // Direction of mass distribution
+        };
+
+        // Solid body cohesion emerges from strong local field coupling
+        struct CohesionPattern {
+            float bondStrength;          // Strong field coupling = rigid
+            float internalResonance;     // Natural frequency of the material
+            float structuralIntegrity;   // Overall field stability
+        };
+
+        // Motion emerges from wave propagation patterns
+        struct MotionPattern {
+            vec3 momentumWave;           // Directional energy flow
+            float phaseVelocity;         // Wave propagation speed
+            float groupVelocity;         // Energy propagation speed
+        };
+    };
+
     struct WaveProperty {
         float amplitude;
         float frequency;
@@ -311,6 +686,209 @@ public:
         }
     };
 
+    // Material properties and states emerge from wave behavior patterns in the field
+    struct MaterialField {
+        struct PropertyFields {
+            // Density emerges from wave amplitude patterns
+            struct DensityField {
+                float baseAmplitude;      // Base material density
+                float localVariation;     // Density fluctuations
+                vec3 gradientFlow;        // Density distribution
+                
+                float computeDensity(const vec3& point) const {
+                    float local = m_solver.sampleField(point);
+                    return baseAmplitude * (1.0f + localVariation * local);
+                }
+            } density;
+
+            // Elasticity from wave propagation characteristics
+            struct ElasticityField {
+                float waveSpeed;          // Speed of internal waves
+                float dampingFactor;      // Energy dissipation rate
+                float resonanceFreq;      // Natural frequency
+                
+                float computeElasticity(const vec3& point) const {
+                    return waveSpeed * waveSpeed * density.computeDensity(point);
+                }
+            } elasticity;
+
+            // Plasticity from permanent wave deformation
+            struct PlasticityField {
+                float yieldThreshold;     // Point of permanent deformation
+                float flowRate;           // Rate of plastic deformation
+                vec3 strainTensor;        // Directional strain
+                
+                bool checkYield(float stress) const {
+                    return stress > yieldThreshold;
+                }
+            } plasticity;
+        } properties;
+
+        /**
+         * @brief Dynamic material state tracking, including fields describing the state of matter in electromagnetic contexts. 
+         *  
+         * This is a complex data structure that encompasses many different fields and properties,
+         * each representing a different aspect of the material's state. It's designed to be flexible
+         * and adaptable to a wide range of material types and scenarios.
+         * TODO: 
+         * - Cleanup, organize, tighten up the code, for better readability and performance.
+         * - Add any missing essential functions.
+         * - Almost certainly optimize, get rid of some structs, properties, for better performance, specially
+         * after practical testing.
+         */
+        struct StateFields {
+            // Energy storage and dissipation, including electromagnetic and mechanical energy
+            struct EnergyStorage {
+                // Stored Electromagnetic energy, including Potential energy from resisting EM field topology
+                float topologicalPotential;   // Energy stored by maintaining position
+                float orientationalEnergy;    // Energy from alignment/misalignment
+                float domainWallEnergy;       // Energy stored in magnetic domains
+                
+                struct ResistiveEffects {
+                    float hysteresis;         // Energy lost/stored in field cycling
+                    float eddyCurrentLoss;    // Energy dissipated in current loops
+                    float magneticDamping;    // Energy dissipation rate
+                };
+                ResistiveEffects resistiveEffects;
+
+                // Stored mechanical energy
+                float mechanicalPotential;  // Stored mechanical energy
+
+                float EMPotential() const {
+                    return topologicalPotential + orientationalEnergy + domainWallEnergy;
+                }
+
+                float totalPotential() const {
+                    return EMPotential() + mechanicalPotential;
+                }
+
+                float EMResistiveLoss() const {
+                    return resistiveEffects.hysteresis + resistiveEffects.eddyCurrentLoss;
+                }
+            } energyStorage;
+
+            // Stress field representation
+            struct StressField {
+                vec3 principal;           // Principal stress directions
+                float magnitude;          // Stress intensity
+                mat3 tensor;              // Full stress tensor, including stress from field resistance
+                float strain;             // Deformation due to field forces
+                float potential;          // Stored energy from field opposition
+
+                struct MagneticStress {
+                    float magnetostriction;   // Field-induced mechanical stress
+                    float magneticAnisotropy; // Directional resistance
+                    float domainAlignment;    // Internal magnetic structure
+                };
+
+                struct ElectricStress {
+                    float dielectricConstant; // Material's dielectric properties
+                    float polarization;       // Internal electric field alignment
+                    float capacitance;        // Energy storage capacity
+                };
+
+                struct ThermalStress {
+                    float thermalExpansion;   // Material's thermal expansion properties
+                    float thermalConductivity; // Heat transfer rate
+                    float thermalCapacity;    // Energy storage capacity
+                };
+
+                struct MechanicalStress {
+                    float elasticModulus;     // Elasticity of the material
+                    float yieldStrength;      // Stress at which plastic deformation begins
+                    float ultimateStrength;   // Maximum stress the material can withstand
+                    float fractureToughness;  // Material's resistance to fracture
+                };
+
+                // Gravitational stress is only relevant in scenarios where gravity is significant, like planetary bodies.
+                struct GravitationalStress {
+                    float gravitationalForce; // Gravitational force
+                    float gravitationalPotential; // Gravitational potential energy
+                    float gravitationalDamping; // Gravitational dissipation rate
+                };
+
+                // Only ever useful in scenarios where quantum effects are significant, like
+                // in extreme conditions (high energy particles collisions) or quantum computing.
+                struct QuantumStress {
+                    float quantumPressure;    // Quantum mechanical stress
+                    float quantumPotential;   // Quantum potential energy
+                    float quantumDamping;     // Quantum dissipation rate
+                };
+
+                void updatePrincipalStresses() {
+                    // Compute principal stresses from tensor
+                    principal = computePrincipalStresses(tensor);
+                }
+                
+                void updateStress(const vec3& force, const vec3& area) {
+                    // Update stress based on applied forces
+                    tensor = computeStressTensor(force, area);
+                    updatePrincipalStresses();
+                }
+            } stress;
+
+            // Field line interaction properties
+            struct FieldLineInteraction {
+                vec3 fieldLineDirection;     // Local field topology
+                float fieldLineDensity;      // Field strength metric
+                float crossingAngle;         // Angle between object and field lines
+                
+                struct ResistanceMetrics {
+                    float topologicalDrag;    // Resistance to field line displacement
+                    float reconnectionRate;   // Field line reconfiguration speed
+                    float pinningStrength;    // How strongly field lines are "held"
+                };
+            } fieldLineInteraction;
+
+            // Temperature as wave energy density
+            struct ThermalField {
+                float temperature;        // Local temperature
+                vec3 heatFlow;           // Heat propagation direction
+                float conductivity;       // Heat transfer rate
+                
+                void propagateHeat(float deltaTime) {
+                    // Heat propagation through wave diffusion
+                    float energyDensity = temperature * conductivity;
+                    m_solver.propagateEnergyWave(heatFlow, energyDensity);
+                }
+            } thermal;
+
+            // Fracture through wave discontinuities
+            struct FractureField {
+                std::vector<vec3> crackTips;    // Active crack positions
+                std::vector<vec3> propagation;   // Crack growth directions
+                float criticalEnergy;            // Energy for crack growth
+                
+                void updateCracks(const StressField& stress) {
+                    for (size_t i = 0; i < crackTips.size(); i++) {
+                        if (computeStrainEnergy(stress) > criticalEnergy) {
+                            propagateCrack(i);
+                        }
+                    }
+                }
+            } fracture;
+
+            // Methods to compute energy storage and dissipation
+            float computeStoredEnergy() const {
+                return stateFields.energyStorage.topologicalPotential +
+                       stateFields.energyStorage.orientationalEnergy +
+                       stateFields.energyStorage.domainWallEnergy;
+            }
+
+            float computeResistiveLoss(float deltaTime) const {
+                return (stateFields.energyStorage.resistiveEffects.hysteresis +
+                        stateFields.energyStorage.resistiveEffects.eddyCurrentLoss) * deltaTime;
+            }
+
+            // Compute work done against field
+            vec3 computeFieldWork(const vec3& displacement) const {
+                vec3 fieldForce = -stateFields.fieldLineInteraction.fieldLineDensity *
+                                  stateFields.fieldLineInteraction.fieldLineDirection;
+                return fieldForce * displacement;
+            }
+        } state;
+    };
+
     // Solver configuration for different physics layers
     struct SolverConfig {
         std::string name;  // e.g. "GlobalSolver", "CharacterSolver"
@@ -319,6 +897,13 @@ public:
         bool enableQuantization;
         float energyThreshold;
         // ... other solver-specific settings
+    };
+
+    // Processing systems all working through the wave-field paradigm
+    struct UnifiedProcessing {
+        WaveTracker m_waveTracker;           // Tracks wave propagation
+        EnergyPropagator m_energyProp;       // Handles energy transfer
+        FieldInteractionSolver m_fieldSolver; // Resolves all field interactions
     };
 
     // Inter-solver communication types
@@ -391,8 +976,270 @@ public:
         } bounds;
     };
 
-    // === Allocation, Initialization, Loading ===
+    // Bridge between traditional shapes (including colliders) and field representation
+    struct ShapeFieldMapping {
+        // Field patterns for common shapes
+        struct ShapePattern {
+            std::vector<vec3> fieldNodes;      // Discretization points
+            std::vector<float> fieldStrengths; // Field intensity at each node
+            float boundaryThreshold;           // Surface definition threshold
+            vec3 centerOfField;                // Field center of mass
+        };
 
+        // Shape-specific field generators
+        struct FieldGenerators {
+            static ShapePattern Box(const vec3& size) {
+                ShapePattern pattern;
+                // Generate field nodes along box surfaces with higher density at edges
+                generateBoxField(size, pattern);
+                return pattern;
+            }
+
+            static ShapePattern Sphere(float radius) {
+                ShapePattern pattern;
+                // Generate radially distributed field nodes
+                generateSphereField(radius, pattern);
+                return pattern;
+            }
+
+            static ShapePattern Capsule(float radius, float height) {
+                ShapePattern pattern;
+                // Combine cylinder field with hemisphere caps
+                generateCapsuleField(radius, height, pattern);
+                return pattern;
+            }
+        };
+    };
+
+    // Wave interference patterns that indicate collisions
+    struct CollisionPattern {
+        float interferenceIntensity;    // Peak of wave superposition
+        float gradientDiscontinuity;    // Sharp changes in field
+        vec3 contactNormal;             // Derived from wave front
+        float penetrationDepth;         // Field overlap measure
+        
+        // Energy state at collision point
+        struct EnergyState {
+            float kineticComponent;     // Motion-related energy
+            float potentialBarrier;     // Repulsion energy
+            float dissipationRate;      // Energy loss during contact
+        } energyState;
+    };
+
+    // Multi-level optimization system.
+    // TODO: The design sketch went too far, and also created redundant structs, instead of using existing ones. Refactor to be
+    // much leaner and concise for now.
+    struct OptimizationSystem {
+        // Level 1: Local Solver Optimizations
+        struct LocalOptimizer {
+            // Adaptive resolution control
+            struct AdaptiveGrid {
+                float baseResolution;
+                float minResolution;
+                float maxResolution;
+                
+                float computeLocalResolution(const vec3& position) {
+                    float activity = m_solver.getActivityLevel(position);
+                    return std::lerp(minResolution, maxResolution, activity);
+                }
+            } grid;
+
+            // Precision scaling based on energy levels
+            struct PrecisionControl {
+                enum class Precision {
+                    HIGH_32BIT = 32,
+                    MEDIUM_16BIT = 16,
+                    LOW_8BIT = 8
+                };
+                
+                Precision selectPrecision(float energy) {
+                    if (energy > m_highEnergyThreshold) return Precision::HIGH_32BIT;
+                    if (energy > m_mediumEnergyThreshold) return Precision::MEDIUM_16BIT;
+                    return Precision::LOW_8BIT;
+                }
+            } precision;
+
+            // SIMD optimization for wave calculations
+            struct SIMDProcessor {
+                void processWaveBatch(WaveProperty* waves, size_t count) {
+                    #ifdef __AVX__
+                        processWavesAVX(waves, count);
+                    #elif defined(__ARM_NEON)
+                        processWavesNEON(waves, count);
+                    #else
+                        processWavesScalar(waves, count);
+                    #endif
+                }
+            } simd;
+        } local;
+
+        // Level 2: Domain-Level Optimization
+        struct DomainOptimizer {
+            // Spatial partitioning for efficient queries
+            struct SpatialCache {
+                static constexpr size_t CELL_SIZE = 64;
+                std::array<WaveCell, CELL_SIZE> cells;
+                
+                void updateCell(size_t index, const WaveProperty& wave) {
+                    cells[index].addWave(wave);
+                    cells[index].optimize();
+                }
+            } cache;
+
+            // Streaming system for large domains
+            struct StreamingSystem {
+                static constexpr size_t STREAM_BUFFER_SIZE = 1024;
+                CircularBuffer<WaveProperty> streamBuffer;
+                
+                void streamIn(const vec3& focusPoint) {
+                    loadHighPriorityWaves(focusPoint);
+                    unloadDistantWaves(focusPoint);
+                }
+            } streaming;
+
+            // LOD system for distance-based optimization
+            struct LODSystem {
+                struct LODLevel {
+                    float distance;
+                    float resolution;
+                    uint32_t maxWaves;
+                };
+                
+                std::array<LODLevel, 4> levels;
+                
+                LODLevel& selectLOD(float distance) {
+                    for (auto& level : levels) {
+                        if (distance <= level.distance) return level;
+                    }
+                    return levels.back();
+                }
+            } lod;
+        } domain;
+
+        // Level 3: Global System Optimization
+        struct GlobalOptimizer {
+            // Dynamic field configuration, including EM and fluid fields
+            struct FieldInfo {
+                // Core (always enabled)
+                bool mechanical = true;  // Disabling will turn off physics collisions, solidBodyNode dynamics
+                
+                // Optional fields
+                struct EMFieldInfo {
+                    bool enabled = false;
+                    float minEnergyThreshold = 0.01f;
+                    bool lightInteraction = false;
+                    bool radiationEffects = false;
+                } electromagnetic;
+                
+                struct FluidFieldInfo {
+                    bool enabled = false;
+                    bool gasSimulation = false;
+                    bool liquidSimulation = false;
+                    float densityThreshold = 0.1f;
+                } fluid;
+
+                // For games, entertainment. Maybe we can skip this one and use EM fields instead, for magic fx
+                struct MagicFieldInfo {
+                    bool enabled = false;
+                    float minEnergyThreshold = 0.001f;
+                    bool spellInteraction = false;
+                    bool auraEffects = false;
+                } magic;
+                
+                // Auto-detection settings
+                struct AutoDetectionInfo {
+                    bool autoDetectTechLevel = true;
+                    bool autoEnableForMagic = true;
+                    float activationRadius = 100.0f;
+                } autoDetection;
+            } fieldInfo;
+
+            // Memory management
+            struct MemoryManager {
+                static constexpr size_t POOL_SIZE = 16384;
+                ObjectPool<WaveProperty> wavePool;
+                
+                template<typename... Args>
+                WaveProperty* allocateWave(Args&&... args) {
+                    return wavePool.allocate(std::forward<Args>(args)...);
+                }
+            } memory;
+
+            // Thread management for parallel processing
+            struct ThreadManager {
+                ThreadPool workers;
+                
+                void scheduleWaveProcessing(const std::vector<WaveProperty*>& waves) {
+                    size_t batchSize = waves.size() / workers.threadCount();
+                    for (size_t i = 0; i < workers.threadCount(); i++) {
+                        workers.enqueue([=] {
+                            processWaveBatch(waves, i * batchSize, (i + 1) * batchSize);
+                        });
+                    }
+                }
+            } threads;
+
+            // Load balancing between CPU/GPU
+            struct LoadBalancer {
+                float cpuLoad;
+                float gpuLoad;
+                
+                void balanceLoad() {
+                    if (cpuLoad > gpuLoad * 1.2f) {
+                        moveWorkToGPU();
+                    } else if (gpuLoad > cpuLoad * 1.2f) {
+                        moveWorkToCPU();
+                    }
+                }
+            } balance;
+
+            void updateFieldConfigurations(const vec3& position) {
+                // Check for auto-detection, using effective rules
+                // TODO
+            }
+        } global;
+
+        // Level 4: Emergency Fallback System
+        struct EmergencySystem {
+            // Performance monitoring
+            struct Monitor {
+                float fps;
+                float frameTime;
+                float memoryUsage;
+                
+                bool needsFallback() const {
+                    return fps < 30.0f || frameTime > 33.3f || memoryUsage > 0.9f;
+                }
+            } monitor;
+
+            // Fallback strategies
+            struct FallbackStrategies {
+                void applyFallback(const Monitor& monitor) {
+                    if (monitor.needsFallback()) {
+                        reducePrecision();
+                        increaseThresholds();
+                        disableNonEssentialEffects();
+                    }
+                }
+            } fallback;
+        } emergency;
+    };
+
+    // === Allocation, Initialization, Loading ===
+    explicit WavePhysicsNode(const SolverConfig& config = SolverConfig()) 
+        : Node(config.name), m_config(config) {}
+
+    // Single unified solver handling all physics through wave-field interactions
+    WavePhysicsSolver m_solver;
+
+    // Solid body behavior emerges from field properties
+    void setSolidBodyProperties(const SolidBodyNode* node, float elasticity) {
+        PhysicsField::SolidBodyField field;
+        field.fieldStiffness = elasticity;
+        m_solver.updateLocalField(node->getWorldPosition(), field);
+    }
+
+    // === Physics System Management ===
     // Inter-solver communication methods
     void connectSolvers(SolverId source, SolverId target) {
         auto& sourceRef = m_solvers[source];
@@ -433,10 +1280,6 @@ public:
             m_messageQueue.push(std::move(msg));
         }
     }
-
-    // === Allocation, Initialization, Loading ===
-    explicit WavePhysicsNode(const SolverConfig& config = SolverConfig()) 
-        : Node(config.name), m_config(config) {}
 
     // === Processing ===
     // Energy transfer and transformation
@@ -498,6 +1341,37 @@ public:
             // Update wave properties based on field conditions
             updateWaveProperties(wave);
         }
+    }
+
+    void updateFieldInteraction(const MaterialField& material, float deltaTime) {
+        // Calculate stored energy from field resistance
+        float storedEnergy = material.computeStoredEnergy();
+        
+        // Generate standing waves to represent stored potential
+        if (storedEnergy > m_config.minEnergyThreshold) {
+            createStandingWaves(
+                material.stateFields.fieldLineInteraction.fieldLineDirection,
+                storedEnergy,
+                material.stateFields.fieldLineInteraction.fieldLineDensity
+            );
+        }
+        
+        // Handle energy dissipation through wave propagation
+        float dissipatedEnergy = material.computeResistiveLoss(deltaTime);
+        if (dissipatedEnergy > 0) {
+            propagateEnergyWaves(
+                material.stateFields.fieldLineInteraction.fieldLineDirection,
+                dissipatedEnergy,
+                WaveType::DISSIPATIVE
+            );
+        }
+    }
+
+    void updatePhysics(float deltaTime) {
+        // All physics phenomena processed through wave-field interactions
+        m_solver.propagateWaves(deltaTime);
+        m_solver.resolveFieldInteractions(deltaTime);
+        m_solver.updateEnergyStates(deltaTime);
     }
 
     // === Debugging & Visualization ===
@@ -647,81 +1521,909 @@ private:
                         it->second.end(), 
                         msg.targetSolver) != it->second.end();
     }
-};
 
-// Integration with ShortLivedParticleSystem
-class WaveTrackingSystem {
-public:
-    // === Processing ===
-    void updateWavePropagation(float deltaTime) {
-        for (auto& particle : m_particleSystem.getActiveParticles()) {
-            // Update wave properties
-            auto& wave = m_energyField.getWaveAt(particle.currentPos);
-            wave.amplitude *= calculateEnergyDissipation(particle, deltaTime);
+    // Example of mass behavior emerging from field properties
+    void updateMassBehavior(const vec3& position, float deltaTime) {
+        auto localField = m_solver.getLocalField(position);
+        
+        // Mass-like behavior emerges from energy density patterns
+        EmergentBehaviors::MassPattern mass;
+        mass.localEnergyDensity = localField.computeEnergyDensity();
+        mass.inertialResistance = localField.getFieldStability();
+        mass.energyGradient = localField.getEnergyGradient();
+
+        // Update field to maintain mass-like properties
+        if (mass.localEnergyDensity > 0.0f) {
+            // Resist changes based on inertial properties
+            vec3 fieldForce = computeExternalForces(position);
+            vec3 inertialResponse = -fieldForce * mass.inertialResistance;
             
-            // Update propagation
-            vec3 newDirection = calculateWaveDirection(particle, m_energyField);
-            particle.velocity = newDirection * getWaveSpeed(wave);
+            // Apply inertial response through wave propagation
+            m_solver.propagateWave(
+                position,
+                inertialResponse,
+                WaveType::INERTIAL_RESPONSE
+            );
+        }
+    }
+
+    // Solid body behavior emerging from field coupling
+    void updateSolidBodyBehavior(const SolidBodyNode* node, float deltaTime) {
+        auto worldPos = node->getWorldPosition();
+        auto& cohesion = node->getCohesionPattern();
+
+        // Strong field coupling creates rigid-like behavior
+        if (cohesion.bondStrength > 0.9f) {  // Nearly rigid
+            // Maintain strict relative positions through strong field forces
+            enforceRigidConstraints(node);
+        } else {  // More elastic
+            // Allow controlled deformation through field oscillations
+            propagateElasticWaves(node, cohesion.internalResonance);
+        }
+    }
+
+    // Motion behavior emerging from wave propagation
+    void updateMotionBehavior(const vec3& position, const vec3& velocity, float deltaTime) {
+        EmergentBehaviors::MotionPattern motion;
+        
+        // Convert traditional velocity to wave properties
+        motion.momentumWave = createMomentumWave(velocity);
+        motion.phaseVelocity = calculatePhaseVelocity(velocity.length());
+        
+        // Propagate motion through field
+        m_solver.propagateWave(
+            position,
+            motion.momentumWave,
+            WaveType::MOMENTUM_CARRIER
+        );
+
+        // Update position based on group velocity
+        vec3 newPosition = position + 
+            (motion.groupVelocity * motion.momentumWave.normalized() * deltaTime);
+        
+        // Ensure conservation of momentum through field interactions
+        conserveMomentum(position, newPosition, motion.momentumWave);
+    }
+
+private:
+    void enforceRigidConstraints(const SolidBodyNode* node) {
+        // Create standing waves that maintain relative positions
+        auto vertices = node->getVertices();
+        for (const auto& vertex : vertices) {
+            // High-frequency, low-amplitude waves create rigid-like bonds
+            m_solver.createStandingWave(
+                vertex.position,
+                FrequencyBand::kHighFrequency,
+                AmplitudeBand::kStructural
+            );
+        }
+    }
+
+    void propagateElasticWaves(const SolidBodyNode* node, float resonance) {
+        // Create waves that allow controlled deformation
+        auto vertices = node->getVertices();
+        for (const auto& vertex : vertices) {
+            // Lower frequency waves allow more flexibility
+            m_solver.createOscillatingWave(
+                vertex.position,
+                resonance,
+                AmplitudeBand::kElastic
+            );
+        }
+    }
+
+    vec3 createMomentumWave(const vec3& velocity) {
+        // Convert linear velocity to wave momentum
+        return WavePattern::createDirectional(
+            velocity,
+            FrequencyBand::kMomentumCarrier,
+            velocity.length() * m_energyScale
+        );
+    }
+
+    // Detect collisions through wave interference
+    void detectCollisions() {
+        // Analyze field for interference patterns
+        auto& grid = m_solver.getAdaptiveGrid();
+        
+        for (const auto& cell : grid.getActiveCells()) {
+            // Look for characteristic collision patterns
+            CollisionPattern pattern = analyzeInterference(cell);
             
-            // Generate field effects
-            if (particle.energy > m_config.minEnergyThreshold) {
-                m_energyField.propagateWave(
-                    particle.currentPos,
-                    particle.velocity,
-                    particle.energy
-                );
+            if (pattern.interferenceIntensity > m_thresholds.collisionThreshold) {
+                // Collision detected - handle response
+                handleCollision(cell.position, pattern);
             }
         }
     }
 
-private:
-    // === Processing ===
-    float getWaveSpeed(const WaveProperty& wave) {
-        return wave.frequency * wave.medium.wavelength;
-    }
-
-    vec3 calculateWaveDirection(const ShortLivedParticle& wavefront, 
-                              const EnergyField& field) {
-        // Consider field gradients and medium properties
-        vec3 baseDirection = wavefront.velocity;
-        vec3 fieldInfluence = field.getGradientAt(wavefront.currentPos);
+    void handleCollision(const vec3& position, const CollisionPattern& pattern) {
+        // Create collision response waves
+        WaveProperty responseWave;
+        responseWave.amplitude = pattern.energyState.kineticComponent;
+        responseWave.direction = pattern.contactNormal;
         
-        return glm::normalize(baseDirection + fieldInfluence * m_config.fieldInfluence);
+        // Spawn both compression and shear waves
+        spawnCollisionWaves(position, responseWave);
+        
+        // Transfer energy between colliding bodies
+        transferCollisionEnergy(position, pattern);
+        
+        // Generate secondary effects (deformation, particles)
+        generateCollisionEffects(position, pattern);
     }
 
-    ShortLivedParticleSystem m_particleSystem;
-    EnergyField m_energyField;
-    Config m_config;
+private:
+    CollisionPattern analyzeInterference(const GridCell& cell) {
+        CollisionPattern pattern;
+        
+        // Analyze wave superposition
+        auto waves = m_solver.getWavesInCell(cell);
+        pattern.interferenceIntensity = computeInterference(waves);
+        
+        // Detect field discontinuities
+        pattern.gradientDiscontinuity = 
+            m_solver.computeFieldGradient(cell.position).length();
+            
+        // Determine contact properties
+        if (pattern.interferenceIntensity > 0) {
+            pattern.contactNormal = 
+                -m_solver.getFieldGradientDirection(cell.position);
+            pattern.penetrationDepth = 
+                computePenetrationFromField(cell);
+        }
+        
+        return pattern;
+    }
+
+    void spawnCollisionWaves(const vec3& position, const WaveProperty& response) {
+        // Primary compression wave
+        m_solver.propagateWave(
+            position,
+            response.direction,
+            WaveType::COMPRESSION,
+            response.amplitude
+        );
+        
+        // Secondary shear waves
+        vec3 tangent = computeTangentVector(response.direction);
+        m_solver.propagateWave(
+            position,
+            tangent,
+            WaveType::SHEAR,
+            response.amplitude * 0.5f
+        );
+    }
+
+    void transferCollisionEnergy(const vec3& position, 
+                               const CollisionPattern& pattern) {
+        // Calculate energy exchange based on field properties
+        float exchangeRate = computeEnergyExchangeRate(pattern);
+        
+        // Create energy transfer waves
+        for (const auto& direction : getEnergyTransferDirections(pattern)) {
+            m_solver.propagateEnergyWave(
+                position,
+                direction,
+                pattern.energyState.kineticComponent * exchangeRate
+            );
+        }
+    }
+
+    void generateCollisionEffects(const vec3& position, 
+                                const CollisionPattern& pattern) {
+        // Spawn deformation waves if energy is high enough
+        if (pattern.energyState.kineticComponent > 
+            m_thresholds.deformationThreshold) {
+            spawnDeformationWaves(position, pattern);
+        }
+        
+        // Create particle effects through field excitation
+        if (pattern.interferenceIntensity > 
+            m_thresholds.particleEmissionThreshold) {
+            emitParticles(position, pattern);
+        }
+    }
+
+    void spawnDeformationWaves(const vec3& position, 
+                             const CollisionPattern& pattern) {
+        // Create internal stress waves
+        WaveProperty stressWave;
+        stressWave.amplitude = pattern.energyState.kineticComponent * 0.3f;
+        stressWave.frequency = calculateStressFrequency(pattern);
+        
+        // Propagate through material
+        m_solver.propagateInternalWave(
+            position,
+            stressWave,
+            WaveType::DEFORMATION
+        );
+    }
+
+    void emitParticles(const vec3& position, const CollisionPattern& pattern) {
+        // Convert excess energy to particle emission
+        float particleEnergy = 
+            pattern.energyState.kineticComponent * 
+            m_config.particleEmissionRatio;
+            
+        // Create particle emission waves
+        m_solver.createParticleEmitter(
+            position,
+            pattern.contactNormal,
+            particleEnergy
+        );
+    }
+
+    // Integration with traditional collision shapes
+    void initializeCollisionShape(const ColliderNode* collider) {
+        ShapeFieldMapping::ShapePattern fieldPattern;
+
+        // Convert traditional shape to field pattern
+        switch (collider->getShapeType()) {
+            case ShapeType::Box: {
+                auto& box = static_cast<const BoxCollider*>(collider);
+                fieldPattern = ShapeFieldMapping::FieldGenerators::Box(box->getSize());
+                break;
+            }
+            case ShapeType::Sphere: {
+                auto& sphere = static_cast<const SphereCollider*>(collider);
+                fieldPattern = ShapeFieldMapping::FieldGenerators::Sphere(sphere->getRadius());
+                break;
+            }
+            case ShapeType::Capsule: {
+                auto& capsule = static_cast<const CapsuleCollider*>(collider);
+                fieldPattern = ShapeFieldMapping::FieldGenerators::Capsule(
+                    capsule->getRadius(), 
+                    capsule->getHeight()
+                );
+                break;
+            }
+        }
+
+        // Create field representation
+        createShapeField(collider, fieldPattern);
+    }
+
+private:
+    void createShapeField(const ColliderNode* collider, 
+                         const ShapeFieldMapping::ShapePattern& pattern) {
+        // Create standing waves that define the shape's boundary
+        for (size_t i = 0; i < pattern.fieldNodes.size(); i++) {
+            vec3 worldPos = collider->transformToWorld(pattern.fieldNodes[i]);
+            float strength = pattern.fieldStrengths[i];
+
+            // Create boundary-defining waves
+            WaveProperty boundaryWave;
+            boundaryWave.amplitude = strength;
+            boundaryWave.frequency = m_config.boundaryWaveFrequency;
+
+            m_solver.createStandingWave(
+                worldPos,
+                boundaryWave,
+                WaveType::BOUNDARY
+            );
+        }
+    }
+
+/**
+ * @brief BoundaryWaveSystem handles boundary wave generation and management.
+ */
+class BoundaryWaveSystem {
+    struct BoundaryDefinition {
+        // Primary high-frequency carrier wave
+        struct CarrierWave {
+            float frequency = FrequencyBand::kBoundaryCarrier; // ~10kHz
+            float amplitude = AmplitudeBand::kStructural;      // High amplitude for clear boundaries
+            vec3 direction;                                    // Normal to surface
+        };
+
+        // Secondary shape-maintaining waves
+        struct ShapeWave {
+            float frequency = FrequencyBand::kShapeMaintainer; // ~5kHz
+            float amplitude = AmplitudeBand::kInternal;        // Lower amplitude, internal structure
+            float phase;                                       // Phase offset for standing wave
+        };
+
+        // Precision control
+        struct PrecisionZone {
+            float primaryFrequency;   // Highest frequency for critical areas
+            float secondaryFrequency; // Background frequency
+            float transitionWidth;    // Smooth frequency transition
+        };
+    };
+
+    void setupBoundaryWaves(const ColliderNode* collider) {
+        auto shape = collider->getShape();
+        
+        // Create primary boundary waves
+        for (const auto& vertex : shape.getVertices()) {
+            createBoundaryWave(
+                vertex.position,
+                vertex.normal,
+                BoundaryWaveType::PRIMARY
+            );
+        }
+
+        // Create shape-maintaining internal waves
+        createShapeMaintainingField(shape);
+        
+        // Setup precision zones
+        setupPrecisionZones(shape);
+    }
 };
 
-// Energy as a dimensional field
+/**
+ * @brief HybridCollisionSystem handles hybrid collision detection.
+ */
+class HybridCollisionSystem {
+    struct ValidationLayer {
+        // Traditional collision data
+        struct GeometricBounds {
+            BoundingBox aabb;
+            BoundingSphere sphere;
+            ConvexHull hull;
+        };
+
+        // Wave-field validation
+        struct WaveFieldMetrics {
+            float fieldIntensity;    // Field strength at boundary
+            float gradientMagnitude; // Rate of field change
+            float coherence;         // Wave pattern stability
+        };
+
+        // Hybrid validation results
+        struct ValidationResult {
+            bool geometricValid;     // Traditional collision check passed
+            bool fieldValid;         // Wave-field boundary is stable
+            float confidence;        // Combined validation score
+        };
+    };
+
+    ValidationResult validateCollision(const CollisionEvent& event) {
+        ValidationResult result;
+
+        // 1. Quick AABB/Sphere test
+        result.geometricValid = checkGeometricBounds(event);
+        if (!result.geometricValid) return result;
+
+        // 2. Wave-field boundary validation
+        WaveFieldMetrics metrics = analyzeFieldBoundary(event);
+        result.fieldValid = validateFieldMetrics(metrics);
+
+        // 3. Compute confidence score
+        result.confidence = computeHybridConfidence(
+            result.geometricValid,
+            result.fieldValid,
+            metrics
+        );
+
+        return result;
+    }
+
+/**
+ * @brief HybridSamplingSystem handles adaptive mesh sampling and wave conversion.
+ * Sampling Strategies:
+ *      - Curvature-Based Sampling, using curvature to guide sampling density.
+ *      - Feature-Preserving Decimation, focusing on preserving key features.
+ */
+class HybridSamplingSystem {
+    struct SamplingConfig {
+        float minSampleDensity;    // Minimum samples per unit
+        float curvatureThreshold;  // Curvature-based sampling
+        float featureThreshold;    // Feature preservation threshold
+        uint32_t maxSamples;      // Upper bound for performance
+    };
+
+    // Wave interference detection
+    class WaveInterferenceDetector {
+        struct WaveField {
+            float amplitude;
+            float frequency;
+            float phase;
+            vec3 direction;
+            
+            float evaluateAt(const vec3& point) const {
+                float distance = glm::length(point - origin);
+                float attenuation = 1.0f / (1.0f + distance * distance);
+                float wavePhase = frequency * distance + phase;
+                return amplitude * attenuation * std::cos(wavePhase);
+            }
+        };
+
+        struct InterferencePoint {
+            vec3 position;
+            float fieldA;
+            float fieldB;
+            float combinedIntensity;
+            vec3 gradientDirection;
+        };
+
+        std::vector<vec3> getSamplingPoints(const WaveField& fieldA, 
+                                          const WaveField& fieldB) {
+            std::vector<vec3> points;
+            
+            // 1. Find overlap region between fields
+            BoundingBox overlapRegion = computeFieldOverlap(fieldA, fieldB);
+            
+            // 2. Create sampling grid in overlap region
+            vec3 gridSize = overlapRegion.size() / m_config.samplingResolution;
+            for (float x = 0; x < m_config.samplingResolution; x++) {
+                for (float y = 0; y < m_config.samplingResolution; y++) {
+                    for (float z = 0; z < m_config.samplingResolution; z++) {
+                        points.push_back(
+                            overlapRegion.min + gridSize * vec3(x, y, z)
+                        );
+                    }
+                }
+            }
+            
+            return points;
+        }
+
+        float computeWaveSuperposition(float fieldA, float fieldB) {
+            // Basic linear superposition
+            float linear = fieldA + fieldB;
+            
+            // Consider constructive/destructive interference
+            float product = fieldA * fieldB;
+            
+            // Weighted combination based on field properties
+            return linear * 0.7f + product * 0.3f;
+        }
+
+        vec3 computeGradientDirection(const WaveField& fieldA,
+                                    const WaveField& fieldB,
+                                    const vec3& point) {
+            const float h = 0.01f; // Small offset for gradient computation
+            
+            // Sample points around center for gradient
+            std::array<vec3, 6> offsets = {
+                vec3(h, 0, 0), vec3(-h, 0, 0),
+                vec3(0, h, 0), vec3(0, -h, 0),
+                vec3(0, 0, h), vec3(0, 0, -h)
+            };
+            
+            vec3 gradient(0);
+            for (int i = 0; i < 6; i += 2) {
+                float pos = computeWaveSuperposition(
+                    fieldA.evaluateAt(point + offsets[i]),
+                    fieldB.evaluateAt(point + offsets[i])
+                );
+                float neg = computeWaveSuperposition(
+                    fieldA.evaluateAt(point + offsets[i + 1]),
+                    fieldB.evaluateAt(point + offsets[i + 1])
+                );
+                gradient[i/2] = (pos - neg) / (2.0f * h);
+            }
+            
+            return glm::normalize(gradient);
+        }
+
+        float estimatePenetrationDepth(const WaveField& fieldA,
+                                     const WaveField& fieldB,
+                                     const vec3& point) {
+            // Follow gradient direction until field strength drops below threshold
+            vec3 gradDir = computeGradientDirection(fieldA, fieldB, point);
+            float depth = 0.0f;
+            float step = 0.01f;
+            
+            vec3 currentPoint = point;
+            float intensity = computeWaveSuperposition(
+                fieldA.evaluateAt(currentPoint),
+                fieldB.evaluateAt(currentPoint)
+            );
+            
+            while (intensity > m_config.penetrationThreshold && 
+                   depth < m_config.maxPenetrationDepth) {
+                currentPoint += gradDir * step;
+                intensity = computeWaveSuperposition(
+                    fieldA.evaluateAt(currentPoint),
+                    fieldB.evaluateAt(currentPoint)
+                );
+                depth += step;
+            }
+            
+            return depth;
+        }
+    };
+};
+
+    // Runtime conversion of vertices to wave sources
+    void convertVerticesToWaveSources(const std::vector<CurvatureSample>& samples) {
+        for (const auto& sample : samples) {
+            // Create primary boundary wave
+            WaveSource boundaryWave;
+            boundaryWave.frequency = calculateAdaptiveFrequency(sample.curvature);
+            boundaryWave.amplitude = calculateAmplitude(sample.importance);
+            boundaryWave.position = sample.position;
+            boundaryWave.direction = sample.normal;
+
+            m_waveSources.push_back(boundaryWave);
+        }
+    }
+
+    // Collision detection through wave interference
+    struct InterferencePattern {
+        float intensity;          // Wave superposition strength
+        vec3 interferencePoint;   // Location of interference
+        vec3 gradientDirection;   // Direction of strongest gradient
+        float penetrationDepth;   // Based on field overlap
+    };
+
+    std::vector<InterferencePattern> detectCollisions() {
+        std::vector<InterferencePattern> collisions;
+        
+        // 1. Broad phase: Check wave source proximity
+        auto potentialPairs = m_broadphase.findPotentialPairs(m_waveSources);
+        
+        // 2. Narrow phase: Analyze wave interference
+        for (const auto& pair : potentialPairs) {
+            // Calculate wave interference at sampling points
+            auto interference = analyzeWaveInterference(
+                pair.first.getWaveField(),
+                pair.second.getWaveField()
+            );
+            
+            // Check for significant interference patterns
+            if (interference.intensity > m_config.collisionThreshold) {
+                collisions.push_back(interference);
+            }
+        }
+        
+        return collisions;
+    }
+
+    // Analyze wave interference between two fields
+    InterferencePattern analyzeWaveInterference(
+        const WaveField& fieldA, 
+        const WaveField& fieldB) {
+        
+        InterferencePattern pattern;
+        
+        // Find points of maximum wave superposition
+        for (const auto& point : getSamplingPoints(fieldA, fieldB)) {
+            float superposition = computeWaveSuperposition(
+                fieldA.evaluateAt(point),
+                fieldB.evaluateAt(point)
+            );
+            
+            if (superposition > pattern.intensity) {
+                pattern.intensity = superposition;
+                pattern.interferencePoint = point;
+                pattern.gradientDirection = 
+                    computeGradientDirection(fieldA, fieldB, point);
+                pattern.penetrationDepth = 
+                    estimatePenetrationDepth(fieldA, fieldB, point);
+            }
+        }
+        
+        return pattern;
+    }
+};
+
+    ValidationResult validateCollision(const CollisionEvent& event) {
+        ValidationResult result;
+
+        // 1. Quick AABB/Sphere test
+        result.geometricValid = checkGeometricBounds(event);
+        if (!result.geometricValid) return result;
+
+        // 2. Wave-field boundary validation
+        WaveFieldMetrics metrics = analyzeFieldBoundary(event);
+        result.fieldValid = validateFieldMetrics(metrics);
+
+        // 3. Compute confidence score
+        result.confidence = computeHybridConfidence(
+            result.geometricValid,
+            result.fieldValid,
+            metrics
+        );
+
+        return result;
+    }
+
+    void handleCollision(const CollisionEvent& event) {
+        auto validation = validateCollision(event);
+        
+        if (validation.confidence > m_config.confidenceThreshold) {
+            // High confidence: Use pure wave-field physics
+            handleWaveFieldCollision(event);
+        } else {
+            // Low confidence: Use hybrid approach
+            handleHybridCollision(event, validation);
+        }
+    }
+
+private:
+    void handleHybridCollision(const CollisionEvent& event, 
+                              const ValidationResult& validation) {
+        // Start with traditional collision response
+        vec3 separationVector = computeGeometricSeparation(event);
+        
+        // Blend with wave-field response based on confidence
+        if (validation.confidence > m_config.minWaveFieldThreshold) {
+            vec3 waveResponse = computeWaveFieldResponse(event);
+            vec3 blendedResponse = lerp(
+                separationVector,
+                waveResponse,
+                validation.confidence
+            );
+            
+            applyHybridResponse(event, blendedResponse);
+        } else {
+            // Fall back to pure geometric collision
+            applyGeometricResponse(event, separationVector);
+        }
+    }
+
+    float computeHybridConfidence(bool geometricValid,
+                                bool fieldValid,
+                                const WaveFieldMetrics& metrics) {
+        float confidence = 0.0f;
+        
+        // Base confidence from validation results
+        if (geometricValid) confidence += 0.5f;
+        if (fieldValid) confidence += 0.3f;
+        
+        // Adjust based on field metrics
+        confidence += metrics.coherence * 0.1f;
+        confidence -= std::abs(1.0f - metrics.fieldIntensity) * 0.1f;
+        
+        // Penalize unstable gradients
+        if (metrics.gradientMagnitude > m_config.maxStableGradient) {
+            confidence *= 0.8f;
+        }
+        
+        return std::clamp(confidence, 0.0f, 1.0f);
+    }
+
+    // Set up shape-maintaining field forces
+    void setupShapeIntegrity(const ColliderNode* collider,
+                            const ShapeFieldMapping::ShapePattern& pattern) {
+        // Create internal field forces that maintain shape
+        auto material = collider->getMaterial();
+        
+        // Stronger coupling for rigid materials
+        float fieldCoupling = material.rigidity * m_config.couplingScale;
+        
+        // Create internal wave patterns that maintain shape
+        for (const auto& node : pattern.fieldNodes) {
+            createShapeMaintainingWaves(
+                node,
+                pattern.centerOfField,
+                fieldCoupling
+            );
+        }
+    }
+
+    void createShapeMaintainingWaves(const vec3& node,
+                                   const vec3& center,
+                                   float coupling) {
+        // Create waves that maintain relative positions
+        WaveProperty maintainerWave;
+        maintainerWave.amplitude = coupling;
+        maintainerWave.direction = (node - center).normalized();
+
+        m_solver.propagateWave(
+            node,
+            maintainerWave,
+            WaveType::SHAPE_MAINTAINER
+        );
+    }
+
+    // Update traditional collision shape based on field deformation
+    void updateShapeFromField(ColliderNode* collider) {
+        auto fieldPattern = getFieldPattern(collider);
+        
+        // Update shape parameters based on field state
+        switch (collider->getShapeType()) {
+            case ShapeType::Box: {
+                auto& box = static_cast<BoxCollider*>(collider);
+                updateBoxDimensions(box, fieldPattern);
+                break;
+            }
+            case ShapeType::Sphere: {
+                auto& sphere = static_cast<SphereCollider*>(collider);
+                updateSphereRadius(sphere, fieldPattern);
+                break;
+            }
+            case ShapeType::Capsule: {
+                auto& capsule = static_cast<CapsuleCollider*>(collider);
+                updateCapsuleParameters(capsule, fieldPattern);
+                break;
+            }
+        }
+    }
+
+    // Handle traditional shape collision through field interaction
+    void handleShapeCollision(ColliderNode* shapeA, ColliderNode* shapeB) {
+        // Get field patterns for both shapes
+        auto patternA = getFieldPattern(shapeA);
+        auto patternB = getFieldPattern(shapeB);
+
+        // Find field intersection regions
+        auto intersectionPoints = findFieldIntersections(patternA, patternB);
+
+        for (const auto& point : intersectionPoints) {
+            // Create collision waves at intersection points
+            CollisionPattern pattern = createCollisionPattern(point, patternA, patternB);
+            handleCollision(point, pattern);
+        }
+    }
+
+    // Apply material properties through field interactions
+    void applyMaterialProperties(const vec3& position, const MaterialField& material) {
+        // Create property-defining wave patterns
+        WaveProperty densityWave = createDensityWave(material.properties.density);
+        WaveProperty elasticWave = createElasticityWave(material.properties.elasticity);
+        
+        // Propagate material property waves
+        m_solver.propagatePropertyWaves(position, {densityWave, elasticWave});
+    }
+
+    // Update material state based on field interactions
+    void updateMaterialState(const vec3& position, MaterialField::StateFields& state) {
+        // Sample local field state
+        auto fieldState = m_solver.sampleFieldState(position);
+        
+        // Update stress state
+        state.stress.updateStress(
+            fieldState.getForce(),
+            fieldState.getArea()
+        );
+        
+        // Update thermal state
+        state.thermal.temperature = fieldState.getEnergyDensity();
+        state.thermal.propagateHeat(m_deltaTime);
+        
+        // Check for fracture
+        if (shouldInitiateFracture(state)) {
+            initiateFracture(position, state);
+        }
+    }
+
+private:
+    // Create waves that define material properties
+    WaveProperty createDensityWave(const MaterialField::PropertyFields::DensityField& density) {
+        WaveProperty wave;
+        wave.amplitude = density.baseAmplitude;
+        wave.frequency = m_config.densityWaveFrequency;
+        wave.phase = computePhaseForDensity(density.localVariation);
+        return wave;
+    }
+
+    WaveProperty createElasticityWave(
+        const MaterialField::PropertyFields::ElasticityField& elasticity) {
+        WaveProperty wave;
+        wave.amplitude = elasticity.waveSpeed;
+        wave.frequency = elasticity.resonanceFreq;
+        wave.phase = computePhaseForElasticity(elasticity.dampingFactor);
+        return wave;
+    }
+
+    // Handle material state changes
+    bool shouldInitiateFracture(const MaterialField::StateFields& state) {
+        float strainEnergy = computeStrainEnergy(state.stress);
+        return strainEnergy > state.fracture.criticalEnergy;
+    }
+
+    void initiateFracture(const vec3& position, MaterialField::StateFields& state) {
+        // Create fracture waves
+        WaveProperty fractureWave;
+        fractureWave.amplitude = state.stress.magnitude;
+        fractureWave.direction = state.stress.principal;
+        
+        // Propagate fracture through material
+        m_solver.propagateFractureWave(position, fractureWave);
+        
+        // Update fracture state
+        state.fracture.crackTips.push_back(position);
+        state.fracture.propagation.push_back(state.stress.principal);
+    }
+
+    // Compute derived properties
+    float computeStrainEnergy(const MaterialField::StateFields::StressField& stress) {
+        // Calculate strain energy density from stress tensor
+        return 0.5f * (
+            stress.tensor[0][0] * stress.tensor[0][0] +
+            stress.tensor[1][1] * stress.tensor[1][1] +
+            stress.tensor[2][2] * stress.tensor[2][2]
+        ) / m_youngsModulus;
+    }
+    
+    OptimizationSystem m_optimizer;
+
+public:
+    void update(float deltaTime) {
+        // Level 1: Local optimizations
+        for (auto& solver : m_activeSolvers) {
+            m_optimizer.local.grid.computeLocalResolution(solver.getPosition());
+            m_optimizer.local.precision.selectPrecision(solver.getEnergy());
+            m_optimizer.local.simd.processWaveBatch(solver.getWaves(), solver.getWaveCount());
+        }
+
+        // Level 2: Domain optimizations
+        vec3 focusPoint = getFocusPoint();
+        m_optimizer.domain.streaming.streamIn(focusPoint);
+        auto& lodLevel = m_optimizer.domain.lod.selectLOD(
+            getDistanceFromFocus(focusPoint)
+        );
+        updateDomainResolution(lodLevel);
+
+        // Level 3: Global optimizations
+        m_optimizer.global.threads.scheduleWaveProcessing(m_activeWaves);
+        m_optimizer.global.balance.balanceLoad();
+
+        // Level 4: Emergency fallback checks
+        if (m_optimizer.emergency.monitor.needsFallback()) {
+            m_optimizer.emergency.fallback.applyFallback(
+                m_optimizer.emergency.monitor
+            );
+        }
+    }
+
+private:
+    void updateDomainResolution(const OptimizationSystem::DomainOptimizer::LODSystem::LODLevel& level) {
+        m_solver.setResolution(level.resolution);
+        m_solver.setMaxWaves(level.maxWaves);
+    }
+
+    vec3 getFocusPoint() const {
+        // Usually the camera or player position
+        return m_activeCamera ? m_activeCamera->getPosition() : vec3(0);
+    }
+
+    float getDistanceFromFocus(const vec3& focusPoint) const {
+        return (m_solver.getPosition() - focusPoint).length();
+    }
+};
+
+/**
+ * @brief Solver for wave physics.
+ * Internal solver class that handles actual physics calculations. WavePhysicsSolver is meant to be instantiated modularly, managed by WavePhysics, and allow for
+ * different solver configurations, from the heavier global solver to the more lightweight local, specialized, effects-oriented solvers.
+ * We could have made it into a node, but we opted for an internal class to facilitate user workflow, communications between solvers - they're handled internally,
+ * and directly, so we have the best of both worlds, as we can turn on and off connections between solvers, and have them communicate directly.
+ */
+class WavePhysicsSolver {
+    public:
+        // === Allocation, Initialization, Loading ===
+        WavePhysicsSolver(const SolverConfig& config) {
+            // Initialize solver with configuration
+        }
+
+        std::unordered_map<SolverId, std::unique_ptr<WavePhysicsSolver>> m_solvers;
+        SolverId m_nextSolverId = 0;
+
+        // TODO: 
+        // - Implement the solver
+        // - Allow, first of all, for different configurations, based on probable workflows, uses, and user preference. For this user will resort to Vulkan-style
+        // configuration info structs, and the implementation details themselves are handled internally.
+        // - Methods, bridges to connect and disconnected transfer of data between solvers, safely.
+        
+        // === Processing ===
+        void processWaves(float deltaTime);
+        void resolveFieldInteractions(float deltaTime);
+        void updateEnergyStates(float deltaTime);
+
+        // === Cleanup ===
+        ~WavePhysicsSolver() {
+            // Cleanup resources
+        }
+};
+
+/**
+ * @brief EnergyDimension handles the energy dimension in the wave physics system.
+ * It's an experimental novel way of treating energy, conceptually, in a physics system. This allows us to map the energy dimension to
+ * topological variations (using a noise field, possibly 4d), to "explain" unexpected effects and phenomena related to energy levels and
+ * energy states, like quantum effects.
+ */
 class EnergyDimension {
 public:
     // === Structure Definitions ===
     struct ExcitationField {
         // 4D noise field (3D space + energy dimension)
-        float sampleField(const vec3& position, float energyLevel) const {
-            // Warp the sampling based on energy level
-            vec3 warpedPos = position + 
-                vec3(simplex3D(position * energyLevel * m_warpFactor));
-            
-            // Multi-octave sampling for different energy scales
-            float result = 0.0f;
-            float amplitude = 1.0f;
-            float frequency = m_baseFrequency;
-            
-            for(int i = 0; i < m_octaves; ++i) {
-                result += amplitude * simplex4D(vec4(
-                    warpedPos * frequency, 
-                    energyLevel * m_energyScale
-                ));
-                
-                frequency *= 2.0f;
-                amplitude *= 0.5f;
-            }
-            
-            return result;
-        }
+        float sampleField(const vec3& position, float energyLevel) const;
 
         // Optimization: Cache frequently accessed regions
         struct CachedRegion {
@@ -740,7 +2442,7 @@ public:
         // Project to scalar when needed
         float toScalar() const {
             return glm::dot(spectralComponents, 
-                           vec4(0.2f, 0.3f, 0.3f, 0.2f));  // Weighted projection
+                            vec4(0.2f, 0.3f, 0.3f, 0.2f));  // Weighted projection
         }
         
         // Combine with field modulation
@@ -751,126 +2453,92 @@ public:
         }
     };
 
-    // === Processing ===
     // Wave interaction with energy dimension
     struct ModulatedWave {
         WaveProperty baseProperties;
         EnergySpectrum energySpectrum;
         
         // Compute interaction with energy field
-        void interact(const ExcitationField& field, const vec3& position) {
-            float fieldValue = field.sampleField(position, 
-                                               energySpectrum.toScalar());
-            
-            // Modulate wave properties based on field interaction
-            EnergySpectrum modulated = energySpectrum.modulate(fieldValue);
-            
-            // Update wave characteristics
-            baseProperties.frequency *= 
-                1.0f + fieldValue * m_config.frequencyModulation;
-            
-            // Quantum effects at high energy levels
-            if (modulated.toScalar() > FrequencyBand::kXRay) {
-                triggerQuantumEffects(modulated);
-            }
-        }
+        void interact(const ExcitationField& field, const vec3& position);
     };
 
+    // === Processing ===
+    // Propagate waves through energy landscape (energy dimension topography)
     void propagateModulatedWave(const vec3& origin, 
-                               const vec3& direction, 
-                               const EnergySpectrum& initialEnergy) {
-        ModulatedWave wave;
-        wave.energySpectrum = initialEnergy;
-        wave.baseProperties = createBaseWaveProperties(initialEnergy);
-        
-        // Sample energy field at propagation points
-        vec3 samplePoint = origin;
-        float stepSize = m_config.propagationStepSize;
-        
-        while (wave.energySpectrum.toScalar() > m_config.minEnergyThreshold) {
-            // Interact with energy dimension
-            wave.interact(m_excitationField, samplePoint);
-            
-            // Update propagation
-            samplePoint += direction * stepSize;
-            
-            // Generate field effects based on modulated energy
-            if (shouldGenerateEffects(wave)) {
-                generateFieldEffects(samplePoint, wave);
-            }
-        }
-    }
+                                const vec3& direction, 
+                                const EnergySpectrum& initialEnergy);
 
 private:
-    // === Structure Definitions ===
-    /**
-     * @brief Solver for wave physics.
-     * Internal solver class that handles actual physics calculations. WavePhysicsSolver is meant to be instantiated modularly, managed by WavePhysics, and allow for
-     * different solver configurations, from the heavier global solvers to the more lightweight local, specialized, effects-oriented solvers.
-     * We could have made it into a node, but we opted for an internal class to facilitate user workflow, communications between solvers - they're handled internally,
-     * and directly, so we have the best of both worlds, as we can turn on and off connections between solvers, and have them communicate directly.
-     */
-    class WavePhysicsSolver {
-        // TODO: 
-        // - Implement the solver
-        // - Allow, first of all, for different configurations, based on probable workflows, uses, and user preference. For this you'll resort to Vulkan-style
-        // configuration info structs, and the implementation details themselves are handled internally.
-        // - Methods, bridges to connect and disconnected transfer of data between solvers, safely.
-    };
-
     // === Allocation, Initialization, Loading ===
     ExcitationField m_excitationField;
     float m_baseFrequency = 1.0f;
     float m_energyScale = 0.1f;
     float m_warpFactor = 0.5f;
     int m_octaves = 4;
-
-    std::unordered_map<SolverId, std::unique_ptr<WavePhysicsSolver>> m_solvers;
-    SolverId m_nextSolverId = 0;
     
     // === Processing ===
-    void triggerQuantumEffects(const EnergySpectrum& energy) {
-        // Handle high-energy quantum interactions
-        // Like particle decay, pair production, etc.
-    }
+    /**
+     * @brief Trigger quantum effects based on high energy levels, like particle decay, pair production, etc.
+     * Intended for advanced use cases and simulations, or creative workflows.
+     */
+    void triggerQuantumEffects(const EnergySpectrum& energy);
 };
 
 /**
- * @brief WaveBatchProcessor handles batch processing of waves.
+ * @brief WaveTrackingSystem handles wave propagation and tracking. 
+ * Integration with ShortLivedParticleSystem.
  */
-class WaveBatchProcessor {
-    struct WaveBatch {
-        // Packed wave properties for SIMD processing
-        alignas(32) std::array<float, 8> amplitudes;
-        alignas(32) std::array<float, 8> frequencies;
-        alignas(32) std::array<float, 8> phases;
-        alignas(32) std::array<vec3, 8> directions;
+class WaveTrackingSystem {
+public:
+    // === Processing ===
+    void updateWavePropagation(float deltaTime);
+
+private:
+    // === Allocation, Initialization, Loading ===
+    ShortLivedParticleSystem m_particleSystem;
+    EnergyField m_energyField;
+    Config m_config;
+
+    // === Processing ===
+    float getWaveSpeed(const WaveProperty& wave) {return wave.frequency * wave.medium.wavelength;}
+    vec3 calculateWaveDirection(const ShortLivedParticle& wavefront, const EnergyField& field);
+};
+
+/**
+ * @brief ForceFieldConfig defines the configuration for force fields.
+ * These are not force fields as their meaning in sci-fi, but rather, they are force fields in the sense that they exert forces on objects.
+ */
+class ForceFieldConfig {
+    /**
+     * @brief RangeProfile defines the range and falloff of a force field.
+     */
+    struct RangeProfile {
+        float dissipationRadius;    // Field reach
+        float falloffExponent;      // How quickly force decreases
+        float baseStrength;         // Initial force magnitude
         
-        // Metadata for batch processing
-        uint32_t activeCount;
-        uint32_t startIndex;
+        // Configure for different force types
+        static RangeProfile createGravityLike() {
+            return { 100.0f, 2.0f, 0.1f }; // Long range, inverse square
+        }
         
-        // Optimization: Pre-calculated trigonometric values
-        alignas(32) std::array<float, 8> sinValues;
-        alignas(32) std::array<float, 8> cosValues;
+        // Configure for different force types
+        static RangeProfile createContactForce() {
+            return { 1.0f, 4.0f, 10.0f };  // Short range, strong
+        }
     };
 
-    // Process waves in SIMD-friendly batches
-    void processBatch(WaveBatch& batch) {
-        // Process 8 waves simultaneously using SIMD
-        #pragma omp simd
-        for (uint32_t i = 0; i < batch.activeCount; i++) {
-            batch.amplitudes[i] *= std::exp(-decay * deltaTime);
-            batch.phases[i] += batch.frequencies[i] * deltaTime;
-            // Update pre-calculated trig values
-            batch.sinValues[i] = std::sin(batch.phases[i]);
-            batch.cosValues[i] = std::cos(batch.phases[i]);
-        }
-    }
+    struct WaveSourcePlacement {
+        // Parameters for when placing wave sources on vertices
+        float normalOffset;         // Distance along normal
+        bool useInternalSources;    // Place inside mesh
+        float volumeCoverage;       // Desired volume fill
+    };
 };
 
 /**
  * @brief FieldGridProcessor handles processing of field grids.
+ * It includes algorithms for optimization, compression, and parallelization.
  */
 class FieldGridProcessor {
     struct FieldBatch {
@@ -904,23 +2572,55 @@ class FieldGridProcessor {
         };
     };
 
-    void processFieldBlock(GridBlock& block) {
-        // Process 8x8x8 blocks using vectorized operations
-        #pragma omp parallel for collapse(3)
-        for (uint32_t x = 0; x < BLOCK_SIZE; x++) {
-            for (uint32_t y = 0; y < BLOCK_SIZE; y++) {
-                for (uint32_t z = 0; z < BLOCK_SIZE; z++) {
-                    // SIMD-friendly field calculations
-                }
-            }
-        }
-    }
+    void processFieldBlock(GridBlock& block);
+};
+
+/**
+ * @brief WaveBatchProcessor handles batch processing of waves.
+ * Uses SIMD and parallelization for performance.
+ */
+class WaveBatchProcessor {
+    struct WaveBatch {
+        // Unique identifier for the batch
+        uint32_t id;
+        int priority;
+        uint64_t timestamp;
+        static constexpr uint32_t batchSize = 8;
+
+        // Packed wave properties for SIMD processing
+        alignas(32) std::array<float, batchSize> amplitudes;
+        alignas(32) std::array<float, batchSize> frequencies;
+        alignas(32) std::array<float, batchSize> phases;
+        alignas(32) std::array<vec3, batchSize> directions;
+        
+        // Metadata for batch processing
+        uint32_t activeCount;
+        uint32_t startIndex;
+        
+        // Optimization: Pre-calculated trigonometric values
+        alignas(32) std::array<float, batchSize> sinValues;
+        alignas(32) std::array<float, batchSize> cosValues;
+    };
+
+    // Process waves in SIMD-friendly batches
+    void processBatch(WaveBatch& batch);
+};
+
+/**
+ * @brief Refines the field grid adaptively with algorithms based on:
+ *  - Energy density
+ *  - Energy gradient
+ *  - Wave-field boundary
+ *  - Samples taken at mesh vertices positions
+ */
+class AdaptiveGridRefinement {
+    /**
+     * @brief Refines the grid at a specific vertex.
+     */
+    void refineAtVertex(const vec3& vertex, const vec3& normal);
 };
 
 } // namespace hd
-
-
-
 
 
 

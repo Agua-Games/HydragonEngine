@@ -218,6 +218,10 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Geometry/Shaders"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Graphics"
 				},
 				{
@@ -591,7 +595,9 @@
 				91,
 				92,
 				93,
-				94
+				94,
+				95,
+				96
 			]
 		}
 	],
@@ -748,14 +754,16 @@
 				91,
 				92,
 				93,
-				94
+				94,
+				95,
+				96
 			]
 		},
 		{
 			"name" : "Header Files",
 			"sourceIndexes" : 
 			[
-				95
+				97
 			]
 		}
 	],
@@ -927,6 +935,18 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Imgui_SteppedLineMath.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Physics/MiniPhysicsSolver.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Physics/WavePhysicsNode.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

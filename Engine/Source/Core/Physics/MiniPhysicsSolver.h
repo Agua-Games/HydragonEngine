@@ -1,4 +1,7 @@
 /**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
  * @brief Mini-solver for artistic physics simulation with focus on optimization and visual quality
  * Principles:
  * - Wave/field-based modeling with discrete sampling
