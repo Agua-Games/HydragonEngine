@@ -7,18 +7,17 @@
 #pragma once
 #include <vector>
 #include <array>
+#include <glm/gtx/gradient_paint.hpp>
 
 namespace hd {
-    
-// Forward declarations for dependencies
-class vec3;
 
 template<typename T, size_t Dims>
-class Field {
+struct Field {
 public:
     // Core tensor operations
     T sample(const std::array<size_t, Dims>& index) const;
     T interpolate(const std::array<float, Dims>& position) const;
+    T computeGradient(const std::array<float, Dims>& position) const;
     
 protected:
     // Multi-dimensional tensor storage
