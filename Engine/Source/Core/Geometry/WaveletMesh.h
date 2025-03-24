@@ -31,7 +31,7 @@
 #if 0
 #pragma once
 #include "Mesh.h"
-#include "WaveletTransform.h"
+#include "WaveletCompressor.h"
 #include "MeshTypes.h"
 
 namespace hd {

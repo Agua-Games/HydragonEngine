@@ -2,8 +2,8 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file SolidBody.h
- * @brief SolidBody represents a solid body node in the engine's node graph.
+ * @file Solid.h
+ * @brief Solid represents a solid body node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
  * - Solid body nodes are used to represent and process solid bodies in physics simulations.
@@ -24,9 +24,9 @@
 
 namespace hd {
 
-struct SolidBodyInfo : public NodeInfo {
-    SolidBodyInfo() {
-        NodeType = "Physics/SolidBody";
+struct SolidInfo : public NodeInfo {
+    SolidInfo() {
+        NodeType = "Physics/Solid";
         
         Inputs = {
             "Shape",            // Solid body shape
@@ -46,9 +46,9 @@ struct SolidBodyInfo : public NodeInfo {
     }
 };
 
-class SolidBody : public Node<BodyState, CollisionEvents, Forces, EnergyState> {
+class Solid : public Node<BodyState, CollisionEvents, Forces, EnergyState> {
 public:
-    explicit SolidBody(const SolidBodyInfo& info = SolidBodyInfo())
+    explicit Solid(const SolidInfo& info = SolidInfo())
         : Node(info) {}
 
     void processNodeGraph() override {

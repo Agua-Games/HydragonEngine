@@ -7,6 +7,8 @@
  * 
  * ARCHITECTURAL NOTES:
  * - Skeleton deformer nodes are used to represent and process skeletal animation data.
+ * - To avoid confusion: SkeletonDeformer derives from VertexBlendDeformer, which is a base class for all deformers. VertexBlendDeformer is more general and 
+ * can accept not only Skeleton hierarchy as input, but also other blendable data.
  * 
  * TODO:
  * - Update the whole content to match the latest Object and Node design.
@@ -18,11 +20,11 @@
  */
 
 #pragma once
-#include "Deformer.h"
+#include "VertexBlendDeformer.h"
 
 namespace hd {
 
-struct SkeletonDeformerInfo : public DeformerInfo {
+struct SkeletonDeformerInfo : public VertexBlendInfo {
     SkeletonDeformerInfo() {
         NodeType = "Geometry/SkeletonDeformer";
         
@@ -43,11 +45,11 @@ struct SkeletonDeformerInfo : public DeformerInfo {
     }
 };
 
-class SkeletonDeformer : public Deformer {
+class SkeletonDeformer : public VertexBlendDeformer {
 public:
     // === Allocation, Initialization, Loading ===
     explicit SkeletonDeformer(const SkeletonDeformerInfo& info = SkeletonDeformerInfo())
-        : Deformer(info) {}
+        : VertexBlendDeformer(info) {}
 
     // === Processing ===
     void processNodeGraph() override;

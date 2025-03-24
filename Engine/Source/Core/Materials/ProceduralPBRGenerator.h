@@ -164,20 +164,20 @@ public:
     };
 
     /*
-    | Packing Scheme    | Bits/Delta | Max Delta | Values/Byte | Memory (4K tex) | Use Case                                    |
-    |------------------|------------|-----------|-------------|----------------|---------------------------------------------|
-    | Original (int8)  | 8 bits     | ±128      | 1           | 16 MB         | Too excessive for MSAA deltas               |
-    | Quarter (2 bits) | 2 bits     | ±3        | 4           | 4 MB          | Perfect for final MSAA level                |
-    | Octal (1 bit)    | 1 bit      | ±1        | 8           | 2 MB          | Ideal for fine detail levels                |
-    | Packed-16 (4b)   | 4 bits     | ±15       | 2           | 8 MB          | Good for first MSAA level                   |
+    | Packing Scheme   | Bits/Delta | Max Delta | Values/Byte | Memory (4K tex) | Use Case                                   |
+    |------------------|------------|-----------|-------------|-----------------|--------------------------------------------|
+    | Original (int8)  | 8 bits     | ±128      | 1           | 16 MB           | Too excessive for MSAA deltas              |
+    | Quarter (2 bits) | 2 bits     | ±3        | 4           | 4 MB            | Perfect for final MSAA level               |
+    | Octal (1 bit)    | 1 bit      | ±1        | 8           | 2 MB            | Ideal for fine detail levels               |
+    | Packed-16 (4b)   | 4 bits     | ±15       | 2           | 8 MB            | Good for first MSAA level                  |
 
     Proposed Multi-Level Delta Encoding:
     | MSAA Level | Max Delta Needed | Bits Required | Samples/Byte |
     |------------|------------------|---------------|--------------|
-    | Level 0->1 | ±15             | 4 bits        | 2            |
-    | Level 1->2 | ±7              | 3 bits        | 2            |
-    | Level 2->3 | ±3              | 2 bits        | 4            |
-    | Level 3->4 | ±1              | 1 bit         | 8            |
+    | Level 0->1 | ±15              | 4 bits        | 2            |
+    | Level 1->2 | ±7               | 3 bits        | 2            |
+    | Level 2->3 | ±3               | 2 bits        | 4            |
+    | Level 3->4 | ±1               | 1 bit         | 8            |
 
     Memory Impact (4K texture):
     - Traditional: 16 MB (single int8 per delta)

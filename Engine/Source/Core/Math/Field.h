@@ -18,6 +18,9 @@ public:
     T sample(const std::array<size_t, Dims>& index) const;
     T interpolate(const std::array<float, Dims>& position) const;
     T computeGradient(const std::array<float, Dims>& position) const;
+    T computeDivergence(const std::array<float, Dims>& position) const;
+    T computeCurl(const std::array<float, Dims>& position) const;
+    T computeAverage(const std::array<float, Dims>& position) const;
     
 protected:
     // Multi-dimensional tensor storage

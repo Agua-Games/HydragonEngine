@@ -8,7 +8,7 @@
  * ARCHITECTURAL NOTES:
  * - It can be synchronous or asynchronous, and can be executed in parallel threads.
  * - Command takes loose inspiration from Vulkan's single-time command buffer concept.
- * - For a node which executes an array of commands, use CommandsNode.
+ * - For a node which executes an array of commands, use Commands.
  * 
  * TODO:
  * - Check with assistant if caching functions are compatible with caching in Node, not conflicting with it - should simply override and extend it.

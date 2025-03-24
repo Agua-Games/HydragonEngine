@@ -33,32 +33,36 @@
 * - Establish communication protocols between systems
 * - Create initial harmony maintenance systems
 */
-#if 0
+
 #pragma once
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "Node.h"                   // Foundation
-#include "ProceduralOrchestrator.h"      // Evolution
-#include "SystemOrchestrator.h"             // Coordination
+#include "Node.h"                           // Foundation
+#include "ProceduralOrchestrator.h"         // Evolution
+#include "SystemOrchestrator.h"             // Coordination, Harmony, etc.
 #include "ResourceManager.h"                // Assets
-#include "VulkanCore.h"                  // Graphics
+#include "VulkanCore.h"                     // Graphics
 
 namespace hd {
 
+/**
+ * @brief The main engine class.
+ */
 class Engine {
 public:
-    // Initialization and shutdown
+    // === Resource Management ===
+    
+    // === Allocation, Initialization, Loading ===
     static Engine& getInstance();
     bool initialize();
-    void shutdown();
-    
+
     // Core system access
     NodeGraph& getNodeGraph();
     ProceduralOrchestrator& getProceduralOrchestrator();
     SystemOrchestrator& getSystemOrchestrator();
     
+    // === Processing ===
     // Runtime control
     void update(float deltaTime);
     void processSystems();
@@ -67,12 +71,12 @@ public:
     void setSystemIntent(const SystemIntent& intent);
     void configureHarmonyParameters(const HarmonyParams& params);
     
-    // Resource management
-    ResourceManager& getResourceManager();
-    
     // Debug and development
     void enableDebugMode(bool enable);
     void setProfilerLevel(ProfilerLevel level);
+
+    // === Cleanup ===
+    void shutdown();
 
 private:
     Engine() = default;

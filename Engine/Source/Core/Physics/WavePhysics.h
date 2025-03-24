@@ -400,7 +400,7 @@ struct EnergyManifestationType {
     };
 };
 
-class SolidBodyField {
+class SolidField {
     // Solid body properties
     Field<float, 3> density;         // Mass density
     Field<vec3, 3> velocity;         // Velocity field
@@ -414,7 +414,7 @@ public:
     // Physics properties and states are represented as field interactions
     struct PhysicsField {
         // Field properties that affect solid bodies
-        struct SolidBodyField {
+        struct SolidField {
             float energyDensity;      // Relates to mass and momentum
             float fieldStiffness;     // Controls elasticity behavior
             float waveImpedance;      // Material resistance to wave propagation
@@ -950,18 +950,19 @@ public:
     // Multi-level optimization system.
     // TODO: The design sketch went too far, and also created redundant structs, instead of using existing ones. Refactor to be
     // much leaner and concise for now.
-    struct OptimizationSystem {
+    struct WaveOptimizer {
         // Level 1: Local Solver Optimizations
         struct LocalOptimizer {
-            // Adaptive resolution control
-            struct AdaptiveGrid {
+            // Adaptive sparse resolution control, using activity levels
+            struct AdaptiveSparseGrid {
                 float baseResolution;
                 float minResolution;
                 float maxResolution;
                 
+                // Compute local resolution based on activity level, which in turn is updated based on energy transfer events, events triggered by moving wavefronts, etc.
+                // This is the core of the adaptive grid system.
                 float computeLocalResolution(const vec3& position) {
-                    float activity = m_solver.getActivityLevel(position);
-                    return std::lerp(minResolution, maxResolution, activity);
+                    return std::clamp(baseResolution * activityLevel(position), minResolution, maxResolution);
                 }
             } grid;
 
@@ -1144,7 +1145,7 @@ public:
                 }
             } fallback;
         } emergency;
-    };
+    } m_optimizer;
 
     // === Allocation, Initialization, Loading ===
     EnergySpectrum m_energy;
@@ -1159,7 +1160,7 @@ public:
     QuantumField m_quantumField;
     FluidField m_fluidField;
     GasField m_gasField;
-    SolidBodyField m_solidBodyField;
+    SolidField m_solidBodyField;
 
     explicit WavePhysics(const SolverConfig& config = SolverConfig()) 
         : Node(config.name), m_config(config) {}
@@ -1168,8 +1169,8 @@ public:
     WavePhysicsSolver m_solver;
 
     // Solid body behavior emerges from field properties
-    void setSolidBodyProperties(const SolidBody* node, float elasticity) {
-        PhysicsField::SolidBodyField field;
+    void setSolidProperties(const Solid* node, float elasticity) {
+        PhysicsField::SolidField field;
         field.fieldStiffness = elasticity;
         m_solver.updateLocalField(node->getWorldPosition(), field);
     }
@@ -1483,7 +1484,7 @@ private:
     }
 
     // Solid body behavior emerging from field coupling
-    void updateSolidBodyBehavior(const SolidBody* node, float deltaTime) {
+    void updateSolidBehavior(const Solid* node, float deltaTime) {
         auto worldPos = node->getWorldPosition();
         auto& cohesion = node->getCohesionPattern();
 
@@ -1521,7 +1522,7 @@ private:
     }
 
 private:
-    void enforceRigidConstraints(const SolidBody* node) {
+    void enforceRigidConstraints(const Solid* node) {
         // Create standing waves that maintain relative positions
         auto vertices = node->getVertices();
         for (const auto& vertex : vertices) {
@@ -1534,7 +1535,7 @@ private:
         }
     }
 
-    void propagateElasticWaves(const SolidBody* node, float resonance) {
+    void propagateElasticWaves(const Solid* node, float resonance) {
         // Create waves that allow controlled deformation
         auto vertices = node->getVertices();
         for (const auto& vertex : vertices) {

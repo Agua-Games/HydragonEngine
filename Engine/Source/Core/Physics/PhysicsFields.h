@@ -25,8 +25,10 @@
  *          - More natural handling of potential vs kinetic energy transformations.
  *      - To avoid confusion: we're declaring classes with the suffix "Field" here, but those are consciously not meant to inherit from the base Field class in Field.h.
  *      The VARIABLES using the Field class as data type are declared, bundled inside of each [physical_property]Field class.
+ *      - The base Field class, in Field.h, has functionality useful for all sorts of fields, worth checking, like computeAverage(), computeGradient(), etc.
  * 
  * TODO:
+ *      - Get rid of LocalSampler struct after moving local adaptive refinement management to WavePhysics.h.
  *      - Decide if EnergySpectrum's spectral components should be a simple modulated scalar value, or a 4D vector (spectral components). Maybe the scalar choice is used
  *      for a LOD version.
  *      - Test and refactor struct EnergySpectrum so that its functions model the intended design (wave properties, like relationship with time being affected by the
@@ -48,6 +50,7 @@
 #include <array>
 #include <glm/gtx/vector_angle.hpp>
 #include "Field.h"
+#include "Wave.h"
 
 namespace hd {
 // === Helper structs ===
@@ -190,6 +193,16 @@ struct EMField {
         // Calculate coupling based on field properties
         return FieldCoupling{...};
     }
+
+    EnergySpectrum getEnergySpectrum(const vec3& position) const {
+        // Calculate energy spectrum based on field properties
+        return EnergySpectrum{...};
+    }
+
+    MediumProperties getMediumProperties(const vec3& position) const {
+        // Calculate medium properties based on field properties
+        return MediumProperties{...};
+    }
 };
 
 // Advanced EM field with detailed energy interactions
@@ -250,14 +263,18 @@ struct AdvancedEMField {
     }
 };
 
+/**
+ * @brief Gravitational field. Due to gravity being such a long range and weak force, we treat it separately, in general skipping the gravitationalEnergy in other fields,
+ * using a downwards term applied over momentumPotential.
+ */
 struct GravitationalField {
-    Field<float, 3> gravitatinalPotential;    // Gravitational potential energy
+    Field<float, 3> gravitationalPotential;    // Gravitational potential energy
     Field<float, 3> energyDensity;            // Energy density
     Field<float, 3> massDensity;              // Mass density
 
     // Compute forces from energy gradients
     vec3 getGravitationalForce(const vec3& position) const {
-        return -gravitatinalPotential.computeGradient(position);
+        return -gravitationalPotential.computeGradient(position);
     }
 
     FieldCoupling getFieldCoupling(const GravitationalField& other) const {
@@ -292,6 +309,8 @@ struct FluidField : public EMField {
     // Medium properties
     bool isCompressible;                 // Gas vs liquid behavior. Compressibility is a property of the medium.
     MediumProperties medium;             // Properties of the medium the field exists in
+    float MieScattering;                 // Mie scattering coefficient
+    float RayleighScattering;            // Rayleigh scattering coefficient
 
     // Get effective EM properties based on matter state
     EMFieldProperties getEMProperties() const {
@@ -303,6 +322,10 @@ struct FluidField : public EMField {
     FieldCoupling getFieldCoupling(const EMField& other) const {
         // Calculate coupling based on field properties
         return FieldCoupling{...};
+    }
+
+    applyGravitationalMomentum(const GravitationalField& gravitationalField) {
+        // Apply gravitational force to the fluid field momentumPotential
     }
 };
 
@@ -320,6 +343,8 @@ struct ComputationalFluidField : public AdvancedFluidField {
     // Additional computational properties
     Field<float, 3> cavitationEnergy;            // Vacuum bubble energy
     Field<float, 3> boundaryLayerEnergy;         // Detailed wall energy
+    Field<float, 3> chemicalEnergy;              // Chemical reaction energy
+    Field<float, 3> phaseTransitionEnergy;       // Phase change energy
     Field<float, 3> shockWaveEnergy;             // High-pressure wave energy
     Field<float, 3> acousticEnergy;              // Sound wave energy
 
@@ -343,6 +368,7 @@ struct GasField : public FluidField {
 struct AdvancedGasField : public GasField {
     // Additional advanced properties
     Field<float, 3> viscosityEnergy;      // Frictional energy
+    Field<float, 3> surfaceTensionEnergy; // Surface energy.
     Field<float, 3> vorticityEnergy;      // Rotational flow energy. Like in turbulence.
     Field<float, 3> turbulenceEnergy;     // Chaotic flow energy. This is the sum of eddyEnergy and dissipationEnergy.
     Field<vec3, 3> convectionEnergy;      // Heat flow energy.
@@ -352,14 +378,67 @@ struct AdvancedGasField : public GasField {
 // Computational/high-detail gas simulation with molecular-level energetics
 struct ComputationalGasField : public AdvancedGasField {
     // Additional computational properties
-    Field<float, 3> bulkModulusEnergy;           // Compression resistance energy
-    Field<float, 3> shearModulusEnergy;          // Deformation resistance energy
-    Field<float, 3> thermalConductivityEnergy;   // Heat transfer resistance energy
-    Field<float, 3> dissipationEnergy;           // Energy loss due to turbulence
     Field<float, 3> entropyField;                // Disorder energy
     Field<float, 3> chemicalEnergy;              // Chemical reaction energy
     Field<float, 3> phaseTransitionEnergy;       // Phase change energy
+    Field<float, 3> shockWaveEnergy;             // High-pressure wave energy
+    Field<float, 3> acousticEnergy;              // Sound wave energy
+
+    Field<float, 3> bulkModulusEnergy;           // Compression resistance energy
+    Field<float, 3> shearModulusEnergy;          // Deformation resistance energy
+    Field<float, 3> thermalConductivityEnergy;   // Heat transfer resistance energy
+
+    Field<float, 3> eddyEnergy;                  // Turbulent flow energy
+    Field<float, 3> dissipationEnergy;           // Energy loss due to turbulence
+
+    void updateTurbulenceEnergy() {
+        // Update turbulenceEnergy, member of AdvancedGasField, to properly represent the sum of eddyEnergy and dissipationEnergy
+    }
 };
+
+/**
+ * @brief Atmosphere field, inheriting from GasField for gas interactions. Used to model atmospheric conditions.
+ * For wind energy, use kinecticEnergy. For temperature, use thermalEnergy from GasField.
+ */
+struct AtmosphereField : public GasField {
+    // Atmosphere-specific properties.
+    Field<float, 3> humidityEnergy;         // Atmospheric humidity energy
+    Field<float, 3> cloudEnergy;            // Cloud energy
+    Field<float, 3> precipitationEnergy;    // Precipitation energy
+};
+
+struct AdvancedAtmosphereField : public AtmosphereField {
+    // Additional advanced properties
+    Field<float, 3> viscosityEnergy;         // Frictional energy
+    Field<float, 3> surfaceTensionEnergy;    // Surface energy. Useful for modeling cloud formation, space reentry skipping for solids, etc.
+    Field<float, 3> vorticityEnergy;         // Rotational flow energy. Like in turbulence.
+    Field<float, 3> turbulenceEnergy;        // Chaotic flow energy. This is the sum of eddyEnergy and dissipationEnergy.
+    Field<vec3, 3> convectionEnergy;         // Heat flow energy.
+    Field<float, 3> diffusionEnergy;         // Mixing energy
+
+    // Atmosphere-specific properties
+    Field<float, 3> latentThermalEnergy;       // Particle-level, Due to phase transitions of water vapor, among others
+};
+
+struct ComputationalAtmosphereField : public AdvancedAtmosphereField {
+    // Additional computational properties
+    Field<float, 3> entropyField;                // Disorder energy
+    Field<float, 3> chemicalEnergy;              // Chemical reaction energy
+    Field<float, 3> phaseTransitionEnergy;       // Phase change energy
+    Field<float, 3> shockWaveEnergy;             // High-pressure wave energy
+    Field<float, 3> acousticEnergy;              // Sound wave energy
+
+    Field<float, 3> bulkModulusEnergy;           // Compression resistance energy
+    Field<float, 3> shearModulusEnergy;          // Deformation resistance energy
+    Field<float, 3> thermalConductivityEnergy;   // Heat transfer resistance energy
+
+    Field<float, 3> eddyEnergy;                  // Turbulent flow energy
+    Field<float, 3> dissipationEnergy;           // Energy loss due to turbulence
+
+    void updateTurbulenceEnergy() {
+        // Update turbulenceEnergy, member of AdvancedGasField, to properly represent the sum of eddyEnergy and dissipationEnergy
+    }
+}
 
 /**
  * @brief Solid field, inheriting from EMField for electromagnetic interactions.
@@ -392,6 +471,10 @@ struct SolidField : public EMField {
     FieldCoupling getFieldCoupling(const EMField& other) const {
         // Calculate coupling based on field properties
         return FieldCoupling{...};
+    }
+
+    applyGravitationalMomentum(const GravitationalField& gravitationalField) {
+        // Apply gravitational force to the fluid field momentumPotential
     }
 };
 
@@ -472,6 +555,7 @@ struct PlasmaField : public FluidField, public EMField {
 struct AdvancedPlasmaField : public PlasmaField, public EMField {
     // Additional advanced properties
     Field<float, 3> viscosityEnergy;      // Frictional energy
+    Field<float, 3> surfaceTensionEnergy; // Surface energy.
     Field<float, 3> vorticityEnergy;      // Rotational flow energy. Like in turbulence.
     Field<float, 3> turbulenceEnergy;     // Chaotic flow energy. This is the sum of eddyEnergy and dissipationEnergy.
     Field<vec3, 3> convectionEnergy;      // Heat flow energy.
