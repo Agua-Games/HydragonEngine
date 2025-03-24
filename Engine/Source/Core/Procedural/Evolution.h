@@ -29,14 +29,14 @@ struct EvolutionInfo : public NodeInfo {
     EvolutionInfo() {
         NodeType = "Procedural/Evolution";
         
-        Inputs = {
+        inputs = {
             "SourcePattern",
             "TimeScale",
             "EvolutionRules",
             "Constraints"
         };
         
-        Outputs = {
+        outputs = {
             "EvolvedPattern",
             "EvolutionState",
             "TransitionMetrics"

@@ -50,16 +50,15 @@
  * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
 #pragma once
-
-#include "Core/NodeGraph/Node.h"
-#include "Core/Rendering/ShaderCache.h"
-#include "Core/Rendering/RenderTypes.h"
-#include "Core/SceneGraph/RuntimeVariants.h"
 #include <spirv_reflect.h>
 #include <vulkan/vulkan.h>
 #include <pxr/usd/usdShade/material.h>
 #include <glm/glm.hpp>
-#include "Core/Procedural/ProceduralTypes.h"
+#include "Node.h"
+#include "ShaderCache.h"
+#include "RenderTypes.h"
+#include "RuntimeVariants.h"
+#include "ProceduralTypes.h"
 
 namespace hd {
 
@@ -98,9 +97,26 @@ struct MaterialInfo : public NodeInfo {
     std::vector<MaterialVariantConfig> VariantConfigs;
     
     MaterialInfo() {
-        NodeType = "Material";
-        IsStreamable = true;
-        IsAsyncLoadable = true;
+        NodeType = "Rendering/Material";
+        isStreamable = true;
+        isAsyncLoadable = true;
+
+        inputs = {
+            "BaseColor",
+            "Metallic",
+            "Roughness",
+            "Normal",
+            "Emissive",
+            "Opacity",
+            "DisplacementAmount",
+            "AmbientOcclusion"
+        };
+
+        outputs = {
+            "SurfaceOutput",
+            "CustomData1",
+            "CustomData2"
+        };
     }
 };
 
@@ -109,12 +125,57 @@ struct MaterialInfo : public NodeInfo {
  */
 class Material : public Node {
 public:
+    // === Structure Definitions ===
+    // Shader Management
+    struct ShaderVariant {
+        VkShaderModule shaderModule;
+        SpvReflectShaderModule reflection;
+        std::vector<VkDescriptorSetLayout> descriptorLayouts;
+    };
+
+    // Runtime Optimization
+    struct RuntimeMaterialData {
+        VkPipeline pipeline;
+        VkPipelineLayout pipelineLayout;
+        std::vector<VkDescriptorSet> descriptorSets;
+        uint32_t currentVariantIndex;
+    };
+
+    struct ProceduralPBRConfig {
+        bool enableProceduralGeneration;
+        bool useVertexColorSource;
+        bool allowTextureReduction;
+
+        struct Quality {
+            float detailLevel;         // 0-1, affects pattern complexity
+            float msaaSampleCount;     // Multi-sample level
+            float patternDensity;      // Pattern frequency multiplier
+        };
+
+        struct MemoryOptimization {
+            bool enableLowResTextures;
+            uint32_t maxTextureSize;
+            float qualityThreshold;    // Acceptable quality loss
+        };
+    };
+
+    // === Allocation, Initialization, Loading ===
     explicit Material(const MaterialInfo& info = MaterialInfo())
         : Node(info), MaterialInfo(info) {
         InitializeDefaultPorts();
         InitializeShaderCache();
     }
 
+    // USD Integration
+    void convertToUsdMaterial(pxr::UsdShadeMaterial& usdMaterial) {
+        // Implementation for USD material conversion
+    }
+
+    void loadFromUsdMaterial(const pxr::UsdShadeMaterial& usdMaterial) {
+        // Implementation for loading from USD material
+    }
+
+    // === Port Management ===
     // Node Graph Integration
     std::vector<std::string> getInputPorts() const override {
         std::vector<std::string> ports = {
@@ -143,39 +204,8 @@ public:
         return {"SurfaceOutput", "CustomData1", "CustomData2"};
     }
 
-    // USD Integration
-    void convertToUsdMaterial(pxr::UsdShadeMaterial& usdMaterial) {
-        // Implementation for USD material conversion
-    }
-
-    void loadFromUsdMaterial(const pxr::UsdShadeMaterial& usdMaterial) {
-        // Implementation for loading from USD material
-    }
-
-    // Shader Management
-    struct ShaderVariant {
-        VkShaderModule shaderModule;
-        SpvReflectShaderModule reflection;
-        std::vector<VkDescriptorSetLayout> descriptorLayouts;
-    };
-
-    void compileShaderVariants() {
-        for (const auto& config : MaterialInfo.VariantConfigs) {
-            CompileVariant(config);
-        }
-    }
-
-    // Runtime Optimization
-    struct RuntimeMaterialData {
-        VkPipeline pipeline;
-        VkPipelineLayout pipelineLayout;
-        std::vector<VkDescriptorSet> descriptorSets;
-        uint32_t currentVariantIndex;
-    };
-
-    void bakeForRuntime() {
-        // Bake material data for optimal runtime performance
-    }
+    // === Procedural Generation ===
+    void setupProceduralPBR(const ProceduralPBRConfig& config);
 
     // Procedural Generation
     void generateProceduralTextures() {
@@ -245,6 +275,21 @@ public:
         // ... rest of texture generation code
     }
 
+    void generatePBRMaps();
+
+    // === Caching, Optimization ===
+    uint64_t computeCacheKey() const override {
+        // Compute cache key based on material properties
+        return 0;
+    }
+
+    void bakeForRuntime() {
+        // Bake material data for optimal runtime performance
+    }
+
+    void optimizeTextureMemory();
+
+    // === Processing ===
     // Performance-based LOD
     void updateLODLevel(float performanceMetric) {
         for (size_t i = 0; i < MaterialInfo.VariantConfigs.size(); ++i) {
@@ -255,28 +300,12 @@ public:
         }
     }
 
-    struct ProceduralPBRConfig {
-        bool enableProceduralGeneration;
-        bool useVertexColorSource;
-        bool allowTextureReduction;
-
-        struct Quality {
-            float detailLevel;         // 0-1, affects pattern complexity
-            float msaaSampleCount;     // Multi-sample level
-            float patternDensity;      // Pattern frequency multiplier
-        };
-
-        struct MemoryOptimization {
-            bool enableLowResTextures;
-            uint32_t maxTextureSize;
-            float qualityThreshold;    // Acceptable quality loss
-        };
-    };
-
-    // New functions
-    void setupProceduralPBR(const ProceduralPBRConfig& config);
-    void generatePBRMaps();
-    void optimizeTextureMemory();
+    // === Compilation ===
+    void compileShaderVariants() {
+        for (const auto& config : MaterialInfo.VariantConfigs) {
+            CompileVariant(config);
+        }
+    }
 
 protected:
     MaterialInfo MaterialInfo;
@@ -304,29 +333,13 @@ protected:
     }
 
 private:
+    // === Structure Definitions ===
     // Shader compilation and caching
     struct ShaderCompilationTask {
         std::string source;
         MaterialVariantConfig config;
         std::promise<ShaderVariant> result;
     };
-
-    std::queue<ShaderCompilationTask> CompilationQueue;
-    std::thread CompilationThread;
-    std::mutex CompilationMutex;
-    
-    void processShaderCompilationQueue() {
-        while (true) {
-            ShaderCompilationTask task;
-            {
-                std::lock_guard<std::mutex> lock(CompilationMutex);
-                if (CompilationQueue.empty()) break;
-                task = std::move(CompilationQueue.front());
-                CompilationQueue.pop();
-            }
-            // Compile shader and set result
-        }
-    }
 
     // Add enum to define structure generation types
     enum class ProceduralStructureType {
@@ -344,6 +357,25 @@ private:
         float variation = 0.5f;      // Pattern variation amount
         std::function<float(float, float, float)> customAlgorithm; // For custom patterns
     };
+
+    // === Allocation, Initialization, Loading ===
+    std::queue<ShaderCompilationTask> CompilationQueue;
+    std::thread CompilationThread;
+    std::mutex CompilationMutex;
+    
+    // === Processing ===
+    void processShaderCompilationQueue() {
+        while (true) {
+            ShaderCompilationTask task;
+            {
+                std::lock_guard<std::mutex> lock(CompilationMutex);
+                if (CompilationQueue.empty()) break;
+                task = std::move(CompilationQueue.front());
+                CompilationQueue.pop();
+            }
+            // Compile shader and set result
+        }
+    }
 
     // Helper functions for different structure types
     float generateGeometricNoise(float x, float y, float z, const ProceduralStructureParams& params);

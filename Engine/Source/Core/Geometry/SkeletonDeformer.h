@@ -28,7 +28,7 @@ struct SkeletonDeformerInfo : public VertexBlendInfo {
     SkeletonDeformerInfo() {
         NodeType = "Geometry/SkeletonDeformer";
         
-        Inputs = {
+        inputs = {
             "JointTransforms",    // Array of joint transforms
             "JointParents",       // Parent hierarchy
             "BindPose",           // Reference pose
@@ -37,7 +37,7 @@ struct SkeletonDeformerInfo : public VertexBlendInfo {
             "IKTargets"           // Optional IK constraints
         };
         
-        Outputs = {
+        outputs = {
             "SkeletonPose",       // Current computed pose
             "JointMatrices",      // Final transformation matrices
             "SkeletonMetrics"     // Performance and quality metrics

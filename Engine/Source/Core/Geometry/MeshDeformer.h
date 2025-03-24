@@ -28,7 +28,7 @@ struct MeshDeformerInfo : public DeformerInfo {
         NodeType = "Geometry/MeshDeformer";
         
         // Add mesh-specific inputs
-        Inputs.insert(Inputs.end(), {
+        inputs.insert(inputs.end(), {
             "VertexWeights",     // Per-vertex influence weights
             "DeformationSpace",  // Local/World space deformation
             "NormalRecalc",      // Normal recalculation method
@@ -36,7 +36,7 @@ struct MeshDeformerInfo : public DeformerInfo {
         });
         
         // Add mesh-specific outputs
-        Outputs.insert(Outputs.end(), {
+        outputs.insert(outputs.end(), {
             "DeformedVertices",
             "DeformedNormals",
             "DeformedTangents"

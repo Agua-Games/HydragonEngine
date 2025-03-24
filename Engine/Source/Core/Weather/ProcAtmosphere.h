@@ -18,7 +18,7 @@ struct AtmosphereInfo : public NodeInfo {
     AtmosphereInfo() {
         NodeType = "Weather/Atmosphere";
         
-        Inputs = {
+        inputs = {
             "Temperature",       // Base temperature
             "Humidity",         // Base humidity
             "Pressure",         // Air pressure
@@ -27,7 +27,7 @@ struct AtmosphereInfo : public NodeInfo {
             "Location"          // Geographic position
         };
         
-        Outputs = {
+        outputs = {
             "AtmosphereState",  // Current state
             "ScatteringParams", // Light scattering
             "DensityProfile",   // Atmospheric density

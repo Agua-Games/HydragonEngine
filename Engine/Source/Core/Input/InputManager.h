@@ -31,14 +31,14 @@ struct InputManagerInfo : public NodeInfo {
     InputManagerInfo() {
         NodeType = "Input/InputManager";
         
-        Inputs = {
+        inputs = {
             "InputMode",     // Input mode, like raw mouse motion, etc.
             "CursorMode",    // Cursor mode, like normal, hidden, disabled, captured, etc.
             "StickyKeys",    // Sticky keys, which means that keys will not be released until they are explicitly released.
             "StickyMouseButtons" // Sticky mouse buttons, which means that mouse buttons will not be released until they are explicitly released.
             };
         
-        Outputs = {
+        outputs = {
             "KeyState",      // Key state, like pressed, released, etc.
             "MouseState",    // Mouse state, like pressed, released, etc.
             "MousePosition", // Mouse position

@@ -28,7 +28,7 @@ struct SolidInfo : public NodeInfo {
     SolidInfo() {
         NodeType = "Physics/Solid";
         
-        Inputs = {
+        inputs = {
             "Shape",            // Solid body shape
             "Mass",            // Body mass
             "Density",         // Body density
@@ -37,7 +37,7 @@ struct SolidInfo : public NodeInfo {
             "InitialVelocity"  // Initial velocity
         };
         
-        Outputs = {
+        outputs = {
             "BodyState",       // Current body state
             "CollisionEvents", // Collision events
             "Forces",          // Applied forces

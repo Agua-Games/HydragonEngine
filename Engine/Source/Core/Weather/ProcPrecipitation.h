@@ -18,7 +18,7 @@ struct PrecipitationInfo : public NodeInfo {
     PrecipitationInfo() {
         NodeType = "Weather/Precipitation";
         
-        Inputs = {
+        inputs = {
             "AtmosphereState",     // From AtmosphereNode
             "CloudData",           // From CloudNode
             "WindVector",          // Wind direction/speed
@@ -28,7 +28,7 @@ struct PrecipitationInfo : public NodeInfo {
             "CollisionMask"        // World collision data
         };
         
-        Outputs = {
+        outputs = {
             "ParticleData",        // Precipitation particles
             "SurfaceEffects",      // Surface interaction effects
             "AudioData",           // Precipitation sound data
@@ -39,7 +39,7 @@ struct PrecipitationInfo : public NodeInfo {
         isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
-        IsStreamable = true;
+        isStreamable = true;
     }
 };
 
@@ -95,11 +95,11 @@ public:
     }
 
     std::vector<std::string> getInputPorts() const override {
-        return getNodeInfo().Inputs;
+        return getNodeInfo().inputs;
     }
 
     std::vector<std::string> getOutputPorts() const override {
-        return getNodeInfo().Outputs;
+        return getNodeInfo().outputs;
     }
 
     void onResume() override {}

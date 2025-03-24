@@ -442,7 +442,7 @@
 				},
 				{
 					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/AssetManager"
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/AssetEditor"
 				},
 				{
 					"backtrace" : 12,
@@ -976,7 +976,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AssetManager.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AssetEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

@@ -71,7 +71,7 @@
  *   (Remember to not implement in Node what is supposed to be in Object).
  * - Flesh out the class and its methods, structs, enums, etc.
  */
-#if 0
+
  #pragma once
 #include <memory>
 #include <string>
@@ -92,9 +92,9 @@
 namespace hd {
 
 struct NodeInfo : public ObjectInfo {
-    std::string NodeType;               
-    std::vector<std::string> Inputs;   
-    std::vector<std::string> Outputs;  
+    std::string nodeType;               
+    std::vector<std::string> inputs;   
+    std::vector<std::string> outputs;  
     
     struct StreamingConfig {
         bool enabled = true;
@@ -111,9 +111,9 @@ struct NodeInfo : public ObjectInfo {
              const std::vector<std::string>& outputs = {},
              bool enableStreaming = true)
         : ObjectInfo(name, isSerializable, isEditableInEditor),
-          NodeType(nodeType), 
-          Inputs(inputs), 
-          Outputs(outputs) {
+          nodeType(nodeType), 
+          inputs(inputs), 
+          outputs(outputs) {
         streamingConfig.enabled = enableStreaming;
     }
 };

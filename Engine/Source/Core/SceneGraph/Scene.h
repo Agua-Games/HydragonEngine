@@ -53,7 +53,7 @@
  * - Flesh out the class and its methods, structs, enums, etc.
  * - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
  */
-#if 0
+
  #pragma once
 #include <future>
 #include <memory>
@@ -215,12 +215,33 @@ struct SceneInfo : public NodeInfo {
     };
 
     // === Constructor with sensible defaults ===
-    SceneInfo(const std::string& name = "") 
-        : NodeInfo(name, true, true, "Scene", {}, {}, true)
-        , layerPath("")
-        , references{}
-        , isLayered(true)
-    {
+    SceneInfo() {
+        NodeType = "Scene";
+        isSerializable = true;
+        IsEditableInEditor = true;
+        isStreamable = true;
+        isAsyncLoadable = true;
+        inputs = {
+            "USDLayerPath",
+            "References",
+            "CompositionMode",
+            "PayloadMode",
+            "TraversalMode",
+            "CullingMode",
+            "AccelerationMode",
+            "InstanceMode",
+            "VariantMode",
+            "ReferenceMode",
+            "ClipMode",
+            "PerformanceMode",
+            "DebugMode"
+        };
+        outputs = {
+            "SceneGraph",
+            "LODLevels",
+            "ResourceUsage"
+        };
+
         // Initialize (scene) composition defaults
         static const Composition::CompositionMode defaultCompMode = Composition::CompositionMode::OPTIMIZED;
         static const Composition::Layer defaultLayer = {
@@ -242,6 +263,11 @@ struct SceneInfo : public NodeInfo {
             .enableOcclusionCulling = true,
             .enableDistanceCulling = true
         };
+        static const Traversal::Acceleration defaultAcceleration = {
+            .cacheTraversalResults = true,
+            .enableParallelProcessing = true,
+            .useGPUAcceleration = true
+        };
 
         // Initialize instancing defaults
         static const Instance::Mode defaultInstanceMode = Instance::Mode::HYBRID;
@@ -249,6 +275,21 @@ struct SceneInfo : public NodeInfo {
             .instanceThreshold = 10,
             .enableGPUInstancing = true,
             .maintainEditability = false
+        };
+
+        // Initialize variant defaults
+        static const Variant::Mode defaultVariantMode = Variant::Mode::OPTIMIZED;
+        static const Variant defaultVariant = {
+            .inlineCommonVariants = true,
+            .enableVariantCaching = true,
+            .allowDynamicSwitching = true
+        };
+
+        // Initialize reference defaults
+        static const Reference defaultReference = {
+            .inlineReferences = true,
+            .enablePayloadLoading = true,
+            .cacheResolvedRefs = true
         };
 
         // Initialize (time-varying value) clip defaults

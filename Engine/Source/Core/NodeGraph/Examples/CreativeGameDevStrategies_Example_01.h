@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Core/NodeGraph/Node.h"
-#include "Core/Materials/MaterialSystem.h"
+#include "Core/Materials/MaterialManager.h"
 #include "Core/SceneGraph/Scene.h"
 
 namespace hd {

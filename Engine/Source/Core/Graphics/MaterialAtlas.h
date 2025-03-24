@@ -26,14 +26,14 @@ struct MaterialAtlasInfo : public NodeInfo {
     MaterialAtlasInfo() {
         NodeType = "Graphics/MaterialAtlas";
         
-        Inputs = {
+        inputs = {
             "MaterialSets",      // Array of material texture sets
             "AtlasConfig",       // Atlas configuration
             "StreamingConfig",   // Streaming parameters
             "ProcessingStage"    // Current processing stage
         };
         
-        Outputs = {
+        outputs = {
             "AtlasTexture",      // Packed texture atlas
             "DescriptorSet",     // Vulkan descriptor set
             "MaterialIndices",   // Material lookup indices

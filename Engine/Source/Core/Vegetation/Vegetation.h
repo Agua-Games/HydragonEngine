@@ -17,7 +17,7 @@ struct VegetationInfo : public NodeInfo {
     VegetationInfo() {
         NodeType = "Vegetation/VegetationSystem";
         
-        Inputs = {
+        inputs = {
             "Terrain",           // Terrain data
             "Climate",           // Climate zone data
             "Density",           // Vegetation density
@@ -28,7 +28,7 @@ struct VegetationInfo : public NodeInfo {
             "ProceduralIntent"   // For procedural variation
         };
         
-        Outputs = {
+        outputs = {
             "VegetationData",    // Generated vegetation data
             "DensityMap",        // Vegetation density distribution
             "GrowthStates",      // Current growth states

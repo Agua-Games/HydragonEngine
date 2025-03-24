@@ -26,7 +26,7 @@ struct NoiseInfo : public NodeInfo {
     NoiseInfo() {
         NodeType = "Procedural/Noise";
         
-        Inputs = {
+        inputs = {
             "NoiseType",      // Perlin, Simplex, Worley, etc.
             "Seed",
             "Scale",
@@ -37,7 +37,7 @@ struct NoiseInfo : public NodeInfo {
             "Warp"           // Optional domain warping
         };
         
-        Outputs = {
+        outputs = {
             "NoiseValue",
             "Derivatives",    // For normal map generation
             "NoiseMetrics"    // Statistical properties
@@ -60,11 +60,11 @@ public:
         : Node(info) {}
 
     std::vector<std::string> getInputPorts() const override {
-        return NoiseInfo.Inputs;
+        return NoiseInfo.inputs;
     }
 
     std::vector<std::string> getOutputPorts() const override {
-        return NoiseInfo.Outputs;
+        return NoiseInfo.outputs;
     }
 
     void processNodeGraph() override {

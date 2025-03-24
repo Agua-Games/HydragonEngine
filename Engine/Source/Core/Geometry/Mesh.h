@@ -32,7 +32,7 @@ struct MeshInfo : public NodeInfo {
     MeshInfo() {
         NodeType = "Geometry/Mesh";
         
-        Inputs = {
+        inputs = {
             "Transform",          // Base transform
             "Material",           // Material assignment
             "Deformers",         // Array of deformer nodes
@@ -40,7 +40,7 @@ struct MeshInfo : public NodeInfo {
             "GeometryModifier"   // Optional geometry modifications
         };
         
-        Outputs = {
+        outputs = {
             "MeshData",          // Final processed geometry
             "BoundingBox",
             "LODLevel",

@@ -102,7 +102,7 @@ struct AdaptiveMeshInfo : public NodeInfo {
     AdaptiveMeshInfo() {
         NodeType = "Geometry/AdaptiveMesh";
         
-        Inputs = {
+        inputs = {
             "BaseMesh",           // Base low-res mesh
             "SubdivConfig",       // Subdivision parameters
             "DeltaThreshold",     // Sparse storage threshold
@@ -111,7 +111,7 @@ struct AdaptiveMeshInfo : public NodeInfo {
             "StreamingConfig"     // Streaming parameters
         };
         
-        Outputs = {
+        outputs = {
             "ProcessedMesh",      // Final mesh data
             "SubdivisionLevels",  // Hierarchy information
             "CompressionStats",   // Compression metrics

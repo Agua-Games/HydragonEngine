@@ -17,7 +17,7 @@ struct VegetationGrowthInfo : public NodeInfo {
     VegetationGrowthInfo() {
         NodeType = "Vegetation/GrowthSimulator";
         
-        Inputs = {
+        inputs = {
             "PlacementPoints",   // From PlacementGenerator
             "Climate",           // Climate influence
             "Nutrients",         // Soil quality
@@ -26,7 +26,7 @@ struct VegetationGrowthInfo : public NodeInfo {
             "SeasonalCycle"      // Seasonal influence
         };
         
-        Outputs = {
+        outputs = {
             "GrowthStates",      // Current growth state
             "ResourceMap",       // Resource distribution
             "HealthMetrics",     // Plant health data

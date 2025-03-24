@@ -17,7 +17,7 @@ struct FogInfo : public NodeInfo {
     FogInfo() {
         NodeType = "Weather/Fog";
         
-        Inputs = {
+        inputs = {
             "AtmosphereState",    // From AtmosphereNode
             "WindVector",         // Wind direction/speed
             "Density",           // Fog density
@@ -27,7 +27,7 @@ struct FogInfo : public NodeInfo {
             "NoiseParams"        // Procedural noise settings
         };
         
-        Outputs = {
+        outputs = {
             "VolumetricData",     // 3D fog data
             "DensityField",       // 3D density distribution
             "ScatteringParams",   // Light scattering parameters
@@ -37,7 +37,7 @@ struct FogInfo : public NodeInfo {
         isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
-        IsStreamable = true;
+        isStreamable = true;
     }
 };
 
@@ -70,11 +70,11 @@ public:
     }
 
     std::vector<std::string> getInputPorts() const override {
-        return getNodeInfo().Inputs;
+        return getNodeInfo().inputs;
     }
 
     std::vector<std::string> getOutputPorts() const override {
-        return getNodeInfo().Outputs;
+        return getNodeInfo().outputs;
     }
 
     void onResume() override {}

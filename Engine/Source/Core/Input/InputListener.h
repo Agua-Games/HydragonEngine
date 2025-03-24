@@ -22,14 +22,14 @@ struct InputListenerInfo : public NodeInfo {
     InputListenerInfo() {
         NodeType = "Input/InputListener";
         
-        Inputs = {
+        inputs = {
             "InputAction",   // Input action to be mapped
             "Key",           // Key that triggers the action
             "MouseButton",   // Mouse button that triggers the action
             "GamepadButton"  // Gamepad button that triggers the action
         };
         
-        Outputs = {
+        outputs = {
             "ActionTriggered"   // Action triggered by input event
         };
     }
@@ -37,6 +37,7 @@ struct InputListenerInfo : public NodeInfo {
 
 class InputListener : public Node {
 public:
+    // === Structure Definitions ===
     struct inputActionMapping {
         std::string name;       // Name of the action
         std::string category;   // Category of the action
@@ -45,11 +46,18 @@ public:
         int gamepadButton;      // Gamepad button that triggers the action
     };
 
+    // === Allocation, Initialization, Loading ===
+    explicit InputListener(const InputListenerInfo& info = InputListenerInfo())
+        : Node(info), InputListenerInfo(info) {}
+    void initialize() override {}
+    void load() override {}
+
     InputListener& mapAction(const std::string& action, int key) {
         m_mappings.push_back({action, "default", key, -1, -1});
         return *this;
     }
 
+    // === Processing ===
     void processNodeGraph() override {
         auto* input = InputManager::getInstance();
         
@@ -60,7 +68,13 @@ public:
         }
     }
 
+    // === Cleanup ===
+    void unload() override {}
+    void cleanup() override {}
+    ~InputListener() = default;     // Default destructor
+    
 private:
+    // === Private Members ===
     std::vector<inputActionMapping> m_mappings;
 };
 

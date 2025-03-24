@@ -27,14 +27,14 @@ struct VertexBlendInfo : public DeformerInfo {
         NodeType = "Geometry/VertexBlendDeformer";
         
         // Add blend-specific inputs
-        Inputs.insert(Inputs.end(), {
+        inputs.insert(inputs.end(), {
             "BlendTargets",      // Array of target positions
             "BlendWeights",      // Corresponding weights
             "BlendSpace",        // Local/World space blending
             "NormalizeWeights"   // Whether to normalize weights
         });
         
-        Outputs.push_back("BlendMetrics");
+        outputs.push_back("BlendMetrics");
     }
 };
 

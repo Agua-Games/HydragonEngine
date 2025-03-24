@@ -2,7 +2,7 @@
 163	1307	7640484193769091	glfw/src/CMakeFiles/glfw.dir/win32_joystick.c.obj	ff0a5a4f7dbb6746
 14	53	7640484191620225	clean	3c2864ab0b1a662c
 44	1291	7640484192571084	glfw/src/CMakeFiles/glfw.dir/monitor.c.obj	67fe799fa3071f0c
-1636	1976	7640484208489288	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AssetManager.cpp.obj	b46ccc57c2adebd0
+1636	1976	7640484208489288	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AssetEditor.cpp.obj	b46ccc57c2adebd0
 132	1209	7640484193448811	glfw/src/CMakeFiles/glfw.dir/win32_module.c.obj	1d04aa0e9a9b1da0
 1996	2344	7640484212089307	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/MacrosEditor.cpp.obj	eb998076703c0c76
 88	1275	7640484193008407	glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.obj	3c484fd69df82709
@@ -177,7 +177,7 @@
 2766	4888	7642484022029633	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/BottomToolbar.cpp.obj	5003d878e8416a4e
 2661	4891	7642484020983531	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AgentsEditor.cpp.obj	da5d96785f96bb84
 2646	4894	7642484020833397	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AITaskEditor.cpp.obj	27e246ac8a225c9a
-2679	4907	7642484021158841	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AssetManager.cpp.obj	6eebc29620a0e92d
+2679	4907	7642484021158841	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AssetEditor.cpp.obj	6eebc29620a0e92d
 2781	4958	7642484022189775	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ChimeraPipelineEditor.cpp.obj	8cdb3e93d06016d3
 2746	4969	7642484021839464	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/BottomStatusBar.cpp.obj	6204c76cd1a8f9a3
 3002	5135	7642484024388919	CMakeFiles/Hydragon.dir/D_/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/CollaborationEditor.cpp.obj	857df65c5b677dac

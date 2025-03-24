@@ -10,7 +10,7 @@ struct VegetationPlacementInfo : public NodeInfo {
     VegetationPlacementInfo() {
         NodeType = "Vegetation/PlacementGenerator";
         
-        Inputs = {
+        inputs = {
             "DensityMap",        // From DensityGenerator
             "PlacementMask",     // Valid placement areas
             "SpacingRules",      // Min/max spacing
@@ -18,7 +18,7 @@ struct VegetationPlacementInfo : public NodeInfo {
             "VariationParams"    // Species variation
         };
         
-        Outputs = {
+        outputs = {
             "PlacementPoints",   // Generated positions
             "InstanceData",      // Per-instance data
             "ClusterInfo"        // Grouping information

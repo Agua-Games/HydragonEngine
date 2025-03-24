@@ -40,7 +40,7 @@ struct WaveletMeshInfo : public NodeInfo {
     WaveletMeshInfo() {
         NodeType = "Geometry/WaveletMesh";
         
-        Inputs = {
+        inputs = {
             "SourceMesh",         // Input mesh data
             "WaveletBasis",       // Wavelet basis function
             "CompressionLevel",   // Compression ratio/level
@@ -48,7 +48,7 @@ struct WaveletMeshInfo : public NodeInfo {
             "ErrorMetric"         // Compression quality metric
         };
         
-        Outputs = {
+        outputs = {
             "CompressedMesh",     // Compressed mesh data
             "CompressionStats",   // Compression metrics
             "WaveletCoeffs",      // Wavelet coefficients

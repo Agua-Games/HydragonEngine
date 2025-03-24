@@ -26,7 +26,7 @@ struct PlacementInfo : public NodeInfo {
     PlacementInfo() {
         NodeType = "Procedural/Placement";
         
-        Inputs = {
+        inputs = {
             "DensityMap",        // Density field (2D/3D)
             "PlacementMask",     // Valid placement areas
             "Bounds",            // Placement volume/area
@@ -37,7 +37,7 @@ struct PlacementInfo : public NodeInfo {
             "CustomAttributes"   // Additional per-instance data
         };
         
-        Outputs = {
+        outputs = {
             "Points",            // Generated positions
             "Rotations",         // Orientation per point
             "Scales",            // Scale per point

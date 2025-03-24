@@ -28,7 +28,7 @@ struct ParticleInfo : public NodeInfo {
     ParticleInfo() {
         NodeType = "Particles/ParticleSystem";
         
-        Inputs = {
+        inputs = {
             "Emitter",           // Emitter properties
             "ParticleProps",     // Particle properties
             "Forces",            // External forces
@@ -39,7 +39,7 @@ struct ParticleInfo : public NodeInfo {
             "SimSpace"           // World/Local space
         };
         
-        Outputs = {
+        outputs = {
             "ParticleData",      // Current particle states
             "SimulationState",   // Simulation data
             "CollisionEvents",   // Collision feedback

@@ -635,7 +635,7 @@ void showMainMenuBar(bool* p_open, EditorWindowData* windowData) {
             if (ImGui::MenuItem("Viewport 2D", "Ctrl+Shift+D")) { windowData->isViewport2DWindowOpen = true; }
             if (ImGui::MenuItem("Viewport 2D Tools", "Ctrl+Shift+O")) { windowData->isViewport2DToolsWindowOpen = true; }
             ImGui::Separator();
-            if (ImGui::MenuItem("Asset Manager", "Ctrl+A")) { windowData->isAssetManagerWindowOpen = true; }
+            if (ImGui::MenuItem("Asset Manager", "Ctrl+A")) { windowData->isAssetEditorWindowOpen = true; }
             if (ImGui::MenuItem("Chimera Pipeline", "Ctrl+Shift+C")) { windowData->isChimeraPipelineWindowOpen = true; }
             ImGui::Separator();
             if (ImGui::MenuItem("Agents", "Ctrl+Shift+A")) { windowData->isAgentsWindowOpen = true; }        

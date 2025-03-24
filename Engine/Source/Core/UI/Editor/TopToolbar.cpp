@@ -192,7 +192,7 @@ void showTopToolbar(bool* p_open, EditorWindowData* windowData)
             static const char* editorIcons[] = {
                 ICON_MS_GRAPH_2 "##SceneGraphEditor",
                 ICON_MS_NETWORK_NODE "##NodeGraphEditor",
-                ICON_MS_BOX "##AssetManager",
+                ICON_MS_BOX "##AssetEditor",
                 ICON_MS_PIP_EXIT "##ChimeraPipeline",
                 ICON_MS_FOLDER_OPEN "##FileExplorer",
                 ICON_MS_TERMINAL "##Console",

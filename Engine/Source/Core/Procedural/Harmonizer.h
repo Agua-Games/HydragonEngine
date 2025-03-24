@@ -26,14 +26,14 @@ struct HarmonizerInfo : public NodeInfo {
     HarmonizerInfo() {
         NodeType = "Procedural/Harmonizer";
         
-        Inputs = {
+        inputs = {
             "PatternA",
             "PatternB",
             "BlendFactor",
             "HarmonyRules"
         };
         
-        Outputs = {
+        outputs = {
             "HarmonizedPattern",
             "HarmonyMetrics"
         };

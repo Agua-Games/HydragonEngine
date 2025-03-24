@@ -26,7 +26,7 @@ struct BlendInfo : public NodeInfo {
     BlendInfo() {
         NodeType = "Procedural/Blend";
         
-        Inputs = {
+        inputs = {
             "SourceA",
             "SourceB",
             "BlendMode",     // Add, Multiply, Overlay, etc.
@@ -35,7 +35,7 @@ struct BlendInfo : public NodeInfo {
             "BlendCurve"     // Optional curve for non-linear blending
         };
         
-        Outputs = {
+        outputs = {
             "BlendedResult",
             "BlendMetrics",
             "TransitionMap"
@@ -60,11 +60,11 @@ public:
         : Node(info) {}
 
     std::vector<std::string> getInputPorts() const override {
-        return BlendInfo.Inputs;
+        return BlendInfo.inputs;
     }
 
     std::vector<std::string> getOutputPorts() const override {
-        return BlendInfo.Outputs;
+        return BlendInfo.outputs;
     }
 
     void processNodeGraph() override {

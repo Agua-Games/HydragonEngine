@@ -24,7 +24,7 @@ struct EmitterInfo : public NodeInfo {
     EmitterInfo() {
         NodeType = "Particles/Emitter";
         
-        Inputs = {
+        inputs = {
             "Shape",            // Emission shape
             "Rate",            // Emission rate
             "InitialState",    // Initial conditions
@@ -33,7 +33,7 @@ struct EmitterInfo : public NodeInfo {
             "Seed"            // Random seed
         };
         
-        Outputs = {
+        outputs = {
             "ParticleStream",   // Emitted particles
             "EmissionEvents",   // Emission timing
             "SystemState",      // Emitter state

@@ -26,7 +26,7 @@ struct TypographyInfo : public NodeInfo {
     TypographyInfo() {
         NodeType = "Design/Typography";
         
-        Inputs = {
+        inputs = {
             "Text",           // Input text content
             "Font",           // Font asset
             "FontSize",       // Base font size
@@ -38,7 +38,7 @@ struct TypographyInfo : public NodeInfo {
             "MaxWidth"       // Text box width
         };
         
-        Outputs = {
+        outputs = {
             "TextImage",     // Rendered text
             "TextMetrics",   // Font metrics data
             "TextBounds"     // Bounding box

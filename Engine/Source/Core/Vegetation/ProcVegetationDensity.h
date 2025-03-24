@@ -17,7 +17,7 @@ struct VegetationDensityInfo : public NodeInfo {
     VegetationDensityInfo() {
         NodeType = "Vegetation/DensityGenerator";
         
-        Inputs = {
+        inputs = {
             "Terrain",           // Height/normal data
             "BiomeType",         // Biome classification
             "SlopeParams",       // Slope constraints
@@ -25,7 +25,7 @@ struct VegetationDensityInfo : public NodeInfo {
             "DensityMask"        // Optional density mask
         };
         
-        Outputs = {
+        outputs = {
             "DensityMap",        // Generated density
             "ValidPlacementMap"  // Binary placement mask
         };

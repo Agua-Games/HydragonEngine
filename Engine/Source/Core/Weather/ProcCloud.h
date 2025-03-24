@@ -18,7 +18,7 @@ struct CloudInfo : public NodeInfo {
     CloudInfo() {
         NodeType = "Weather/Clouds";
         
-        Inputs = {
+        inputs = {
             "AtmosphereState",  // From AtmosphereNode
             "WindVector",       // Wind direction/speed
             "Coverage",         // Cloud coverage
@@ -31,7 +31,7 @@ struct CloudInfo : public NodeInfo {
             "NoiseParams"      // Procedural noise settings
         };
         
-        Outputs = {
+        outputs = {
             "VolumetricData",   // 3D cloud data
             "ShadowData",       // Cloud shadows
             "LightingData",     // Cloud lighting
@@ -43,7 +43,7 @@ struct CloudInfo : public NodeInfo {
         isSerializable = true;
         IsEditableInEditor = true;
         IsProcedural = true;
-        IsStreamable = true;
+        isStreamable = true;
     }
 };
 
@@ -111,11 +111,11 @@ public:
     }
 
     std::vector<std::string> getInputPorts() const override {
-        return getNodeInfo().Inputs;
+        return getNodeInfo().inputs;
     }
 
     std::vector<std::string> getOutputPorts() const override {
-        return getNodeInfo().Outputs;
+        return getNodeInfo().outputs;
     }
 
     void onResume() override {}

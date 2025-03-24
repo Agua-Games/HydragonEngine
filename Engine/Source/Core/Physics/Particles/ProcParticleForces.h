@@ -24,7 +24,7 @@ struct ParticleForcesInfo : public NodeInfo {
     ParticleForcesInfo() {
         NodeType = "Particles/Forces";
         
-        Inputs = {
+        inputs = {
             "Particles",        // From EmitterNode
             "Gravity",         // Gravity force
             "Wind",            // Wind force
@@ -33,7 +33,7 @@ struct ParticleForcesInfo : public NodeInfo {
             "Fields"           // Force fields
         };
         
-        Outputs = {
+        outputs = {
             "ModifiedParticles", // Updated particles
             "ForceMetrics",      // Force magnitudes
             "EnergyState",       // System energy

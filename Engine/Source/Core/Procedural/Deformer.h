@@ -27,7 +27,7 @@ struct DeformerInfo : public NodeInfo {
         IsProcedural = true;
         
         // Generic deformer inputs
-        Inputs = {
+        inputs = {
             "PrimitiveIn",    // Generic primitive input (mesh, volume, etc.)
             "Strength",       // Global deformation strength
             "Mask",          // Optional deformation mask
@@ -37,7 +37,7 @@ struct DeformerInfo : public NodeInfo {
             "TimeOffset"     // For time-based procedural deformations
         };
         
-        Outputs = {
+        outputs = {
             "PrimitiveOut",   // Deformed primitive
             "DeformMetrics",  // Performance and quality metrics
             "ProceduralData", // Generated procedural data

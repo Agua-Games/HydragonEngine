@@ -29,7 +29,7 @@ struct ProcOrchestratorInfo : public NodeInfo {
         Name = "Procedural Orchestrator";
         
         // Global control inputs
-        Inputs = {
+        inputs = {
             "GlobalIntent",          // Overall procedural behavior intent
             "HarmonyParams",         // System harmony parameters
             "TimeScale",             // Time scaling for evolution
@@ -38,7 +38,7 @@ struct ProcOrchestratorInfo : public NodeInfo {
         };
         
         // Orchestrated outputs
-        Outputs = {
+        outputs = {
             "harmonizedPatterns",    // Collection of harmonized patterns
             "SystemStates",          // Current state of all systems
             "EvolutionMetrics",      // Pattern evolution metrics
@@ -67,11 +67,11 @@ public:
     }
 
     std::vector<std::string> getInputPorts() const override {
-        return getNodeInfo().Inputs;
+        return getNodeInfo().inputs;
     }
 
     std::vector<std::string> getOutputPorts() const override {
-        return getNodeInfo().Outputs;
+        return getNodeInfo().outputs;
     }
 
     void processNodeGraph() override {

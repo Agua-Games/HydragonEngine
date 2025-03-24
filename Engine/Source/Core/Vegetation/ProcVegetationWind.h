@@ -17,7 +17,7 @@ struct VegetationWindInfo : public NodeInfo {
     VegetationWindInfo() {
         NodeType = "Vegetation/WindResponse";
         
-        Inputs = {
+        inputs = {
             "InstanceData",      // From PlacementGenerator
             "GrowthStates",      // From GrowthSimulator
             "WindDirection",     // Wind vector
@@ -26,7 +26,7 @@ struct VegetationWindInfo : public NodeInfo {
             "Stiffness"         // Material properties
         };
         
-        Outputs = {
+        outputs = {
             "BendingData",       // Vertex deformation
             "AnimationState",    // Current animation
             "StressFactors",     // Physical stress

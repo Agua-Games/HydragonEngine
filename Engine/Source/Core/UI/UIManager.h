@@ -109,7 +109,7 @@ struct EditorWindowData
     bool isViewport2DToolsWindowOpen = true;
 
     bool isPropertiesWindowOpen = true;
-    bool isAssetManagerWindowOpen = true;
+    bool isAssetEditorWindowOpen = true;
     bool isLightingWindowOpen = true;
     bool isPhysicsWindowOpen = true;
     bool isBottomStatusBarWindowOpen = true;

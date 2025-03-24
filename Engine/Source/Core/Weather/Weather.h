@@ -17,7 +17,7 @@ struct WeatherInfo : public NodeInfo {
     WeatherInfo() {
         NodeType = "Weather/WeatherSystem";
         
-        Inputs = {
+        inputs = {
             "Time",              // Time of day/year
             "Location",          // World position
             "Temperature",       // Base temperature
@@ -29,7 +29,7 @@ struct WeatherInfo : public NodeInfo {
             "PrecipParams"      // Precipitation parameters
         };
         
-        Outputs = {
+        outputs = {
             "WeatherState",     // Current weather state
             "AtmosphereParams", // Atmospheric parameters
             "CloudData",        // Cloud system data
@@ -88,11 +88,11 @@ public:
     }
 
     std::vector<std::string> getInputPorts() const override {
-        return getNodeInfo().Inputs;
+        return getNodeInfo().inputs;
     }
 
     std::vector<std::string> getOutputPorts() const override {
-        return getNodeInfo().Outputs;
+        return getNodeInfo().outputs;
     }
 
 private:

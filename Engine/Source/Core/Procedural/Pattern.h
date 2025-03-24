@@ -26,7 +26,7 @@ struct ProceduralPatternInfo : public NodeInfo {
     ProceduralPatternInfo() {
         NodeType = "Procedural/Pattern";
         
-        Inputs = {
+        inputs = {
             "Seed",
             "Scale",
             "Complexity",
@@ -34,7 +34,7 @@ struct ProceduralPatternInfo : public NodeInfo {
             "OrchestratorIntent"  // Receives intent from orchestrator
         };
         
-        Outputs = {
+        outputs = {
             "PatternData",
             "PatternMetrics"
         };

@@ -42,7 +42,7 @@ namespace nodeEd = ax::NodeEditor;
 #include "Viewport2D.h"
 #include "Viewport2DTools.h"
 #include "PropertyEditor.h"
-#include "AssetManager.h"
+#include "AssetEditor.h"
 #include "LightingEditor.h"
 #include "PhysicsEditor.h"
 #include "BottomStatusBar.h"
@@ -113,7 +113,7 @@ void initializeWindows(EditorWindowData* windowData){
     #if 0
     MacroEditor::initialize();
     PropertyEditor::initialize();
-    AssetManager::initialize();
+    AssetEditor::initialize();
     ChimeraPipelineEditor::initialize();
     AgentsEditor::initialize();
     LightingEditor::initialize();
@@ -456,7 +456,7 @@ void renderHydragonEditor(EditorWindowData* windowData) {
     // Properties Editor
     if (windowData->isPropertiesWindowOpen) { hd::showPropertyEditor(&windowData->isPropertiesWindowOpen, windowData); }
     // Asset Manager
-    if (windowData->isAssetManagerWindowOpen) { hd::showAssetManager(&windowData->isAssetManagerWindowOpen, windowData); }
+    if (windowData->isAssetEditorWindowOpen) { hd::showAssetEditor(&windowData->isAssetEditorWindowOpen, windowData); }
     // Chimera Pipeline Editor
     if (windowData->isChimeraPipelineWindowOpen) { hd::showChimeraPipelineEditor(&windowData->isChimeraPipelineWindowOpen, windowData); }
     // Agents Editor

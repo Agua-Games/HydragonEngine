@@ -23,7 +23,7 @@ struct ParticleCollisionInfo : public NodeInfo {
     ParticleCollisionInfo() {
         NodeType = "Particles/Collision";
         
-        Inputs = {
+        inputs = {
             "Particles",        // From ForcesNode
             "CollisionMesh",    // Scene geometry
             "Response",         // Collision response
@@ -32,7 +32,7 @@ struct ParticleCollisionInfo : public NodeInfo {
             "SubSteps"         // Simulation quality
         };
         
-        Outputs = {
+        outputs = {
             "FinalParticles",   // Post-collision state
             "Impacts",          // Collision events
             "Fragments",        // Break-up particles

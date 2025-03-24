@@ -2,15 +2,16 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file AssetManager.cpp
- * @brief The Asset Manager is a specialized view for asset-based nodes.
+ * @file AssetEditor.cpp
+ * @brief The Asset Editor is a specialized view for asset-based nodes.
+ * To avoid confusion: the AssetEditor is the UI for the AssetManager.
  */
 #pragma once
 #include <imgui.h>
 #include <string>
 #include "IconsMaterialSymbols.h"
 
-#include "AssetManager.h"
+#include "AssetEditor.h"
 #include "UIManager.h"
 
 namespace hd {
@@ -21,13 +22,13 @@ const char* GetAssetTypeIcon(int index);
 // Static variables for persistent state
 static float s_thumbnailScale = 1.0f;
 
-void showAssetManager(bool* p_open, EditorWindowData* windowData) 
+void showAssetEditor(bool* p_open, EditorWindowData* windowData) 
 {
     if (!p_open || !*p_open)
         return;
 
     ImGui::SetNextWindowBgAlpha(windowData->globalWindowBgAlpha);
-    if (ImGui::Begin("Asset Manager", p_open, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Asset Editor", p_open, ImGuiWindowFlags_MenuBar))
     {
         // Menu Bar
         if (ImGui::BeginMenuBar())
@@ -95,7 +96,7 @@ void showAssetManager(bool* p_open, EditorWindowData* windowData)
         }
 
         // Main content area
-        ImGui::Columns(2, "AssetManagerColumns", true);
+        ImGui::Columns(2, "AssetEditorColumns", true);
         ImGui::SetColumnWidth(0, 250); // Left panel width
 
         // Left panel - Directory Tree

@@ -26,7 +26,7 @@ struct LayoutInfo : public NodeInfo {
     LayoutInfo() {
         NodeType = "Design/LayoutUI";
         
-        Inputs = {
+        inputs = {
             "Elements",      // Array of layout elements
             "Container",     // Container constraints
             "GridSystem",    // Grid configuration
@@ -37,7 +37,7 @@ struct LayoutInfo : public NodeInfo {
             "Background"    // Background layer
         };
         
-        Outputs = {
+        outputs = {
             "ComposedLayout",  // Final composition
             "ElementBounds",   // Element positions
             "GridGuides"       // Grid visualization

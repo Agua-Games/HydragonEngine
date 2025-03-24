@@ -26,7 +26,7 @@ struct ColorGradingInfo : public NodeInfo {
     ColorGradingInfo() {
         NodeType = "Design/ColorGrading";
         
-        Inputs = {
+        inputs = {
             "SourceImage",      // Input image
             "LUT",             // Optional color lookup table
             "Exposure",        // Exposure adjustment
@@ -38,7 +38,7 @@ struct ColorGradingInfo : public NodeInfo {
             "ColorBalance"     // Shadows/Midtones/Highlights balance
         };
         
-        Outputs = {
+        outputs = {
             "ProcessedImage",  // Color graded result
             "Histogram",      // Color distribution data
             "Waveform"        // Luminance distribution

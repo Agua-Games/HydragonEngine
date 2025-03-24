@@ -33,12 +33,12 @@ namespace hd {
 /**
  * @brief Command is used to execute a function with inputs and outputs.
  */
-template<typename... Inputs>
-class Command : public Node<Inputs...> {
+template<typename... inputs>
+class Command : public Node<inputs...> {
 public:
     // === Initialization ===
-    using CommandFunc = std::function<void(Inputs...)>;
-    using AsyncCommandFunc = std::function<std::future<void>(Inputs...)>;
+    using CommandFunc = std::function<void(inputs...)>;
+    using AsyncCommandFunc = std::function<std::future<void>(inputs...)>;
 
     Command(const NodeInfo& info,
                   CommandFunc cmd,
@@ -89,9 +89,9 @@ public:
     // === Processing ===
     void processNodeGraph() override {
         if (isAsynchronous) {
-            executeAsyncCommand(std::index_sequence_for<Inputs...>{});
+            executeAsyncCommand(std::index_sequence_for<inputs...>{});
         } else {
-            executeCommand(std::index_sequence_for<Inputs...>{});
+            executeCommand(std::index_sequence_for<inputs...>{});
         }
     }
 
@@ -135,24 +135,24 @@ public:
 private:
     // === Initialization ===
     // Factory functions for cleaner syntax
-    template<typename... Inputs>
-    std::shared_ptr<Command<Inputs...>> makeCommandNode(
+    template<typename... inputs>
+    std::shared_ptr<Command<inputs...>> makeCommandNode(
         const std::string& name,
-        std::function<void(Inputs...)> cmd,
+        std::function<void(inputs...)> cmd,
         std::tuple<std::string...> inputNames) {
         NodeInfo info(name, true, true, "Command", {}, {}, false);  // streaming disabled
-        return std::make_shared<Command<Inputs...>>(
+        return std::make_shared<Command<inputs...>>(
             info, std::move(cmd), std::move(inputNames));
     }
 
-template<typename... Inputs>
-std::shared_ptr<Command<Inputs...>> makeAsyncCommandNode(
+template<typename... inputs>
+std::shared_ptr<Command<inputs...>> makeAsyncCommandNode(
     const std::string& name,
-    std::function<std::future<void>(Inputs...)> cmd,
+    std::function<std::future<void>(inputs...)> cmd,
     std::tuple<std::string...> inputNames) {
     NodeInfo info(name);
-    info.IsAsyncLoadable = true;
-    return std::make_shared<Command<Inputs...>>(
+    info.isAsyncLoadable = true;
+    return std::make_shared<Command<inputs...>>(
         info, std::move(cmd), std::move(inputNames));
 }
 
@@ -166,22 +166,22 @@ std::shared_ptr<Command<Inputs...>> makeAsyncCommandNode(
 
     // Helper to check if all inputs are ready
     bool areInputsReady() const {
-        return checkInputsReady(std::index_sequence_for<Inputs...>{});
+        return checkInputsReady(std::index_sequence_for<inputs...>{});
     }
 
     template<size_t... Is>
     bool checkInputsReady(std::index_sequence<Is...>) const {
-        return (... && hasInput<Inputs>(std::get<Is>(inputNames)));
+        return (... && hasInput<inputs>(std::get<Is>(inputNames)));
     }
 
     template<size_t... Is>
     void executeCommand(std::index_sequence<Is...>) {
-        command(getInput<Inputs>(std::get<Is>(inputNames))...);
+        command(getInput<inputs>(std::get<Is>(inputNames))...);
     }
 
     template<size_t... Is>
     void executeAsyncCommand(std::index_sequence<Is...>) {
-        auto future = asyncCommand(getInput<Inputs>(std::get<Is>(inputNames))...);
+        auto future = asyncCommand(getInput<inputs>(std::get<Is>(inputNames))...);
         pendingTasks.push_back(std::move(future));
     }
 };
