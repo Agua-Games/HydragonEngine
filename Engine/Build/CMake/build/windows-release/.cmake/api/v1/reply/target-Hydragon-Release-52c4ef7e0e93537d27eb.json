@@ -778,7 +778,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Geometry/AdaptiveMeshNode.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Geometry/AdaptiveMesh.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -946,7 +946,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Physics/WavePhysicsNode.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/Physics/WavePhysics.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

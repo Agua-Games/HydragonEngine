@@ -6,7 +6,7 @@
  */
 #if 0
 #include "Core/Engine.h"
-#include "Core/Scene/SceneNode.h"
+#include "Core/Scene/Scene.h"
 #include "Core/Effects/PostProcess.h"
 #include "Core/Audio/AudioNode.h"
 #include "Core/Particles/ParticleSystem.h"
@@ -23,7 +23,7 @@ public:
         auto& graph = engine.getNodeGraph();
 
         // Main scene setup
-        auto scene = std::make_shared<SceneNode>("CombatArena");
+        auto scene = std::make_shared<Scene>("CombatArena");
         scene->loadGeometry("Levels/Arena/MainGeometry.usd");
         scene->setLightingSetup("DynamicBattleField");
 

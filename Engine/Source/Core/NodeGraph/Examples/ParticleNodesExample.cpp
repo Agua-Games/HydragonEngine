@@ -10,7 +10,7 @@
 #include "ProcOrchestrator.h"
 #include "ProceduralTypes.h"
 #include "ProcEvolutionNode.h"
-#include "PatternNode.h"
+#include "Pattern.h"
 
 using namespace hd;
 // Particle system

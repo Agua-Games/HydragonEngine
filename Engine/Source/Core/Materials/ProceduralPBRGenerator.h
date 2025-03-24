@@ -105,7 +105,7 @@ public:
         bool preserveEdges;
     };
 
-    // Similar to AdaptiveMeshNode's DeltaEncoding
+    // Similar to AdaptiveMesh's DeltaEncoding
     enum class ValueEncoding {
         INT8_BALANCED,    // int8_t scaled 0.1 (-12.8 to 12.7, 0.1 precision)
         INT8_EXPONENTIAL, // exp10 encoding for wide range values
@@ -145,7 +145,7 @@ public:
     // Sync with adaptive mesh
     struct SubdivisionSync {
         uint32_t subdivLevel;
-        float maxDisplacement;    // From AdaptiveMeshNode
+        float maxDisplacement;    // From AdaptiveMesh
         vec2 uvScale;            // For UV space mapping
         
         struct SyncChannel {
@@ -290,7 +290,7 @@ private:
 
     // Enhanced packing methods
     void packExponential(float value, float base, int8_t& result) {
-        // Similar to AdaptiveMeshNode's encoding but with exp10
+        // Similar to AdaptiveMesh's encoding but with exp10
         float logVal = std::log10(std::abs(value)) / std::log10(base);
         result = static_cast<int8_t>(std::clamp(logVal * 127.0f, -128.0f, 127.0f));
     }

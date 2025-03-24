@@ -11,7 +11,7 @@ class CreativeImplementation_Example_01 {
 public:
     void setupCreativeWorkflow() {
         // 1. Procedural Evolution System
-        auto evolution = graph.create<EvolutionNode>("evolution")
+        auto evolution = graph.create<Evolution>("evolution")
             .setParams({
                 .mutationRate = 0.15f,
                 .crossoverRate = 0.8f,

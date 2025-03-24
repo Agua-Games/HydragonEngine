@@ -1,12 +1,12 @@
 /**
  * ARCHITECTURAL NOTES:
- * - SceneFlags is a utility class for managing scene flags, to be used in the SceneInfo struct (see SceneNode.h), to reduce memory usage considerably for each SceneNode instance.
+ * - SceneFlags is a utility class for managing scene flags, to be used in the SceneInfo struct (see Scene.h), to reduce memory usage considerably for each Scene instance.
  * - See the file SceneFlags_README.md in Core/SceneGraph/ for more information.
  * 
  * TODO:
  * - Replace the use of booleans, etc, for SceneInfo member variables with SceneFlags.
  * - Check if we have all needed flags here, and update as needed.
- * - Maybe move the content here to SceneNode.h, for the sake of simplicity and avoiding dependency. Or keep it here to helo with context length reduction for assistants.
+ * - Maybe move the content here to Scene.h, for the sake of simplicity and avoiding dependency. Or keep it here to helo with context length reduction for assistants.
  */
 
 #pragma once

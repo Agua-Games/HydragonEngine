@@ -7,17 +7,17 @@
 
  #if 0
 // Material nodes showing texture/shader workflow
-auto metallic = graph.create<MaterialNode>("brushedMetal")
+auto metallic = graph.create<Material>("brushedMetal")
     .baseColor({0.9f, 0.9f, 0.9f})
     .roughness(0.4f)
     .metallic(1.0f)
     .normal(1.0f)
-    .connect<TextureNode>("albedo")
+    .connect<Texture>("albedo")
         .path("textures/metal/albedo.png")
         .sRGB(true)
         .filter(TextureFilter::Anisotropic)
         .wrap(TextureWrap::Repeat)
-    .connect<TextureNode>("roughness")
+    .connect<Texture>("roughness")
         .path("textures/metal/roughness.png")
         .channel(Channel::Red)
     .connect<NormalMapNode>("normal")
@@ -25,8 +25,8 @@ auto metallic = graph.create<MaterialNode>("brushedMetal")
         .strength(0.8f);
 
 // Procedural material using math nodes
-auto marble = graph.create<MaterialNode>("marble")
-    .connect<NoiseNode>("noise")
+auto marble = graph.create<Material>("marble")
+    .connect<Noise>("noise")
         .scale(0.5f)
         .octaves(4)
         .persistence(0.5f)

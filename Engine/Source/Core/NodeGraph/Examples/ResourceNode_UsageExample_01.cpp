@@ -12,12 +12,12 @@ using namespace hd;
 
 // Example 1: Creating a texture node with a raw resource
 // Simplified usage - raw resource automatically created and pooled
-auto albedoNode1 = scene.create<TextureNode>("textures/metal.png")
+auto albedoNode1 = scene.create<Texture>("textures/metal.png")
     .filter(VK_FILTER_LINEAR)
     .addressMode(VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 // Second node using same (raw) resource automatically
-auto albedoNode2 = scene.create<TextureNode>("textures/metal.png")  // same path = same resource
+auto albedoNode2 = scene.create<Texture>("textures/metal.png")  // same path = same resource
     .filter(VK_FILTER_NEAREST)
     .addressMode(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
     

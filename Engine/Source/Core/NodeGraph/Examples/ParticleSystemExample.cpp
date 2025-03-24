@@ -45,7 +45,7 @@ auto post = NodeGraph::create("post")
         .intensity(1.0f, runtime)
         .threshold(1.0f, runtime)
         .connect("output", "colorGrade.input")
-    .add<ColorGradingNode>("colorGrade")
+    .add<ColorGrading>("colorGrade")
         .contrast({1.0f, 1.0f, 1.0f}, runtime)
         .saturation(1.0f, runtime);
 

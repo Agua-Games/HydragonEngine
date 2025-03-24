@@ -8,20 +8,20 @@
 #pragma once
 
 #include "Node.h"
-#include "ProcVegetationDensityNode.h"
-#include "ProcVegetationPlacementNode.h"
-#include "ProcVegetationGrowthNode.h"
-#include "ProcVegetationWindNode.h"
+#include "ProcVegetationDensity.h"
+#include "ProcVegetationPlacement.h"
+#include "ProcVegetationGrowth.h"
+#include "ProcVegetationWind.h"
 
 namespace hd {
 
 // Example of how to chain vegetation nodes
 inline void CreateVegetationChain(Node& graph) {
     // Create nodes
-    auto densityNode = graph.createNode<ProcVegetationDensityNode>();
-    auto placementNode = graph.createNode<ProcVegetationPlacementNode>();
-    auto growthNode = graph.createNode<ProcVegetationGrowthNode>();
-    auto windNode = graph.createNode<ProcVegetationWindNode>();
+    auto densityNode = graph.createNode<ProcVegetationDensity>();
+    auto placementNode = graph.createNode<ProcVegetationPlacement>();
+    auto growthNode = graph.createNode<ProcVegetationGrowth>();
+    auto windNode = graph.createNode<ProcVegetationWind>();
     
     // Connect nodes
     graph.Connect(densityNode, "DensityMap", 

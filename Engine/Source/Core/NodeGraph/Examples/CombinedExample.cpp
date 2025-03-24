@@ -7,7 +7,7 @@
 
  #if 0
 // Clean, fluent style for node creation
-auto scene = graph.create<SceneNode>("mainScene")
+auto scene = graph.create<Scene>("mainScene")
     .skybox("sky/hdri.exr")
     .ambient({0.1f, 0.1f, 0.1f})
     .fog(true)

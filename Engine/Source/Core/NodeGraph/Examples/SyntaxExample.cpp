@@ -16,7 +16,7 @@ auto node = graph.create<TransformNode>("worldRoot")
     .scale(2.0f)
     .visible(true);
 
-auto material = graph.create<MaterialNode>("metal")
+auto material = graph.create<Material>("metal")
     .baseColor({0.8f, 0.8f, 0.8f})
     .roughness(0.5f)
     .metallic(1.0f)

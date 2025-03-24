@@ -25,13 +25,28 @@
  *          - More natural handling of potential vs kinetic energy transformations.
  *      - To avoid confusion: we're declaring classes with the suffix "Field" here, but those are consciously not meant to inherit from the base Field class in Field.h.
  *      The VARIABLES using the Field class as data type are declared, bundled inside of each [physical_property]Field class.
+ * 
+ * TODO:
+ *      - Decide if EnergySpectrum's spectral components should be a simple modulated scalar value, or a 4D vector (spectral components). Maybe the scalar choice is used
+ *      for a LOD version.
+ *      - Test and refactor struct EnergySpectrum so that its functions model the intended design (wave properties, like relationship with time being affected by the
+ *      EnergySpectrum through the wave's energy level. The modulation factor uses a non-linear function, but we must find the right algorithm for it.) This will be useful to
+ *      model quantum effects, among others.
+ *      - After thourough tests, determine which AdvancedEMField properties will actually be used. Some may be moved to ComputationalEMField.
+ *      - Same for Solid, AdvancedSolidField and ComputationalSolidField: decide which properties are Advanced or Compute Level. This task is just because of allocated memory
+ *      optimization issues, when there will be many fields in a scene, possibly hundreds or thousands. For scientifical computation this issue is much less relevant and
+ *      many times in fact they'll prefer more detail, for more reliable results.
+ *      - After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
+ *      - Flesh out the class and its methods, structs, enums, etc.
  */
 #pragma once
 #include <vector>
+#include <cmath>
 #include <string>
 #include <memory>
 #include <complex>
 #include <array>
+#include <glm/gtx/vector_angle.hpp>
 #include "Field.h"
 
 namespace hd {
@@ -60,7 +75,41 @@ struct MediumProperties {
  * Dimensional Energy: Energy represented as a 4D vector (spectral components), which we can project to scalar when needed for simple calculations.
  */
 struct EnergySpectrum {
-    Field<vec4, 3> energySpectrum;      // Different energy manifestations
+    // Energy level as a dimensional value
+    vec4 spectralComponents;  // Different energy manifestations
+    
+    // Project to scalar when needed
+    float toScalar() const {
+        return glm::dot(spectralComponents, 
+                        vec4(0.2f, 0.3f, 0.3f, 0.2f));  // Weighted projection
+    }
+    
+    // The spectral components are basically used to change the relationship of a wave (in a specific cell in a field) with time (the 4th dimension), based
+    // on the energy level
+    struct WaveProperties {
+        float frequency;         // Oscillation frequency
+        float wavelength;        // Spatial periodicity
+        vec3 propagation;        // Direction of wave travel
+        float phaseVelocity;    // Wave front speed
+    };
+
+    // Combine with field modulation
+    EnergySpectrum modulate(float fieldValue) const {
+        // Non-linear modulation based on field strength
+        float modFactor = std::pow(1.0f + std::abs(fieldValue), 2.0f);
+        return EnergySpectrum{spectralComponents * modFactor};
+    }
+
+    // Create base wave properties based on energy spectrum
+    WaveProperties createBaseWaveProperties() const {
+        // Convert spectral components to wave properties
+        return WaveProperties{
+            toScalar(),                  // Frequency
+            1.0f / toScalar(),           // Wavelength
+            vec3(0.0f, 0.0f, 1.0f),      // Propagation direction
+            toScalar()                   // Phase velocity
+        };
+    }
 };
 
 /**
@@ -88,6 +137,36 @@ struct EnergyField {
     Field<float, 3> thermalEnergy;        // Thermal energy                 (particle-level kinetic energy)
     Field<float, 3> pressureEnergy;       // Pressure-volume energy         (particle-level kinetic energy)
     Field<vec3, 3> momentumEnergy;        // Momentum energy                (particle-level kinetic energy)
+
+    // Compute forces from energy gradients
+    vec3 getForce(const vec3& position) const {
+        return -electricPotential.computeGradient(position) -
+               magneticPotential.computeGradient(position) -
+               nucleusPotential.computeGradient(position) -
+               gravityPotential.computeGradient(position);
+    }
+
+    FieldCoupling getFieldCoupling(const EnergyField& other) const {
+        // Calculate coupling based on field properties
+        return FieldCoupling{...};
+    }
+
+    EnergySpectrum getEnergySpectrum(const vec3& position) const {
+        // Calculate energy spectrum based on field properties
+        return EnergySpectrum{...};
+    }
+
+    // Modulate energy for a field using the energy spectrum.
+    // Return the field property/specific energy modified by the energy spectrum.
+    float modulateEnergy(const vec3& position, float fieldValue) const {
+        EnergySpectrum spectrum = getEnergySpectrum(position);
+        return spectrum.modulate(fieldValue).toScalar();
+    }
+    
+    MediumProperties getMediumProperties(const vec3& position) const {
+        // Calculate medium properties based on field properties
+        return MediumProperties{...};
+    }
 };
 
 // === Specialized Fields ===
@@ -113,14 +192,72 @@ struct EMField {
     }
 };
 
+// Advanced EM field with detailed energy interactions
+struct AdvancedEMField {
+    // Additional advanced properties
+    float permeability;             // Similar to fluid viscosity
+    float permittivity;             // Like fluid compressibility
+
+    // Wave characteristics (shared with fluid waves)
+    struct WaveProperties {
+        float frequency;         // Oscillation frequency
+        float wavelength;        // Spatial periodicity
+        vec3 propagation;        // Direction of wave travel
+        float phaseVelocity;    // Wave front speed
+        
+        struct Coupling {
+            float EMcoupling;    // E-B field interaction
+            float materialCoupling; // Field-matter interaction
+            float resonance;     // Natural frequencies
+        };
+    };
+
+    // Field dynamics similar to fluid turbulence
+    struct FieldDynamics {
+        vec3 poyntingVector;     // EM energy flow (cf. fluid momentum)
+        float fieldEnergy;       // Energy density
+        vec3 magneticVorticity;  // Like fluid vorticity
+        float divergence;        // Field source/sink (Gauss's law)
+        
+        struct Currents {
+            vec3 eddyCurrent;    // Similar to fluid eddies
+            vec3 displacement;    // Changing E-field contribution
+            float conductivity;   // Material response to fields
+            float hallEffect;    // Charge carrier deflection
+        };
+    };
+
+    // Material interaction (parallel to fluid-material interaction)
+    struct MaterialResponse {
+        struct Magnetic {
+            float susceptibility;  // Like fluid susceptibility
+            float remanence;      // Residual magnetization
+            float coercivity;     // Field resistance
+            bool isParamagnetic;  // Material type flag
+        };
+
+        struct Electric {
+            float polarizability; // Like fluid polarizability
+            float capacitance;    // Charge storage
+            float resistance;     // Current opposition
+            bool isDielectric;    // Material type flag
+        };
+    };
+
+    FieldCoupling getFieldCoupling(const AdvancedEMField& other) const {
+        // Calculate coupling based on field properties
+        return FieldCoupling{...};
+    }
+};
+
 struct GravitationalField {
-    Field<float, 3> potentialEnergy;    // Gravitational potential energy
-    Field<float, 3> energyDensity;      // Energy density
-    Field<float, 3> massDensity;        // Mass density
+    Field<float, 3> gravitatinalPotential;    // Gravitational potential energy
+    Field<float, 3> energyDensity;            // Energy density
+    Field<float, 3> massDensity;              // Mass density
 
     // Compute forces from energy gradients
     vec3 getGravitationalForce(const vec3& position) const {
-        return -potentialEnergy.computeGradient(position);
+        return -gravitatinalPotential.computeGradient(position);
     }
 
     FieldCoupling getFieldCoupling(const GravitationalField& other) const {
@@ -129,16 +266,38 @@ struct GravitationalField {
     }
 };
 
-struct FluidField {
+/**
+ * @brief Fluid field, inheriting from EMField for electromagnetic interactions.
+ * In our architecture FluidFields are nothing more than more convoluted energy fields, with more complex and specific standing carrier patterns (arising from their
+ * standing waves, couplings, nucleus potentials, etc.) and in their case with short-range particle interactions.
+ */ 
+struct FluidField : public EMField {
+    // Energy density distribution. Scalar field representing the total energy concentration per unit volume
     Field<float, 3> energyDensity;
-    Field<vec3, 3> kineticEnergy;        // Particle-level kinetic energy with velocity
-    Field<float, 3> potentialEnergy;     // Particle-level potential energy
-    Field<vec3, 3> momentumEnergy;       // Momentum energy                (particle-level kinetic energy)
-    Field<float, 3> pressureEnergy;      // Compression-expansion energy. Particle-level kinetic energy
-    Field<float, 3> thermalEnergy;       // Particle-level kinetic energy
 
+    // Core fluid properties
+    Field<float, 3> nucleusPotential;    // Nuclear binding energy + rest mass potential energy (E=mc²). Essential for Solid (body)Physics.
+    Field<float, 3> dielectricEnergy;    // Dielectric response energy
+    Field<float, 3> shortRangeEnergy;    // Short-range interaction energy
+
+    // Particle-level energy properties. Kinetic energy is essential for solid body physics, in our system
+    Field<vec3, 3> kineticEnergy;        // Local, particle-level motion with velocity. Thermal vibrations, pressure-induced motion. Random or chaotic motion.
+    Field<vec3, 3> momentumPotential;    // Momentum energy. Coherent, bulk motion of the fluidField. Relates to relativistic mass-energy relationship (E=mc²)
+    Field<float, 3> pressureEnergy;      // Compression-expansion energy. Particle-level, converted from kinetic energy
+    Field<float, 3> thermalEnergy;       // Particle-level, converted from kinetic energy
+
+    // Optional EM interaction (can be disabled for basic collision)
+    bool emInteractionEnabled = false;
+
+    // Medium properties
     bool isCompressible;                 // Gas vs liquid behavior. Compressibility is a property of the medium.
     MediumProperties medium;             // Properties of the medium the field exists in
+
+    // Get effective EM properties based on matter state
+    EMFieldProperties getEMProperties() const {
+        if (!emInteractionEnabled) return EMFieldProperties::minimal();
+        // Return full EM properties considering bound charges, etc
+    }
 
     // References to EMField for interactions
     FieldCoupling getFieldCoupling(const EMField& other) const {
@@ -152,47 +311,82 @@ struct AdvancedFluidField : public FluidField {
     // Additional advanced properties
     Field<float, 3> viscosityEnergy;         // Internal friction energy
     Field<float, 3> surfaceTensionEnergy;    // Surface energy
-    Field<float, 3> vorticalEnergy;          // Rotational flow energy. Like in turbulence.
-    Field<float, 3> turbulenceEnergy;        // Chaotic flow energy.
+    Field<float, 3> vorticityEnergy;          // Rotational flow energy. Like in turbulence.
+    Field<float, 3> turbulenceEnergy;        // Chaotic flow energy. This is the sum of eddyEnergy and dissipationEnergy.
 };
 
 // Computational/high-detail fluid simulation with detailed energy interactions
 struct ComputationalFluidField : public AdvancedFluidField {
     // Additional computational properties
-    Field<float, 3> cavitationEnergy;         // Vacuum bubble energy
-    Field<float, 3> boundaryLayerEnergy;      // Detailed wall energy
-    Field<float, 3> shockWaveEnergy;          // High-pressure wave energy
-    Field<float, 3> acousticEnergy;           // Sound wave energy
+    Field<float, 3> cavitationEnergy;            // Vacuum bubble energy
+    Field<float, 3> boundaryLayerEnergy;         // Detailed wall energy
+    Field<float, 3> shockWaveEnergy;             // High-pressure wave energy
+    Field<float, 3> acousticEnergy;              // Sound wave energy
+
+    Field<float, 3> bulkModulusEnergy;           // Compression resistance energy
+    Field<float, 3> shearModulusEnergy;          // Deformation resistance energy
+    Field<float, 3> thermalConductivityEnergy;   // Heat transfer resistance energy
+
+    Field<float, 3> eddyEnergy;                  // Turbulent flow energy
+    Field<float, 3> dissipationEnergy;           // Energy loss due to turbulence
+
+    void updateTurbulenceEnergy() {
+        // Update turbulenceEnergy, member of AdvancedFluidField, to properly represent the sum of eddyEnergy and dissipationEnergy
+    }
 };
 
 struct GasField : public FluidField {
-    Field<float, 3> viscosityEnergy;     // Frictional energy
+    // Add any specific baseline gas properties here
 };
 
 // Advanced gas simulation with molecular-level energetics
-struct AdvancedGasField : public FluidField {
+struct AdvancedGasField : public GasField {
     // Additional advanced properties
     Field<float, 3> viscosityEnergy;      // Frictional energy
+    Field<float, 3> vorticityEnergy;      // Rotational flow energy. Like in turbulence.
+    Field<float, 3> turbulenceEnergy;     // Chaotic flow energy. This is the sum of eddyEnergy and dissipationEnergy.
     Field<vec3, 3> convectionEnergy;      // Heat flow energy.
     Field<float, 3> diffusionEnergy;      // Mixing energy
 };
 
 // Computational/high-detail gas simulation with molecular-level energetics
-struct ComputationalGasField : public AdvancedFluidField {
+struct ComputationalGasField : public AdvancedGasField {
     // Additional computational properties
-    Field<float, 3> entropyField;         // Disorder energy
-    Field<float, 3> chemicalEnergy;       // Chemical reaction energy
-    Field<float, 3> phaseTransitionEnergy; // Phase change energy
+    Field<float, 3> bulkModulusEnergy;           // Compression resistance energy
+    Field<float, 3> shearModulusEnergy;          // Deformation resistance energy
+    Field<float, 3> thermalConductivityEnergy;   // Heat transfer resistance energy
+    Field<float, 3> dissipationEnergy;           // Energy loss due to turbulence
+    Field<float, 3> entropyField;                // Disorder energy
+    Field<float, 3> chemicalEnergy;              // Chemical reaction energy
+    Field<float, 3> phaseTransitionEnergy;       // Phase change energy
 };
 
-struct SolidField {
+/**
+ * @brief Solid field, inheriting from EMField for electromagnetic interactions.
+ * In our architecture SolidFields are nothing more than more convoluted energy fields, with more complex and specific standing carrier patterns (arising from their
+ * standing waves, couplings, nucleus potentials, etc.) and in their case with long-range particle interactions, in the form of crystalographic lattices.
+ */ 
+struct SolidField : public EMField {
+    // Energy density distribution. Scalar field representing the total energy concentration per unit volume
     Field<float, 3> energyDensity;
-    Field<vec3, 3> strainEnergy;             // Deformation energy
-    Field<float, 3> thermalEnergy;           // Particle-level kinetic energy
-    Field<float, 3> elasticEnergy;           // Recoverable deformation energy
-    Field<float, 3> latticeEnergy;           // Crystalographic lattice energy
 
-    MediumProperties medium;                 // Properties of the medium the field exists in
+    // Core solid properties
+    Field<float, 3> nucleusPotential;           // Nuclear binding energy + rest mass potential energy (E=mc²). Essential for Solid (body)Physics.
+    Field<float, 3> dielectricEnergy;           // Dielectric response energy
+    Field<float, 3> latticeEnergy;              // Crystalographic lattice energy
+
+    // Particle-level energy properties. Kinetic energy is essential for solid body physics, in our system
+    Field<vec3, 3> kineticEnergy;               // Particle-level kinetic energy with velocity. In the case of solids, this is the thermal vibrations, pressure-induced motion.
+    Field<vec3, 3> momentumPotential;           // Momentum energy. Coherent, bulk motion of the solidField. Relates to relativistic mass-energy relationship (E=mc²)
+    Field<float, 3> pressureEnergy;             // Compression-expansion energy. Particle-level, converted from kinetic energy
+    Field<float, 3> thermalEnergy;              // Particle-level, converted from kinetic energy
+
+    Field<vec3, 3> strainEnergy;                // Deformation energy, based on Elastic Modulus (cf. Elastic Energy)
+    Field<float, 3> elasticEnergy;              // Recoverable deformation energy, based on Elastic Modulus
+    Field<float, 3> fractureToughnessEnergy;    // Fracture resistance energy
+    Field<float, 3> surfaceTensionEnergy;       // Surface tension energy
+
+    MediumProperties medium;                    // Properties of the medium the field exists in
 
     // References to EMField for interactions
     FieldCoupling getFieldCoupling(const EMField& other) const {
@@ -204,36 +398,104 @@ struct SolidField {
 // Advanced solid simulation with crystalline and structural energetics
 struct AdvancedSolidField : public SolidField {
     // Additional advanced properties
-    Field<float, 3> anisotropicEnergy;    // Directional property energy
-    Field<vec3, 3> residualStressEnergy;  // Internal stress energy
-    Field<float, 3> crackedEnergy;        // Fracture surface energy
-    Field<float, 3> fatigueEnergy;        // Cyclic loading energy
+    Field<float, 3> thermalExpansionEnergy;     // Thermal expansion energy
+    Field<float, 3> anisotropicEnergy;          // Directional property energy, based on Elastic Modulus (cf. Elastic Energy)
+    Field<float, 3> curvatureEnergy;            // Local surface bending energy
+    Field<float, 3> plasticEnergy;              // Permanent deformation energy
+    Field<float, 3> crackedEnergy;              // Fracture surface energy
+    Field<float, 3> fatigueEnergy;              // Cyclic loading energy
 };
 
 // Computational/high-detail solid simulation with crystalline and structural energetics
-struct ComputationalSolidField : public SolidField {
-    // Additional advanced properties
-    Field<float, 3> dislocationEnergy;        // Crystal defects energy
-    Field<float, 3> grainBoundaryEnergy;      // Crystal interface energy
-    Field<float, 3> phononEnergy;             // Lattice vibration energy
-    Field<float, 3> plasticEnergy;            // Permanent deformation energy
+struct ComputationalSolidField : public AdvancedSolidField {
+    // Additional computational properties
+    Field<float, 3> dislocationEnergy;          // Crystal defects energy
+    Field<float, 3> grainBoundaryEnergy;        // Crystal interface energy
+    Field<float, 3> phononEnergy;               // Lattice vibration energy
+
+    Field<float, 3> bulkModulusEnergy;           // Compression resistance energy
+    Field<float, 3> thermalConductivityEnergy;   // Heat transfer resistance energy
+
+    Field<vec3, 3> residualStrainEnergy;         // Internal strain energy
+    Field<float, 3> shearModulusEnergy;          // Deformation resistance energy
+    Field<float, 3> capillaryLengthEnergy;       // Surface tension vs gravity energy
+    Field<float, 3> interfacialEnergy;           // Interface energy
+    Field<vec3, 3> normalFieldEnergy;            // Surface orientation energy
+    Field<float, 3> meniscusHeightEnergy;        // Edge lifting effect energy
+    Field<float, 3> spreadingCoeffEnergy;        // Wetting behavior energy
+    Field<float, 3> contactAngleEnergy;          // Wetting behavior energy
+
+    // Density emerges from wave amplitude patterns
+    struct Density {
+        float baseAmplitude;      // Base material density
+        float localVariation;     // Density fluctuations
+        vec3 gradientFlow;        // Density distribution
+        
+        float computeDensity(const vec3& point) const {
+            float local = m_solver.sampleField(point);
+            return baseAmplitude * (1.0f + localVariation * local);
+        }
+    };
+     
+    // Elasticity from wave propagation characteristics
+    struct Elasticity {
+        float waveSpeed;          // Speed of internal waves
+        float dampingFactor;      // Energy dissipation rate
+        float resonanceFreq;      // Natural frequency
+        
+        float computeElasticity(const vec3& point) const {
+            return waveSpeed * waveSpeed * density.computeDensity(point);
+        }
+    };
+
+    // Plasticity from permanent wave deformation
+    struct Plasticity {
+        float yieldThreshold;     // Point of permanent deformation
+        float flowRate;           // Rate of plastic deformation
+        vec3 strainTensor;        // Directional strain
+        
+        bool checkYield(float stress) const {
+            return stress > yieldThreshold;
+        }
+    };
 };
 
 /**
  * @brief Plasma field, inheriting from EMField for electromagnetic interactions.
  */
 struct PlasmaField : public FluidField, public EMField {
-    Field<float, 3> viscosityEnergy;     // Frictional energy
+    // Plasma properties
     Field<float, 3> ionizationEnergy;         //Ionization energy
 };
 
 // Advanced Plasma simulation with molecular-level energetics
-struct AdvancedPlasmaField : public FluidField, public EMField {
+struct AdvancedPlasmaField : public PlasmaField, public EMField {
     // Additional advanced properties
-    Field<float, 3> viscosityEnergy;     // Frictional energy
-    Field<float, 3> ionizationEnergy;         //Ionization energy
+    Field<float, 3> viscosityEnergy;      // Frictional energy
+    Field<float, 3> vorticityEnergy;      // Rotational flow energy. Like in turbulence.
+    Field<float, 3> turbulenceEnergy;     // Chaotic flow energy. This is the sum of eddyEnergy and dissipationEnergy.
     Field<vec3, 3> convectionEnergy;      // Heat flow energy.
     Field<float, 3> diffusionEnergy;      // Mixing energy
+};
+
+// Computational/high-detail plasma simulation with molecular-level energetics
+struct ComputationalPlasmaField : public AdvancedPlasmaField {
+    // Additional computational properties
+    Field<float, 3> bulkModulusEnergy;           // Compression resistance energy
+    Field<float, 3> shearModulusEnergy;          // Deformation resistance energy
+    Field<float, 3> thermalConductivityEnergy;   // Heat transfer resistance energy
+    Field<float, 3> dissipationEnergy;           // Energy loss due to turbulence
+    Field<float, 3> entropyField;                // Disorder energy
+    Field<float, 3> chemicalEnergy;              // Chemical reaction energy
+    Field<float, 3> phaseTransitionEnergy;       // Phase change energy
+
+    // Eddie currents and turbulence emerge from strong local field coupling.
+    // Eddie Currents are loops of electric current induced in a conductor when exposed to a changing magnetic field (Faraday's Law of Induction)
+    Field<float, 3> eddyCurrentsEnergy;                  // Turbulent flow energy
+
+    void updateTurbulenceEnergy() {
+        // Update turbulenceEnergy, member of AdvancedFluidField, to properly represent the sum of eddyEnergy and dissipationEnergy
+    }
 };
 
 struct SuperconductorField : public SolidField {

@@ -10,11 +10,11 @@
  * - Adaptive precision and memory optimization
  */
 #pragma once
-#include "Core/Math/WaveletTransform.h"
-#include "Core/Geometry/AdaptiveMeshNode.h"
-#include "Core/Math/TopologyUtils.h"
-#include "EnergyTransfer.h"
 #include <vulkan/vulkan.h>
+#include "WaveletCompressor.h"
+#include "AdaptiveMesh.h"
+//#include "Core/Math/TopologyUtils.h"
+#include "WavePhysics.h"
 
 namespace hd {
 
@@ -31,23 +31,6 @@ struct PhysicsQuantization {
         uint8_t magnitude : 2;  // 00: fine, 01: medium, 10: coarse, 11: very coarse
         uint8_t value : 6;     // Actual delta value
     };
-};
-
-struct EnergyField {
-    // Field properties for continuous representation
-    float potential;      // Stored in 4-bit exp notation
-    float kinetic;       // Stored in 4-bit exp notation
-    vec3 gradient;       // Directional energy flow
-    float dissipation;   // Energy loss factor
-    
-    // Wave characteristics
-    float frequency;     // Oscillation frequency
-    float amplitude;     // Wave amplitude
-    float phase;        // Phase offset
-    
-    // Topology deformation
-    mat3 deformTensor;  // Deformation gradient tensor
-    float curvature;    // Local surface curvature
 };
 
 struct LocalSpace {

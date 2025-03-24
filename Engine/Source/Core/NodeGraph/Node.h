@@ -60,7 +60,7 @@
 
 		- Ask assistant to explain "class Node : public Object, public std::enable_shared_from_this<Node>" 
 		(shared_from_this).
-		- Document Object, Node, SceneNode and CommandNode so that they are self-documented, clear, easy to make sense of.
+		- Document Object, Node, Scene and Command so that they are self-documented, clear, easy to make sense of.
 		- Separar claramente funcionalidade Core de Avançada e Secundária.
  * - Move Debugging features (DebugInfo, functions) to Object. Override as needed, here.
  * - Move Streaming features to object. *Consult assistant.

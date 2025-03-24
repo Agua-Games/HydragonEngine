@@ -1,5 +1,5 @@
 // This shader is still a design sketch, not tested yet.
-// For the features it implements, see Core/Geometry/AdaptiveMeshNode.h
+// For the features it implements, see Core/Geometry/AdaptiveMesh.h
 #version 450
 
 layout(local_size_x = 256) in;

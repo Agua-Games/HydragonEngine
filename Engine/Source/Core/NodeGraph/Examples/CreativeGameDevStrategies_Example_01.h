@@ -3,7 +3,7 @@
 #pragma once
 #include "Core/NodeGraph/Node.h"
 #include "Core/Materials/MaterialSystem.h"
-#include "Core/SceneGraph/SceneNode.h"
+#include "Core/SceneGraph/Scene.h"
 
 namespace hd {
 
@@ -33,7 +33,7 @@ public:
                 .connect<TerrainNode>("terrain")
                     .setNoiseParams(0.5f, 2.0f)
                     .setDetailLevels(8)
-                .connect<VegetationNode>("vegetation")
+                .connect<Vegetation>("vegetation")
                     .setDensity(100.0f)
                     .setVariation(0.3f);
         }
@@ -65,7 +65,7 @@ public:
     struct VisualEffects {
         void setupEffectsPipeline() {
             auto fx = graph.create<EffectsNode>("fx")
-                .connect<ParticleNode>("particles")
+                .connect<Particle>("particles")
                     .setMaxParticles(10000)
                     .setSimulationQuality(SimQuality::High)
                 .connect<PostProcessNode>("post")

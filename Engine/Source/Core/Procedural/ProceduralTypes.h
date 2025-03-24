@@ -53,7 +53,7 @@ enum class SystemDomain {
     Procedural      // Concrete procedural generation
 };
 
-// Procedural structure parameters (from MaterialNode)
+// Procedural structure parameters (from Material)
 struct ProceduralStructureParams {
     ProceduralStructureType type = ProceduralStructureType::Organic;
     float regularity = 0.5f;     // 0 = chaotic, 1 = regular

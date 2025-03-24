@@ -11,9 +11,9 @@
 #include "ProceduralTypes.h"
 #include "ProceduralEvolutionNode.h"
 #include "ProceduralNode.h"
-#include "PatternNode.h"
+#include "Pattern.h"
 #include "ProceduralStructureNode.h"
-#include "NoiseNode.h"
+#include "Noise.h"
 
 namespace hd {
 

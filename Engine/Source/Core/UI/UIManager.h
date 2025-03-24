@@ -9,10 +9,12 @@
  * Wrapper for window creation, input and UI functionality. Leverages glfw, Dear imgui, imgui-node-editor and other third-party libraries.
  * 
  * TODO:
- * - Change UIManager to be a class (EditorUIManager), which inherits from a base UIManager class.
+ * - Change UIManager to be a class (EditorUIManager or HydragonEditorUIManager), which inherits from a base UIManager class. 
+ * - Place HydragonEditorUIManager inside of Core/UI/Editor/ and the base class (UIManager) in Core/UI/Base.
  * - Study if it's the case of wrapping Imgui's main functions into methods to avoid the lower capital case mess imgui uses for functions.
  * - Refactor the architecture to use classes, inheritance, encapsulation, more well-structured code, instead of namespace + free-functions.
- * - Also use classes & methods for the sub-editors.
+ * - Maybe also use classes & methods for the sub-editors. In this case they are UI nodes themselves. If leaving them as namespaces only, they're
+ * like UI implementations that could be inside of HydragonEditorUIManager but were place in separate files for better separation.
  * - Move here the initialization, update and cleanup code blocks currently in main.cpp responsible for glfw, imgui, steps.
  */
 #pragma once

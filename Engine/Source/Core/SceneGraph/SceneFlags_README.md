@@ -75,20 +75,20 @@ struct SceneFlags {
 } // namespace hd
 ````
 
-2. Usage in SceneNode:
+2. Usage in Scene:
 
-````cpp path=Engine/Source/Core/SceneGraph/SceneNode.h mode=EDIT
-class SceneNode {
+````cpp path=Engine/Source/Core/SceneGraph/Scene.h mode=EDIT
+class Scene {
 public:
     SceneFlags flags;  // Only 4 bytes for all flags
     
     // Fluent interface for flag manipulation
-    SceneNode& enableCulling(bool enable = true) {
+    Scene& enableCulling(bool enable = true) {
         flags.setFlag(SceneFlag::Culling, enable);
         return *this;
     }
     
-    SceneNode& configureCulling(bool frustum, bool occlusion, bool distance) {
+    Scene& configureCulling(bool frustum, bool occlusion, bool distance) {
         flags.setFlag(SceneFlag::FrustumCulling, frustum);
         flags.setFlag(SceneFlag::OcclusionCulling, occlusion);
         flags.setFlag(SceneFlag::DistanceCulling, distance);
@@ -109,7 +109,7 @@ public:
 
 ````cpp path=Engine/Source/Core/SceneGraph/Examples/SceneFlags_Usage.cpp mode=EDIT
 // Example 1: Basic flag manipulation
-SceneNode node;
+Scene node;
 node.flags.setFlag(SceneFlag::Culling, true);
 node.flags.setFlag(SceneFlag::GPUInstancing, true);
 

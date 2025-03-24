@@ -109,7 +109,7 @@ std::string_view StringID::toString() const {
 
 3. Usage example:
 
-````cpp path=Engine/Source/Core/SceneGraph/SceneNode.h mode=EDIT
+````cpp path=Engine/Source/Core/SceneGraph/Scene.h mode=EDIT
 struct SceneInfo : public NodeInfo {
     StringID layerPath;                    // Instead of std::string
     std::vector<StringID> references;      // Instead of std::vector<std::string>

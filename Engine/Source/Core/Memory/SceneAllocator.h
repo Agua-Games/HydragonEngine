@@ -192,7 +192,7 @@ public:
 
     // 5. Separate pools for different data types
     struct MemoryPools {
-        PoolAllocator<SceneNode> nodePool;
+        PoolAllocator<Scene> nodePool;
         PoolAllocator<std::string> stringPool;
         PoolAllocator<RuntimeVariant> variantPool;
     };

@@ -6,7 +6,7 @@
  */
 #if 0
 #include "Engine.h"
-#include "SceneNode.h"
+#include "Scene.h"
 #include "VehiclePhysics.h"
 #include "WeatherSystem.h"
 #include "AudioNode.h"
@@ -21,7 +21,7 @@ public:
         auto& graph = Engine::getInstance().getNodeGraph();
 
         // Track and environment
-        auto scene = std::make_shared<SceneNode>("MountainCircuit");
+        auto scene = std::make_shared<Scene>("MountainCircuit");
         scene->loadGeometry("Tracks/Mountain/Track.usd")
              ->setProperty("materialQuality", 0.9f);
 
