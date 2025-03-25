@@ -9,6 +9,10 @@
  * - AudioManager is a singleton class that manages the audio playback.
  * - It is responsible for playing, pausing, stopping, and managing the audio system.
  * - It uses the FMOD library for audio playback.
+ * - To understand the Audio system, the function of each node:
+ * 
+ *      AudioFile --> AudioClip (for settings, some FX) --> AudioProcessor (for FX, modulation. Or use EQ, etc.) --> Montage --> AudioManager
+ * 
  * 
  */
 #pragma once
@@ -17,6 +21,7 @@
 #include <unordered_map>
 #include "Node.h"
 #include "Wave.h"
+#include "PhysicsFields.h"
 #include "PhysicsTypes.h"
 #include "AcousticProcessor.h"
 /* #include "AudioPool.h"           // Nice suggestions for interfaces

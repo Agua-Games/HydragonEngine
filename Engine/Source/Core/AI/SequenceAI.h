@@ -37,9 +37,11 @@ class SequenceAI : public Node {
 public:
     // === Allocation, Initialization, Loading ===
     explicit SequenceAI(const SequenceAIInfo& info = SequenceAIInfo())
-        : Node(info) {}   
+        : Node(info) {}
     initialize() override {}
     load() override {}
+
+    std::vector<Node> queuedActions;        // Queued actions std::vector. Uses Node class to accept ConditionAI, ActionAI, etc
 
     // === Processing ===
     void processNodeGraph() override {
@@ -50,7 +52,7 @@ public:
     // === Cleanup ===
     void unload() override {}
     void cleanup() override {}
-    ~SequenceAI() = default;     // Default destructor
+    ~SequenceAI() = default;                // Default destructor
 };
 
 } // namespace hd

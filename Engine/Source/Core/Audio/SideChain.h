@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include "Node.h"
 #include "Wave.h"
+#include "PhysicsFields.h"
 #include "PhysicsTypes.h"
 #include "AcousticProcessor.h"
 /* #include "AudioPool.h"           // Nice suggestions for interfaces
@@ -32,8 +33,16 @@ struct SideChainInfo : public NodeInfo {
     SideChainInfo() {
         NodeType = "Audio/SideChain";
         inputs = {
-            "AudioSignal",   // Audio signal to apply sidechain compression to
-            "SideChainParams"  // Sidechain parameters
+            "AudioSignal",      // Audio signal to apply sidechain compression to
+            "Source",           // Audio signal to use as the sidechain source
+            "Amount",           // Amount of sidechain compression to apply
+            "Attack",           // Sidechain attack time
+            "Release",          // Sidechain release time
+            "Threshold",        // Sidechain threshold
+            "Ratio",            // Sidechain compression ratio
+            "MakeupGain",       // Makeup gain to apply after sidechain compression
+            "Randomize",        // Whether to randomize the sidechain compression
+            "SideChainParams"   // Sidechain parameters
         };
         outputs = {
             "SideChainSignal",  // Sidechain-compressed audio signal
@@ -49,6 +58,13 @@ public:
         : Node(info) {}   
     initialize() override {}
     load() override {}
+
+    float amount = 0.0f;
+    float attack = 0.0f;
+    float release = 0.0f;
+    float threshold = 0.0f;
+    float ratio = 0.0f;
+    float makeupGain = 0.0f;
 
     // === Processing ===
     void processNodeGraph() override {

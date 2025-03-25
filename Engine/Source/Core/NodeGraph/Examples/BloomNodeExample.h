@@ -5,6 +5,7 @@
  * @brief This file contains examples of how to setup a node graph in code.
  */
 
+ #if 0
 class BloomNodeExample : public Node {
 public:
     BloomNodeExample() {
@@ -20,3 +21,4 @@ public:
             .category("Appearance");
     }
 };
+#endif

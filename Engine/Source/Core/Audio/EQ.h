@@ -17,6 +17,8 @@
 #include <unordered_map>
 #include "Node.h"
 #include "Wave.h"
+#include "PhysicsFields.h"
+#include "AudioFile.h"
 #include "PhysicsTypes.h"
 #include "AcousticProcessor.h"
 /* #include "AudioPool.h"           // Nice suggestions for interfaces
@@ -32,12 +34,17 @@ struct EQInfo : public NodeInfo {
     EQInfo() {
         NodeType = "Audio/EQ";
         inputs = {
-            "AudioSignal",   // Audio signal to equalize
-            "EQParams"  // Equalizer parameters
+            "AudioSignal",
+            "Lowcut",   
+            "Highcut", 
+            "BandParams", 
+            "Gain",
+            "QFactor",      // Quality factor
+            "EQParams"
         };
         outputs = {
-            "EqualizedSignal",  // Equalized audio signal
-            "EQMetrics"  // Equalizer performance metrics
+            "EqualizedSignal",
+            "EQMetrics"
         };
     }
 };
@@ -50,7 +57,14 @@ public:
     initialize() override {}
     load() override {}
 
+    float lowcut = 0.0f;
+    float highcut = 0.0f;
+    float gain = 0.0f;
+    float qFactor = 0.0f;
+
     // === Processing ===
+    void addBand(float frequency, float gain, float qFactor);
+    void removeBand(float frequency);
     void processNodeGraph() override {
         update();
     }

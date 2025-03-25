@@ -22,6 +22,10 @@ struct BloomInfo : public PostProcessInfo {
         NodeType = "Rendering/PostProcess/Bloom";
         inputs = {
             "RenderedImage",   // Rendered image to apply bloom to
+            "Intensity",   // Bloom intensity
+            "Threshold",   // Bloom threshold
+            "Radius",   // Bloom radius
+            "Quality",   // Bloom quality
             "BloomParams"  // Bloom parameters
         };
         outputs = {
@@ -38,6 +42,11 @@ public:
         : PostProcess(info) {}   
     initialize() override {}
     load() override {}
+
+    float Intensity = 1.0f;
+    float Threshold = 1.0f;
+    float Radius = 1.0f;
+    float Quality = 1.0f;
 
     // === Processing ===
     void processNodeGraph() override {

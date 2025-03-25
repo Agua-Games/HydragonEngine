@@ -7,17 +7,17 @@
 
 #if 0
 
-#include "Core/Engine.h"
-#include "Core/Network/NetworkManager.h"
-#include "Core/Physics/PhysicsWorld.h"
-#include "Core/Gameplay/TeamManager.h"
-#include "Core/NodeGraph/Node.h"
+#include "Engine.h"
+#include "NetworkManager.h"
+#include "WavePhysics.h"
+#include "TeamManager.h"
+#include "Node.h"
 
 namespace hd {
 
 class MultiplayerArenaSetup_Example_01 : public Node {
 public:
-    void setup() {                              // Going to be replace with Initialize()
+    void setup() {                                  // Going to be replace with Initialize()
         auto& engine = Engine::getInstance();
         auto& graph = engine.getNodeGraph();
 
@@ -29,7 +29,7 @@ public:
                .setMaxPlayers(32);
 
         // Arena scene
-        ArenaScene arena("BattleArena");
+        ArenaScene arena("BattleArena");                // ArenaScene is a custom node
         arena.loadGeometry("Arenas/Cyberpunk/Main.usd")
              .setLightingSetup("Dynamic")
              .enableDestructibles(true)
@@ -57,7 +57,7 @@ public:
                .enableKillcam(true);
 
         // Physics setup
-        PhysicsWorld physics;
+        WavePhysics physics;
         physics.setSimulationRate(240)
                .setGravity(Vector3(0, -9.81f, 0))
                .enableContinuousDetection(true)
@@ -111,7 +111,7 @@ private:
         gameplay.setMatchFlow(flow);
     }
 
-    void setupNetworkPrediction(NetworkManager& network, PhysicsWorld& physics) {
+    void setupNetworkPrediction(NetworkManager& network, WavePhysics& physics) {
         PredictionSystem prediction;
         prediction.setLookAhead(2) // ticks
                  .setMaxExtrapolation(0.2f) // seconds

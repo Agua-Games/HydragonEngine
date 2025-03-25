@@ -3,31 +3,32 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ *      - The idea is to have sensible defaults so that the user can focus on the unique aspects of their game.
  */
 
  #if 0
-// Audio mixing/processing
-auto audio = graph.create<AudioMixerNode>("gameMixer")
-    .connect<AudioTrackNode>("music")
-        .clip("audio/music.ogg")
+// Audio processing chain
+auto audio = graph.create<AudioProcessor>("mainAudio")
+    .connect<AudioClip>("music")
+        .file("audio/music.ogg")
         .volume(0.8f)
-        .loop(true)
-        .connect<ReverbNode>("reverb")
+        .looping(true)
+        .connect<Reverb>("reverb")
             .roomSize(0.8f)
             .damping(0.5f)
             .wetLevel(0.3f)
-        .connect<CompressorNode>("compressor")
+        .connect<Compressor>("compressor")
             .threshold(-12.0f)
             .ratio(4.0f)
             .attack(0.01f)
             .release(0.1f)
-    .connect<AudioTrackNode>("sfx")
+    .connect<AudioClip>("sfx")
         .volume(1.0f)
-        .connect<EQNode>("eq")
+        .connect<EQ>("eq")
             .lowcut(20.0f)
             .highcut(20000.0f)
             .addBand(100.0f, 1.0f, 0.7f)
-    .connect<SideChainNode>("duckMusic")
+    .connect<SideChain>("duckMusic")
         .source("sfx")
         .target("music")
         .amount(0.5f)

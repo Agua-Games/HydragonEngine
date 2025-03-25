@@ -17,6 +17,8 @@
 #include <unordered_map>
 #include "Node.h"
 #include "Wave.h"
+#include "PhysicsFields.h"
+#include "AudioFile.h"
 #include "PhysicsTypes.h"
 #include "AcousticProcessor.h"
 /* #include "AudioPool.h"           // Nice suggestions for interfaces
@@ -32,12 +34,16 @@ struct ReverbInfo : public NodeInfo {
     ReverbInfo() {
         NodeType = "Audio/Reverb";
         inputs = {
-            "AudioSignal",   // Audio signal to apply reverb to
-            "ReverbParams"  // Reverb parameters
+            "AudioSignal",
+            "RoomSize",  
+            "Damping",  
+            "WetLevel", 
+            "DryLevel", 
+            "ReverbParams" 
         };
         outputs = {
-            "ReverbSignal",  // Reverb-applied audio signal
-            "ReverbMetrics"  // Reverb performance metrics
+            "ReverbSignal",
+            "ReverbMetrics"
         };
     }
 };
@@ -49,6 +55,11 @@ public:
         : Node(info) {}   
     initialize() override {}
     load() override {}
+
+    float roomSize = 0.0f;
+    float damping = 0.0f;
+    float wetLevel = 0.0f;
+    float dryLevel = 0.0f;
 
     // === Processing ===
     void processNodeGraph() override {

@@ -54,6 +54,10 @@ public:
     void initialize();
 
     // === Processing ===
+    void setViewMatrix(const glm::mat4& viewMatrix);
+    void setProjectionMatrix(const glm::mat4& projectionMatrix);
+    void setViewport(const glm::ivec4& viewport);
+    vois setClearColor(const glm::vec4& clearColor);
     void processNodeGraph() {
         updateViewMatrix();
         updateProjectionMatrix();

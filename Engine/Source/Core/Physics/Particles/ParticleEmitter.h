@@ -2,11 +2,12 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ProcEmitter.h
- * @brief ProcEmitter represents a procedural emitter node in the engine's node graph.
+ * @file ParticleEmitter.h
+ * @brief ParticleEmitter represents a procedural emitter node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
- * - ProcEmitter nodes are used to emit particles procedurally based on density fields and rules.
+ * - ParticleEmitter nodes are used to emit traditional particles procedurally based on density fields and rules.
+ * - It has strong built-in procedural support, and can be used to create complex traditional particle systems.
  * 
  * TODO:
  * - Update the whole content to match the latest Object and Node design.

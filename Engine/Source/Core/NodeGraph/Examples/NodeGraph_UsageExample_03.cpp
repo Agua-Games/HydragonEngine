@@ -30,13 +30,13 @@ auto& collider = rigidBody.connect<BoxCollider>()
 
 // Example 3: Audio mixer with strongly typed parameters
 auto& audioMixer = Engine::get().audio().createMixer("sfx")
-    .addTrack<AudioTrack>("music")
+    .addTrack<AudioClip>("music")
         .setVolume(0.8f)
         .setFadeTime(2.0f)
         .addEffect<ReverbEffect>()
             .setRoomSize(0.7f)
             .setDamping(0.3f)
-    .addTrack<AudioTrack>("ambient")
+    .addTrack<AudioClip>("ambient")
         .setVolume(0.4f)
         .addEffect<LowPassFilter>()
             .setCutoff(1000.0f);

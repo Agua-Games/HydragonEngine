@@ -25,10 +25,10 @@ struct TriggerInfo : public NodeInfo {
         NodeType = "Physics/Trigger";
         
         inputs = {
-            "Shape",            // Trigger shape
-            "Material",        // Material properties
-            "CollisionMesh",   // Collision mesh
-            "PhysicsProperties"// Physics properties
+            "solidShape",           // Trigger shape
+            "Material",             // Material properties
+            "solidShapeMesh",       // Collision mesh
+            "PhysicsProperties"     // Physics properties
         };
         
         outputs = {
@@ -48,6 +48,7 @@ public:
     load() override {}
 
     // === Processing ===
+    void setVolume(const Volume& volume);
     void processNodeGraph() override {
         update();
     }

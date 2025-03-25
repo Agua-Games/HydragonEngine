@@ -7,6 +7,7 @@
  * 
  * ARCHITECTURAL NOTES:
  * - ParticleSystem nodes are used to simulate and render traditional particle systems.
+ * - We try to support traditional particle systems by hooking them with WavePhysics, through proper conversions to waves, EnergyTransfer (=spawn) events, etc.
  * - It supports traditional particle systems, like fire, smoke, snow, etc.
  * - It supports procedural particle systems, like flocking, swarming, etc.
  * 

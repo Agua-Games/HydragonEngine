@@ -91,6 +91,9 @@
 
 namespace hd {
 
+/*
+ * @brief Metadata and attributes for the node
+ */
 struct NodeInfo : public ObjectInfo {
     std::string nodeType;               
     std::vector<std::string> inputs;   

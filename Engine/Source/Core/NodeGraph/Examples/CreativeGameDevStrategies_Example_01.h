@@ -21,16 +21,16 @@ public:
     struct SystemIntegration {
         // Game Systems
         void setupGameplaySystems() {
-            auto gameplay = graph.create<GameplayNode>("gameplay")
-                .connect<PhysicsNode>("physics")
-                .connect<AINode>("ai")
-                .connect<AudioNode>("audio");
+            auto gameplay = graph.create<GameplayManager>("gameplay")
+                .connect<PhysicsPhenomenon>("physics")
+                .connect<AIAgent>("ai")
+                .connect<AudioPlayer>("audio");
         }
 
         // Procedural Generation
         void setupProceduralSystems() {
-            auto procGen = graph.create<ProceduralNode>("procGen")
-                .connect<TerrainNode>("terrain")
+            auto procGen = graph.create<ProcOrchestrator>("procGen")
+                .connect<Terrain>("terrain")
                     .setNoiseParams(0.5f, 2.0f)
                     .setDetailLevels(8)
                 .connect<Vegetation>("vegetation")
@@ -40,7 +40,7 @@ public:
 
         // Material Evolution
         void setupMaterialEvolution() {
-            auto matEvo = graph.create<MaterialEvolutionNode>("matEvo")
+            auto matEvo = graph.create<MaterialEvolution>("matEvo")
                 .setFitnessFunction([](const Material& mat) {
                     // Evaluate material quality
                     return mat.performance * 0.6f + 
@@ -54,7 +54,7 @@ public:
     // Real-time Content Adaptation
     struct ContentAdaptation {
         void setupAdaptiveContent() {
-            auto adapter = graph.create<ContentAdapterNode>("adapter")
+            auto adapter = graph.create<QualityAdaptation>("adapter")
                 .setPerformanceTarget(60.0f)  // fps
                 .setQualityThreshold(0.8f)
                 .enableDynamicLOD(true);
@@ -64,11 +64,11 @@ public:
     // Visual Effects Pipeline
     struct VisualEffects {
         void setupEffectsPipeline() {
-            auto fx = graph.create<EffectsNode>("fx")
+            auto fx = graph.create<PhysicsPhenomenon>("fx")
                 .connect<Particle>("particles")
                     .setMaxParticles(10000)
                     .setSimulationQuality(SimQuality::High)
-                .connect<PostProcessNode>("post")
+                .connect<PostProcess>("post")
                     .enableBloom(true)
                     .enableDOF(true)
                     .setAmbientOcclusion(AOQuality::High);

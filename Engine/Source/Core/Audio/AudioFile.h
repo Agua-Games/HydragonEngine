@@ -9,6 +9,9 @@
  * - AudioFile is a class that represents an audio file in the engine's node graph.
  * - It is used to load and manage audio files.
  * - It uses the FMOD library for audio file management.
+ * - To understand the Audio system, the function of each node:
+ * 
+ *      AudioFile --> AudioClip (for settings, some FX) --> AudioProcessor (for FX, modulation. Or use EQ, etc.) --> Montage --> AudioManager
  * 
  */
 #pragma once
@@ -17,6 +20,7 @@
 #include <unordered_map>
 #include "Node.h"
 #include "Wave.h"
+#include "PhysicsFields.h"
 #include "PhysicsTypes.h"
 #include "AcousticProcessor.h"
 /* #include "AudioPool.h"           // Nice suggestions for interfaces

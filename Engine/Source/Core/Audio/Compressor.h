@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include "Node.h"
 #include "Wave.h"
+#include "PhysicsFields.h"
 #include "PhysicsTypes.h"
 #include "AcousticProcessor.h"
 /* #include "AudioPool.h"           // Nice suggestions for interfaces
@@ -31,12 +32,16 @@ struct CompressorInfo : public NodeInfo {
     CompressorInfo() {
         NodeType = "Audio/Compressor";
         inputs = {
-            "AudioSignal",   // Audio signal to compress
-            "CompressorParams"  // Compressor parameters
+            "AudioSignal",  
+            "Threshold", 
+            "Ratio",   
+            "Attack",           // Compression attack time
+            "Release"           // Compression release time
+            "CompressorParams" 
         };
         outputs = {
-            "CompressedSignal",  // Compressed audio signal
-            "CompressorMetrics"  // Compressor performance metrics
+            "CompressedSignal",
+            "CompressorMetrics"
         };
     }
 };
@@ -48,6 +53,11 @@ public:
         : Node(info) {}   
     initialize() override {}
     load() override {}
+
+    float threshold = 0.0f;
+    float ratio = 0.0f;
+    float attack = 0.0f;
+    float release = 0.0f;
 
     // === Processing ===
     void processNodeGraph() override {

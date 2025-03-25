@@ -2,8 +2,8 @@
  * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file StateMachineNode.h
- * @brief StateMachineNode represents a state machine node in the engine's node graph.
+ * @file StateMachine.h
+ * @brief StateMachine represents a state machine node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
  * - State machine nodes are used to represent and process state machines.
@@ -17,12 +17,13 @@
 #pragma once
 #include "Node.h"
 #include "Object.h"
+#include <unordered_map>
 
 namespace hd {
 
-struct StateMachineNodeInfo : public NodeInfo {
-    StateMachineNodeInfo() {
-        NodeType = "StateMachineNode";
+struct StateMachineInfo : public NodeInfo {
+    StateMachineInfo() {
+        NodeType = "StateMachine";
         
         inputs = {
             "CurrentState",  // Current state of the state machine
@@ -37,22 +38,34 @@ struct StateMachineNodeInfo : public NodeInfo {
     }
 };
 
-class StateMachineNode : public Node {
+class StateMachine : public Node {
 public:
     // === Allocation, Initialization, Loading ===
-    explicit StateMachineNode(const StateMachineNodeInfo& info = StateMachineNodeInfo())
+    explicit StateMachine(const StateMachineInfo& info = StateMachineInfo())
         : Node(info) {}
     void initialize() override {}
     void load() override {}
 
+    std::unordered_map<std::string, std::string> states;    // Map of states and their corresponding animation paths
+    std::string currentState;                               // Current state of the state machine
+    std::string nextState;                                  // Next state of the state machine
+
     // === Processing ===
+    void addState(const std::string& name, const std::string& animationPath); // Add an animation state to the state machine
+    void addTransition(const std::string& fromState, 
+        const std::string& toState, 
+        const std::string& condition, 
+        float crossfadeDuration); // Add a transition between two states
+    void loadAsync() override {}
     void stream() override {}
     void process() override {}
     void update() override {}
     void processNodeGraph() override {}
 
     // === Cleanup ===
+    void unload() override {} 
     void cleanup() override {}
+    ~StateMachine() = default;     // Default destructor
 };
 
 } // namespace hd
