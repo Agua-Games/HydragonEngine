@@ -3,16 +3,17 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ *      - The idea is to have sensible defaults so that the user can focus on the unique aspects of their game.
  */
 #if 0
-#include "Core/Engine.h"
-#include "Core/Scene/Scene.h"
-#include "Core/Effects/PostProcess.h"
-#include "Core/Audio/AudioNode.h"
-#include "Core/Particles/ParticleSystem.h"
-#include "Core/Physics/PhysicsNode.h"
-#include "Core/Gameplay/TriggerNode.h"
-#include "Core/NodeGraph/Node.h"
+#include "Engine.h"
+#include "Scene.h"
+#include "PostProcess.h"
+#include "AudioFile.h"
+#include "ParticleSystem.h"
+#include "WavePhysics.h"
+#include "Trigger.h"
+#include "Node.h"
 
 namespace hd {
 
@@ -28,7 +29,7 @@ public:
         scene->setLightingSetup("DynamicBattleField");
 
         // Combat area trigger zones
-        auto combatTrigger = std::make_shared<TriggerNode>("CombatZone");
+        auto combatTrigger = std::make_shared<Trigger>("CombatZone");
         combatTrigger->setVolume(Box(Vector3(-50, 0, -50), Vector3(50, 20, 50)));
         
         // Dynamic particle effects for combat
@@ -38,20 +39,20 @@ public:
                      ->setProperty("particleLife", 2.0f);
 
         // Combat music system
-        auto musicSystem = std::make_shared<AudioNode>("CombatMusic");
+        auto musicSystem = std::make_shared<AudioFile>("CombatMusic");
         musicSystem->loadBank("Music/Combat/Intensity.bank");
         musicSystem->setProperty("crossfadeTime", 2.0f);
 
         // Physics setup for destructible elements
-        auto physics = std::make_shared<PhysicsNode>("ArenaPhysics");
+        auto physics = std::make_shared<WavePhysics>("ArenaPhysics");
         physics->setGravity(Vector3(0, -9.81f, 0));
         physics->enableDebris(true);
 
         // Post-process chain
         auto postProcess = std::make_shared<PostProcess>("CombatPostProcess");
-        postProcess->addEffect<BloomEffect>()
-                   ->addEffect<MotionBlurEffect>()
-                   ->addEffect<ColorGradingEffect>("LUTs/Combat.cube");
+        postProcess->addEffect<Bloom>()
+                   ->addEffect<MotionBlur>()
+                   ->addEffect<ColorGrading>("LUTs/Combat.cube");
 
         // Connect the nodes
         graph.connect(combatTrigger, "OnEnter", musicSystem, "IncreaseCombatIntensity");

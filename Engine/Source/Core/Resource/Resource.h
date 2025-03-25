@@ -10,18 +10,53 @@
  * - Refactor the sketch to match the latest Object and Node design.
  */
 #pragma once
+#include <vulkan/vulkan.h>
+#include <string>
+#include <unordered_map>
 #include "Node.h"
 #include "Resource.h"
 
 namespace hd {
 
+struct ResourceInfo : public NodeInfo {
+    ResourceInfo() {
+        NodeType = "Resource";
+        inputs = {
+            "ResourcePath",     // Path to the resource
+            "ResourceData",     // Resource data
+            "ResourceMetadata"  // Resource metadata
+        };
+        outputs = {
+            "LoadedResource",   // Loaded resource
+            "ResourceStatus",   // Resource loading status
+            "ResourceMetadata"  // Resource metadata
+        }
+    }
+};
+
 // Node (usage/view)
 class Resource : public Node {
-    std::shared_ptr<Resource> resource;
-    // This is from first design sketch. Vulkan code should use proper wrappers
-    VkImage image;
-    VkBuffer buffer;
-    VkShaderModule shaderModule;
+    public:
+    explicit Resource(const ResourceInfo& info = ResourceInfo())
+        : Node(info) {}
+    initialize() override {}
+    load() override {}
+
+    // === Resource Management ===
+    void loadResource(const std::string& resourcePath);
+    void unloadResource(const std::string& resourcePath);
+    void reloadResource(const std::string& resourcePath);
+
+    // === Processing ===
+    void processNodeGraph() override {
+        update();
+    }
+    void update();
+
+    // === Cleanup ===
+    void unload() override {}
+    void cleanup() override {}
+    ~Resource() = default;     // Default destructor
 };
 
 } // namespace hd

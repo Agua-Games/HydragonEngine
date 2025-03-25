@@ -2,13 +2,12 @@
  * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ParentLink.h
- * @brief Header file for the ParentLink class.
+ * @file FollowLink.h
+ * @brief Header file for the FollowLink class.
  * 
  * ARCHITECTURAL NOTES:
- * - ParentLink is a class that represents a parent link in Hydragon.
- * - It is used to link a node to another node as a parent transform.
- * - It supports parenting only translation, rotation, or scale, or any combination of them. And also supports custom transformations.
+ * - FollowLink is a class that represents a follow link in Hydragon.
+ * - It is used to follow a node to another node.
  * - It supports linking arbitrary data types, such as position, rotation, scale, color, etc. And has built-in support for modulation with
  * procedural features, using ProceduralPatternData.
  * - It supports linking multiple nodes to a single node.
@@ -23,26 +22,26 @@
 
 namespace hd {
 
-struct ParentLinkInfo : public NodeInfo {
-    ParentLinkInfo() {
-        NodeType = "Logic/ParentLink";
+struct FollowLinkInfo : public NodeInfo {
+    FollowLinkInfo() {
+        NodeType = "Logic/FollowLink";
         
         inputs = {
-            "SourceNode",  // Node to parent
-            "TargetNode",  // Node to parent to
+            "SourceNode",  // Node to follow
+            "TargetNode",  // Node to follow to
             "Offset"       // Optional offset
         };
         
         outputs = {
-            "ParentedNode" // Parented node
+            "FollowedNode" // Followed node
         };
     }
 };
 
-class ParentLink : public Node {
+class FollowLink : public Node {
 public:
-    // === Allocation, Initialization, Loading ===
-    explicit ParentLink(const ParentLinkInfo& info = ParentLinkInfo())
+    // === Allocation, Initialization, Loading === 
+    explicit FollowLink(const FollowLinkInfo& info = FollowLinkInfo())
         : Node(info) {}
     initialize() override {}
     load() override {}
@@ -56,7 +55,7 @@ public:
     // === Cleanup ===
     void unload() override {}
     void cleanup() override {}
-    ~ParentLink() = default;     // Default destructor
+    ~FollowLink() = default;     // Default destructor
 };
 
 } // namespace hd

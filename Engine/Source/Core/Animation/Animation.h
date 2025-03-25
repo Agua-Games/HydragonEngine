@@ -7,7 +7,8 @@
  * 
  * ARCHITECTURAL NOTES:
  * - Animation is a class that represents an animation in Hydragon.
- * - It is used to animate any value with support for time-varying interpolation.
+ * - It is used to animate any value with support for time-varying interpolation, such as position, rotation, scale, color, etc. 
+ * - It can also be used to animate any other type of data.
  * - It supports different interpolation modes, such as linear, cubic, and spline interpolation.
  * - It supports different easing functions, such as ease-in, ease-out, and ease-in-out.
  * - It offers built-in support for procedural modification of imported animations, and for procedural animation generation.

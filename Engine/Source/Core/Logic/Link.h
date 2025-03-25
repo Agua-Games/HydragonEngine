@@ -2,13 +2,18 @@
  * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ParentLink.h
- * @brief Header file for the ParentLink class.
+ * @file Link.h
+ * @brief Header file for the Link class.
  * 
  * ARCHITECTURAL NOTES:
- * - ParentLink is a class that represents a parent link in Hydragon.
- * - It is used to link a node to another node as a parent transform.
- * - It supports parenting only translation, rotation, or scale, or any combination of them. And also supports custom transformations.
+ * - Link is a class that represents a link in Hydragon.
+ * - It is used to link a node to another node.
+ * - It is the most basic link type, the base class for all other links. For more advanced specialized links see:
+ *      - ParentLink
+ *      - PointLink
+ *      - OrientLink
+ *      - AimLink
+ *      - FollowLink
  * - It supports linking arbitrary data types, such as position, rotation, scale, color, etc. And has built-in support for modulation with
  * procedural features, using ProceduralPatternData.
  * - It supports linking multiple nodes to a single node.
@@ -23,26 +28,26 @@
 
 namespace hd {
 
-struct ParentLinkInfo : public NodeInfo {
-    ParentLinkInfo() {
-        NodeType = "Logic/ParentLink";
+struct LinkInfo : public NodeInfo {
+    LinkInfo() {
+        NodeType = "Logic/Link";
         
         inputs = {
-            "SourceNode",  // Node to parent
-            "TargetNode",  // Node to parent to
+            "SourceNode",  // Node to link
+            "TargetNode",  // Node to link to
             "Offset"       // Optional offset
         };
         
         outputs = {
-            "ParentedNode" // Parented node
+            "LinkedNode" // Linked node
         };
     }
 };
 
-class ParentLink : public Node {
+class Link : public Node {
 public:
     // === Allocation, Initialization, Loading ===
-    explicit ParentLink(const ParentLinkInfo& info = ParentLinkInfo())
+    explicit Link(const LinkInfo& info = LinkInfo())
         : Node(info) {}
     initialize() override {}
     load() override {}
@@ -56,7 +61,7 @@ public:
     // === Cleanup ===
     void unload() override {}
     void cleanup() override {}
-    ~ParentLink() = default;     // Default destructor
+    ~Link() = default;     // Default destructor
 };
 
 } // namespace hd

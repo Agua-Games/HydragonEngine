@@ -7,7 +7,7 @@
  * 
  * ARCHITECTURAL NOTES:
  * - AnimationProcessor is a class that represents an animation processor in Hydragon.
- * - It is used to process animations and their associated data.
+ * - It is used to process animations and their associated data, such as skeleton animations, curve IK, full body IK, single chain IK, etc.
  * - It offers built-in support for procedural modification of imported animations, and for procedural animation generation.
  * - It uses the Vulkan API for animation processing.
  * 

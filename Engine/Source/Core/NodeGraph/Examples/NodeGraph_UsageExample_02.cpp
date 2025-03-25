@@ -88,7 +88,7 @@ auto& postProcess = Renderer::get()
 
 // Example 5: AI behavior tree using nodes
 auto& npc = Scene::current()
-    .add<AIController>("guard")
+    .add<ControllerAI>("guard")
         .add<BehaviorTree>()
             .sequence("patrol")
                 .add<MoveToPoint>()

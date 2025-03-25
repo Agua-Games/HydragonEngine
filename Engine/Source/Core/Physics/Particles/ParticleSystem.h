@@ -2,11 +2,13 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file Particle.h
- * @brief Particle represents a particle system node in the engine's node graph.
+ * @file ParticleSystem.h
+ * @brief ParticleSystem represents a traditional particle system node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
- * - Particle nodes are used to simulate and render particle systems.
+ * - ParticleSystem nodes are used to simulate and render traditional particle systems.
+ * - It supports traditional particle systems, like fire, smoke, snow, etc.
+ * - It supports procedural particle systems, like flocking, swarming, etc.
  * 
  * TODO:
  * - Update the whole content to match the latest Object and Node design.
@@ -30,11 +32,11 @@ struct ParticleInfo : public NodeInfo {
         
         inputs = {
             "Emitter",           // Emitter properties
-            "ParticleProps",     // Particle properties
+            "ParticleProps",     // ParticleSystem properties
             "Forces",            // External forces
             "Collisions",        // Collision parameters
             "LifetimeParams",    // Lifetime control
-            "MaterialParams",    // Particle material
+            "MaterialParams",    // ParticleSystem material
             "ProceduralIntent",  // For procedural variation
             "SimSpace"           // World/Local space
         };
@@ -54,9 +56,9 @@ struct ParticleInfo : public NodeInfo {
     }
 };
 
-class Particle : public Node {
+class ParticleSystem : public Node {
 public:
-    explicit Particle(const ParticleInfo& info = ParticleInfo())
+    explicit ParticleSystem(const ParticleInfo& info = ParticleInfo())
         : Node(info) {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         particlePatternId = orchestrator.registerPattern(createDefaultParticlePattern());
@@ -74,7 +76,7 @@ public:
         
         // Create particle pattern parameters
         ProceduralStructureParams params;
-        params.type = ProceduralStructureType::Particle;
+        params.type = ProceduralStructureType::ParticleSystem;
         params.emitterData = emitter;
         params.particleProps = particleProps;
         params.forceFields = forces;
