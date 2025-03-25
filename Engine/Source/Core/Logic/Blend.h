@@ -1,18 +1,17 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
  * @file Blend.h
  * @brief Blend represents a blend node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
- * - Blend nodes are used to blend between two values, from simple integers to complex patterns.
- * 
- * TODO:
- * - Update the whole content to match the latest Object and Node design.
- * - Create .cpp file and move the implementation there.
- * - Organize the existing code into logical sections and functions.
- * - Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
+ * - Blend nodes are used to blend between an arbitrary number of values (using arrays/vectors of ProceduralPatternData), from simple integers to complex patterns.
+ * - They can be used to create smooth transitions between different values, such as colors, textures, and other visual elements.
+ * - It supports various blend modes, such as linear, multiply, screen, and overlay.
+ * - It supports custom blend curves for non-linear blending.
+ * - Also supports built-in procedural generation of blend masks, transition maps and simple blending logic.
+ * - Also supports multiple layers of blending, in fact working as a Layered Blend node.
  */
 #pragma once
 #include <vector>
@@ -24,7 +23,7 @@ namespace hd {
 
 struct BlendInfo : public NodeInfo {
     BlendInfo() {
-        NodeType = "Procedural/Blend";
+        NodeType = "Logic/Blend";
         
         inputs = {
             "SourceA",

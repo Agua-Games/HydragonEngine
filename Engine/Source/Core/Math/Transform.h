@@ -2,8 +2,8 @@
  * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file TransformNode.h
- * @brief TransformNode represents a transform node in the engine's node graph.
+ * @file Transform.h
+ * @brief Transform represents a transform node in the engine's node graph.
  * 
  * ARCHITECTURAL NOTES:
  * - Transform nodes are used to apply transformations to objects.
@@ -102,11 +102,11 @@ public:
     }
 };
 
-// TransformNode: A node that supports extendable transformations
-class TransformNode : public Node {
+// Transform: A node that supports extendable transformations
+class Transform : public Node {
 public:
     // Constructor with default transformations
-    TransformNode(const NodeInfo& info)
+    Transform(const NodeInfo& info)
         : Node(info) {
         addDefaultTransformations();
     }

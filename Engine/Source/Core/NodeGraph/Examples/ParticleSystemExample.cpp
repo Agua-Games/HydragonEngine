@@ -27,7 +27,7 @@ auto particles = NodeGraph::create("effects")
 
 // Example 2: Audio processing chain
 auto audio = NodeGraph::create("audio")
-    .add<AudioSourceNode>("musicTrack")
+    .add<AcousticSourceNode>("musicTrack")
         .volume(0.8f, runtime)
         .pitch(1.0f, runtime)
         .connect("output", "reverb.input")

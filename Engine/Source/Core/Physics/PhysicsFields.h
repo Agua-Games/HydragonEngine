@@ -327,6 +327,21 @@ struct FluidField : public EMField {
     applyGravitationalMomentum(const GravitationalField& gravitationalField) {
         // Apply gravitational force to the fluid field momentumPotential
     }
+
+    void propagateAcousticWave(const EnergyTransferEvent& event) {
+        // Compute fluid dynamics effects
+        float compressionFactor = computeCompression(event);
+        float turbulenceFactor = computeTurbulence(event);
+        
+        // Generate appropriate wave patterns
+        if (turbulenceFactor > m_thresholds.turbulenceThreshold) {
+            spawnTurbulenceWaves(event.position, turbulenceFactor);
+        }
+        
+        if (compressionFactor > m_thresholds.compressionThreshold) {
+            spawnPressureWave(event.position, compressionFactor);
+        }
+    }
 };
 
 // Advanced fluid simulation with detailed energy interactions
@@ -475,6 +490,21 @@ struct SolidField : public EMField {
 
     applyGravitationalMomentum(const GravitationalField& gravitationalField) {
         // Apply gravitational force to the fluid field momentumPotential
+    }
+
+    void propagateAcousticWave(const EnergyTransferEvent& event) {
+        // Compute fluid dynamics effects
+        float compressionFactor = computeCompression(event);
+        float turbulenceFactor = computeTurbulence(event);
+        
+        // Generate appropriate wave patterns
+        if (turbulenceFactor > m_thresholds.turbulenceThreshold) {
+            spawnTurbulenceWaves(event.position, turbulenceFactor);
+        }
+        
+        if (compressionFactor > m_thresholds.compressionThreshold) {
+            spawnPressureWave(event.position, compressionFactor);
+        }
     }
 };
 

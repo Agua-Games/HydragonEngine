@@ -38,11 +38,11 @@ auto& building = Scene::current()
 
 // Example 4: Audio system setup
 auto& audio = Engine::get().audio()
-    .add<AudioSource>("background")
+    .add<AcousticSource>("background")
         .file("music/ambient.ogg")
         .loop(true)
         .volume(0.5f)
-    .add<AudioListener>()
+    .add<AcousticListener>()
         .connect<Transform>();
 
 // Example 5: Processing chain

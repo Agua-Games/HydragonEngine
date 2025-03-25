@@ -16,6 +16,15 @@
 #include <string>
 #include <unordered_map>
 #include "Node.h"
+#include "Wave.h"
+#include "PhysicsTypes.h"
+#include "AcousticProcessor.h"
+/* #include "AudioPool.h"           // Nice suggestions for interfaces
+#include "WavePool.h"
+#include "AudioAsset.h"
+#include "AudioConfig.h"
+#include "AudioEvent.h"
+#include "AudioTypes.h" */
 
 namespace hd {
 
@@ -43,6 +52,63 @@ public:
     void load() override;
 
     // === Processing ===
+    void updateResolution(const vec3& listenerPos) {
+        // Adjust wave sampling based on distance and importance
+        for (auto& wave : m_activeWaves) {
+            float distance = (wave.position - listenerPos).length();
+            float importance = wave.getEnergy() / (distance * distance);
+            
+            wave.setSamplingResolution(
+                computeAdaptiveResolution(importance)
+            );
+        }
+    }
+
+    void computeWaveInteraction(const AcousticWave& wave, const vec3& position, const MediumProperties& medium);
+
+    void handleEnergyTransfer(const EnergyTransferEvent& event) {
+        if (event.getKineticEnergy() > m_config.acousticThreshold) {
+            spawnAcousticWave(event);
+        }
+    }
+    void handleCollision(const CollisionEvent& event) {
+        if (event.getImpactEnergy() > m_config.acousticThreshold) {
+            spawnAcousticWave(event);
+        }
+    }
+    void spawnAcousticWave(const EnergyTransferEvent& event) {
+        auto wave = AcousticWave(event.getPosition(), event.getKineticEnergy());
+        m_wavePool.spawn(wave);
+    }
+    void processAcousticWave(const AcousticWave& wave) {
+        if (wave.isWithinRange(getPosition(), m_config.acousticRange)) {
+            processWavefront(wave);
+        }
+    }
+
+    void processWavefront(const AcousticWave& wave) {
+        auto interaction = computeWaveInteraction(
+            wave.getSignature(),
+            getPosition(),
+            wave.getMediumProperties()
+        );
+
+        auto modulated = m_acousticProcessor.process(
+            interaction,
+            getCurrentMedium()
+        );
+
+        for (const auto& asset : wave.getMatchedAssets()) {
+            playModulatedAudio(asset, modulated);
+        }
+    }
+
+    void playModulatedAudio(const AudioAsset& asset, const AcousticModulation& modulation) {
+        auto audio = m_audioPool.acquire(asset);
+        audio.applyModulation(modulation);
+        audio.play();
+    }
+
     void processNodeGraph() override;     // This is called every frame. It updates the audio system.
     void update();
 
