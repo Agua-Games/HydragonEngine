@@ -54,15 +54,21 @@ public:
     void initialize();
 
     // === Processing ===
+    void processNode() override {
+ 
+    }
     void setViewMatrix(const glm::mat4& viewMatrix);
     void setProjectionMatrix(const glm::mat4& projectionMatrix);
     void setViewport(const glm::ivec4& viewport);
-    vois setClearColor(const glm::vec4& clearColor);
-    void () {
+    void setClearColor(const glm::vec4& clearColor);
+    void setClearDepth(float clearDepth);
+    void setClearStencil(int clearStencil);
+    void setRenderTarget(const std::string& renderTarget);
+    void setCameraShake(float intensity, float frequency);
+    void update() {
         updateViewMatrix();
         updateProjectionMatrix();
     }
-    void update();
     void updateViewMatrix();
     void updateProjectionMatrix();
 
