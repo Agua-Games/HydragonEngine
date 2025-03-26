@@ -12,25 +12,28 @@
  * 
  */
 #pragma once
+#include <functional>
+#include <vector>
 #include "Node.h"
 #include "Material.h"
+#include "MaterialTypes.h"
 
 namespace hd {
 
 struct MaterialEvolutionInfo : public NodeInfo {
     MaterialEvolutionInfo() {
-        NodeType = "Rendering/MaterialEvolution";
+        nodeType = "Rendering/MaterialEvolution";
         inputs = {
-            "InitialMaterial",  // Initial material to evolve
-            "FitnessFunction",  // Fitness function to evaluate materials
-            "Constraints",      // Constraints for material evolution
-            "MutationRate",     // Mutation rate for genetic algorithm
-            "PopulationSize",   // Population size for genetic algorithm
-            "Generations",      // Number of generations to evolve
-            "Seed"              // Random seed for genetic algorithm
+            "initialMaterial",  // Initial material to evolve
+            "fitnessFunction",  // Fitness function to evaluate materials
+            "constraints",      // Constraints for material evolution
+            "mutationRate",     // Mutation rate for genetic algorithm
+            "populationSize",   // Population size for genetic algorithm
+            "generations",      // Number of generations to evolve
+            "seed"              // Random seed for genetic algorithm
         };
         outputs = {
-            "EvolvedMaterial"   // Evolved material
+            "evolvedMaterial"   // Evolved material
         };
     }
 };
@@ -39,14 +42,34 @@ class MaterialEvolution : public Node {
 public:
     // === Allocation, Initialization, Loading ===
     explicit MaterialEvolution(const MaterialEvolutionInfo& info = MaterialEvolutionInfo())
-        : Node(info) {}   
+        : Node(info) {}
+      
+    // Defaults
+    FitnessFunction fitnessFunction = nullptr;
+    std::vector<Constraint> constraints = {};
+    MutationType mutationStrategy = MutationType::Random;
+    float mutationRate = 0.1f;
+    int populationSize = 100;
+    int generations = 50;
+    int seed = 42;
+
     initialize() override {}
     load() override {}
 
     // === Processing === 
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+        fitnessFunction = getInputValue<FitnessFunction>("fitnessFunction");
+        constraints = getInputValue<std::vector<Constraint>>("constraints");
+        mutationRate = getInputValue<float>("mutationRate");
+        mutationStrategy = getInputValue<MutationType>("mutationStrategy");
+        populationSize = getInputValue<int>("populationSize");
+        generations = getInputValue<int>("generations");
+        seed = getInputValue<int>("seed");
     }
+
+    void adapt();
+    void evolve();
+    void mutate();     // Mutation function for genetic algorithm
     void update();
 
     // === Cleanup ===

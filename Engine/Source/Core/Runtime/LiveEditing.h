@@ -18,7 +18,7 @@ namespace hd {
 
 struct LiveEditingInfo : public NodeInfo {
     LiveEditingInfo() {
-        NodeType = "LiveEditing/LiveEditing";
+        NodeType = "Runtime/LiveEditing";
         
         inputs = {
             "EditMode",      // Edit mode, like object selection, etc.
@@ -33,6 +33,10 @@ struct LiveEditingInfo : public NodeInfo {
     }
 };
 
+/**
+ * @class LiveEditing
+ * @brief Represents a live editing session in the engine's node graph.
+ */
 class LiveEditing : public Node {
 public:
     // === Allocation, Initialization, Loading === 
@@ -42,8 +46,11 @@ public:
     load() override {}
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void enableLivePreview(bool enable);
+    void setSaveInterval(float interval);       // seconds
+    void connectDebugger(bool connect);
+    void processNode() override {
+ 
     }
     void update();
 

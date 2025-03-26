@@ -49,7 +49,7 @@ public:
     explicit Harmonizer(const HarmonizerInfo& info = HarmonizerInfo())
         : Node(info) {}
 
-    void processNodeGraph() override {
+    void () override {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         auto patternA = getInputValue<ProceduralPatternData>("PatternA");

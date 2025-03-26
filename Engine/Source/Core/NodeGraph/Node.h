@@ -44,6 +44,10 @@
  * - Inputs and outputs are defined using the Property system. Input and output Ports are the UI representation of input and output Properties.
  * 
  * TODO:
+  * - Refactor all nodes in the codebase to use the same and proper methods to get and set input values from ports (GetInputValue, SetInputValue). I started doing this here 
+ * in Scene.h. This is part of the cleanup pass after design sketch phase, before beginning to test the whole system, first "Vulkan-less" (a graphical adventure game with
+ * output/logging text to a imgui window), to validate it's working. Then we move on to refactoring the Vulkan core implementation.
+ * 
  * - Move implementation (of functions) to .cpp file.
  * - Questions to ask assistant:
  *          - Modify struct PortValidationState to hold a more comprehensive set of Port features, and call it PortInfo. Unify all port info into it.
@@ -405,19 +409,59 @@ public:
         return ports;
     }
 
+    /**
+     * @brief Get the value of a port. Type-safe port system.
+     * Leverages: Port lookup using hash map; Type validation; Explicit Error handling; Cached indices; Multiple access patterns.
+     */
     template<typename T>
-    bool setInputValue(const std::string& name, const T& value);
+    T getInputValue(const std::string& portName) {
+        // Fast lookup using cached index
+        auto it = m_inputPortIndices.find(portName);
+        if (it == m_inputPortIndices.end()) {
+            throw std::runtime_error("Port not found: " + portName);
+        }
+
+        const NodePort& port = m_inputPorts[it->second];
+        
+        // Type validation
+        if (!port.isType<T>()) {
+            throw std::runtime_error(
+                "Type mismatch for port '" + portName + 
+                "': expected " + typeid(T).name() + 
+                ", got " + port.getTypeInfo().name
+            );
+        }
+
+        T value;
+        if (!port.getValue(value)) {
+            throw std::runtime_error("Failed to get value for port: " + portName);
+        }
+
+        return value;
+    }
+
+    // Optional: Non-throwing variant
+    template<typename T>
+    std::optional<T> tryGetInputValue(const std::string& portName) noexcept {
+        try {
+            return getInputValue<T>(portName);
+        } catch (const std::exception&) {
+            return std::nullopt;
+        }
+    }
+
+    // Optional: Default value variant
+    template<typename T>
+    T getInputValueOr(const std::string& portName, const T& defaultValue) noexcept {
+        auto value = tryGetInputValue<T>(portName);
+        return value.value_or(defaultValue);
+    }
 
     /**
      * @brief Set the value of a port. Type-safe port system.
-     * @param portName Name of the port.
-     * @param value Value to set.
      */
     template<typename T>
-    void setPortValue(const std::string& portName, T&& value);
-
-    template<typename T>
-    T getPortValue(const std::string& portName) const;
+    void setInputValue(const std::string& portName, const T& value);
 
     // === Validation ===
     std::shared_ptr<CommandValidator> validator;
@@ -537,15 +581,23 @@ public:
     virtual void streamAsync();
 
     // === Processing ===
-    virtual void process() = 0;
+    /**
+     * @brief Process this node's data. Responsible for:
+     * Input value retrieval; Core node computation; Output value setting; State transformation.
+     */
+    virtual void processNode() = 0;     // Abstract method for derived classes to implement
 
+    /**
+     * @brief Update this node's state. Responsible for:
+     *  Lifecycle management; Cache handling; Dirty state checking; Execution flow control; Streaming state management; Error handling.
+     */
     void update(float deltaTime) override {
         if (!isInitialized()) return;
 
-        // Base class update
+        // Call base class update
         Object::update(deltaTime);
 
-        // update node state
+        // Update node state
         if (isDirty) {
             onDirty();
             isDirty = false;
@@ -557,7 +609,7 @@ public:
         }
 
         // Process node
-        process();
+        processNode();
 
         // Update cache if needed
         if (canCache()) {
@@ -703,15 +755,29 @@ protected:
 
 private:
     // === Port Management ===
+    // Cache port indices for fast lookup
+    std::unordered_map<std::string, size_t> m_inputPortIndices;
+    std::vector<NodePort> m_inputPorts;
+
+    /*
     virtual std::string getPortType(const std::string& portName) const = 0;
     virtual std::string getPortDefaultValue(const std::string& portName) const = 0;
     virtual std::string getPortValidation(const std::string& portName) const;
     virtual bool validatePort(const std::string& portName, const std::any& value) const;
     virtual std::string getPortDescription(const std::string& portName) const = 0;
     virtual bool isPortRequired(const std::string& portName) const = 0;
+    */
 
     // === Caching & Optimization ===
     uint64_t calculateInputHash() const;
+
+    // Cache port indices for fast lookup
+    void initializePortCache() {
+        m_inputPortIndices.clear();
+        for (size_t i = 0; i < m_inputPorts.size(); ++i) {
+            m_inputPortIndices[m_inputPorts[i].getName()] = i;
+        }
+    }
     void storeOutputsToCache();
     void restoreOutputsFromCache();
 

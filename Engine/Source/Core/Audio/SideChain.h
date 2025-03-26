@@ -31,22 +31,22 @@ namespace hd {
 
 struct SideChainInfo : public NodeInfo {
     SideChainInfo() {
-        NodeType = "Audio/SideChain";
+        nodeType = "Audio/SideChain";
         inputs = {
-            "AudioSignal",      // Audio signal to apply sidechain compression to
-            "Source",           // Audio signal to use as the sidechain source
-            "Amount",           // Amount of sidechain compression to apply
-            "Attack",           // Sidechain attack time
-            "Release",          // Sidechain release time
-            "Threshold",        // Sidechain threshold
-            "Ratio",            // Sidechain compression ratio
-            "MakeupGain",       // Makeup gain to apply after sidechain compression
-            "Randomize",        // Whether to randomize the sidechain compression
-            "SideChainParams"   // Sidechain parameters
+            "audioSignal",      // Audio signal to apply sidechain compression to
+            "source",           // Audio signal to use as the sidechain source
+            "amount",           // Amount of sidechain compression to apply
+            "attack",           // Sidechain attack time
+            "release",          // Sidechain release time
+            "threshold",        // Sidechain threshold
+            "ratio",            // Sidechain compression ratio
+            "makeupGain",       // Makeup gain to apply after sidechain compression
+            "randomize",        // Whether to randomize the sidechain compression
+            "sideChainParams"   // Sidechain parameters
         };
         outputs = {
-            "SideChainSignal",  // Sidechain-compressed audio signal
-            "SideChainMetrics"  // Sidechain performance metrics
+            "sideChainSignal",  // Sidechain-compressed audio signal
+            "sideChainMetrics"  // Sidechain performance metrics
         };
     }
 };
@@ -59,16 +59,19 @@ public:
     initialize() override {}
     load() override {}
 
+    AudioSignal* source = nullptr;
     float amount = 0.0f;
     float attack = 0.0f;
     float release = 0.0f;
     float threshold = 0.0f;
     float ratio = 0.0f;
     float makeupGain = 0.0f;
+    bool randomize = false;
+    std::unordered_map<std::string, float> sideChainParams;
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

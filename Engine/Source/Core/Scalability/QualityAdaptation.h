@@ -41,8 +41,10 @@ public:
     load() override {}
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void setAdaptationInterval(float interval);
+    void setQualityThresholds(const std::map<Performance, float>& thresholds);
+    void processNode() override {
+ 
     }
     void update();
 

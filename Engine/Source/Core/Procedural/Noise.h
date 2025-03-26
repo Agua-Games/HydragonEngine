@@ -67,7 +67,7 @@ public:
         return NoiseInfo.outputs;
     }
 
-    void processNodeGraph() override {
+    void () override {
         auto noiseType = getInputValue<NoiseType>("NoiseType");
         uint32_t seed = getInputValue<uint32_t>("Seed");
         float scale = getInputValue<float>("Scale");

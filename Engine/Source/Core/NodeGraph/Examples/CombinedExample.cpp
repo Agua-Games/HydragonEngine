@@ -4,11 +4,11 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  *      - The idea is to have sensible defaults so that the user can focus on the unique aspects of their game.
+ *      - The commands here may be in sketch phase. We'll try to consolidate them as we go.
  */
 
- #if 0
 // Clean, fluent style for node creation
-auto scene = graph.create<Scene>("mainScene")
+auto scene = graph.create<DynamicEnvLighting>("envLighting")
     .skybox("sky/hdri.exr")
     .ambient({0.1f, 0.1f, 0.1f})
     .fog(true)
@@ -33,9 +33,10 @@ auto physics = scene.add<WavePhysics>("dynamic")
     });
 
 // The same node can be accessed traditionally elsewhere
-if (physics.getNucleusPotential() > 10.0f) {
-    physics.solidShape<SolidBoxShape>({1,1,1});
-    physics.solidShape.setDynamics(false);
+auto collider = scene.add<Solid>("collider");
+if (collider.solidField.nuclearPotential > 10.0f) {
+    collider.Shape[0].setMaterialArchetype("metal");
+    collider.solidField.solidShape.setDynamic(false);
 }
 
 #endif

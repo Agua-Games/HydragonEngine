@@ -25,14 +25,14 @@ public:
         // 2. Dynamic Content Pipeline
         auto pipeline = graph.create<AssetProcessor>("pipeline")
             .enableAsyncProcessing(true)
-            .setOptimizationLevel(OptLevel::Balanced)
-            .addStage<MeshProcessor>("meshes")
-            .addStage<TextureProcessor>("textures")
-            .addStage<MaterialProcessor>("materials");
+            .setOptimizationLevel(OptimizationLevel::Balanced)
+            .addStage("meshes", "MeshProcessor")
+            .addStage("textures", "TextureProcessor")
+            .addStage("materials", "MaterialProcessor");
 
         // 3. Real-time Adaptation System
         auto adaptation = graph.create<QualityAdaptation>("adaptation")
-            .setUpdateInterval(1.0f)  // seconds
+            .setAdaptationInterval(1.0f)  // seconds
             .setQualityThresholds({
                 {Performance::High, 0.8f},
                 {Performance::Medium, 0.6f},
@@ -40,9 +40,9 @@ public:
             });
 
         // 4. Creative Tools Integration
-        auto tools = graph.create<CreativeTools>("tools")
-            .enableLiveEditing(true)
-            .setAutoSave(300.0f)  // 5 minutes
+        auto tools = graph.create<LiveEditing>("liveEditing")
+            .enableLivePreview(true)
+            .setSaveInterval(300.0f)  // 5 minutes
             .connectDebugger(true);
 
         // Connect systems

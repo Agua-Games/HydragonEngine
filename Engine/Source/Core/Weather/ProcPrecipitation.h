@@ -58,7 +58,7 @@ public:
         }
     }
 
-    void processNodeGraph() override {
+    void () override {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
 
         // Get input values

@@ -85,7 +85,7 @@ public:
         for (const auto& task : executionPlan) {
             std::visit(overloaded{
                 [](const SingleNode& node) {
-                    node.ptr->process();
+                    node.ptr->processNode();
                 },
                 [](const CompiledSubgraphTask& subgraph) {
                     subgraph.execute();

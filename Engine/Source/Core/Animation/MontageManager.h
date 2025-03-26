@@ -19,18 +19,18 @@ namespace hd {
 
 struct MontageManagerInfo : public NodeInfo {
     MontageManagerInfo() {
-        NodeType = "Animation/MontageManager";
+        nodeType = "Animation/MontageManager";
         
         inputs = {
-            "Montages",        // Array of montages
-            "MontageState",    // Current state of the montage
-            "MontageSpeed",    // Speed of the montage
-            "MontageLoop"      // Whether the montage should loop
+            "montages",        // Array of montages
+            "montageState",    // Current state of the montage
+            "montageSpeed",    // Speed of the montage
+            "montageLoop"      // Whether the montage should loop
         };
         
         outputs = {
-            "ActiveMontages",  // Active montages
-            "MontageMetrics"   // Performance and quality metrics
+            "activeMontages",  // Active montages
+            "montageMetrics"   // Performance and quality metrics
         };
     }
 };
@@ -43,9 +43,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

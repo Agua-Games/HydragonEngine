@@ -21,16 +21,16 @@ namespace hd {
 
 struct AssetProcessorInfo : public NodeInfo {
     AssetProcessorInfo() {
-        NodeType = "Core/AssetProcessor";
+        nodeType = "Core/AssetProcessor";
         inputs = {
-            "AssetPath",     // Path to the asset
-            "AssetData",     // Asset data
-            "AssetMetadata"  // Asset metadata
+            "assetPath",     // Path to the asset
+            "assetData",     // Asset data
+            "assetMetadata"  // Asset metadata
         };
         outputs = {
-            "ProcessedAsset",   // Processed asset
-            "AssetStatus",   // Asset processing status
-            "AssetMetadata"  // Asset metadata
+            "processedAsset",   // Processed asset
+            "assetStatus",   // Asset processing status
+            "assetMetadata"  // Asset metadata
         }
     }
 };
@@ -41,11 +41,24 @@ public:
         : Node(info), AssetProcessorInfo(info) {}
     void initialize();
 
+    enum class OptimizationLevel {
+        Low,
+        Medium,
+        High
+    };
+
+    // Set default values
+    // (...)
+
     // === Allocation, Initialization, Loading ===
+    void enableAsyncProcessing(bool enable);
+    void setMaxConcurrentTasks(int maxTasks);
+    void setOptimizationLevel(OptimizationLevel level);
+    void addStage(const std::string& stageName, const std::string& stageType);
     void processAsset(const std::string& assetPath);
 
     // === Processing ===
-    void processNodeGraph() override;
+    void () override;
     void update();
 
     // === Cleanup ===

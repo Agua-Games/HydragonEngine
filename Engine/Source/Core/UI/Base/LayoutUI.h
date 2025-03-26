@@ -50,7 +50,7 @@ public:
     explicit LayoutUI(const LayoutInfo& info = LayoutInfo())
         : Node(info), LayoutInfo(info) {}
 
-    void processNodeGraph() override {
+    void () override {
         auto elements = getInputValue<std::vector<LayoutElement>>("Elements");
         auto container = getInputValue<ContainerConstraints>("Container");
         auto grid = getInputValue<GridSystem>("GridSystem");

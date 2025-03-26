@@ -9,6 +9,9 @@
  * - ConditionAI is a class that represents a AI condition in Hydragon.
  * - It is used to represent and process AI conditions.
  * - It uses the Vulkan API for condition AI processing.
+ * 
+ * @todo Declare-define all default member variables.
+ * @todo Assign all member variables to port inputs inside of processNode(). Also computeResult(), and setOutputValue() for all outputs.
  */
 #pragma once
 #include <vulkan/vulkan.h>
@@ -18,18 +21,18 @@ namespace hd {
 
 struct ConditionAIInfo : public NodeInfo {
     ConditionAIInfo() {
-        NodeType = "AI/ConditionAI";
+        nodeType = "AI/ConditionAI";
         
         inputs = {
-            "Condition",       // Condition data
-            "Environment",     // Environment data
-            "ProceduralParams" // Procedural parameters
+            "condition",       // Condition data
+            "environment",     // Environment data
+            "proceduralParams" // Procedural parameters
         };
         
         outputs = {
-            "ConditionResult", // Result of the condition
-            "BehaviorMetrics", // Performance and quality metrics
-            "ProceduralData"   // Generated procedural data
+            "conditionResult", // Result of the condition
+            "behaviorMetrics", // Performance and quality metrics
+            "proceduralData"   // Generated procedural data
         };
     }
 };
@@ -46,9 +49,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

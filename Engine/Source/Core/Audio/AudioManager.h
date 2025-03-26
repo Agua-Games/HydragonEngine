@@ -35,14 +35,14 @@ namespace hd {
 
 struct AudioManagerInfo : public NodeInfo {
     AudioManagerInfo() {
-        NodeType = "Audio/AudioManager";
+        nodeType = "Audio/AudioManager";
         inputs = {
-            "AudioClips",    // Array of audio clips
-            "AudioSettings"  // Audio settings
+            "audioClips",    // Array of audio clips
+            "audioSettings"  // Audio settings
         };
         outputs = {
-            "AudioStatus",   // Audio playback status
-            "AudioMetrics"   // Audio performance metrics
+            "audioStatus",   // Audio playback status
+            "audioMetrics"   // Audio performance metrics
         };
     }
 };
@@ -50,13 +50,25 @@ struct AudioManagerInfo : public NodeInfo {
 class AudioManager : public Node {
 public:
     // === Allocation, Initialization, Loading ===
+    AudioManager(const AudioManagerInfo& info = AudioManagerInfo());
     static AudioManager* getInstance();    // Get the singleton instance of the AudioManager.
 
     // These are called once, when the engine is initialized.
     void initialize() override;
     void load() override;
 
+    // Set default values
+    std::vector<AudioClip*> audioClips;
+    AudioSettings audioSettings;
+
     // === Processing ===
+    void processNode() override {
+        audioClips = getInputValue<std::vector<AudioClip*>>("audioClips");
+        audioSettings = getInputValue<AudioSettings>("audioSettings");
+    }
+    
+    void play(const std::string& audioClipName, const vec3& position);
+    void play(const std::string& audioClipName);
     void updateResolution(const vec3& listenerPos) {
         // Adjust wave sampling based on distance and importance
         for (auto& wave : m_activeWaves) {
@@ -114,7 +126,7 @@ public:
         audio.play();
     }
 
-    void processNodeGraph() override;     // This is called every frame. It updates the audio system.
+    void () override;     // This is called every frame. It updates the audio system.
     void update();
 
     // === Cleanup ===

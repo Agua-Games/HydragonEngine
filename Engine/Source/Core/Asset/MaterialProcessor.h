@@ -20,16 +20,16 @@ namespace hd {
 
 struct MaterialProcessorInfo : public AssetProcessorInfo {
     MaterialProcessorInfo() {
-        NodeType = "Core/MaterialProcessor";
+        nodeType = "Core/MaterialProcessor";
         inputs = {
-            "MaterialData",     // Material data
-            "TextureData",      // Texture data
-            "MaterialParams"    // Material parameters
+            "materialData",     // Material data
+            "textureData",      // Texture data
+            "materialParams"    // Material parameters
         };
         outputs = {
-            "ProcessedMaterial",   // Processed material
-            "MaterialStatus",   // Material processing status
-            "MaterialMetadata"  // Material metadata
+            "processedMaterial",   // Processed material
+            "materialStatus",   // Material processing status
+            "materialMetadata"  // Material metadata
         }
     }
 };
@@ -41,9 +41,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing === 
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

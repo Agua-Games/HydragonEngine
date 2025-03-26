@@ -75,19 +75,19 @@ public:
     }
 
     // === Streaming ===
-    // TODO: Study wether to nest processNodeGraph() and other processing functions here in load time. If so, conform the architecture in the other nodes to
+    // TODO: Study wether to nest () and other processing functions here in load time. If so, conform the architecture in the other nodes to
     // be unified, follow the same pattern
     std::future<void> loadAsync() override {
         if (isAsynchronous) {
             return std::async(std::launch::async, [this]() {
-                processNodeGraph();
+                ();
             });
         }
         return Node::loadAsync();
     }
 
     // === Processing ===
-    void processNodeGraph() override {
+    void () override {
         if (isAsynchronous) {
             executeAsyncCommand(std::index_sequence_for<inputs...>{});
         } else {

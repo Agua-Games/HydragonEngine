@@ -43,7 +43,7 @@ class MeshProcessor : public AssetProcessor {
         load() override {}
 
         // === Processing ===
-        void processNodeGraph() override {
+        void () override {
             update();
         }
         void update();

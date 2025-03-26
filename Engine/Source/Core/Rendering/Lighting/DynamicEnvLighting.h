@@ -22,28 +22,105 @@ struct DynamicEnvLightingInfo : public LightInfo {
     DynamicEnvLightingInfo() {
         NodeType = "Rendering/DynamicEnvLighting";
         inputs.insert(inputs.end(), {
-            "TimeOfDay",       // Time of day (day, night, etc.)
-            "Weather",         // Weather conditions (sunny, rainy, etc.)
-            "Season",          // Season (spring, summer, etc.)
-            "Location"         // Geographic location
+            "TimeOfDay",                 // Time of day (day, night, etc.)
+            "Weather",                   // Weather conditions (sunny, rainy, etc.)
+            "Season",                    // Season (spring, summer, etc.)
+            "Location",                  // Geographic location
+            "SkylightStrength",          // Strength of skylight
         });
         outputs.insert(outputs.end(), {
-            "DynamicLightData" // Dynamic light data for rendering
+            "DynamicLightData",          // Dynamic light data for rendering
+            "DynamicEnvironmentData"     // Dynamic environment data for rendering (e.g. skylight)
         });
     }
 };
 
 class DynamicEnvLighting : public Light {
 public:
+    // === Structure Definitions ===
+    struct DynamicLightData {
+        
+    };
+    struct DynamicEnvironmentData {
+        
+    };
+
+    struct Skylight {
+        vec3 color;
+        float intensity = 20000.0f;     // Based on real-world values, in lux (e.g. 20,000 lux for a clear sky) - this is normalized to 1.0f in the engine.
+        float quality;
+        std::string capturePath;
+        float captureInterval;
+    };
+
+    struct Sun {
+        vec3 color;
+        // Based on real-world values, in lux (e.g. 100,000 lux for direct sunlight, usually 90,000-120,000) - this is normalized to 1.0f in the engine.
+        float intensity = 100000.0f;
+        float quality;
+    };
+
+    struct Atmosphere {
+        float density;
+        float MieScattering;            // Mie scattering coefficient, sampled from the AtmosphereField. If absent use default value.
+        float MieAbsorption;            // Mie absorption coefficient, sampled from the AtmosphereField. If absent use default value.
+        float RayleighScattering;       // Rayleigh scattering coefficient, sampled from the AtmosphereField. If absent use default value.
+    };
+
+    struct Fog {
+        float density;
+        vec3 color;
+        float startDistance;
+        float endDistance;
+    };
+
+    struct Clouds {
+        float density;
+        vec3 color;
+        float startDistance;
+        float endDistance;
+    };
+
+    struct TimeOfDay {
+        float time;
+        // ...
+    };
+
+    struct Weather {
+        std::string type;
+        // ...
+    };
+
+    struct Season {
+        float 1.0f;         // Normalized season value (0.0f = winter, 0.25f = spring, 0.5f = summer, 0.75f = fall, 1.0f = winter)
+        // ...
+    };
+
+    struct Location {
+        float latitude;
+        float longitude;
+        // ...
+    };
+
     // === Allocation, Initialization, Loading ===
     explicit DynamicEnvLighting(const DynamicEnvLightingInfo& info = DynamicEnvLightingInfo())
         : Light(info) {}   
     initialize() override {}
     load() override {}
 
+    Skylight skylight;
+    Sun sun;
+    Fog fog;
+    Clouds clouds;
+    Atmosphere atmosphere;
+    Weather weather;
+    TimeOfDay timeOfDay;
+    Season season;
+    Location location;
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

@@ -21,26 +21,26 @@ namespace hd {
 
 struct AnimationControllerInfo : public AnimationInfo {
     AnimationControllerInfo() {
-        NodeType = "Animation/AnimationController";
+        nodeType = "Animation/AnimationController";
         
         inputs = {
-            "AnimationClip",     // Animation clip data
-            "Skeleton",          // Skeleton data 
-            "AnimationSpeed",    // Speed of the animation
-            "AnimationLoop",     // Whether the animation should loop
-            "Controls",          // Control parameters/interfaces
-            "Links",             // Links between animation, skeleton data (e.g. IK constraints), also arbitrary data - all with support for procedural modulation
-            "Influences",        // External influence factors
-            "Parameters",        // Animation parameters
-            "Targets"            // Target poses/positions
+            "animationClip",     // Animation clip data
+            "skeleton",          // Skeleton data 
+            "animationSpeed",    // Speed of the animation
+            "animationLoop",     // Whether the animation should loop
+            "controls",          // Control parameters/interfaces
+            "links",             // Links between animation, skeleton data (e.g. IK constraints), also arbitrary data - all with support for procedural modulation
+            "influences",        // External influence factors
+            "parameters",        // Animation parameters
+            "targets"            // Target poses/positions
         };
         
         outputs = {
-            "AnimatedSkeleton", // Animated skeleton data
-            "ControlState",     // Current control state
-            "PoseModification", // Modified pose data
-            "Feedback",         // Control feedback data
-            "Diagnostics"       // Debug/monitoring data
+            "animatedSkeleton", // Animated skeleton data
+            "controlState",     // Current control state
+            "poseModification", // Modified pose data
+            "feedback",         // Control feedback data
+            "diagnostics"       // Debug/monitoring data
         };
     }
 };
@@ -53,6 +53,9 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+    
     // === Processing ===
     // Control interfaces
     void setControlParameter(const std::string& name, float value);
@@ -67,8 +70,8 @@ public:
     float getControlValue(const std::string& name) const;
     bool isControlActive(const std::string& name) const;
     
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

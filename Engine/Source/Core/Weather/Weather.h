@@ -52,7 +52,7 @@ public:
         weatherPatternId = orchestrator.registerPattern(createDefaultWeatherPattern());
     }
 
-    void processNodeGraph() override {
+    void () override {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Process inputs

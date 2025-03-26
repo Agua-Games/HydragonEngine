@@ -32,18 +32,18 @@ namespace hd {
 
 struct ReverbInfo : public NodeInfo {
     ReverbInfo() {
-        NodeType = "Audio/Reverb";
+        nodeType = "Audio/Reverb";
         inputs = {
-            "AudioSignal",
-            "RoomSize",  
-            "Damping",  
-            "WetLevel", 
-            "DryLevel", 
-            "ReverbParams" 
+            "audioSignal",
+            "roomSize",  
+            "damping",  
+            "wetLevel", 
+            "dryLevel", 
+            "reverbParams" 
         };
         outputs = {
-            "ReverbSignal",
-            "ReverbMetrics"
+            "reverbSignal",
+            "reverbMetrics"
         };
     }
 };
@@ -60,10 +60,11 @@ public:
     float damping = 0.0f;
     float wetLevel = 0.0f;
     float dryLevel = 0.0f;
+    std::unordered_map<std::string, float> reverbParams;
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

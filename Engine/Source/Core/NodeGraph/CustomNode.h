@@ -18,7 +18,7 @@ public:
         setupFromTemplate();
     }
 
-    void process() override {                           // TODO: Move to implementation file
+    void processNode() override {                           // TODO: Move to implementation file
         if (m_Template["implementation"]["language"].as<std::string>() == "cpp") {
             executeCompiledCode();
         } else {

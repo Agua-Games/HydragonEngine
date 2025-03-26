@@ -17,15 +17,15 @@ namespace hd {
 
 struct GameplayManagerInfo : public NodeInfo {
     GameplayManagerInfo() {
-        NodeType = "Gameplay/GameplayManager";
+        nodeType = "Gameplay/GameplayManager";
         inputs = {
-            "GameplaySettings",  // Gameplay settings 
-            "GameplayData",      // Gameplay data
-            "GameplayState"      // Gameplay state
+            "gameplaySettings",  // Gameplay settings 
+            "gameplayData",      // Gameplay data
+            "gameplayState"      // Gameplay state
         };
         outputs = {
-            "GameplayStatus",  // Gameplay status
-            "GameplayMetrics"  // Gameplay performance metrics
+            "gameplayStatus",  // Gameplay status
+            "gameplayMetrics"  // Gameplay performance metrics
         };
     }
 };
@@ -38,9 +38,23 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    GameplaySettings gameplaySettings;
+    GameplayData gameplayData;
+    GameplayState gameplayState;
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+        gameplaySettings = getInputValue<GameplaySettings>("gameplaySettings");
+        gameplayData = getInputValue<GameplayData>("gameplayData");
+        gameplayState = getInputValue<GameplayState>("gameplayState");
+
+        // Process gameplay
+        auto gameplayStatus = updateGameplay(gameplaySettings, gameplayData, gameplayState);
+
+        // Set outputs
+        setOutputValue("gameplayStatus", gameplayStatus);
+        setOutputValue("gameplayMetrics", computeGameplayMetrics(gameplayStatus));
     }
     void update();
 

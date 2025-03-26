@@ -24,45 +24,60 @@ namespace hd {
 
 struct ColorGradingInfo : public NodeInfo {
     ColorGradingInfo() {
-        NodeType = "Design/ColorGrading";
+        nodeType = "Design/ColorGrading";
         
         inputs = {
-            "SourceImage",      // Input image
+            "sourceImage",      // Input image
             "LUT",             // Optional color lookup table
-            "Exposure",        // Exposure adjustment
-            "Contrast",        // Contrast adjustment
-            "Saturation",      // Saturation adjustment
-            "Temperature",     // Color temperature
-            "Tint",           // Green-Magenta tint
-            "Vibrance",       // Intelligent saturation
-            "ColorBalance"     // Shadows/Midtones/Highlights balance
+            "exposure",        // Exposure adjustment
+            "contrast",        // Contrast adjustment
+            "saturation",      // Saturation adjustment
+            "temperature",     // Color temperature
+            "tint",           // Green-Magenta tint
+            "vibrance",       // Intelligent saturation
+            "colorBalance"     // Shadows/Midtones/Highlights balance
         };
         
         outputs = {
-            "ProcessedImage",  // Color graded result
-            "Histogram",      // Color distribution data
-            "Waveform"        // Luminance distribution
+            "processedImage",  // Color graded result
+            "histogram",      // Color distribution data
+            "waveform"        // Luminance distribution
         };
     }
 };
 
 class ColorGrading : public Node<RenderTarget, HistogramData, WaveformData> {
 public:
+    // === Allocation, Initialization, Loading ===
     explicit ColorGrading(const ColorGradingInfo& info = ColorGradingInfo())
         : Node(info), GradingInfo(info) {}
+    initialize() override {}
+    load() override {}
 
-    void processNodeGraph() override {
-        auto source = getInputValue<RenderTarget>("SourceImage");
-        auto lut = getInputValue<RenderTarget>("LUT");
+    // Set default values
+    RenderTarget* source = nullptr;
+    RenderTarget* lut = nullptr;
+    float exposure = 0.0f;
+    float contrast = 0.0f;
+    float saturation = 0.0f;
+    float temperature = 0.0f;
+    float tint = 0.0f;
+    float vibrance = 0.0f;
+    glm::vec3 colorBalance = glm::vec3(0.0f);
+
+    // === Processing ===
+    void processNode() override {
+        source = getInputValue<RenderTarget>("sourceImage");
+        lut = getInputValue<RenderTarget>("LUT");
         
         // Get adjustment values
-        float exposure = getInputValue<float>("Exposure");
-        float contrast = getInputValue<float>("Contrast");
-        float saturation = getInputValue<float>("Saturation");
-        float temperature = getInputValue<float>("Temperature");
-        float tint = getInputValue<float>("Tint");
-        float vibrance = getInputValue<float>("Vibrance");
-        auto colorBalance = getInputValue<glm::vec3>("ColorBalance");
+        exposure =      getInputValue<float>("exposure");
+        contrast =      getInputValue<float>("contrast");
+        saturation =    getInputValue<float>("saturation");
+        temperature =   getInputValue<float>("temperature");
+        tint =          getInputValue<float>("tint");
+        vibrance =      getInputValue<float>("vibrance");
+        colorBalance =  getInputValue<glm::vec3>("colorBalance");
 
         // Process image
         auto result = processImage(source, lut, exposure, contrast, 
@@ -74,28 +89,18 @@ public:
         auto waveform = generateWaveform(result);
 
         // Set outputs
-        setOutputValue("ProcessedImage", result);
-        setOutputValue("Histogram", histogram);
-        setOutputValue("Waveform", waveform);
+        setOutputValue("processedImage", result);
+        setOutputValue("histogram", histogram);
+        setOutputValue("waveform", waveform);
     }
 
     void drawInNodeGraph() override {
-        ImGui::BeginGroup();
-        ImGui::Text("Color Grading");
         
-        drawInputPort("SourceImage", "Source");
-        drawInputPort("LUT", "LUT");
-        
-        // Draw sliders for adjustments
-        float exposure = getInputValue<float>("Exposure");
-        ImGui::SliderFloat("Exposure", &exposure, -5.0f, 5.0f);
-        setInputValue("Exposure", exposure);
-        
-        drawOutputPort("ProcessedImage", "Result");
-        drawOutputPort("Histogram", "Histogram");
-        
-        ImGui::EndGroup();
     }
+    // === Cleanup ===
+    void unload() override {}
+    void cleanup() override {}
+    ~ColorGrading() = default;     // Default destructor
 
 private:
     ColorGradingInfo GradingInfo;

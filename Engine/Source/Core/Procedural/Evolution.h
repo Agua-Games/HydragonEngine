@@ -33,13 +33,23 @@ struct EvolutionInfo : public NodeInfo {
             "SourcePattern",
             "TimeScale",
             "EvolutionRules",
-            "Constraints"
+            "Constraints",
+            "OrchestratorIntent",
+            "Seed",
+            "SystemWeights",
+            "MutationRate",                 // Rate of Evolution by mutation
+            "CrossoverRate",                // Rate of Evolution by crossover
+            "AdaptationRate",               // Rate of Evolution by adaptation
+            "GenerationSize",
+            "MaxGenerations",
+            "StabilityThreshold"
         };
         
         outputs = {
             "EvolvedPattern",
             "EvolutionState",
-            "TransitionMetrics"
+            "TransitionMetrics",
+            "PerformanceMetrics"
         };
 
         isSerializable = true;
@@ -48,8 +58,13 @@ struct EvolutionInfo : public NodeInfo {
     }
 };
 
+/**
+ * @class Evolution
+ * @brief Represents a procedural evolution node in the engine's node graph.
+ */
 class Evolution : public Node {
 public:
+    // === Allocation, Initialization, Loading ===
     explicit Evolution(const EvolutionInfo& info = EvolutionInfo())
         : Node(info) {
         // Register with orchestrator on creation
@@ -61,14 +76,11 @@ public:
             )
         );
     }
+    initialize() override {}
+    load() override {}
 
-    ~Evolution() {
-        // Cleanup registration
-        auto& orchestrator = ProceduralOrchestrator::getInstance();
-        orchestrator.unregisterPattern(m_evolutionPatternId);
-    }
-
-    void processNodeGraph() override {
+    // === Processing ===
+    void processNode() override {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Get inputs
@@ -78,7 +90,7 @@ public:
         
         // Initialize evolution if needed
         if (!m_evolutionState.currentGeneration) {
-            InitializeEvolution(sourcePattern);
+            initializeEvolution(sourcePattern);
         }
 
         // Get orchestrator's fine-tuning parameters
@@ -89,7 +101,7 @@ public:
         evolvePattern(evolutionRules, constraints);
         
         // Update orchestrator about evolution progress
-        eotifyOrchestrator();
+        notifyOrchestrator();
         
         // Set outputs
         setOutputValue("EvolvedPattern", m_evolutionState.bestPattern);
@@ -97,11 +109,45 @@ public:
         setOutputValue("TransitionMetrics", calculateTransitionMetrics());
     }
 
+    addEvaluator([](const auto& entity) {
+        // Evaluate entity fitness
+        return evaluateEntityFitness(entity);
+    });
+
+    void adapt();
+    void evolve();
+    void mutate();
+    void update();
+
+    // === Cleanup ===
+    void unload() override {}
+    void cleanup() override {}
+    ~Evolution() {
+        // Cleanup registration
+        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        orchestrator.unregisterPattern(m_evolutionPatternId);
+    }
+
 private:
+    // === Allocation, Initialization, Loading ===
     EvolutionState m_evolutionState;
     EvolutionParameters m_params;
     std::string m_evolutionPatternId;
 
+    void initializeEvolution(const ProceduralPatternData& source) {
+        m_evolutionState.populationPool.clear();
+        m_evolutionState.populationPool.push_back(source);
+        
+        // Generate initial population variations
+        for (size_t i = 0; i < INITIAL_POPULATION_SIZE; ++i) {
+            auto variant = createVariant(source, m_params.mutationRate);
+            if (validatePattern(variant)) {
+                m_evolutionState.populationPool.push_back(variant);
+            }
+        }
+    }
+
+    // === Processing ===
     void updateEvolutionParams(const ProceduralPatternData& orchestratorPattern) {
         // Update evolution parameters based on orchestrator's guidance
         if (orchestratorPattern.parameters.contains("mutationRate")) {
@@ -131,19 +177,6 @@ private:
         };
         
         orchestrator.propagateIntent(evolutionIntent);
-    }
-
-    void initializeEvolution(const ProceduralPatternData& source) {
-        m_evolutionState.populationPool.clear();
-        m_evolutionState.populationPool.push_back(source);
-        
-        // Generate initial population variations
-        for (size_t i = 0; i < INITIAL_POPULATION_SIZE; ++i) {
-            auto variant = createVariant(source, m_params.mutationRate);
-            if (validatePattern(variant)) {
-                m_evolutionState.populationPool.push_back(variant);
-            }
-        }
     }
 
     void evolvePattern(const OctaveParams& rules, const HarmonyParams& constraints) {

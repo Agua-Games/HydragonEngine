@@ -25,10 +25,13 @@ struct TriggerInfo : public NodeInfo {
         NodeType = "Physics/Trigger";
         
         inputs = {
+            "ShapeType",            // Type of the shape
             "solidShape",           // Trigger shape
             "Material",             // Material properties
             "solidShapeMesh",       // Collision mesh
-            "PhysicsProperties"     // Physics properties
+            "PhysicsProperties",
+            "OnEnter",              // Event callback for when an object enters the trigger
+            "OnExit",               // Event callback for when an object exits the trigger
         };
         
         outputs = {
@@ -41,6 +44,15 @@ struct TriggerInfo : public NodeInfo {
 
 class Trigger : public Node {
 public:
+    // === Structure Definitions ===
+    enum class ShapeType {
+        Box,
+        Sphere,
+        Cylinder,
+        Mesh,
+        Custom
+    };
+
     // === Allocation, Initialization, Loading ===
     explicit Trigger(const TriggerInfo& info = TriggerInfo())
         : Node(info) {}
@@ -48,9 +60,13 @@ public:
     load() override {}
 
     // === Processing ===
+    // Events
+    void OnEnter(const std::string& objectName);
+    void OnExit(const std::string& objectName);
+
     void setVolume(const Volume& volume);
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

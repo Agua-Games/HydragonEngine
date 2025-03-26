@@ -21,19 +21,19 @@ namespace hd {
 
 struct FullBodyIKInfo : public AnimationInfo {
     FullBodyIKInfo() {
-        NodeType = "Animation/FullBodyIK";
+        nodeType = "Animation/FullBodyIK";
         
         inputs = {
-            "Body",            // Body data
-            "AnimationClip",   // Animation clip data
-            "Time",            // Current time
-            "PlaybackSpeed",   // Playback speed
-            "Looping"          // Whether to loop the animation
+            "body",            // Body data
+            "animationClip",   // Animation clip data
+            "time",            // Current time
+            "playbackSpeed",   // Playback speed
+            "looping"          // Whether to loop the animation
         };
         
         outputs = {
-            "AnimatedBody",    // Animated body data
-            "AnimationMetrics" // Performance and quality metrics
+            "animatedBody",    // Animated body data
+            "animationMetrics" // Performance and quality metrics
         };
     }
 };
@@ -46,9 +46,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

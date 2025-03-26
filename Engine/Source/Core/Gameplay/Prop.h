@@ -21,30 +21,30 @@ namespace hd {
 
 struct PropInfo : public NodeInfo {
     PropInfo() {
-        NodeType = "Gameplay/Prop";
+        nodeType = "Gameplay/Prop";
         
         inputs = {
-            "Model",        // Model of the prop
-            "Position",     // Position of the prop
-            "Rotation",     // Rotation of the prop
-            "Scale",        // Scale of the prop
-            "Material",     // Material of the prop
-            "Animation",    // Animation of the prop
-            "Physics",      // Physics of the prop
-            "Collision",    // Collision of the prop
-            "Script"        // Script of the prop
+            "model",        // Model of the prop
+            "position",     // Position of the prop
+            "rotation",     // Rotation of the prop
+            "scale",        // Scale of the prop
+            "material",     // Material of the prop
+            "animation",    // Animation of the prop
+            "physics",      // Physics of the prop
+            "collision",    // Collision of the prop
+            "script"        // Script of the prop
         };
         
         outputs = {
-            "Model",        // Model of the prop
-            "Position",     // Position of the prop
-            "Rotation",     // Rotation of the prop
-            "Scale",        // Scale of the prop
-            "Material",     // Material of the prop
-            "Animation",    // Animation of the prop
-            "Physics",      // Physics of the prop
-            "Collision",    // Collision of the prop
-            "Script"        // Script of the prop
+            "model",        // Model of the prop
+            "position",     // Position of the prop
+            "rotation",     // Rotation of the prop
+            "scale",        // Scale of the prop
+            "material",     // Material of the prop
+            "animation",    // Animation of the prop
+            "physics",      // Physics of the prop
+            "collision",    // Collision of the prop
+            "script"        // Script of the prop
         };
     }
 };
@@ -56,10 +56,51 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    Model model;
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 scale;
+    Material material;
+    Animation animation;
+    Physics physics;
+    Collision collision;
+    Script script;
+
     // === Processing ===
+    void processNode() override {
+        model = getInputValue<Model>("model");
+        position = getInputValue<glm::vec3>("position");
+        rotation = getInputValue<glm::vec3>("rotation");
+        scale = getInputValue<glm::vec3>("scale");
+        material = getInputValue<Material>("material");
+        animation = getInputValue<Animation>("animation");
+        physics = getInputValue<Physics>("physics");
+        collision = getInputValue<Collision>("collision");
+        script = getInputValue<Script>("script");
+
+        // Process prop
+        auto propState = updateProp(model, position, rotation, scale, material, animation, physics, collision, script);
+
+        // Set outputs
+        setOutputValue("model", propState.model);
+        setOutputValue("position", propState.position);
+        setOutputValue("rotation", propState.rotation);
+        setOutputValue("scale", propState.scale);
+        setOutputValue("material", propState.material);
+        setOutputValue("animation", propState.animation);
+        setOutputValue("physics", propState.physics);
+        setOutputValue("collision", propState.collision);
+        setOutputValue("script", propState.script);
+
+    }
+    void interact();
+    void use();
+    void drop();
+    void pickUp();
     void update() override {}
     void processProp();
-    void processNodeGraph() override {
+    void () override {
         processProp(); 
     }
 

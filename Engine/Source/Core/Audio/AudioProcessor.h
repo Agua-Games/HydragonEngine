@@ -41,14 +41,14 @@ namespace hd {
 
 struct AudioProcessorInfo : public NodeInfo {
     AudioProcessorInfo() {
-        NodeType = "Audio/AudioProcessor";
+        nodeType = "Audio/AudioProcessor";
         inputs = {
-            "AudioSignal",   // Audio signal to process
-            "Reverb",
-            "Compression",
-            "Equalization",
-            "SideChain",
-            "AudioParams"
+            "audioSignal",   // Audio signal to process
+            "reverb",
+            "compressor",
+            "eq",
+            "sideChain",
+            "audioParams"
         };
         outputs = {
             "ProcessedSignal",
@@ -65,9 +65,14 @@ public:
     initialize() override {}
     load() override {}
 
-    Reverb reverb;
-    Compressor compressor;
-    EQ eq;
+    // Set default values
+    AudioSignal* audioSignal = nullptr;
+    Reverb* reverb = nullptr;
+    Compressor* compressor = nullptr;
+    EQ* eq = nullptr;
+    SideChain* sideChain = nullptr;
+    std::unordered_map<std::string, float> audioParams;
+    std::unordered_map<std::string, std::any> audioMetrics;
 
     // === Processing ===
     using AudioSignal = std::vector<float>;
@@ -77,8 +82,8 @@ public:
     void applyCompression(const Compressor& compressor);
     void applyEqualization(const EQ& eq);
     AudioSignal process(const AudioSignal& signal);
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

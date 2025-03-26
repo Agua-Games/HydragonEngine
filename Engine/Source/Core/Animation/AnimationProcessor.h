@@ -22,18 +22,18 @@ namespace hd {
 
 struct AnimationProcessorInfo : public AnimationInfo {
     AnimationProcessorInfo() {
-        NodeType = "Animation/AnimationProcessor";
+        nodeType = "Animation/AnimationProcessor";
         
         inputs = {
-            "AnimationClip",   // Animation clip data
-            "Time",            // Current time
-            "PlaybackSpeed",   // Playback speed
-            "Looping"          // Whether to loop the animation
+            "animationClip",   // Animation clip data;;
+            "time",            // Current time
+            "playbackSpeed",   // Playback speed
+            "looping"          // Whether to loop the animation
         };
         
         outputs = {
-            "ProcessedAnimation", // Processed animation data
-            "AnimationMetrics"   // Performance and quality metrics
+            "processedAnimation", // Processed animation data
+            "animationMetrics"   // Performance and quality metrics
         };
     }
 };
@@ -46,9 +46,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

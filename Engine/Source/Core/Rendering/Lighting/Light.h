@@ -49,7 +49,7 @@ public:
     void load() override {}                              // Load the node (optional)
 
     // === Processing ===
-    void processNodeGraph() override;
+    void () override;
     void update();
 
     // === Cleanup ===

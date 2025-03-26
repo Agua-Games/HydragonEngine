@@ -60,7 +60,7 @@ public:
         placementPatternId = orchestrator.registerPattern(createDefaultPlacementPattern());
     }
 
-    void processNodeGraph() override {
+    void () override {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Get inputs

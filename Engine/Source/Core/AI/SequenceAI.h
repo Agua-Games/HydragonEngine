@@ -9,6 +9,9 @@
  * - SequenceAI is a class that represents a behavior AI sequence in Hydragon.
  * - It is used to represent and process AI sequences.
  * - It uses the Vulkan API for sequence AI processing.
+ * 
+ * @todo Declare-define all default member variables.
+ * @todo Assign all member variables to port inputs inside of processNode(). Also computeResult(), and setOutputValue() for all outputs.
  */
 #pragma once
 #include <vulkan/vulkan.h>
@@ -18,17 +21,17 @@ namespace hd {
 
 struct SequenceAIInfo : public NodeInfo {
     SequenceAIInfo() {
-        NodeType = "AI/SequenceAI";
+        nodeType = "AI/SequenceAI";
         
         inputs = {
-            "RootNode",       // Root node of the behavior tree
-            "Environment",    // Environment data
-            "ProceduralParams" // Procedural parameters
+            "rootNode",       // Root node of the behavior tree
+            "environment",    // Environment data
+            "proceduralParams" // Procedural parameters
         };
         
         outputs = {
-            "BehaviorMetrics", // Performance and quality metrics
-            "ProceduralData"   // Generated procedural data
+            "behaviorMetrics", // Performance and quality metrics
+            "proceduralData"   // Generated procedural data
         };
     }
 };
@@ -41,11 +44,14 @@ public:
     initialize() override {}
     load() override {}
 
-    std::vector<Node> queuedActions;        // Queued actions std::vector. Uses Node class to accept ConditionAI, ActionAI, etc
+    // Set default values
+    // (...)
+    
+    std::vector<Node> queuedActions;        // Queued actions vector. Uses Node class to accept ConditionAI, ActionAI, etc
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

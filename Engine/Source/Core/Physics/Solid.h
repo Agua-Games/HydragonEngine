@@ -1,13 +1,18 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
  * @file Solid.h
- * @brief Solid represents a solid body node in the engine's node graph.
+ * @brief Solid represents a physics solid body node in the engine's node graph. It is physics-enabled, via WavePhysics.
  * 
  * ARCHITECTURAL NOTES:
- * - Solid body nodes are used to represent and process solid bodies in physics simulations.
+ * - Solid supports traditional rigid body joints and constraints via logical links, like ParentLink, PointLink, etc.
+ * - It is used to represent any solid shape in the game world, such as boxes, spheres, cylinders, etc.
+ * - It also support procedurally generated shapes and input meshes from assets.
+ * - It supports interactive features, such as collision detection and response.
+ * - It uses the Vulkan API for shape processing.
  * 
+ * @todo Unify and consolidate the content in Solid.h and SolidShape.h.
  * @todo Update the whole content to match the latest Object and Node design.
  * @todo Properly integrate with the physics engine (WavePhysics, etc).
  * @todo Create .cpp file and move the implementation there.
@@ -15,12 +20,16 @@
  * @todo Unify, cleanup, and refactor the code, to exactly match the design, architecture goals.
  * @todo Flesh out the class and its methods, structs, enums, etc.
  * @todo After design sketch phase and first use sessions, cleanup and tidy up again the whole content.
+ * @todo Get rid of traditional rigid body dynamics and colliders (after validation), leaving only WavePhysics code.
  */
 #pragma once
-
+#include <vulkan/vulkan.h>
 #include "Node.h"
-//#include "PhysicsTypes.h"
 #include "WavePhysics.h"
+#include "PhysicsTypes.h"             // From WavePhysics, for the body state, collision events, forces, energy state, etc.
+#include "PhysicsFields.h"            // From WavePhysics, for the solidField, fluidField, etc.
+#include "ProceduralTypes.h"          // From WavePhysics, for the procedural shape types, such as Box, Sphere, Cylinder, etc.
+#include "RuntimeVariants.h"        // From our custom usd implementation, optimized for realtime, including LOD support
 
 namespace hd {
 
@@ -29,29 +38,103 @@ struct SolidInfo : public NodeInfo {
         NodeType = "Physics/Solid";
         
         inputs = {
-            "Shape",            // Solid body shape
+            "ShapeType",       // Type of the solid shape (Box, Sphere, Cylinder, Mesh, Custom)
+            "Shape",           // Solid body shape
+            "Extents",         // Dimensions of the shape
             "Mass",            // Body mass
             "Density",         // Body density
             "Material",        // Material properties
-            "InitialPosition", // Initial position
-            "InitialVelocity"  // Initial velocity
+            "Position",        // Initial position
+            "Velocity",        // Initial velocity
+            "Dynamic"          // Whether the body is dynamic or static 
+            "Material",        // To override the meshes physics material, normally tagged in the mesh
         };
         
         outputs = {
-            "BodyState",       // Current body state
             "CollisionEvents", // Collision events
-            "Forces",          // Applied forces
-            "EnergyState"      // Energy state
+            // Add more outputs as needed
         };
     }
 };
 
-class Solid : public Node<BodyState, CollisionEvents, Forces, EnergyState> {
+/**
+ * @brief Solid represents a physics solid body node in the engine's node graph.
+ * It corresponds to a combination of the Collider and RigidBody(+SoftBody) entities in traditional physics engines.
+ */
+class Solid : public Node {
 public:
+    // === Structure Definitions ===
+    enum class ShapeType {
+        Box,
+        Sphere,
+        Cylinder,
+        Mesh,
+        Custom
+    };
+
+    /**
+     * @brief Energy Transfer Events. Traditionally called "Collisions".
+     */
+    struct EnergyTransferEvent {
+        // Define collision events here
+    };
+
+    struct Shape {
+        // Define shape properties here
+    };
+
+    struct Material {
+        float restitution;
+        float friction;
+        float density;
+    };
+    
+    // Initially, this struct is to allow easy compatibility with, conversion to rigid body dynamics
+    struct BodyState {
+        vec3 position;          // Derived from the solidField's momentum potential energy
+        vec3 velocity;          // Derived from the solidField's momentum potential energy
+        float mass;             // Derived from the solidField's nuclear potential energy
+        float density;          // Derived from the solidField's energy density gradient
+        Material material;      // Derived from some solidField's properties/energy values related to material
+    };
+
+    // === Allocation, Initialization, Loading ===
     explicit Solid(const SolidInfo& info = SolidInfo())
         : Node(info) {}
+    initialize() override {}
+    load() override {}
 
-    void processNodeGraph() override {
+    SolidField solidField;
+    ShapeType shapeType;
+    vec3 position;
+    vec3 velocity;
+    float nucleusPotential;
+    float mass;                 // Derived directly from nucleusPotential, kept only to help users not used to WavePhysics. May be removed later.
+    Shape shape;
+    Material material;
+    BodyState bodyState;
+    bool isDynamic = false;
+
+    // === Processing ===
+    void getMaterialsFromMesh();                // Can apply different physics materials from different parts of the mesh using assigned mesh materials and their tags
+    void setDynamic(bool isDynamic);
+    void setShape(const Shape& shape);
+    void setMaterial(const Material& material);
+    void setInitialPosition(const vec3& position);
+    void setInitialVelocity(const vec3& velocity);
+    void setDensity(float density);
+    void setNucleusPotential(float nucleusPotential);
+    void addMomentumPotential(const vec3& momentum);
+    void processEnergyTransfer();
+
+    // These are for compatibility with traditional physics engines.
+    void setMass(float mass);
+    void addForce(const vec3& force);                   // We derive forces directly from energy fields. Mostly for compatibility with traditional physics engines.
+    void processCollisions();
+
+    void processPhysics();
+
+    void () override {
         // Process inputs
         auto shape = getInputValue<Shape>("Shape");
         auto mass = getInputValue<float>("Mass");
@@ -69,7 +152,8 @@ public:
         bodyState.material = material;
 
         // Process collisions and forces
-        CollisionEvents collisionEvents = processCollisions(bodyState);
+        std::vector<EnergyTransferEvent> energyTransferEvents = processEnergyTransfer(bodyState);
+        std::vector<EnergyTransferEvent> collisionEvents = processCollisions(bodyState);
         Forces forces = applyForces(bodyState);
 
         // Update body state
@@ -82,8 +166,18 @@ public:
         setOutputValue("EnergyState", computeEnergyState(bodyState));
     }
 
+    void update() override {}
+
+    // === Cleanup ===
+    void unload() override {}
+    void cleanup() override {}
+    ~Solid() = default;     // Default destructor
+
 private:
-    CollisionEvents processCollisions(const BodyState& bodyState);
+    // === Processing ===
+    // Helper functions
+    EnergyTransferEvents processEnergyTransfer(const BodyState& bodyState);
+    EnergyTransferEvents processCollisions(const BodyState& bodyState);         // Specific to solid-solid collisions. Used for rigid body dynamics (compatibility)
     Forces applyForces(const BodyState& bodyState);
     void updateBodyState(BodyState& bodyState, const Forces& forces);
     EnergyState computeEnergyState(const BodyState& bodyState);

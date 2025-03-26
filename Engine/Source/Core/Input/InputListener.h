@@ -58,7 +58,7 @@ public:
     }
 
     // === Processing ===
-    void processNodeGraph() override {
+    void () override {
         auto* input = InputManager::getInstance();
         
         for (const auto& mapping : m_mappings) {

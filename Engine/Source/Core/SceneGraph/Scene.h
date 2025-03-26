@@ -31,6 +31,10 @@
  *          - Support node-based scene manipulation
  * 
  * TODO:
+ * - Refactor all nodes in the codebase to use the same and proper methods to get and set input values from ports (GetInputValue, SetInputValue). I started doing this here 
+ * in Scene.h. This is part of the cleanup pass after design sketch phase, before beginning to test the whole system, first "Vulkan-less" (a graphical adventure game with
+ * output/logging text to a imgui window), to validate it's working. Then we move on to refactoring the Vulkan core implementation.
+ * 
  * - Check and compare redundancy, conflicts and proper overrides in corresponding methods in Node and Scene. Clean and fix as necessary.
  * - SceneInfo - optimize. Estimated SceneInfo struct size in memory (bytes) per instance, can be reduced from approx. 436 bytes
  * to 128 bytes (436 bytes * 20,000 instances = 8.72 MB) (128 * 20,000 = 2.56 MB):
@@ -216,30 +220,30 @@ struct SceneInfo : public NodeInfo {
 
     // === Constructor with sensible defaults ===
     SceneInfo() {
-        NodeType = "Scene";
+        nodeType = "Scene";
         isSerializable = true;
-        IsEditableInEditor = true;
+        isEditableInEditor = true;
         isStreamable = true;
         isAsyncLoadable = true;
         inputs = {
-            "USDLayerPath",
-            "References",
-            "CompositionMode",
-            "PayloadMode",
-            "TraversalMode",
-            "CullingMode",
-            "AccelerationMode",
-            "InstanceMode",
-            "VariantMode",
-            "ReferenceMode",
-            "ClipMode",
-            "PerformanceMode",
-            "DebugMode"
+            "usdLayerPath",
+            "references",
+            "compositionMode",
+            "payloadMode",
+            "traversalMode",
+            "cullingMode",
+            "accelerationMode",
+            "instanceMode",
+            "variantMode",
+            "referenceMode",
+            "clipMode",
+            "performanceMode",
+            "debugMode"
         };
         outputs = {
-            "SceneGraph",
-            "LODLevels",
-            "ResourceUsage"
+            "sceneGraph",
+            "lodLevels",
+            "resourceUsage"
         };
 
         // Initialize (scene) composition defaults
@@ -387,6 +391,24 @@ public:
 
     // === Allocation, Initialization, Loading ===
     virtual ~Scene() = default;
+    Scene(const SceneInfo& info = SceneInfo()) : Node(info) {}
+    void initialize() override;
+    void load() override;
+
+    // Set default values
+    std::string usdLayerPath = "";
+    std::vector<std::string> references = {};
+    Composition::CompositionMode compositionMode = Composition::CompositionMode::OPTIMIZED;
+    Composition::Payload payloadMode = Composition::Payload::DEFAULT;
+    Traversal::TraversalMode traversalMode = Traversal::TraversalMode::HYBRID;
+    Traversal::Culling cullingMode = Traversal::Culling::DEFAULT;
+    Traversal::Acceleration accelerationMode = Traversal::Acceleration::DEFAULT;
+    Instance::Mode instanceMode = Instance::Mode::HYBRID;
+    Variant::Mode variantMode = Variant::Mode::OPTIMIZED;
+    Reference referenceMode = Reference::DEFAULT;
+    Clips::Mode clipMode = Clips::Mode::SPARSE_CLIPS;
+    Performance performanceMode = Performance::DEFAULT;
+    Debug debugMode = Debug::DEFAULT;
 
     /** @return Current scene information and metadata */
     const SceneInfo& getSceneInfo() const { return sceneInfo; }
@@ -527,18 +549,29 @@ public:
                           const std::unordered_map<std::string, std::string>& selectedVariants);
 
     // === Scene Evaluation ===
-    void processNodeGraph() override {
+    void processNode() override {
         // Process inputs
-        auto worldTransform = getInputValue<glm::mat4>("WorldTransform");
-        auto performanceMetric = getInputValue<float>("LODMetric");
+        usdLayerPath = getInputValue<std::string>("usdLayerPath");
+        references = getInputValue<std::vector<std::string>>("references");
+        compositionMode = getInputValue<Composition::CompositionMode>("compositionMode");
+        payloadMode = getInputValue<Composition::Payload>("payloadMode");
+        traversalMode = getInputValue<Traversal::TraversalMode>("traversalMode");
+        cullingMode = getInputValue<Traversal::Culling>("cullingMode");
+        accelerationMode = getInputValue<Traversal::Acceleration>("accelerationMode");
+        instanceMode = getInputValue<Instance::Mode>("instanceMode");
+        variantMode = getInputValue<Variant::Mode>("variantMode");
+        referenceMode = getInputValue<Reference>("referenceMode");
+        clipMode = getInputValue<Clips::Mode>("clipMode");
+        performanceMode = getInputValue<Performance>("performanceMode");
+        debugMode = getInputValue<Debug>("debugMode");
         
         // Update internal state
         updateTransforms(worldTransform);
         updateLODSelection(performanceMetric);
         
         // Set outputs
-        setOutputValue("MeshData", getCurrentMeshData());
-        setOutputValue("BoundingBox", calculateBoundingBox());
+        setOutputValue("meshData", getCurrentMeshData());
+        setOutputValue("boundingBox", calculateBoundingBox());
     }
 
     /**
@@ -642,45 +675,7 @@ private:
     std::vector<NodeProxy> m_inactiveNodes;
 
     // === Port Management ===
-    // TODO: Almost certainly refactor to be based on the actual use of node graphs (the core usage being implementing them in code, inside classes, be it instancing and
-    // connecting other nodes directly or assigning them as child nodes and them accessing their members), where the concise fluent style (it's an actual C++ coding style) 
-    // syntax and workflow are paramount design features - we want users to feel good and highly productive using the engine in "barebones" mode, in code for most things.
-    // So, the connection to and accessing of node graph members will possibly be simpler than currently we see below for port management. Or maybe those GetPort(), SetPort()
-    // will still be useful for UI - visual node graph editor. For state, sync, etc.
-    std::vector<SceneNodePort> inputPorts;
-    std::vector<SceneNodePort> outputPorts;
-    
-    void initializePorts() {
-        inputPorts = {
-            {SceneNodePort::Type::Transform, "WorldTransform"},
-            {SceneNodePort::Type::Performance, "LODMetric"},
-            {SceneNodePort::Type::Material, "MaterialOverride"}
-        };
-
-        outputPorts = {
-            {SceneNodePort::Type::Geometry, "MeshData"},
-            {SceneNodePort::Type::Transform, "BoundingBox"}
-        };
-    }
-
-    template<typename T>
-    T getInputValue(const std::string& portName) {
-        for (const auto& port : inputPorts) {
-            if (port.name == portName) {
-                return std::any_cast<T>(port.value);
-            }
-        }
-        return T();
-    }
-
-    void setOutputValue(const std::string& portName, const std::any& value) {
-        for (auto& port : outputPorts) {
-            if (port.name == portName) {
-                port.value = value;
-                break;
-            }
-        }
-    }
+    //(...)
 
     // === Validation ===
     /** @brief Validates compiled data integrity */

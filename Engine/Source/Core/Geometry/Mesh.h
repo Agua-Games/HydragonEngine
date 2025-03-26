@@ -55,7 +55,7 @@ public:
     explicit Mesh(const MeshInfo& info = MeshInfo())
         : Node(info) {}
 
-    void processNodeGraph() override {
+    void () override {
         // Process base transform
         auto transform = getInputValue<std::shared_ptr<TransformNode>>("Transform");
         

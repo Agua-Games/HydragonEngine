@@ -14,6 +14,8 @@
  * - It offers built-in support for procedural modification of imported animations, and for procedural animation generation.
  * - It uses the Vulkan API for animation processing.
  * 
+ * @todo Declare-define all default member variables.
+ * @todo Assign all member variables to port inputs inside of processNode(). Also computeResult(), and setOutputValue() for all outputs.
  */
 #pragma once
 #include <vulkan/vulkan.h>
@@ -24,20 +26,20 @@ namespace hd {
 
 struct AnimationInfo : public NodeInfo {
     AnimationInfo() {
-        NodeType = "Animation/Animation";
+        nodeType = "Animation/Animation";
         
         inputs = {
-            "StartTime",       // Start time of the animation
-            "EndTime",         // End time of the animation
-            "Value",           // Value to animate
-            "Interpolation",   // Interpolation mode
-            "Easing",          // Easing function
-            "Looping"          // Whether to loop the animation
+            "startTime",       // Start time of the animation
+            "endTime",         // End time of the animation
+            "value",           // Value to animate
+            "interpolation",   // Interpolation mode
+            "easing",          // Easing function
+            "looping"          // Whether to loop the animation
         };
         
         outputs = {
-            "AnimatedValue",   // Animated value
-            "AnimationMetrics" // Performance and quality metrics
+            "animatedValue",   // Animated value
+            "animationMetrics" // Performance and quality metrics
         };
     }
 };
@@ -50,9 +52,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+    
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

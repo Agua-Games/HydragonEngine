@@ -46,7 +46,7 @@ public:
     explicit ProcAtmosphere(const AtmosphereInfo& info = AtmosphereInfo())
         : Node(info) {}
 
-    void processNodeGraph() override {
+    void () override {
         // Process inputs
         auto temperature = getInputValue<float>("Temperature");
         auto humidity = getInputValue<float>("Humidity");

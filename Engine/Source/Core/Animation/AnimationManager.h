@@ -20,18 +20,18 @@ namespace hd {
 
 struct AnimationManagerInfo : public NodeInfo {
     AnimationManagerInfo() {
-        NodeType = "Animation/AnimationManager";
+        nodeType = "Animation/AnimationManager";
         
         inputs = {
-            "Animations",      // Array of animations
-            "AnimationState",  // Current state of the animation
-            "AnimationSpeed",  // Speed of the animation
-            "AnimationLoop"    // Whether the animation should loop
+            "animations",      // Array of animations
+            "animationState",  // Current state of the animation
+            "animationSpeed",  // Speed of the animation
+            "animationLoop"    // Whether the animation should loop
         };
         
         outputs = {
-            "ActiveAnimations", // Active animations
-            "AnimationMetrics"  // Performance and quality metrics
+            "activeAnimations", // Active animations
+            "animationMetrics"  // Performance and quality metrics
         };
     }
 };
@@ -43,6 +43,9 @@ public:
         : Node(info) {}   
     initialize() override {}
     load() override {}
+
+    // Set default values
+    // (...)
 
     // === Processing ===
     void processNodeGraph() override {

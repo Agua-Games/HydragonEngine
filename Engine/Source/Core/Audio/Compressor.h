@@ -30,18 +30,18 @@ namespace hd {
 
 struct CompressorInfo : public NodeInfo {
     CompressorInfo() {
-        NodeType = "Audio/Compressor";
+        nodeType = "Audio/Compressor";
         inputs = {
-            "AudioSignal",  
-            "Threshold", 
-            "Ratio",   
-            "Attack",           // Compression attack time
-            "Release"           // Compression release time
-            "CompressorParams" 
+            "audioSignal",  
+            "threshold", 
+            "ratio",   
+            "attack",           // Compression attack time
+            "release"           // Compression release time
+            "compressorParams" 
         };
         outputs = {
-            "CompressedSignal",
-            "CompressorMetrics"
+            "compressedSignal",
+            "compressorMetrics"
         };
     }
 };
@@ -54,14 +54,16 @@ public:
     initialize() override {}
     load() override {}
 
+    AudioSignal* source = nullptr;
     float threshold = 0.0f;
     float ratio = 0.0f;
     float attack = 0.0f;
     float release = 0.0f;
+    std::unordered_map<std::string, float> compressorParams;
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

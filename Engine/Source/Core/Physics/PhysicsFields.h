@@ -8,6 +8,22 @@
  * ARCHITECTURAL NOTES:
  *      - We're fundamentally treating everything through an energy-based approach.
  *      - Energy is the most fundamental quantity in physics, and everything else is derived from it.
+ *      In WavePhysics, we model energy, fundamentally, as (nothing more, let's say, than) a tensor between fields. This is a very powerful and elegant approach,
+ *      which allows us to model energy transfer and transformation in a very natural and elegant way, and also to handle energy transfer between different field types.
+ *      So, for instance, in E = mc², mass is the energy tensor between the fields of mass and energy. Or,  we could also say, the strength of the coupling between the
+ *      wave and the underlying field. The way this coupling works has a function curve yet to be found, because when they are multiplied together their range becomes
+ *      exponentially longer in an extreme function curve - that's why gravity is so weak and goes so far, and the opposite is true for the nuclear forces. So: in an
+ *      extreme, we have almost massless waves (we could call them particles also, like the photon. Massless meaning, in other words: they have among the weakest of
+ *      couplings with the underlying field, and so their coupling to the field is so weak that they display quantum-like behaviors, which means that they can seem to
+ *      "jump" in some fields, this property directly related to their energy levels vs mass levels) and in the other extreme we have supermassive blackholes, etc 
+ *      (these, by the effect where the joining of the masses of its constituents cause this "super-exponential" range curve, start to have the inverse relationship that
+ *      the almost massless high-energy particles have with the umderlying field: instead of possibly showing skips in relation to the field/being almost un-coupled from
+ *      it, the coupling is so strong that they distort the relationship with the field towards enormous vectors - extreme gravity levels, etc). Continuing: c², the rest 
+ *      mass, is the energy tensor between each wave's fields. So, as in the relativistic (we could say: relative momentum based) postulations if, for example, two waves 
+ *      are "traveling" with exact the same momentum vector, they'll have zero (momentum) energy in relation to each other. So their divergence energy tensor is zero. So, 
+ *      automatically we derive that the divergence energy tensor also can be enormous between fields, given the right circumstances and also is the most promising way to 
+ *      convert extreme amounts of energy from one form to another, in any area of technology, from propulsion and other "man-enhancing" tech to destructive tech, weapons, etc.
+ *
  *      - Fields, along with Waves, are the core building blocks in WavePhysics. 
  *      - Fields basically always represent energy distributions in space, be it potential or converted: kinetic/momentum, etc, and in one form or another
  *      (of properties, which can be converted to other forms of energy, like kinetic, thermal, etc).
@@ -74,8 +90,10 @@ struct MediumProperties {
 // === Generic Fields ===
 
 /**
- * @brief We leverage the concept of Energy Dimension (or Energy Spectrum), to map energy levels and states to topological variations.
- * Dimensional Energy: Energy represented as a 4D vector (spectral components), which we can project to scalar when needed for simple calculations.
+ * @brief We leverage the concept of Energy Dimension (a field arising from the mapping of one particle's energy field(s) to another's), to map energy levels and 
+ * states to topological variations. Dimensional Energy: Energy represented as a 4D vector (spectral components), which we can project to scalar when needed for 
+ * simple calculations.
+ *  @todo update the mapping algorithm to account for the latest clarifications.
  */
 struct EnergySpectrum {
     // Energy level as a dimensional value

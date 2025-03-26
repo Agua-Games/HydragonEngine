@@ -157,7 +157,7 @@ protected:
         return blendResult;
     }
 
-    void processNodeGraph() override {
+    void () override {
         if (m_isSimpleBlend) {
             processSimpleBlend();  // Fast path
         } else {

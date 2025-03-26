@@ -9,6 +9,10 @@
  * - AgentAI is a class that represents an AI agent in Hydragon.
  * - It is used to represent any AI agent in the game world, such as characters, vehicles, etc.
  * - It is AI-enabled, via BehaviorTree.
+ * 
+ * @todo Change all input and output names to lowercase camelCase.
+ * @todo Declare-define all default member variables.
+ * @todo Assign all member variables to port inputs inside of processNode(). Also computeResult(), and setOutputValue() for all outputs.
  */
 #pragma once
 #include "BehaviorTree.h"
@@ -43,8 +47,8 @@ public:
     load() override {}
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

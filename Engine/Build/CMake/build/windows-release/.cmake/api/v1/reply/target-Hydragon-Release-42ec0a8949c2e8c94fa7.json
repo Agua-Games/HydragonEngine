@@ -214,6 +214,10 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Geometry"
 				},
 				{
@@ -242,11 +246,7 @@
 				},
 				{
 					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Logging"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Materials"
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Logic"
 				},
 				{
 					"backtrace" : 12,
@@ -286,11 +286,11 @@
 				},
 				{
 					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Particles"
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Physics"
 				},
 				{
 					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Physics"
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Physics/Traditional"
 				},
 				{
 					"backtrace" : 12,
@@ -318,11 +318,51 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Camera"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Lighting"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Material"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Material/Compute"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Material/PostProcess"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Material/RayTracing"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Material/Surface"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Material/Volumetric"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Pipeline"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Resource"
 				},
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Runtime"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Scalability"
 				},
 				{
 					"backtrace" : 12,
@@ -355,6 +395,14 @@
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/UI"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/UI/Base"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/UI/Editor"
 				},
 				{
 					"backtrace" : 12,
@@ -427,50 +475,6 @@
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Core"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/AssetEditor"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/AssetEditor"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/MaterialEditor"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/MemoryVisualizer"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/NodeGraph"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/Plugins"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/SceneGraphEditor"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/Scripting"
-				},
-				{
-					"backtrace" : 12,
-					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Editor/Tools/UI"
 				},
 				{
 					"backtrace" : 12,
@@ -597,7 +601,10 @@
 				93,
 				94,
 				95,
-				96
+				96,
+				97,
+				98,
+				99
 			]
 		}
 	],
@@ -756,14 +763,17 @@
 				93,
 				94,
 				95,
-				96
+				96,
+				97,
+				98,
+				99
 			]
 		},
 		{
 			"name" : "Header Files",
 			"sourceIndexes" : 
 			[
-				97
+				100
 			]
 		}
 	],
@@ -814,6 +824,18 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/BlendExamples_01.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/CameraSetupExample_01.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/CombatArenaExample.cpp",
 			"sourceGroupIndex" : 0
 		},
@@ -839,6 +861,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/GameApplicationExample.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/InputSetupExample_01.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -964,313 +992,313 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AITaskEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/AITaskEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AgentsEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/AgentsEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AssetEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/AssetEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/AudioEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/AudioEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/BottomStatusBar.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/BottomStatusBar.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/BottomToolbar.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/BottomToolbar.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ChimeraPipelineEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/ChimeraPipelineEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/CollaborationEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/CollaborationEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/CommandsPalette.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/CommandsPalette.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/CommunityEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/CommunityEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ConsoleEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/ConsoleEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/DebugEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/DebugEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/DramaEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/DramaEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ExtensionsEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/ExtensionsEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/FileExplorer.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/FileExplorer.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/FontEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/FontEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ImageTools.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/ImageTools.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/InputEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/InputEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/LeftToolbar.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/LeftToolbar.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/LightingEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/LightingEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/LocalizationEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/LocalizationEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/MacrosEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/MacrosEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/MainMenuBar.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/MainMenuBar.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/MeshEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/MeshEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/MonetizationEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/MonetizationEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/MontageEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/MontageEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/NetworkingEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/NetworkingEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/NodeGraphEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/NodeGraphEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/PerformanceScalabilityEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/PerformanceScalabilityEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/PhysicsEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/PhysicsEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/PluginEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/PluginEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/PresetEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/PresetEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ProcOrchestratorEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/ProcOrchestratorEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Profiler.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/Profiler.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ProjectInsightsEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/ProjectInsightsEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/PropertiesMatrixEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/PropertiesMatrixEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/PropertyEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/PropertyEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ReflectionEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/ReflectionEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/RightToolbar.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/RightToolbar.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/SceneGraphEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/SceneGraphEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ScriptEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/ScriptEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/ScriptsPalette.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/ScriptsPalette.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/SettingsEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/SettingsEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/StreamingEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/StreamingEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/TopToolbar.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/TopToolbar.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/UIEditor.cpp",
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/UIEditor.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/Viewport2D.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/Viewport2DTools.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/Viewport3D.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/Viewport3DTools.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Editor/VolumeEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/UIManager.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Viewport2D.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Viewport2DTools.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Viewport3D.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/Viewport3DTools.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/UI/VolumeEditor.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

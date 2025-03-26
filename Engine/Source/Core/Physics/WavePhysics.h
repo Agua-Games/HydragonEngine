@@ -18,6 +18,22 @@
  * ARCHITECTURAL NOTES:
  * - We're fundamentally treating everything through an energy-based approach:
  *      - Energy is the most fundamental quantity in physics, and everything else is derived from it.
+ *      In WavePhysics, we model energy, fundamentally, as (nothing more, let's say, than) a tensor between fields. This is a very powerful and elegant approach,
+ *      which allows us to model energy transfer and transformation in a very natural and elegant way, and also to handle energy transfer between different field types.
+ *      So, for instance, in E = mc², mass is the energy tensor between the fields of mass and energy. Or,  we could also say, the strength of the coupling between the
+ *      wave and the underlying field. The way this coupling works has a function curve yet to be found, because when they are multiplied together their range becomes
+ *      exponentially longer in an extreme function curve - that's why gravity is so weak and goes so far, and the opposite is true for the nuclear forces. So: in an
+ *      extreme, we have almost massless waves (we could call them particles also, like the photon. Massless meaning, in other words: they have among the weakest of
+ *      couplings with the underlying field, and so their coupling to the field is so weak that they display quantum-like behaviors, which means that they can seem to
+ *      "jump" in some fields, this property directly related to their energy levels vs mass levels) and in the other extreme we have supermassive blackholes, etc 
+ *      (these, by the effect where the joining of the masses of its constituents cause this "super-exponential" range curve, start to have the inverse relationship that
+ *      the almost massless high-energy particles have with the umderlying field: instead of possibly showing skips in relation to the field/being almost un-coupled from
+ *      it, the coupling is so strong that they distort the relationship with the field towards enormous vectors - extreme gravity levels, etc). Continuing: c², the rest 
+ *      mass, is the energy tensor between each wave's fields. So, as in the relativistic (we could say: relative momentum based) postulations if, for example, two waves 
+ *      are "traveling" with exact the same momentum vector, they'll have zero (momentum) energy in relation to each other. So their divergence energy tensor is zero. So, 
+ *      automatically we derive that the divergence energy tensor also can be enormous between fields, given the right circumstances and also is the most promising way to 
+ *      convert extreme amounts of energy from one form to another, in any area of technology, from propulsion and other "man-enhancing" tech to destructive tech, weapons, etc.
+ * 
  *      - Fields, along with Waves, are the core building blocks in WavePhysics. and they're basically always representing energy distributions in space, be 
  *       it potential or converted. So, basically, at the heart of our architecture we have:
  * 
@@ -72,6 +88,12 @@
  *          factor, a wishlist. While the physics thread and the physics system are much more complex and nuanced, dynamic and emergent. What prevents us from
  *          letting it spread more in realtime is of course performance constraints. And in Hydragon we have the proper harmonic mechanisms to gracefully lead
  *          the possible emergent scenarios to fruitful, interesting ones - e.g. the PatternOrchestrator.
+ *          - *Regarding traditional particle emitters: in WavePhysics, to keep with Energy Conservation, etc, we probably won't introduce emitters, if possible,
+ *          as we're trying to stick to a "makes sense", phenomenological approach, considering Energy Conservation Law, Cause-Effect, etc. So, to model an emitter
+ *          (arbitrary emission event) we resort to adding a field plus adding "fuel" (energy) to a region of the field. If a proper field is already present we
+ *          just add energy to it. This can be useful, for instance, to model magic fx. For more realistic effects, try to simplify cause-effect, energy
+ *          conservation, energy transfer, etc. e.g. for a fire effect for a torch, we can sample/query a pre-set thermalEnergy value in the torch prop, adding
+ *          also, automatically, a local field, for more resolution.
  * 
  * - Spatial Partitioning: Grid-based division for parallel compute, Local space calculations, Neighbor search optimization. Adaptive granular refinement of these
  * grids, for further optimization (they can go from very sparse to very dense, depending on the needs of the simulation). Irregular grids for complex and exotic 
@@ -2454,6 +2476,39 @@ private:
     float getWaveSpeed(const WaveProperty& wave) {return wave.frequency * wave.medium.wavelength;}
     vec3 calculateWaveDirection(const ShortLivedParticle& wavefront, const EnergyField& field);
 };
+
+/**
+ * @brief SetConstantGravityForce sets a constant global gravity force. It's used as a simplified way to set gravity, as properly modeled gravity 
+ * fields would require enormous processing power, for being enormous (big enough to model gradient variations). For lower res approximations
+ * (e.g. space sim games, with planet scales far from actual), such gravity fields are feasible, though.
+ */
+void setConstantGravityForce(const vec3& gravityDirection, float strength) {
+    // Set the simplified global gravity field
+}
+
+/**
+ * @brief SetConstantWindForce sets a constant global wind force. It's used as a simplified wind force approximation in the absence of a proper
+ * AtmosphereField in the scene. It applies a reasonably well modeled combination of directional kineticEnergy and momentumPotential to entities
+ * in the scene, with some variations akin to how wind behaves in the real world. It will, for instance, make simulated cloth (solidFields with
+ * low stiffness areas) flutter and move in the wind as they receive these energy transfers.
+ */
+void setConstantWindForce(const vec3& windDirection, float strength, float turbulence, float gustFrequency, float randomness) {
+    // Set the simplified global wind field
+}
+
+/**
+ * @brief EnableEnergyConservation enables or disables the strict keeping of the energy conservation law.
+ * This results in the generation of side effects from energy transfer events (like collisions), like debris, sparks, heating of surfaces, 
+ * sound punches/shockwaves, all sorts of side effects from collisions which happen as the system tries to solve the proper transfer of energy and 
+ * keep the energy conservation law.
+ */
+void enableEnergyConservation(bool enable) {
+    // Enable/disable energy conservation
+}
+
+void OnEnergyTransfer(const EnergyTransferEvent& event) {
+    // Handle energy transfer event
+}
 
 /**
  * @brief ForceFieldConfig defines the configuration for force fields.

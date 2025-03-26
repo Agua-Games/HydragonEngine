@@ -60,7 +60,7 @@ public:
         }
     }
 
-    void processNodeGraph() override {
+    void () override {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         uint32_t seed = getInputValue<uint32_t>("Seed");

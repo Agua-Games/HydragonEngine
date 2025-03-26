@@ -48,10 +48,10 @@ public:
         auto& engine = Engine::getInstance();
         
         // Process the node graph
-        engine.getNodeGraph().process();
+        engine.getNodeGraph().processNode();
 
         // Update procedural systems
-        engine.getProceduralOrchestrator().processNodeGraph();
+        engine.getProceduralOrchestrator().();
 
         // Example of system harmony maintenance
         HarmonyParams harmonyParams;

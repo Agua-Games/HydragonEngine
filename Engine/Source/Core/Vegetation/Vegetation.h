@@ -45,13 +45,19 @@ struct VegetationInfo : public NodeInfo {
 
 class Vegetation : public Node {
 public:
+    // === Allocation, Initialization, Loading ===
     explicit Vegetation(const VegetationInfo& info = VegetationInfo())
         : Node(info) {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         vegetationPatternId = orchestrator.registerPattern(createDefaultVegetationPattern());
     }
+    initialize() override {}
+    load() override {}
 
-    void processNodeGraph() override {
+    // === Processing ===
+    void setDensity(float density);
+    void setVariation(float variation);
+    void processNode() override {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Process inputs
@@ -83,6 +89,13 @@ public:
         setOutputValue("LODData", generateLODData(vegetationData));
         setOutputValue("PerformanceMetrics", computePerformanceMetrics());
     }
+    
+    void update();
+
+    // === Cleanup ===
+    void unload() override {}
+    void cleanup() override {}
+    ~Vegetation() = default;     // Default destructor
 
 private:
     std::string vegetationPatternId;

@@ -21,19 +21,19 @@ namespace hd {
 
 struct SingleChainIKInfo : public AnimationInfo {
     SingleChainIKInfo() {
-        NodeType = "Animation/SingleChainIK";
+        nodeType = "Animation/SingleChainIK";
         
         inputs = {
-            "Chain",           // Chain data
-            "AnimationClip",   // Animation clip data
-            "Time",            // Current time
-            "PlaybackSpeed",   // Playback speed
-            "Looping"          // Whether to loop the animation
+            "chain",           // Chain data
+            "animationClip",   // Animation clip data
+            "time",            // Current time
+            "playbackSpeed",   // Playback speed
+            "looping"          // Whether to loop the animation
         };
         
         outputs = {
-            "AnimatedChain",   // Animated chain data
-            "AnimationMetrics" // Performance and quality metrics
+            "animatedChain",   // Animated chain data
+            "animationMetrics" // Performance and quality metrics
         };
     }
 };
@@ -46,9 +46,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

@@ -23,74 +23,74 @@ namespace hd {
 struct WeaponInfo : public PropInfo {
     // TODO: Organize better the struct, use nested structs for categories. Maybe get rid of some too specific properties.
     WeaponInfo() {
-        NodeType = "Gameplay/Weapon";
+        nodeType = "Gameplay/Weapon";
         inputs = {
-            "Ammo",         // Ammo of the weapon
-            "AmmoType",     // Ammo type of the weapon
-            "AmmoCount",    // Ammo count of the weapon
-            "AmmoCapacity", // Ammo capacity of the weapon
-            "AmmoAimTime",  // Ammo aim time of the weapon
-            "AmmoFire",     // Ammo fire of the weapon
-            "AmmoFireRate", // Ammo fire rate of the weapon
-            "AmmoReload",   // Ammo reload of the weapon
-            "AmmoReloadTime", // Ammo reload time of the weapon
-            "AmmoAim",      // Ammo aim of the weapon
-            "AmmoAccuracy", // Ammo accuracy of the weapon
-            "AmmoDamage",   // Ammo damage of the weapon
-            "AmmoSpeed",    // Ammo speed of the weapon
-            "AmmoRange",    // Ammo range of the weapon
-            "AmmoSpread",   // Ammo spread of the weapon
-            "AmmoPenetration", // Ammo penetration of the weapon
-            "AmmoDrop",     // Ammo drop of the weapon
-            "AmmoDropTime", // Ammo drop time of the weapon
-            "AmmoDropRate", // Ammo drop rate of the weapon
-            "AmmoDropChance", // Ammo drop chance of the weapon
-            "AmmoDropAmount", // Ammo drop amount of the weapon
-            "AmmoDropType", // Ammo drop type of the weapon
-            "AmmoDropPosition", // Ammo drop position of the weapon
-            "AmmoDropVelocity", // Ammo drop velocity of the weapon
-            "AmmoDropAngularVelocity", // Ammo drop angular velocity of the weapon
-            "AmmoDropRotation", // Ammo drop rotation of the weapon
-            "AmmoDropScale", // Ammo drop scale of the weapon
-            "AmmoDropMaterial", // Ammo drop material of the weapon
-            "AmmoDropAnimation", // Ammo drop animation of the weapon
-            "AmmoDropPhysics", // Ammo drop physics of the weapon
-            "AmmoDropCollision", // Ammo drop collision of the weapon
-            "AmmoDropScript", // Ammo drop script of the weapon
+            "ammo",         // Ammo of the weapon
+            "ammoType",     // Ammo type of the weapon
+            "ammoCount",    // Ammo count of the weapon
+            "ammoCapacity", // Ammo capacity of the weapon
+            "ammoAimTime",  // Ammo aim time of the weapon
+            "ammoFire",     // Ammo fire of the weapon
+            "ammoFireRate", // Ammo fire rate of the weapon
+            "ammoReload",   // Ammo reload of the weapon
+            "ammoReloadTime", // Ammo reload time of the weapon
+            "ammoAim",      // Ammo aim of the weapon
+            "ammoAccuracy", // Ammo accuracy of the weapon
+            "ammoDamage",   // Ammo damage of the weapon
+            "ammoSpeed",    // Ammo speed of the weapon
+            "ammoRange",    // Ammo range of the weapon
+            "ammoSpread",   // Ammo spread of the weapon
+            "ammoPenetration", // Ammo penetration of the weapon
+            "ammoDrop",     // Ammo drop of the weapon
+            "ammoDropTime", // Ammo drop time of the weapon
+            "ammoDropRate", // Ammo drop rate of the weapon
+            "ammoDropChance", // Ammo drop chance of the weapon
+            "ammoDropAmount", // Ammo drop amount of the weapon
+            "ammoDropType", // Ammo drop type of the weapon
+            "ammoDropPosition", // Ammo drop position of the weapon
+            "ammoDropVelocity", // Ammo drop velocity of the weapon
+            "ammoDropAngularVelocity", // Ammo drop angular velocity of the weapon
+            "ammoDropRotation", // Ammo drop rotation of the weapon
+            "ammoDropScale", // Ammo drop scale of the weapon
+            "ammoDropMaterial", // Ammo drop material of the weapon
+            "ammoDropAnimation", // Ammo drop animation of the weapon
+            "ammoDropPhysics", // Ammo drop physics of the weapon
+            "ammoDropCollision", // Ammo drop collision of the weapon
+            "ammoDropScript", // Ammo drop script of the weapon
         };
         outputs = {
-            "Ammo",         // Ammo of the weapon
-            "AmmoType",     // Ammo type of the weapon
-            "AmmoCount",    // Ammo count of the weapon
-            "AmmoCapacity", // Ammo capacity of the weapon
-            "AmmoAimTime",  // Ammo aim time of the weapon
-            "AmmoFire",     // Ammo fire of the weapon
-            "AmmoFireRate", // Ammo fire rate of the weapon
-            "AmmoReload",   // Ammo reload of the weapon
-            "AmmoReloadTime", // Ammo reload time of the weapon
-            "AmmoAim",      // Ammo aim of the weapon
-            "AmmoAccuracy", // Ammo accuracy of the weapon
-            "AmmoDamage",   // Ammo damage of the weapon
-            "AmmoSpeed",    // Ammo speed of the weapon
-            "AmmoRange",    // Ammo range of the weapon
-            "AmmoSpread",   // Ammo spread of the weapon
-            "AmmoPenetration", // Ammo penetration of the weapon
-            "AmmoDrop",     // Ammo drop of the weapon
-            "AmmoDropTime", // Ammo drop time of the weapon
-            "AmmoDropRate", // Ammo drop rate of the weapon
-            "AmmoDropChance", // Ammo drop chance of the weapon
-            "AmmoDropAmount", // Ammo drop amount of the weapon
-            "AmmoDropType", // Ammo drop type of the weapon
-            "AmmoDropPosition", // Ammo drop position of the weapon
-            "AmmoDropVelocity", // Ammo drop velocity of the weapon
-            "AmmoDropAngularVelocity", // Ammo drop angular velocity of the weapon
-            "AmmoDropRotation", // Ammo drop rotation of the weapon
-            "AmmoDropScale", // Ammo drop scale of the weapon
-            "AmmoDropMaterial", // Ammo drop material of the weapon
-            "AmmoDropAnimation", // Ammo drop animation of the weapon
-            "AmmoDropPhysics", // Ammo drop physics of the weapon
-            "AmmoDropCollision", // Ammo drop collision of the weapon
-            "AmmoDropScript", // Ammo drop script of the weapon
+            "ammo",         // Ammo of the weapon
+            "ammoType",     // Ammo type of the weapon
+            "ammoCount",    // Ammo count of the weapon
+            "ammoCapacity", // Ammo capacity of the weapon
+            "ammoAimTime",  // Ammo aim time of the weapon
+            "ammoFire",     // Ammo fire of the weapon
+            "ammoFireRate", // Ammo fire rate of the weapon
+            "ammoReload",   // Ammo reload of the weapon
+            "ammoReloadTime", // Ammo reload time of the weapon
+            "ammoAim",      // Ammo aim of the weapon
+            "ammoAccuracy", // Ammo accuracy of the weapon
+            "ammoDamage",   // Ammo damage of the weapon
+            "ammoSpeed",    // Ammo speed of the weapon
+            "ammoRange",    // Ammo range of the weapon
+            "ammoSpread",   // Ammo spread of the weapon
+            "ammoPenetration", // Ammo penetration of the weapon
+            "ammoDrop",     // Ammo drop of the weapon
+            "ammoDropTime", // Ammo drop time of the weapon
+            "ammoDropRate", // Ammo drop rate of the weapon
+            "ammoDropChance", // Ammo drop chance of the weapon
+            "ammoDropAmount", // Ammo drop amount of the weapon
+            "ammoDropType", // Ammo drop type of the weapon
+            "ammoDropPosition", // Ammo drop position of the weapon
+            "ammoDropVelocity", // Ammo drop velocity of the weapon
+            "ammoDropAngularVelocity", // Ammo drop angular velocity of the weapon
+            "ammoDropRotation", // Ammo drop rotation of the weapon
+            "ammoDropScale", // Ammo drop scale of the weapon
+            "ammoDropMaterial", // Ammo drop material of the weapon
+            "ammoDropAnimation", // Ammo drop animation of the weapon
+            "ammoDropPhysics", // Ammo drop physics of the weapon
+            "ammoDropCollision", // Ammo drop collision of the weapon
+            "ammoDropScript", // Ammo drop script of the weapon
         };
     }
 };
@@ -104,10 +104,14 @@ public:
     load() override {}
 
     // === Processing ===
+    void processNode() override {
+        
+    }
+    void aim();
     void reload();
     void fire();
     void processWeapon();
-    void processNodeGraph() override {
+    void () override {
         processWeapon(); 
     }    
     void update() override { // Override the update() function to call processWeapon() instead of update().

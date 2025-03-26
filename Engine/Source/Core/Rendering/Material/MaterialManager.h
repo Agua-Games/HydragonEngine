@@ -85,7 +85,7 @@ public:
     void initialize();
 
     // === Processing ===
-    void processNodeGraph() {
+    void () {
         update();
     }
     void update();

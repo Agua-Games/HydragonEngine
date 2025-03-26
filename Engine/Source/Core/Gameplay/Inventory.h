@@ -22,28 +22,28 @@ namespace hd {
 
 struct InventoryInfo : public NodeInfo {
     InventoryInfo() {
-        NodeType = "Gameplay/Inventory";
+        nodeType = "Gameplay/Inventory";
         
         inputs = {
-            "Items",        // Array of items
-            "ItemTypes",    // Item type definitions
-            "ItemCounts",   // Item count for each type
-            "ItemWeights",  // Item weight for each type
-            "ItemValues",   // Item value for each type
-            "ItemSlots",    // Inventory slots
-            "ItemFilters",  // Filter definitions
-            "Sorts"         // Sort definitions
+            "items",        // Array of items
+            "itemTypes",    // Item type definitions
+            "itemCounts",   // Item count for each type
+            "itemWeights",  // Item weight for each type
+            "itemValues",   // Item value for each type
+            "itemSlots",    // Inventory slots
+            "itemFilters",  // Filter definitions
+            "sorts"         // Sort definitions
         };
         
         outputs = {
-            "Items",        // Array of items
-            "ItemTypes",    // Item type definitions
-            "ItemCounts",   // Item count for each type
-            "ItemWeights",  // Item weight for each type
-            "ItemValues",   // Item value for each type
-            "ItemSlots",    // Inventory slots
-            "ItemFilters",  // Filter definitions
-            "Sorts"         // Sort definitions
+            "items",        // Array of items
+            "itemTypes",    // Item type definitions
+            "itemCounts",   // Item count for each type
+            "itemWeights",  // Item weight for each type
+            "itemValues",   // Item value for each type
+            "itemSlots",    // Inventory slots
+            "itemFilters",  // Filter definitions
+            "sorts"         // Sort definitions
         };
     }
 };
@@ -56,11 +56,45 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    std::vector<Item> items;
+    std::unordered_map<std::string, ItemType> itemTypes;
+    std::unordered_map<std::string, int> itemCounts;
+    std::unordered_map<std::string, float> itemWeights;
+    std::unordered_map<std::string, float> itemValues;
+    std::vector<InventorySlot> itemSlots;
+    std::vector<Filter> itemFilters;
+    std::vector<Sort> sorts;
+    DataTable dataTable;
+
     // === Processing ===
+    void processNode() override {
+        items = getInputValue<std::vector<Item>>("items");
+        itemTypes = getInputValue<std::unordered_map<std::string, ItemType>>("itemTypes");
+        itemCounts = getInputValue<std::unordered_map<std::string, int>>("itemCounts");
+        itemWeights = getInputValue<std::unordered_map<std::string, float>>("itemWeights");
+        itemValues = getInputValue<std::unordered_map<std::string, float>>("itemValues");
+        itemSlots = getInputValue<std::vector<InventorySlot>>("itemSlots");
+        itemFilters = getInputValue<std::vector<Filter>>("itemFilters");
+        sorts = getInputValue<std::vector<Sort>>("sorts");
+
+        // Compute results
+        processInventory();
+
+        setOutputValue("items", items);
+        setOutputValue("itemTypes", itemTypes);
+        setOutputValue("itemCounts", itemCounts);
+        setOutputValue("itemWeights", itemWeights);
+        setOutputValue("itemValues", itemValues);
+        setOutputValue("itemSlots", itemSlots);
+        setOutputValue("itemFilters", itemFilters);
+        setOutputValue("sorts", sorts);
+    }
     void processInventory();
-    void processNodeGraph() override {
+    void () override {
         processInventory(); 
     }
+    void update() override {}
 
     // === Cleanup ===
     void unload() override {}

@@ -9,6 +9,9 @@
  * - BehaviorTree is a class that represents a behavior tree in Hydragon.
  * - It is used to represent and process behavior trees.
  * - It uses the Vulkan API for behavior tree processing (Compute, parallel multi-threaded tree traversal, etc).
+ *
+ * @todo Declare-define all default member variables.
+ * @todo Assign all member variables to port inputs inside of processNode(). Also computeResult(), and setOutputValue() for all outputs.
  */
 #pragma once
 #include <vulkan/vulkan.h>
@@ -18,17 +21,17 @@ namespace hd {
 
 struct BehaviorTreeInfo : public NodeInfo {
     BehaviorTreeInfo() {
-        NodeType = "AI/BehaviorTree";
+        nodeType = "AI/BehaviorTree";
         
         inputs = {
-            "RootNode",       // Root node of the behavior tree
-            "Environment",    // Environment data
-            "ProceduralParams" // Procedural parameters
+            "rootNode",       // Root node of the behavior tree
+            "environment",    // Environment data
+            "proceduralParams" // Procedural parameters
         };
         
         outputs = {
-            "BehaviorMetrics", // Performance and quality metrics
-            "ProceduralData"   // Generated procedural data
+            "behaviorMetrics", // Performance and quality metrics
+            "proceduralData"   // Generated procedural data
         };
     }
 };
@@ -42,8 +45,8 @@ public:
     load() override {}
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

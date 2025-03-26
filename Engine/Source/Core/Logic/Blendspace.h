@@ -59,8 +59,8 @@ public:
     
     void blendAnimations();
 
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

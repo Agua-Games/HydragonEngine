@@ -23,12 +23,13 @@ struct PostProcessInfo : public NodeInfo {
     PostProcessInfo() {
         NodeType = "Rendering/PostProcess";
         inputs = {
-            "RenderedImage",   // Rendered image to apply post-processing to
-            "PostProcessParams"  // Post-processing parameters
+            "RenderedImage",             // Rendered image to apply post-processing to
+            "Intensity",                 // Post-processing intensity
+            "PostProcessParams"          // Post-processing parameters
         };
         outputs = {
-            "ProcessedImage",  // Post-processed image
-            "PostProcessMetrics"  // Post-processing performance metrics
+            "ProcessedImage",            // Post-processed image
+            "PostProcessMetrics"         // Post-processing performance metrics
         };
     }
 };
@@ -41,9 +42,14 @@ public:
     initialize() override {}
     load() override {}
 
+    std::unordered_map<std::string, std::any> PostProcessParams;
+    std::unordered_map<std::string, std::any> PostProcessMetrics;
+
+    float Intensity = 1.0f;
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

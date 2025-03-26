@@ -20,14 +20,14 @@ namespace hd {
 
 struct AcousticListenerInfo : public NodeInfo {
     AcousticListenerInfo() {
-        NodeType = "Audio/AcousticListener";
+        nodeType = "Audio/AcousticListener";
         inputs = {
-            "Position",      // Listener position
-            "Orientation",   // Listener orientation
-            "Velocity"       // Listener velocity
+            "position",      // Listener position
+            "orientation",   // Listener orientation
+            "velocity"       // Listener velocity
         };
         outputs = {
-            "ListenerData"   // Listener data
+            "listenerData"   // Listener data
         };
     }
 };
@@ -41,9 +41,16 @@ public:
     void initialize() override {}
     void load() override {}
 
+    // Set default values
+    vec3 position;
+    vec3 orientation;
+    vec3 velocity;
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+        position = getInputValue<vec3>("position");
+        orientation = getInputValue<vec3>("orientation");
+        velocity = getInputValue<vec3>("velocity");
     }
     void update();
 

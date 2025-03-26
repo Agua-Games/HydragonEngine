@@ -38,16 +38,16 @@ namespace hd {
 
 struct AudioClipInfo : public NodeInfo {
     AudioClipInfo() {
-        NodeType = "Audio/AudioClip";
+        nodeType = "Audio/AudioClip";
         inputs = {
-            "AudioFile",
-            "PlaybackSpeed",
-            "Volume",
-            "Pitch",
-            "Looping",         // Whether to loop the audio clip
-            "Randomize",       // Whether to randomize the audio clip
-            "RandomizeParams", // Randomization parameters
-            "ClipParams"
+            "audioFile",
+            "playbackSpeed",
+            "volume",
+            "pitch",
+            "looping",         // Whether to loop the audio clip
+            "randomize",       // Whether to randomize the audio clip
+            "randomizeParams", // Randomization parameters
+            "clipParams"
 
         };
         outputs = {
@@ -65,6 +65,7 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
     AudioFile* audio = nullptr;
     float playbackSpeed = 1.0f;
     float volume = 1.0f;
@@ -72,8 +73,12 @@ public:
     bool looping = false;
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+        audio = getInputValue<AudioFile>("audioFile");
+        playbackSpeed = getInputValue<float>("playbackSpeed");
+        volume = getInputValue<float>("volume");
+        pitch = getInputValue<float>("pitch");
+        looping = getInputValue<bool>("looping");
     }
     void update();
 

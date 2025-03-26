@@ -39,8 +39,8 @@ public:
     void initialize() override {}
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
     void addLight(const std::shared_ptr<Light>& light);

@@ -38,7 +38,7 @@ public:
         pattern->setIntent("VisualComplexity", evolutionParams);
         
         // Process evolution
-        orchestrator.processNodeGraph();
+        orchestrator.();
         
         // The particle system will now evolve based on:
         // 1. System harmony requirements

@@ -19,12 +19,12 @@ public:
 
     // Dynamic Systems Integration
     struct SystemIntegration {
-        // Game Systems
+        // Game Systems - This codeblock doesn't make much sense, as the GameplayManager must already have access to the other systems at engine startup
         void setupGameplaySystems() {
             auto gameplay = graph.create<GameplayManager>("gameplay")
                 .connect<PhysicsPhenomenon>("physics")
                 .connect<AIAgent>("ai")
-                .connect<AudioPlayer>("audio");
+                .connect<Montage>("audio");
         }
 
         // Procedural Generation

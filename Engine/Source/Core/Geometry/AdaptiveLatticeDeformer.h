@@ -129,7 +129,7 @@ public:
     }
 
     // === Processing ===
-    void processNodeGraph() override;
+    void () override;
 
     void ProcessRegion(const Region& region) {
         // SIMD-optimized field updates

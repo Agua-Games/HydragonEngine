@@ -24,16 +24,16 @@ namespace hd {
     
 struct AssetInfo : public NodeInfo {
     AssetInfo() {
-        NodeType = "Core/Asset";
+        nodeType = "Core/Asset";
         inputs = {
-            "AssetPath",     // Path to the asset
-            "AssetData",     // Asset data
-            "AssetMetadata"  // Asset metadata
+            "assetPath",     // Path to the asset
+            "assetData",     // Asset data
+            "assetMetadata"  // Asset metadata
         };
         outputs = {
-            "LoadedAsset",   // Loaded asset
-            "AssetStatus",   // Asset loading status
-            "AssetMetadata"  // Asset metadata
+            "loadedAsset",   // Loaded asset
+            "assetStatus",   // Asset loading status
+            "assetMetadata"  // Asset metadata
         }
     }
 };
@@ -44,13 +44,16 @@ public:
         : Node(info), AssetInfo(info) {}
     void initialize();
 
+    // Set default values
+    // (...)
+
     // === Allocation, Initialization, Loading ===
     void loadAsset(const std::string& assetPath);
     void unloadAsset(const std::string& assetPath);
     void reloadAsset(const std::string& assetPath);
 
     // === Processing ===
-    void processNodeGraph() override;
+    void () override;
     void update();
 
     // === Cleanup ===

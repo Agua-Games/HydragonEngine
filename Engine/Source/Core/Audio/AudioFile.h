@@ -34,16 +34,16 @@ namespace hd {
 
 struct AudioFileInfo : public Resource {
     AudioFileInfo() {
-        NodeType = "Audio/AudioFile";
+        nodeType = "Audio/AudioFile";
         inputs = {
-            "AudioPath",     // Path to the audio file
-            "AudioData",     // Audio data
-            "AudioMetadata"  // Audio metadata
+            "audioPath",     // Path to the audio file
+            "audioData",     // Audio data
+            "audioMetadata"  // Audio metadata
         };
         outputs = {
-            "LoadedAudio",   // Loaded audio file
-            "AudioStatus",   // Audio loading status
-            "AudioMetadata"  // Audio metadata
+            "loadedAudio",   // Loaded audio file
+            "audioStatus",   // Audio loading status
+            "audioMetadata"  // Audio metadata
         }
     }
 };
@@ -56,9 +56,16 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    std::string audioPath;
+    std::unordered_map<std::string, std::any> audioData;
+    std::unordered_map<std::string, std::any> audioMetadata;
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+        audioPath = getInputValue<std::string>("audioPath");
+        audioData = getInputValue<std::unordered_map<std::string, std::any>>("audioData");
+        audioMetadata = getInputValue<std::unordered_map<std::string, std::any>>("audioMetadata");
     }
     void update();
 

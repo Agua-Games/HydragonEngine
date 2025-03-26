@@ -20,16 +20,16 @@ namespace hd {
 
 struct TextureProcessorInfo : public AssetProcessorInfo {
     TextureProcessorInfo() {
-        NodeType = "Core/TextureProcessor";
+        nodeType = "Core/TextureProcessor";
         inputs = {
-            "TextureData",     // Texture data
-            "TextureParams",   // Texture parameters
-            "ImageMetadata"    // Image metadata
+            "textureData",     // Texture data
+            "textureParams",   // Texture parameters
+            "imageMetadata"    // Image metadata
         };
         outputs = {
-            "ProcessedTexture",   // Processed texture
-            "TextureStatus",   // Texture processing status
-            "TextureMetadata"  // Texture metadata
+            "processedTexture",   // Processed texture
+            "textureStatus",   // Texture processing status
+            "textureMetadata"  // Texture metadata
         }
     }
 };
@@ -41,9 +41,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing === 
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

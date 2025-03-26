@@ -42,8 +42,8 @@ public:
     load() override {}
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

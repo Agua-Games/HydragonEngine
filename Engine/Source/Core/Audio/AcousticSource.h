@@ -10,7 +10,7 @@
  * - It also provides methods to get the current position, orientation, and velocity of the source.
  */
 #pragma once
-#include <fmod.hpp>
+//#include <fmod.hpp>
 #include <string>
 #include "Node.h"
 
@@ -18,18 +18,18 @@ namespace hd {
 
 struct AcousticSourceInfo : public NodeInfo {
     AcousticSourceInfo() {
-        NodeType = "Audio/AcousticSource";
+        nodeType = "Audio/AcousticSource";
         inputs = {
-            "Position",      // Wave emission point
-            "Orientation",   // Emission direction
-            "Velocity",      // For Doppler effect
-            "WavePattern",   // Acoustic wave characteristics
-            "Medium"         // Propagation medium properties
+            "position",      // Wave emission point
+            "orientation",   // Emission direction
+            "velocity",      // For Doppler effect
+            "wavePattern",   // Acoustic wave characteristics
+            "medium"         // Propagation medium properties
         };
         outputs = {
-            "WaveEmission",  // Generated acoustic waves
-            "Energy",        // Energy transfer data
-            "Resonance"      // Resonance effects
+            "waveEmission",  // Generated acoustic waves
+            "energy",        // Energy transfer data
+            "resonance"      // Resonance effects
         };
     }
 };
@@ -42,9 +42,20 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    vec3 position;
+    vec3 orientation;
+    vec3 velocity;
+    WavePattern wavePattern;
+    MediumProperties medium;
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+        position = getInputValue<vec3>("position");
+        orientation = getInputValue<vec3>("orientation");
+        velocity = getInputValue<vec3>("velocity");
+        wavePattern = getInputValue<WavePattern>("wavePattern");
+        medium = getInputValue<MediumProperties>("medium");
     }
     void update();
 

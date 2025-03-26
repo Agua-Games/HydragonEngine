@@ -24,14 +24,14 @@ namespace hd {
 
 struct AcousticProcessorInfo : public NodeInfo {
     AcousticProcessorInfo() {
-        NodeType = "Audio/AcousticProcessor";
+        nodeType = "Audio/AcousticProcessor";
         inputs = {
-            "WaveInteraction",  // Wave interaction data
-            "MediumProperties" // Medium properties
+            "waveInteraction",  // Wave interaction data
+            "mediumProperties" // Medium properties
         };
         outputs = {
-            "ProcessedWave",    // Processed acoustic wave
-            "AcousticEffects"   // Applied acoustic effects
+            "processedWave",    // Processed acoustic wave
+            "acousticEffects"   // Applied acoustic effects
         };
     }
 };
@@ -43,7 +43,16 @@ public:
     ~AcousticProcessor() = default;
     initialize() override {}
 
+    // Set default values
+    AcousticWaveInteraction waveInteraction;
+    MediumProperties mediumProperties;
+
     // === Processing ===
+    void processNode() override {
+        waveInteraction = getInputValue<AcousticWaveInteraction>("waveInteraction");
+        mediumProperties = getInputValue<MediumProperties>("mediumProperties");
+    }
+    void update();
     AcousticModulation process(const AcousticWaveInteraction& interaction, const MediumProperties& medium);
     void applyAcousticEffects(const AcousticWave& wave, const AcousticModulation& modulation);
 

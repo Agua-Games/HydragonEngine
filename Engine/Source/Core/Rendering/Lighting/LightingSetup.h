@@ -12,6 +12,7 @@
  */
 #pragma once
 #include <vulkan/vulkan.h>
+#include <vector>
 #include <string>
 #include "Node.h"
 #include "Light.h"
@@ -22,29 +23,50 @@ struct LightingSetupInfo : public NodeInfo {
     LightingSetupInfo() {
         NodeType = "Rendering/LightingSetup";
         inputs = {
-            "Lights",        // Array of lights
-            "EnvironmentMap" // Environment map for global lighting
+            "Lights",           // Array of lights
+            "EnvironmentMap"    // Environment map for global lighting
         };
         outputs = {
-            "LightingData",  // Lighting data for rendering
-            "LightingMetrics"// Performance metrics
+            "LightingData",     // Lighting data for rendering
+            "LightingMetrics"   // Performance metrics
         };
     }
 };
 
+/**
+ * @class LightingSetup.
+ * @brief LightingSetup represents a ready-to-use customizable lighting setup node in the engine's node graph.
+ */
 class LightingSetup : public Node {
 public:
     // === Allocation, Initialization, Loading ===
     explicit LightingSetup(const LightingSetupInfo& info = LightingSetupInfo())
-        : Node(info) {}   
+        : Node(info) {}
     initialize() override {}
     load() override {}
 
+    std::vector<std::shared_ptr<Light>> lights;
+    std::string environmentMap;
+    bool dynamicShadows = true;
+    glm::vec3 ambientColor = glm::vec3(0.1f);
+    glm::vec3 directionalLightDirection = glm::vec3(0, -1, 0);
+    glm::vec3 directionalLightColor = glm::vec3(0.5f);
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void enableDynamicShadows(bool enable);
+    void addLight(const std::shared_ptr<Light>& light);
+    void removeLight(const std::shared_ptr<Light>& light);
+    void setAmbient(const glm::vec3& color);
+    void setEnvironmentMap(const std::string& path);
+    void processLights();
+    void processEnvironmentMap();
+    void processNode() override {
+ 
     }
-    void update();
+    void update(
+        processLights();
+        processEnvironmentMap();
+    );
 
     // === Cleanup ===
     void unload() override {}

@@ -28,20 +28,20 @@ namespace hd {
 
 struct MontageInfo : public AnimationInfo {
     MontageInfo() {
-        NodeType = "Animation/Montage";
+        nodeType = "Animation/Montage";
         
         inputs = {
-            "Montage",         // Montage data
-            "Skeleton",        // Skeleton data
-            "AnimationClip",   // Animation clip data
-            "Time",            // Current time
-            "PlaybackSpeed",   // Playback speed
-            "Looping"          // Whether to loop the animation
+            "montage",         // Montage data
+            "skeleton",        // Skeleton data
+            "animationClip",   // Animation clip data
+            "time",            // Current time
+            "playbackSpeed",   // Playback speed
+            "looping"          // Whether to loop the animation
         };
         
         outputs = {
-            "AnimatedMontage", // Animated montage data
-            "AnimationMetrics" // Performance and quality metrics
+            "animatedMontage", // Animated montage data
+            "animationMetrics" // Performance and quality metrics
         };
     }
 };
@@ -54,8 +54,11 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing ===
-    void processNodeGraph() override {
+    void () override {
         auto montage = getInputValue<Montage>("Montage");
         auto skeleton = getInputValue<Skeleton>("Skeleton");
         auto animationClip = getInputValue<AnimationClip>("AnimationClip");
@@ -65,7 +68,7 @@ public:
         
         auto animatedMontage = animateMontage(montage, skeleton, animationClip, time, playbackSpeed, looping);
         auto metrics = analyzeAnimationQuality(animatedMontage);
-    }     // processNodeGraph() override
+    }     // () override
 
     // === Cleanup ===
     void unload() override {}

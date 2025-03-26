@@ -9,6 +9,9 @@
  * - SelectorAI is a class that represents a behavior AI selector in Hydragon.
  * - It is used to represent and process AI selectors.
  * - It uses the Vulkan API for selector AI processing.
+ * 
+ * @todo Declare-define all default member variables.
+ * @todo Assign all member variables to port inputs inside of processNode(). Also computeResult(), and setOutputValue() for all outputs.
  */
 #pragma once
 #include <vulkan/vulkan.h>
@@ -20,17 +23,17 @@ namespace hd {
 
 struct SelectorAIInfo : public NodeInfo {
     SelectorAIInfo() {
-        NodeType = "AI/SelectorAI";
+        nodeType = "AI/SelectorAI";
         
         inputs = {
-            "RootNode",       // Root node of the behavior tree
-            "Environment",    // Environment data
-            "ProceduralParams" // Procedural parameters
+            "rootNode",       // Root node of the behavior tree
+            "environment",    // Environment data
+            "proceduralParams" // Procedural parameters
         };
         
         outputs = {
-            "BehaviorMetrics", // Performance and quality metrics
-            "ProceduralData"   // Generated procedural data
+            "behaviorMetrics", // Performance and quality metrics
+            "proceduralData"   // Generated procedural data
         };
     }
 };
@@ -43,11 +46,14 @@ public:
     initialize() override {}
     load() override {}
 
-    std::vector<SequenceAI> sequenceAI; // SequenceAI std::vector
+    // Set default values
+    // (...)
+    
+    std::vector<SequenceAI> sequenceAI; // SequenceAI vector
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

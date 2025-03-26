@@ -32,15 +32,15 @@ namespace hd {
 
 struct EQInfo : public NodeInfo {
     EQInfo() {
-        NodeType = "Audio/EQ";
+        nodeType = "Audio/EQ";
         inputs = {
-            "AudioSignal",
-            "Lowcut",   
-            "Highcut", 
-            "BandParams", 
-            "Gain",
-            "QFactor",      // Quality factor
-            "EQParams"
+            "audioSignal",
+            "lowcut",   
+            "highcut", 
+            "bandParams", 
+            "gain",
+            "qFactor",      // Quality factor
+            "eqParams"
         };
         outputs = {
             "EqualizedSignal",
@@ -59,14 +59,16 @@ public:
 
     float lowcut = 0.0f;
     float highcut = 0.0f;
+    std::unordered_map<float, std::pair<float, float>> bandParams;
     float gain = 0.0f;
     float qFactor = 0.0f;
+    std::unordered_map<std::string, float> eqParams;
 
     // === Processing ===
     void addBand(float frequency, float gain, float qFactor);
     void removeBand(float frequency);
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

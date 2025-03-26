@@ -24,43 +24,58 @@ namespace hd {
 
 struct TypographyInfo : public NodeInfo {
     TypographyInfo() {
-        NodeType = "Design/Typography";
+        nodeType = "Design/Typography";
         
         inputs = {
-            "Text",           // Input text content
-            "Font",           // Font asset
-            "FontSize",       // Base font size
-            "LineHeight",     // Line spacing
-            "LetterSpacing", // Character spacing
-            "Alignment",     // Text alignment
-            "Color",         // Text color
-            "Shadow",        // Text shadow
-            "MaxWidth"       // Text box width
+            "text",           // Input text content
+            "font",           // Font asset
+            "fontSize",       // Base font size
+            "lineHeight",     // Line spacing
+            "letterSpacing", // Character spacing
+            "alignment",     // Text alignment
+            "color",         // Text color
+            "shadow",        // Text shadow
+            "maxWidth"       // Text box width
         };
         
         outputs = {
-            "TextImage",     // Rendered text
-            "TextMetrics",   // Font metrics data
-            "TextBounds"     // Bounding box
+            "textImage",     // Rendered text
+            "textMetrics",   // Font metrics data
+            "textBounds"     // Bounding box
         };
     }
 };
 
 class Typography : public Node<RenderTarget, FontMetrics, BoundingBox> {
 public:
+    // === Allocation, Initialization, Loading ===
     explicit Typography(const TypographyInfo& info = TypographyInfo())
         : Node(info), TypoInfo(info) {}
+    initialize() override {}
+    load() override {}
 
-    void processNodeGraph() override {
-        auto text = getInputValue<std::string>("Text");
-        auto font = getInputValue<FontAsset>("Font");
-        float fontSize = getInputValue<float>("FontSize");
-        float lineHeight = getInputValue<float>("LineHeight");
-        float letterSpacing = getInputValue<float>("LetterSpacing");
-        TextAlignment alignment = getInputValue<TextAlignment>("Alignment");
-        glm::vec4 color = getInputValue<glm::vec4>("Color");
-        TextShadow shadow = getInputValue<TextShadow>("Shadow");
-        float maxWidth = getInputValue<float>("MaxWidth");
+    // Set default values
+    std::string text;
+    FontAsset* font = nullptr;
+    float fontSize = 12.0f;
+    float lineHeight = 1.0f;
+    float letterSpacing = 0.0f;
+    TextAlignment alignment = TextAlignment::Left;
+    glm::vec4 color = glm::vec4(1.0f);
+    TextShadow shadow;
+    float maxWidth = 0.0f;
+
+    // === Processing ===
+    void processNode() override {
+        text = getInputValue<std::string>("Text");
+        font = getInputValue<FontAsset>("Font");
+        fontSize = getInputValue<float>("FontSize");
+        lineHeight = getInputValue<float>("LineHeight");
+        letterSpacing = getInputValue<float>("LetterSpacing");
+        alignment = getInputValue<TextAlignment>("Alignment");
+        color = getInputValue<glm::vec4>("Color");
+        shadow = getInputValue<TextShadow>("Shadow");
+        maxWidth = getInputValue<float>("MaxWidth");
 
         // Process typography
         auto textImage = renderText(text, font, fontSize, lineHeight, 

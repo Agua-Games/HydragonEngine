@@ -51,7 +51,7 @@ public:
     explicit Deformer(const DeformerInfo& info = DeformerInfo())
         : Node(info) {}
 
-    virtual void processNodeGraph() override {
+    virtual void () override {
         // Cache validation
         auto cacheKey = generateCacheKey();
         if (tryLoadFromCache(cacheKey)) {

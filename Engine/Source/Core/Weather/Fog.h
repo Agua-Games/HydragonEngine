@@ -46,7 +46,7 @@ public:
     explicit Fog(const FogInfo& info = FogInfo())
         : Node(info) {}
 
-    void processNodeGraph() override {
+    void () override {
         // Get input values
         auto atmosphereState = getPortValue<AtmosphereState>("AtmosphereState");
         auto windVector = getPortValue<glm::vec3>("WindVector");

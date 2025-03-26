@@ -18,17 +18,17 @@ namespace hd {
 
 struct DebuggerInfo : public NodeInfo {
     DebuggerInfo() {
-        NodeType = "Debugger/Debugger";
+        nodeType = "Debugger/Debugger";
         
         inputs = {
-            "DebugMode",     // Debug mode, like object selection, etc.
-            "ObjectData",    // Object data to debug
-            "DebugAction"    // Debug action, like move, rotate, etc.
+            "debugMode",     // Debug mode, like object selection, etc.
+            "objectData",    // Object data to debug
+            "debugAction"    // Debug action, like move, rotate, etc.
         };
         
         outputs = {
-            "DebuggedObject",  // Debugged object data
-            "DebugMetrics"     // Performance metrics
+            "debuggedObject",  // Debugged object data
+            "debugMetrics"     // Performance metrics
         };
     }
 };
@@ -41,9 +41,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

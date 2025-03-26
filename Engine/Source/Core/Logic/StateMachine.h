@@ -58,9 +58,9 @@ public:
         float crossfadeDuration); // Add a transition between two states
     void loadAsync() override {}
     void stream() override {}
-    void process() override {}
+    void processNode() override {}
     void update() override {}
-    void processNodeGraph() override {}
+    void () override {}
 
     // === Cleanup ===
     void unload() override {} 

@@ -9,6 +9,10 @@
  * - ActionAI is a class that represents a behavior AI action in Hydragon.
  * - It is used to represent and process AI actions.
  * - It uses the Vulkan API for action AI processing.
+ * 
+ * @todo Change all input and output names to lowercase camelCase.
+ * @todo Declare-define all default member variables.
+ * @todo Assign all member variables to port inputs inside of processNode(). Also computeResult(), and setOutputValue() for all outputs.
  */
 #pragma once
 #include <vulkan/vulkan.h>
@@ -25,26 +29,26 @@ struct Waypoint {
 
 struct ActionAIInfo : public NodeInfo {
     ActionAIInfo() {
-        NodeType = "AI/ActionAI";
+        nodeType = "AI/ActionAI";
         
         inputs = {
-            "Action",               // Action data
-            "Environment",          // Environment data
-            "ProceduralParams",     // Procedural parameters
-            "Waypoints",            // Waypoints for navigation
-            "WaypointGroup",        // Waypoint group name
-            "Speed",                // Agent speed for movement actions
-            "Duration",             // Duration for actions like wait
-            "MinRange",             // Minimum range for actions like moveToRange, attackRange, etc.
-            "PreferredRange",       // Preferred range for actions like moveToRange
-            "Tolerance",            // Tolerance for actions like moveToRange, etc.
-            "Cooldown",             // Cooldown for actions like attack, etc.
+            "action",               // Action data
+            "environment",          // Environment data
+            "proceduralParams",     // Procedural parameters
+            "waypoints",            // Waypoints for navigation
+            "waypointGroup",        // Waypoint group name
+            "speed",                // Agent speed for movement actions
+            "duration",             // Duration for actions like wait
+            "minRange",             // Minimum range for actions like moveToRange, attackRange, etc.
+            "preferredRange",       // Preferred range for actions like moveToRange
+            "tolerance",            // Tolerance for actions like moveToRange, etc.
+            "cooldown",             // Cooldown for actions like attack, etc.
         };
         
         outputs = {
-            "ActionResult",    // Result of the action
-            "BehaviorMetrics", // Performance and quality metrics
-            "ProceduralData"   // Generated procedural data
+            "actionResult",    // Result of the action
+            "behaviorMetrics", // Performance and quality metrics
+            "proceduralData"   // Generated procedural data
         };
     }
 };
@@ -67,13 +71,16 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing ===
     // Waypoints, Navigation, and Pathfinding
     void setWaypoints(const std::vector<Waypoint>& waypoints) {}         // Set waypoints directly from a vector of Waypoints (Vector3s and times)
     void setWaypointsFromGroup(const std::string& groupName) {}          // Set waypoints from a waypoint group
 
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

@@ -22,19 +22,19 @@ namespace hd {
 
 struct SkeletonAnimationInfo : public AnimationInfo {
     SkeletonAnimationInfo() {
-        NodeType = "Animation/SkeletonAnimation";
+        nodeType = "Animation/SkeletonAnimation";
         
         inputs = {
-            "Skeleton",        // Skeleton data
-            "AnimationClip",   // Animation clip data
-            "Time",            // Current time
-            "PlaybackSpeed",   // Playback speed
-            "Looping"          // Whether to loop the animation
+            "skeleton",        // Skeleton data
+            "animationClip",   // Animation clip data
+            "time",            // Current time
+            "playbackSpeed",   // Playback speed
+            "looping"          // Whether to loop the animation
         };
         
         outputs = {
-            "AnimatedSkeleton",  // Animated skeleton data
-            "AnimationMetrics"   // Performance and quality metrics
+            "animatedSkeleton",  // Animated skeleton data
+            "animationMetrics"   // Performance and quality metrics
         };
     }
 };
@@ -46,10 +46,13 @@ public:
         : Node(info) {}
     void initialize();
 
+    // Set default values
+    // (...)
+
     // === Processing ===
     void processAnimation();                    // Process the animation. This is called every frame.
     void applyAnimationToSkeleton();           // Apply the animation to the skeleton. This is called every frame.
-    void processNodeGraph() override {          // Process the node graph. This is called every frame.
+    void () override {          // Process the node graph. This is called every frame.
         update();
     }     
     void update();                              // Update the animation state. This is called every frame.

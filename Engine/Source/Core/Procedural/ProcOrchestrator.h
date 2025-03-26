@@ -3,7 +3,7 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @file ProcOrchestrator.h
- * @brief ProcOrchestrator is a singleton class that manages the orchestration of procedural patterns.
+ * @brief ProcOrchestrator represents a singleton class that manages the orchestration of procedural patterns.
  * 
  * ARCHITECTURAL NOTES:
  * 
@@ -42,7 +42,8 @@ struct ProcOrchestratorInfo : public NodeInfo {
             "harmonizedPatterns",    // Collection of harmonized patterns
             "SystemStates",          // Current state of all systems
             "EvolutionMetrics",      // Pattern evolution metrics
-            "PerformanceMetrics"     // Performance monitoring data
+            "PerformanceMetrics",    // Performance monitoring data
+            "SystemMetrics"          // System metrics
         };
 
         isSerializable = true;
@@ -59,13 +60,25 @@ struct IntentTask {
     bool propagate;
 };
 
+/**
+ * @class ProcOrchestrator
+ * @brief Represents a procedural orchestrator node in the engine's node graph.
+ */
 class ProcOrchestrator : public Node {
 public:
+    // === Allocation, Initialization, Loading ===
+    ProcOrchestrator() 
+        : Node(ProcOrchestratorInfo()) {}
+    initialize() override {}
+    load() override {}
+
+    // Singleton instance
     static ProcOrchestrator& getInstance() {
         static ProcOrchestrator instance;
         return instance;
     }
 
+    // === Port Management ===
     std::vector<std::string> getInputPorts() const override {
         return getNodeInfo().inputs;
     }
@@ -74,7 +87,8 @@ public:
         return getNodeInfo().outputs;
     }
 
-    void processNodeGraph() override {
+    // === Processing ===
+    void () override {
         // Process input intents and parameters
         auto globalIntent = getInputValue<OctaveParams>("GlobalIntent");
         auto harmonyParams = getInputValue<HarmonyParams>("HarmonyParams");
@@ -96,6 +110,7 @@ public:
         setOutputValue("SystemStates", getSystemStates());
         setOutputValue("EvolutionMetrics", computeEvolutionMetrics());
         setOutputValue("PerformanceMetrics", gatherPerformanceMetrics());
+        setOutputValue("SystemMetrics", gatherSystemMetrics());
     }
 
     // Pattern Management (now supports node graph integration)
@@ -122,7 +137,7 @@ public:
 
     void updateHarmony(float deltaTime) {
         // Update harmony parameters
-        // This is now handled in processNodeGraph
+        // This is now handled in 
     }
 
     // System Orchestration
@@ -132,12 +147,12 @@ public:
 
     void modulateSystem(SystemDomain domain, const OctaveParams& octaves) {
         // Modulate system parameters
-        // This is now handled in processNodeGraph
+        // This is now handled in 
     }
 
     void balanceSystems() {
         // Balance systems
-        // This is now handled in processNodeGraph
+        // This is now handled in 
     }
 
     // Procedural Pattern Interface
@@ -182,19 +197,19 @@ public:
         drawOutputPort("SystemStates", "States");
         drawOutputPort("EvolutionMetrics", "Evolution");
         drawOutputPort("PerformanceMetrics", "Performance");
+        drawOutputPort("SystemMetrics", "SystemMetrics");
         
         ImGui::EndGroup();
     }
 
 private:
-    ProcOrchestrator() 
-        : Node(ProcOrchestratorInfo()) {}
-    
+    // === Allocation, Initialization, Loading ===  
     std::unordered_map<std::string, std::unique_ptr<IPattern>> patterns;
     std::queue<IntentTask> intentQueue;
     HarmonyParams harmonyParams;
     OctaveParams globalIntent;
 
+    // === Processing ===
     void processIntentQueue(float timeScale) {
         while (!intentQueue.empty()) {
             auto task = intentQueue.front();
@@ -209,7 +224,7 @@ private:
     std::string generatePatternId() {
         return "pattern_" + std::to_string(patterns.size());
     }
-
+    
     void notifyPatternChanged(const std::string& patternId) {
         // Notify connected nodes about pattern updates
         markOutputDirty("harmonizedPatterns");
@@ -220,6 +235,7 @@ private:
         markOutputDirty("harmonizedPatterns");
     }
 
+    // === Cleanup ===
     // Prevent copying of singleton
     ProcOrchestrator(const ProcOrchestrator&) = delete;
     ProcOrchestrator& operator=(const ProcOrchestrator&) = delete;

@@ -10,6 +10,7 @@
  * - It is used to animate a curve and its associated geometry, joints or any other arbitrary data.
  * - It offers built-in support for procedural modification of imported animations, and for procedural animation generation.
  * - It uses the Vulkan API for animation processing.
+ * 
  */
 #pragma once
 #include <vulkan/vulkan.h>
@@ -21,19 +22,19 @@ namespace hd {
 
 struct CurveIKInfo : public AnimationInfo {
     CurveIKInfo() {
-        NodeType = "Animation/CurveIK";
+        nodeType = "nimation/CurveIK";
         
         inputs = {
-            "Curve",           // Curve data
-            "AnimationClip",   // Animation clip data
-            "Time",            // Current time
-            "PlaybackSpeed",   // Playback speed
-            "Looping"          // Whether to loop the animation
+            "curve",           // Curve data
+            "animationClip",   // Animation clip data
+            "time",            // Current time
+            "playbackSpeed",   // Playback speed
+            "looping"          // Whether to loop the animation
         };
         
         outputs = {
-            "AnimatedCurve",   // Animated curve data
-            "AnimationMetrics" // Performance and quality metrics
+            "animatedCurve",   // Animated curve data
+            "animationMetrics" // Performance and quality metrics
         };
     }
 };
@@ -46,9 +47,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

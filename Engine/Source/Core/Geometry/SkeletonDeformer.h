@@ -52,7 +52,7 @@ public:
         : VertexBlendDeformer(info) {}
 
     // === Processing ===
-    void processNodeGraph() override;
+    void () override;
 };
 
 } // namespace hd

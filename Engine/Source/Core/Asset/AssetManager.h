@@ -10,7 +10,6 @@
  * - AssetManager is a singleton class that manages the loading and management of assets (which are nodes).
  */
 #pragma once
-
 #include <vulkan/vulkan.h>
 #include <string>
 #include <unordered_map>
@@ -24,14 +23,14 @@ namespace hd {
 
 struct AssetManagerInfo : public NodeInfo {
     AssetManagerInfo() {
-        NodeType = "Core/AssetManager";
+        nodeType = "Core/AssetManager";
         inputs = {
             
         };
         outputs = {
-            "LoadedAsset",   // Loaded asset
-            "AssetStatus",   // Asset loading status
-            "AssetMetadata"  // Asset metadata
+            "loadedAsset",   // Loaded asset
+            "assetStatus",   // Asset loading status
+            "assetMetadata"  // Asset metadata
         }
     }
 };
@@ -42,11 +41,14 @@ public:
         : Node(info), AssetManagerInfo(info) {}
     void initialize();
 
+    // Set default values
+    // (...)
+
     // === Allocation, Initialization, Loading ===
     void streamAsset(const std::string& assetPath);
 
     // === Processing ===
-    void processNodeGraph() override;
+    void () override;
     void update();
 
     // === Cleanup ===

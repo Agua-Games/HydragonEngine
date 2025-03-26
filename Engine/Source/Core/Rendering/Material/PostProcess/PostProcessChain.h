@@ -13,6 +13,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <memory>
 #include "PostProcess.h"
 
 namespace hd {
@@ -21,12 +22,13 @@ struct PostProcessChainInfo : public PostProcessInfo {
     PostProcessChainInfo() {
         NodeType = "Rendering/PostProcess/PostProcessChain";
         inputs = {
-            "RenderedImage",   // Rendered image to apply post-processing chain to
-            "PostProcessChainParams"  // Post-processing chain parameters
+            "RenderedImage",                   // Rendered image to apply post-processing chain to
+            "BloomIntensity",                  // Bloom intensity
+            "PostProcessChainParams"           // Post-processing chain parameters
         };
         outputs = {
-            "ProcessedChainImage",  // Post-processed image after the chain
-            "PostProcessChainMetrics"  // Post-processing chain performance metrics
+            "ProcessedChainImage",             // Post-processed image after the chain
+            "PostProcessChainMetrics"          // Post-processing chain performance metrics
         };
     }
 };
@@ -39,9 +41,13 @@ public:
     initialize() override {}
     load() override {}
 
+    std::unordered_map<std::string, std::shared_ptr<PostProcess>> passes;
+    std::unordered_map<std::string, std::any> PostProcessChainParams;
+
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void addPass(const std::string& name, const std::shared_ptr<PostProcess>& pass);
+    void processNode() override {
+ 
     }
     void update();
 

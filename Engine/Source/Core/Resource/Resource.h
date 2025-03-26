@@ -48,8 +48,8 @@ class Resource : public Node {
     void reloadResource(const std::string& resourcePath);
 
     // === Processing ===
-    void processNodeGraph() override {
-        update();
+    void processNode() override {
+ 
     }
     void update();
 

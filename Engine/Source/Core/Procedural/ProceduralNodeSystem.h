@@ -50,7 +50,7 @@ public:
         
         // Generate new pattern with self-modification
         auto pattern = createProceduralPattern();
-        pattern->processNodeGraph();
+        pattern->();
         
         // Validate and apply changes
         if (pattern->validateEvolution()) {
