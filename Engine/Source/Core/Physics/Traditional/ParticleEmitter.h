@@ -26,28 +26,28 @@ namespace hd {
 
 struct ParticleEmitterInfo : public NodeInfo {
     ParticleEmitterInfo() {
-        NodeType = "Physics/Particles/ParticleEmitter";
+        nodeType = "Physics/Particles/ParticleEmitter";
         
         inputs = {
-            "Shape",           // Emission shape
-            "Direction",       // Emission direction
-            "Position",        // Emission position
-            "Radius",          // Used for circular and spherical emitters
-            "Rate",            // Emission rate
-            "MaxParticles",    // Maximum concurrent particles
-            "InitialVelocity", // Initial velocity
-            "InitialState",    // Initial conditions
-            "Variation",       // Property variation
-            "Lifetime",        // Particle lifetime
-            "Seed",            // Random seed
-            "EmitterParams"    // Emitter parameters
+            "shape",           // Emission shape
+            "direction",       // Emission direction
+            "position",        // Emission position
+            "radius",          // Used for circular and spherical emitters
+            "rate",            // Emission rate
+            "maxParticles",    // Maximum concurrent particles
+            "initialVelocity", // Initial velocity
+            "initialState",    // Initial conditions
+            "variation",       // Property variation
+            "lifetime",        // Particle lifetime
+            "seed",            // Random seed
+            "emitterParams"    // Emitter parameters
         };
         
         outputs = {
-            "ParticleStream",   // Emitted particles
-            "EmissionEvents",   // Emission timing
-            "SystemState",      // Emitter state
-            "Statistics"        // Performance stats
+            "particleStream",   // Emitted particles
+            "emissionEvents",   // Emission timing
+            "systemState",      // Emitter state
+            "statistics"        // Performance stats
         };
     }
 };

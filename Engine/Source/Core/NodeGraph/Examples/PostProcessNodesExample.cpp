@@ -3,6 +3,14 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Post-processing chain
+ *  - Depth of field effect
+ *  - Bloom effect
+ *  - SSAO effect
+ *  - Tonemap effect
  */
 #if 0
 #include "Core/Engine.h"

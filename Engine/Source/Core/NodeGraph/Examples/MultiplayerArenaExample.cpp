@@ -3,6 +3,14 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Multiplayer arena setup with network, physics, and gameplay systems
+ *  - Match state management with transitions and events
+ *  - Spectator system with replay and player POV
+ *  - Powerup system with spawn and collection
+ *  - Network prediction and rollback for smooth gameplay
  */
 
 #if 0

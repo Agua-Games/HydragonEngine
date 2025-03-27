@@ -15,31 +15,32 @@ namespace hd {
 
 struct VegetationInfo : public NodeInfo {
     VegetationInfo() {
-        NodeType = "Vegetation/VegetationSystem";
+        nodeType = "Vegetation/VegetationSystem";
         
         inputs = {
-            "Terrain",           // Terrain data
-            "Climate",           // Climate zone data
-            "Density",           // Vegetation density
-            "BiomeType",         // Biome classification
-            "GrowthParams",      // Growth parameters
-            "WindInfluence",     // Wind effect on vegetation
-            "SeasonalParams",    // Seasonal changes
-            "ProceduralIntent"   // For procedural variation
+            "terrain",           // Terrain data
+            "climate",           // Climate zone data
+            "density",           // Vegetation density
+            "variation",         // Species variation
+            "biomeType",         // Biome classification
+            "growthParams",      // Growth parameters
+            "windInfluence",     // Wind effect on vegetation
+            "seasonalParams",    // Seasonal changes
+            "proceduralIntent"   // For procedural variation
         };
         
         outputs = {
-            "VegetationData",    // Generated vegetation data
-            "DensityMap",        // Vegetation density distribution
-            "GrowthStates",      // Current growth states
-            "WindResponse",      // Wind animation data
+            "vegetationData",    // Generated vegetation data
+            "densityMap",        // Vegetation density distribution
+            "growthStates",      // Current growth states
+            "windResponse",      // Wind animation data
             "LODData",           // Level of detail data
-            "PerformanceMetrics"
+            "performanceMetrics"
         };
 
         isSerializable = true;
-        IsEditableInEditor = true;
-        IsProcedural = true;
+        isEditableInEditor = true;
+        isProcedural = true;
     }
 };
 
@@ -51,8 +52,8 @@ public:
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         vegetationPatternId = orchestrator.registerPattern(createDefaultVegetationPattern());
     }
-    initialize() override {}
-    load() override {}
+    void initialize() override {}
+    void load() override {}
 
     // === Processing ===
     void setDensity(float density);
@@ -61,12 +62,13 @@ public:
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Process inputs
-        auto terrain = getInputValue<TerrainData>("Terrain");
-        auto climate = getInputValue<ClimateData>("Climate");
-        auto density = getInputValue<float>("Density");
-        auto biomeType = getInputValue<BiomeType>("BiomeType");
-        auto growthParams = getInputValue<GrowthParams>("GrowthParams");
-        auto intent = getInputValue<OctaveParams>("ProceduralIntent");
+        terrain = getInputValue<TerrainData>("terrain");
+        climate = getInputValue<ClimateData>("climate");
+        density = getInputValue<float>("density");
+        variation = getInputValue<float>("variation");
+        biomeType = getInputValue<BiomeType>("biomeType");
+        growthParams = getInputValue<GrowthParams>("growthParams");
+        intent = getInputValue<OctaveParams>("proceduralIntent");
         
         // Create vegetation pattern parameters
         ProceduralStructureParams params;
@@ -74,6 +76,7 @@ public:
         params.terrainData = terrain;
         params.climateData = climate;
         params.density = density;
+        params.variation = variation;
         params.biomeType = biomeType;
         params.growthParams = growthParams;
         
@@ -82,15 +85,15 @@ public:
         auto vegetationData = orchestrator.getProceduralPattern(vegetationPatternId);
         
         // Update outputs
-        setOutputValue("VegetationData", vegetationData);
-        setOutputValue("DensityMap", computeDensityMap(vegetationData));
-        setOutputValue("GrowthStates", computeGrowthStates(vegetationData));
-        setOutputValue("WindResponse", computeWindResponse(vegetationData));
+        setOutputValue("vegetationData", vegetationData);
+        setOutputValue("densityMap", computeDensityMap(vegetationData));
+        setOutputValue("growthStates", computeGrowthStates(vegetationData));
+        setOutputValue("windResponse", computeWindResponse(vegetationData));
         setOutputValue("LODData", generateLODData(vegetationData));
-        setOutputValue("PerformanceMetrics", computePerformanceMetrics());
+        setOutputValue("performanceMetrics", computePerformanceMetrics());
     }
     
-    void update();
+    void update() override {}
 
     // === Cleanup ===
     void unload() override {}

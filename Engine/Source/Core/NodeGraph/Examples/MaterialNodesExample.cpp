@@ -3,6 +3,11 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Material nodes showing texture/shader workflow
+ *  - Procedural material using math nodes
  */
 
  #if 0

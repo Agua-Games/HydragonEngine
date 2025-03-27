@@ -4,6 +4,10 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  *      - The idea is to have sensible defaults so that the user can focus on the unique aspects of their game.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Combat arena setup with triggers, particle effects, and music
  */
 #if 0
 #include "Engine.h"

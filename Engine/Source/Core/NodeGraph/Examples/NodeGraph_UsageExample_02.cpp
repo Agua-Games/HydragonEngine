@@ -3,6 +3,16 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Complete game level setup
+ *  - Character controller with animation system
+ *  - Procedural weapon generation system
+ *  - Post-processing chain
+ *  - AI behavior tree using nodes
+ *  - Particle system setup
+ *  - Shader graph setup
  */
 
 #if 0

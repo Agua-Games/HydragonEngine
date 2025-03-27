@@ -3,6 +3,11 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Game application setup with multiple node graphs
+ *  - Interconnection between node graphs
  */
 
 #if 0

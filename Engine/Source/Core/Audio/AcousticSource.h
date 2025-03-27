@@ -49,6 +49,9 @@ public:
     WavePattern wavePattern;
     MediumProperties medium;
 
+    void addAudioBank(const std::string& audioBankPath);
+    void removeAudioBank(const std::string& audioBankPath);
+
     // === Processing ===
     void processNode() override {
         position = getInputValue<vec3>("position");

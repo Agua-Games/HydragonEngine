@@ -25,15 +25,17 @@ struct ProjectileInfo : public NodeInfo {
         nodeType = "Gameplay/Projectile";
         
         inputs = {
-            "model",        // Model of the projectile
-            "position",     // Position of the projectile
-            "rotation",     // Rotation of the projectile
-            "scale",        // Scale of the projectile
-            "material",     // Material of the projectile
-            "animation",    // Animation of the projectile
-            "physics",      // Physics of the projectile
-            "collision",    // Collision of the projectile
-            "script"        // Script of the projectile
+            "model",              // Model of the projectile
+            "position",           // Position of the projectile
+            "rotation",           // Rotation of the projectile
+            "scale",              // Scale of the projectile
+            "velocity",           // Velocity of the projectile
+            "material",           // Material of the projectile
+            "energyMultiplier",   // Energy multiplier of the projectile
+            "animation",          // Animation of the projectile
+            "physics",            // Physics of the projectile
+            "collision",          // Collision of the projectile
+            "script"              // Script of the projectile
         };
         
         outputs = {
@@ -41,7 +43,9 @@ struct ProjectileInfo : public NodeInfo {
             "position",     // Position of the projectile
             "rotation",     // Rotation of the projectile
             "scale",        // Scale of the projectile
+            "velocity",     // Velocity of the projectile
             "material",     // Material of the projectile
+            "energyMultiplier",   // Energy multiplier of the projectile
             "animation",    // Animation of the projectile
             "physics",      // Physics of the projectile
             "collision",    // Collision of the projectile
@@ -54,19 +58,56 @@ class Projectile : public Node {
 public:
     // === Allocation, Initialization, Loading === 
     explicit Projectile(const ProjectileInfo& info = ProjectileInfo())
-        : Prop(info) {}
+        : Node(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    Model model;
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 scale;
+    glm::vec3 velocity;
+    Material material;
+    float energyMultiplier;
+    Animation animation;
+    Physics physics;
+    Collision collision;
+    Script script;
     
     // === Processing ===
     void processNode() override {
- 
+        model = getInputValue<Model>("model");
+        position = getInputValue<glm::vec3>("position");
+        rotation = getInputValue<glm::vec3>("rotation");
+        scale = getInputValue<glm::vec3>("scale");
+        velocity = getInputValue<glm::vec3>("velocity");
+        material = getInputValue<Material>("material");
+        energyMultiplier = getInputValue<float>("energyMultiplier");
+        animation = getInputValue<Animation>("animation");
+        physics = getInputValue<Physics>("physics");
+        collision = getInputValue<Collision>("collision");
+        script = getInputValue<Script>("script");
+
+        // Process projectile
+        auto projectileState = updateProjectile(model, position, rotation, scale, velocity, material, animation, physics, collision, script);
+        
+        // Set outputs
+        setOutputValue("model", projectileState.model);
+        setOutputValue("position", projectileState.position);
+        setOutputValue("rotation", projectileState.rotation);
+        setOutputValue("scale", projectileState.scale);
+        setOutputValue("velocity", projectileState.velocity);
+        setOutputValue("material", projectileState.material);
+        setOutputValue("energyMultiplier", projectileState.energyMultiplier);
+        setOutputValue("animation", projectileState.animation);
+        setOutputValue("physics", projectileState.physics);
+        setOutputValue("collision", projectileState.collision);
+        setOutputValue("script", projectileState.script);
+
     }
     void update() override {}
     void processProjectile();
-    void () override {
-        processProjectile(); 
-    }
 
     // === Cleanup ===
     void unload() override {}

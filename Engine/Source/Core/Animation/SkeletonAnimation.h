@@ -39,6 +39,10 @@ struct SkeletonAnimationInfo : public AnimationInfo {
     }
 };
 
+/**
+ * @class SkeletonAnimation
+ * @brief Represents a skeleton animation in the game world.
+ */
 class SkeletonAnimation : public Animation {
 public:
     // === Allocation, Initialization, Loading ===
@@ -49,13 +53,16 @@ public:
     // Set default values
     // (...)
 
+    void setSkeleton(Skeleton* skeleton);        // Set the skeleton to animate.
+    void setAnimationClip(AnimationClip* clip);  // Set the animation clip to play.
+
     // === Processing ===
-    void processAnimation();                    // Process the animation. This is called every frame.
-    void applyAnimationToSkeleton();           // Apply the animation to the skeleton. This is called every frame.
-    void () override {          // Process the node graph. This is called every frame.
+    void processAnimation();                     // Process the animation. This is called every frame.
+    void applyAnimationToSkeleton();             // Apply the animation to the skeleton. This is called every frame.
+    void () override {                           // Process the node graph. This is called every frame.
         update();
     }     
-    void update();                              // Update the animation state. This is called every frame.
+    void update();                               // Update the animation state. This is called every frame.
 
     // === Cleanup ===
     ~SkeletonAnimation() = default;

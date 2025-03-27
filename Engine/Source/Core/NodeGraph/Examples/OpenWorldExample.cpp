@@ -3,6 +3,14 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Open world setup with streaming, biomes, and weather
+ *  - Procedural vegetation and wildlife
+ *  - Dynamic weather and time of day
+ *  - Quest and POI system
+ *  - Population system for NPCs
  */
 #if 0
 #include "Engine.h"

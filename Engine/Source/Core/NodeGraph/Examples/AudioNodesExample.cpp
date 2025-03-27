@@ -4,6 +4,11 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  *      - The idea is to have sensible defaults so that the user can focus on the unique aspects of their game.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Audio processing chain with reverb, compression, and EQ
+ *  - Audio mixing with sidechain compression
  */
 
  #if 0

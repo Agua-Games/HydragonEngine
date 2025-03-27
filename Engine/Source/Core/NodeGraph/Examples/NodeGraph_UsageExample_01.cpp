@@ -4,6 +4,14 @@
  * 
  * @file NodeGraph_UsageExample_01.cpp
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Creating a simple render pipeline
+ *  - Setting up a character with physics
+ *  - Procedural building generation
+ *  - Audio system setup
+ *  - Processing chain
  */
 
  #if 0

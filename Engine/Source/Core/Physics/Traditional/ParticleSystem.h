@@ -29,30 +29,31 @@ namespace hd {
 
 struct ParticleInfo : public NodeInfo {
     ParticleInfo() {
-        NodeType = "Physics/Particles/ParticleSystem";
+        nodeType = "Physics/Particles/ParticleSystem";
         
         inputs = {
-            "Emitter",
-            "ParticleProps",
-            "Forces",
-            "Collisions",
-            "SimSpace",
-            "ParticleLife",
-            "ColorOverLife",
-            "SizeOverLife",
-            "Gravity",
-            "LifeParams",
-            "MaterialParams",
-            "ProceduralIntent"
+            "emitter",
+            "particleProps",
+            "forces",
+            "collisions",
+            "simSpace",
+            "particleLife",
+            "colorOverLife",
+            "sizeOverLife",
+            "gravity",
+            "intent",
+            "lifeParams",
+            "materialParams",
+            "proceduralIntent"
         };
         
         outputs = {
-            "ParticleData",
-            "SimulationState",
-            "CollisionEvents",   // Collision Event Callbacks with data
-            "EmitterState",
-            "VisualData",
-            "PerformanceMetrics"
+            "particleData",
+            "simulationState",
+            "collisionEvents",   // Collision Event Callbacks with data
+            "emitterState",
+            "visualData",
+            "performanceMetrics"
         };
 
         isSerializable = true;
@@ -76,23 +77,42 @@ public:
     initialize() override {}
     load() override {}
 
+    // Optimization Flags
+    bool m_useSimpleSimulation = true;
+    bool m_useCollisionEvents = false;
+    bool m_useEmitterState = false;
+    bool m_useVisualData = false;
+    bool m_usePerformanceMetrics = false;
+
+    // State
+    EmitterData emitter;
+    ParticleProperties particleProps;
+    std::vector<ForceField> forces;
+    CollisionParams collisions;
+    SimulationSpace simSpace;
+    float particleLife = 0.0f;
+    ColorOverLifetime colorOverLife;
+    SizeOverLifetime sizeOverLife;
+    glm::vec3 gravity;
+    OctaveParams intent;
+    LifeParams lifeParams;
+    MaterialParams materialParams;
+
     // === Processing ===
-    void () override {
-        auto& orchestrator = ProceduralOrchestrator::getInstance();
-        
+    void processNode() override {
         // Process inputs
-        auto emitter = getInputValue<EmitterData>("Emitter");
-        auto particleProps = getInputValue<ParticleProperties>("ParticleProps");
-        auto forces = getInputValue<std::vector<ForceField>>("Forces");
-        auto collisions = getInputValue<CollisionParams>("Collisions");
-        auto simSpace = getInputValue<SimulationSpace>("SimSpace");
-        auto particleLife = getInputValue<float>("ParticleLife");
-        auto colorOverLife = getInputValue<ColorOverLifetime>("ColorOverLifetime");
-        auto sizeOverLife = getInputValue<SizeOverLifetime>("SizeOverLifetime");
-        auto gravity = getInputValue<glm::vec3>("Gravity");
-        auto intent = getInputValue<OctaveParams>("ProceduralIntent");
-        auto lifeParams = getInputValue<LifeParams>("LifeParams");
-        auto materialParams = getInputValue<MaterialParams>("MaterialParams");
+        emitter = getInputValue<EmitterData>("emitter");
+        particleProps = getInputValue<ParticleProperties>("particleProps");
+        forces = getInputValue<std::vector<ForceField>>("forces");
+        collisions = getInputValue<CollisionParams>("collisions");
+        simSpace = getInputValue<SimulationSpace>("simSpace");
+        particleLife = getInputValue<float>("particleLife");
+        colorOverLife = getInputValue<ColorOverLifetime>("colorOverLifetime");
+        sizeOverLife = getInputValue<SizeOverLifetime>("sizeOverLifetime");
+        gravity = getInputValue<glm::vec3>("gravity");
+        intent = getInputValue<OctaveParams>("intent");
+        lifeParams = getInputValue<LifeParams>("lifeParams");
+        materialParams = getInputValue<MaterialParams>("materialParams");
         
         // Create particle pattern parameters
         ProceduralStructureParams params;
@@ -106,6 +126,7 @@ public:
         params.colorOverLife = colorOverLife;
         params.sizeOverLife = sizeOverLife;
         params.gravity = gravity;
+        params.intent = intent;
         params.lifeParams = lifeParams;
         params.materialParams = materialParams;
         
@@ -114,12 +135,12 @@ public:
         auto particleData = orchestrator.getProceduralPattern(particlePatternId);
         
         // Update outputs
-        setOutputValue("ParticleData", particleData);
-        setOutputValue("SimulationState", computeSimulationState(particleData));
-        setOutputValue("CollisionEvents", processCollisions(particleData));
-        setOutputValue("EmitterState", updateEmitterState(particleData));
-        setOutputValue("VisualData", generateVisualData(particleData));
-        setOutputValue("PerformanceMetrics", computePerformanceMetrics());
+        setOutputValue("particleData", particleData);
+        setOutputValue("simulationState", computeSimulationState(particleData));
+        setOutputValue("collisionEvents", processCollisions(particleData));
+        setOutputValue("emitterState", updateEmitterState(particleData));
+        setOutputValue("visualData", generateVisualData(particleData));
+        setOutputValue("performanceMetrics", computePerformanceMetrics());
 
         orchestrator.setIntent(intent);
         orchestrator.();

@@ -4,6 +4,12 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  *      - The idea is to have sensible defaults so that the user can focus on the unique aspects of their game.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Animation blend tree with blend space and state machine
+ *  - Animation blending with blend tree
+ *  - Animation state machine with transitions
  */
 
  #if 0

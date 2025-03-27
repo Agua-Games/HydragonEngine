@@ -3,6 +3,17 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Material creation with precise typing
+ *  - Physics setup with explicit types
+ *  - Audio mixer with strongly typed parameters
+ *  - Shader pipeline with type checking
+ *  - UI layout with strong typing and constraints
+ *  - Animation state machine with type-safe transitions
+ *  - Particle system with templated emitters and modifiers
+ *  - Network replication with type safety
  */
 
 #if 0

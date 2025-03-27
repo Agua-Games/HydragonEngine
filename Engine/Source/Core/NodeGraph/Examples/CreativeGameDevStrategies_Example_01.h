@@ -1,3 +1,16 @@
+/**
+ * Copyright (c) 2025 Agua Games. All rights reserved.
+ * Licensed under the Agua Games License 1.0
+ * 
+ * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Creative game development strategies
+ *  - Procedural content evolution
+ *  - Real-time content adaptation
+ *  - Creative tools integration
+ */
 #if 0
 
 #pragma once

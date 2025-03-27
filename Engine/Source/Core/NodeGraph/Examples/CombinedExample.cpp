@@ -5,6 +5,12 @@
  * @brief This file contains examples of how to setup a node graph in code.
  *      - The idea is to have sensible defaults so that the user can focus on the unique aspects of their game.
  *      - The commands here may be in sketch phase. We'll try to consolidate them as we go.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Clean, fluent style for node creation
+ *  - Complex setup using setters where needed
+ *  - The same node can be accessed traditionally elsewhere
  */
 
 // Clean, fluent style for node creation

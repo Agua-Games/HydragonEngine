@@ -3,6 +3,13 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - AI behavior tree with conditions and actions
+ *  - Pathfinding with navigation mesh
+ *  - Steering behaviors for movement
+ *  - Flocking behavior for group movement
  */
 
  #if  0

@@ -3,6 +3,11 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Physics setup with rigid bodies and colliders
+ *  - Vehicle physics with suspension and wheels
  */
 #if 0
 #include "Core/Engine.h"

@@ -3,6 +3,11 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Creating a texture node with a raw resource
+ *  - Simplified usage - raw resource automatically created and pooled
  */
 #if 0
 #include "Engine.h"

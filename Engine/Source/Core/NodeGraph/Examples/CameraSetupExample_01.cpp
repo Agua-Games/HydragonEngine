@@ -4,6 +4,10 @@
  * 
  * @brief This file contains examples of how to setup a node graph in code.
  *      - The idea is to have sensible defaults so that the user can focus on the unique aspects of their game.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Camera setup with position and target
  */
 #if 0
 // Example showing camera's typical usage context

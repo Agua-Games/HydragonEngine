@@ -3,6 +3,11 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Simple blend between two textures
+ *  - Complex blend with blend parameters and weights
  */
 #if 0
 // Simple blend - uses optimized path

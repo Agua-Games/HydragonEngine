@@ -3,6 +3,14 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - System integration example
+ *  - Procedural particle system setup
+ *  - Procedural material generation
+ *  - Procedural system harmony maintenance
+ *  - System intent handling
  */
 #if 0
 

@@ -24,27 +24,27 @@ struct CombatVehicleInfo : public NodeInfo {
         nodeType = "Gameplay/CombatVehicle";
         
         inputs = {
-            "model",        // Model of the combat vehicle
-            "position",     // Position of the combat vehicle
-            "rotation",     // Rotation of the combat vehicle
-            "scale",        // Scale of the combat vehicle
-            "material",     // Material of the combat vehicle
-            "animation",    // Animation of the combat vehicle
-            "physics",      // Physics of the combat vehicle
-            "collision",    // Collision of the combat vehicle
-            "script"        // Script of the combat vehicle
+            "model",
+            "position",
+            "rotation",
+            "scale",
+            "material",
+            "animation",
+            "physics",
+            "collision",
+            "script"
         };
         
         outputs = {
-            "model",        // Model of the combat vehicle
-            "position",     // Position of the combat vehicle
-            "rotation",     // Rotation of the combat vehicle
-            "scale",        // Scale of the combat vehicle
-            "material",     // Material of the combat vehicle
-            "animation",    // Animation of the combat vehicle
-            "physics",      // Physics of the combat vehicle
-            "collision",    // Collision of the combat vehicle
-            "script"        // Script of the combat vehicle
+            "model",
+            "position",
+            "rotation",
+            "scale",
+            "material",
+            "animation",
+            "physics",
+            "collision",
+            "script"
         };
     }
 };
@@ -54,14 +54,14 @@ public:
     // === Allocation, Initialization, Loading ===
     explicit CombatVehicle(const CombatVehicleInfo& info = CombatVehicleInfo())
         : Node(info) {}
-    initialize() override {}
-    load() override {}
+    void initialize() override {}
+    void load() override {}
 
     // === Processing ===
     void processNode() override {
  
     }
-    void update();
+    void update() override {}
 
     // === Cleanup ===
     void unload() override {}

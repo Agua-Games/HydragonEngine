@@ -3,6 +3,12 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Race track setup with vehicle physics, weather, and audio
+ *  - Dynamic difficulty adjustment based on player performance
+ *  - Real-time weather and time of day
  */
 #if 0
 #include "Engine.h"

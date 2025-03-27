@@ -3,6 +3,10 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * 
+ * These examples demonstrate:
+ * 
+ *  - Bloom effect node with intensity and threshold
  */
 
  #if 0

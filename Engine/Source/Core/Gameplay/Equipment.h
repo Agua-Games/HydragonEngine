@@ -20,15 +20,15 @@ struct EquipmentInfo : public NodeInfo {
         nodeType = "Gameplay/Equipment";
         
         inputs = {
-            "equipmentType",  // Type of equipment (armor, weapon, tool, etc.)
-            "equipmentData",  // Equipment data
-            "environment",    // Environment data
-            "characterData",  // Character data
-            "equipmentState"  // Equipment state
+            "equipmentType",  // Type of equipment (armor, weapon, tool, etc.) (armor, weapon, tool, etc.)
+            "equipmentData",  // Equipment data (stats, etc.)
+            "environment",    // Environment data (stats, etc.)
+            "characterData",
+            "equipmentState"
         };
         
         outputs = {
-            "equipmentStatus",  // Equipment status
+            "equipmentStatus",
             "equipmentMetrics"  // Equipment performance metrics
         };
     }
