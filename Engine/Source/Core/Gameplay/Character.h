@@ -12,12 +12,16 @@
  */
 #pragma once
 #include <vulkan/vulkan.h>
+#include <vector>
+#include <unordered_map>
 #include "Node.h"
+#include "Scene.h"
 #include "BehaviorTree.h"
+#include "AnimationController.h"
 
 namespace hd {
 
-struct CharacterInfo : public BehaviorTreeInfo {
+struct CharacterInfo : public SceneInfo {
     CharacterInfo() {
         nodeType = "Gameplay/Character";
         
@@ -40,17 +44,18 @@ struct CharacterInfo : public BehaviorTreeInfo {
  * @class Character
  * @brief Represents a character controller node in the engine's node graph.
  */
-class Character : public BehaviorTree {
+class Character : public Scene {
 public:
     // === Allocation, Initialization, Loading ===
     explicit Character(const CharacterInfo& info = CharacterInfo())
-        : BehaviorTree(info) {}    // Call the base class constructor
+        : Scene(info), behaviorTree(info) {} 
     initialize() override {}
     load() override {}
 
     // Set default values
     Character character;
     BehaviorTree behaviorTree;
+    AnimationController animationController;
     Environment environment;
     ProceduralParams proceduralParams;
     CharacterState characterState;
@@ -60,26 +65,35 @@ public:
 
     // === Processing ===
     void processNode() override {
-        character = getInputValue<Character>("character");
-        behaviorTree = getInputValue<BehaviorTree>("behaviorTree");
-        environment = getInputValue<Environment>("environment");
-        proceduralParams = getInputValue<ProceduralParams>("proceduralParams");
+        // Get inputs
+        auto environment = getInputValue<Environment>("environment");
+        auto params = getInputValue<ProceduralParams>("proceduralParams");
 
-        // Process character controller
-        auto characterState = updateCharacterController(character, behaviorTree, environment, proceduralParams);
-
+        // Update AI
+        behaviorTree.process(environment, params);
+        
+        // Update character state
+        characterState = updateCharacterState();
+        
         // Set outputs
         setOutputValue("characterState", characterState);
-        setOutputValue("behaviorMetrics", computeBehaviorMetrics(characterState));
-        setOutputValue("proceduralData", generateProceduralData(characterState));
+        setOutputValue("behaviorMetrics", behaviorTree.getMetrics());
+        setOutputValue("proceduralData", generateProceduralData());
+    }
+    // Character gets Scene functionality through BehaviorTree
+    // Can manage equipment, attachments, etc. as sub-scenes
+    void equipItem(const Scene* item) {
+        attachScene(item, "equipment_slot");
+    }
 
+    // Sketch example of exposing only relevant AI controls
+    void setAggression(float value) { 
+        behaviorTree.setParameter("aggression", value); 
     }
-    void processCharacterController();
-    void () override {
-        processCharacterController(); 
-    }
-    void update() override { // Override the update() function to call processCharacterController() instead of update().
-        processCharacterController(); // Call the processCharacterController() function to update the character controller state.
+
+    void processAnimationController();
+    void update() override {
+        processAnimationController();
     }
     
     // === Cleanup ===

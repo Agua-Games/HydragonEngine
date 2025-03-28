@@ -22,6 +22,8 @@
 #include "ProceduralTypes.h"
 #include "ProceduralOrchestrator.h"
 #include "Noise.h"
+#include "ProceduralManager.h"
+#include "Heightmap.h"
 
 namespace hd {
 
@@ -31,8 +33,10 @@ struct TerrainInfo : public NodeInfo {
         
         inputs = {
             "terrainType",      // Type of terrain (mountain, desert, etc.)
+            "heightMap",        // Heightmap data
             "seed",
             "scale",
+            "resolution",       // Resolution of the terrain
             "octaves",
             "persistence",
             "lacunarity",
@@ -83,22 +87,26 @@ public:
     TerrainType terrainType = TerrainType::Mountain;
     uint32_t seed = 0;
     float scale = 1.0f;
+    float resolution = 1024;
     int octaves = 1;
     float persistence = 0.5f;
     float lacunarity = 2.0f;
     int subdivisionLevel = 1;
     int detailLevels = 1;
+    Heightmap heightMap;
     ProceduralNoiseParams noiseParams;
     TerrainDeformation deformation;
     ErosionParams erosionParams;
     LODParams lodParams;
     AdaptiveQualityParams adaptiveQuality;
+    TerrainData terrainData;
 
     // === Processing ===
     void processNode() override {
         terrainType = getInputValue<TerrainType>("terrainType");
         seed = getInputValue<uint32_t>("seed");
         scale = getInputValue<float>("scale");
+        resolution = getInputValue<float>("resolution");
         octaves = getInputValue<int>("octaves");
         persistence = getInputValue<float>("persistence");
         lacunarity = getInputValue<float>("lacunarity");

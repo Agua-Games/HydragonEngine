@@ -42,6 +42,9 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    float health = 100.0f;      // TODO: maybe normalize to 0-1?
+
     // === Processing ===
     void processNode() override {
  

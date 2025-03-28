@@ -19,28 +19,29 @@
 #include "Core/NodeGraph/Node.h"
 #include "Core/Procedural/ProceduralTypes.h"
 #include "Core/Math/Noise.h"
+#include "ProceduralManager.h"
 
 namespace hd {
 
 struct NoiseInfo : public NodeInfo {
     NoiseInfo() {
-        NodeType = "Procedural/Noise";
+        nodeType = "Procedural/Noise";
         
         inputs = {
-            "NoiseType",      // Perlin, Simplex, Worley, etc.
-            "Seed",
-            "Scale",
-            "Octaves",
-            "Persistence",
-            "Lacunarity",
-            "Domain",         // 2D or 3D
-            "Warp"           // Optional domain warping
+            "noiseType",      // Perlin, Simplex, Worley, etc.
+            "seed",
+            "scale",
+            "octaves",
+            "persistence",
+            "lacunarity",
+            "domain",         // 2D or 3D
+            "warp"           // Optional domain warping
         };
         
         outputs = {
-            "NoiseValue",
-            "Derivatives",    // For normal map generation
-            "NoiseMetrics"    // Statistical properties
+            "noiseValue",
+            "derivatives",    // For normal map generation
+            "noiseMetrics"    // Statistical properties
         };
     }
 };

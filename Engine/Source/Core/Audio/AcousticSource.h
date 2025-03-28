@@ -13,6 +13,9 @@
 //#include <fmod.hpp>
 #include <string>
 #include "Node.h"
+#include "Wave.h"
+#include "PhysicsFields.h"
+#include "PhysicsTypes.h"
 
 namespace hd {
 

@@ -25,55 +25,48 @@
     - AI commanders with different strategies
     - Weather and terrain effects on combat
  */
-#include "Core/Engine.h"
-#include "Core/NodeGraph/Node.h"
-#include "Core/Gameplay/Vehicle.h"
-#include "Core/Gameplay/CombatVehicle.h"
+#pragma once
+#include "Engine.h"
+#include "Node.h"
+#include "Vehicle.h"
+#include "CombatVehicle.h"
+#include "DamageZone.h"
 
 using namespace hd;
 
 // === Advanced Vehicle Damage System ===
 auto armoredVehicle = Scene::current()
-    .add<CombatVehicle>("mbt_challenger")
+    .add<CombatVehicle>("mbtChallenger")
         .scene("vehicles/tanks/challenger2.usd")
         .addArmor("composite", 150.0f)
         .addArmor("reactive", 100.0f)
-        .addWeapon("main_cannon", {
-            .damage = 1000.0f,
-            .rateOfFire = 1.0f
-        })
-        .connect<DamageZones>("critical_areas")
-            .addZone("ammo_rack", {
-                .multiplier = 3.0f,
-                .detonationChance = 0.7f
-            })
-            .addZone("engine", {
-                .multiplier = 2.0f,
-                .fireChance = 0.4f
-            })
-    .connect<SubsystemManager>("vehicle_systems")
-        .addSubsystem("engine", {
-            .health = 100.0f,
-            .degradationRate = 0.1f,
-            .connect<StatusEffect>("engine_damage")
-                .addEffect("speed", -0.3f)
-                .addEffect("acceleration", -0.5f)
-        })
-        .addSubsystem("transmission", {
-            .health = 100.0f,
-            .connect<StatusEffect>("transmission_damage")
-                .addEffect("turning_rate", -0.4f)
-        })
-    .connect<RepairSystem>("field_repairs")
-        .addRepairKit("basic", {
-            .healAmount = 30.0f,
-            .repairTime = 10.0f
-        })
-        .addRepairKit("advanced", {
-            .healAmount = 70.0f,
-            .repairTime = 20.0f,
-            .requiresCrew = true
-        });
+        .addWeapon("main_cannon")
+            .damage(1000.0f)
+            .rateOfFire(1.0f)
+        .connect<DamageZone>("exhaustDamageZone")
+            .multiplier(3.0f)
+            .detonationChance(0.7f)
+        .connect<DamageZone>("engineDamageZone")
+            .multiplier(2.0f)
+            .fireChance(0.4f)
+    .connect<EquipmentManager>("mbtChallengerEquipments")
+        .connect<Turret>("sideTurret")
+            .health(50.0f)
+            .accuracy(0.9f)
+        .connect<Equipment>("EMJammingAntenna")
+        .connect<Equipment>("droneDetector")
+            .health(100.0f)
+        .connect<Equipment>("transmission")
+            .health(100.0f)
+            .connect<PhysicsPhenomenon>("jamming");
+    .connect<RepairMechanics>("field_repairs")
+        .connect<RepairKit>("basicRepairKit")
+            .healAmount(30.0f)
+            .repairTime(10.0)
+        .connect<RepairKit>("advancedRepairKit")
+            .healAmount(70.0f)
+            .repairTime(20.0f)
+            .requiresCrew(true);
 
 // === Space Exploration Mechanics ===
 auto deepSpaceVessel = Scene::current()
@@ -110,33 +103,26 @@ auto arenaManager = Scene::current()
     .add<BattleArea>("mega_arena")
         .dimensions({200.0f, 50.0f, 200.0f})
         .connect<GameModeManager>("arena_modes")
-            .addMode("capture_points", {
-                .points = {
-                    {50.0f, 0.0f, 50.0f},
+            .addMode("capture_points")
+                .points({50.0f, 0.0f, 50.0f},
                     {-50.0f, 0.0f, -50.0f},
-                    {0.0f, 20.0f, 0.0f}
-                },
-                .captureTime = 30.0f,
-                .scoreLimit = 1000
-            })
-            .addMode("king_of_hill", {
-                .hillRadius = 20.0f,
-                .moveInterval = 60.0f,
+                    {0.0f, 20.0f, 0.0f})
+                .captureTime(30.0f)
+                .scoreLimit(1000)
+            .addMode("king_of_hill")
+                .hillRadius(20.0f)
+                .moveInterval(60.0f)
                 .connect<HazardRing>("closing_circle")
                     .shrinkRate(0.5f)
                     .damage(10.0f)
-            })
         .connect<EnvironmentManager>("dynamic_arena")
-            .addHazard("lava_floor", {
-                .damage = 50.0f,
-                .spreadRate = 0.1f,
+            .addHazard("lava_floor")
+                .damage(50.0f)
+                .spreadRate(0.1f)
                 .connect<ParticleSystem>("lava_fx")
-            })
-            .addHazard("lightning_storm", {
-                .frequency = 0.2f,
-                .damage = 100.0f,
-                .warning = 1.5f
-            })
+            .addHazard("lightning_storm")
+                .frequency(0.2f)
+                .damage(100.0f)
         .connect<SpectatorSystem>("arena_viewers")
             .enableReplay(true)
             .connect<BettingSystem>("arena_bets")
@@ -170,16 +156,14 @@ auto battleManager = Scene::current()
                         .spotting(true)
             })
         .connect<ObjectiveManager>("mission_control")
-            .addObjective("capture_bridge", {
-                .location = {0.0f, 0.0f, 0.0f},
-                .radius = 50.0f,
-                .reward = 1000
-            })
+            .addObjective("capture_bridge")
+                .location(0.0f, 0.0f, 0.0f)
+                .radius(50.0f)
+                .reward(1000)
             .connect<ReinforcementSystem>("support")
-                .addReinforcement("air_strike", {
-                    .cooldown = 300.0f,
-                    .damage = 500.0f
-                })
+                .addReinforcement("air_strike")
+                    .cooldown(300.0f)
+                    .damage(500.0f)
         .connect<WeatherSystem>("battlefield_conditions")
             .setWeather("rain")
             .visibility(0.7f)

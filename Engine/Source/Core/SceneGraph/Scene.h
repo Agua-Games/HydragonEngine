@@ -34,6 +34,7 @@
  * - Refactor all nodes in the codebase to use the same and proper methods to get and set input values from ports (GetInputValue, SetInputValue). I started doing this here 
  * in Scene.h. This is part of the cleanup pass after design sketch phase, before beginning to test the whole system, first "Vulkan-less" (a graphical adventure game with
  * output/logging text to a imgui window), to validate it's working. Then we move on to refactoring the Vulkan core implementation.
+ * - Refactor Scene and all other nodes to get the default values from the SceneInfo struct.
  * 
  * - Check and compare redundancy, conflicts and proper overrides in corresponding methods in Node and Scene. Clean and fix as necessary.
  * - SceneInfo - optimize. Estimated SceneInfo struct size in memory (bytes) per instance, can be reduced from approx. 436 bytes to 128 bytes.

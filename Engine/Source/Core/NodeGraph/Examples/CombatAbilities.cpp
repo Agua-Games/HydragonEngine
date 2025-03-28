@@ -11,10 +11,12 @@
     - Combat mechanics like combo systems and chain reactions
     - Area effects and healing mechanics
  */
-#include "Core/Engine.h"
-#include "Core/NodeGraph/Node.h"
-#include "Core/Gameplay/Projectile.h"
-#include "Core/Gameplay/Ability.h"
+#pragma once
+#include "Engine.h"
+#include "Node.h"
+#include "Projectile.h"
+#include "Ability.h"
+#include "DamageZone.h"
 
 using namespace hd;
 

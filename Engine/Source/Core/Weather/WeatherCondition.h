@@ -43,10 +43,25 @@ struct WeatherConditionInfo : public NodeInfo {
 
 class WeatherCondition : public Node {
 public:
+    // === Allocation, Initialization, Loading ===
     explicit WeatherCondition(const WeatherConditionInfo& info = WeatherConditionInfo())
         : Node(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    WeatherTypes weatherType;
+    float temperature;
+    float humidity;
+    float windSpeed;
+    float snowDensity;
+    float fogDensity;
+    float precipitationIntensity;
+    float lightningFrequency;
+    float thunderFrequency;
+    float cloudCoverage;
+    float cloudHeight;
+    float cloudSpeed;
 
     // === Processing ===
     void processNode() override {

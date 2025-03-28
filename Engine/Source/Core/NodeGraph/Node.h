@@ -362,27 +362,22 @@ public:
         propertyInfos[name] = def;
     }
 
-    // Enhanced connection method that works with property system
-    Node& connect(const std::string& sourceProperty, const std::string& targetPath) {
-        // Verify source property exists and is connectable
-        auto srcMetadataIt = propertyInfos.find(sourceProperty);
-        if (srcMetadataIt == propertyInfos.end() || !srcMetadataIt->second.isConnectable) {
-            throw std::runtime_error("Source property not found or not connectable");
+    // Direct node-to-node connection without lookup
+    template<typename TargetType>
+    NodeType& connect(TargetType* target, const char* targetPort = nullptr) {
+        if (targetPort) {
+            connectMember(target, targetPort);
         }
-
-        auto [targetNode, targetProperty] = NodeManager::get().parsePortPath(targetPath);
-        
-        // Verify target property exists and is connectable
-        auto targetMetadataIt = targetNode->propertyInfos.find(targetProperty);
-        if (targetMetadataIt == targetMetadataIt->end() || !targetMetadataIt->second.isConnectable) {
-            throw std::runtime_error("Target property not found or not connectable");
-        }
-
-        // Use existing connection system
-        NodeManager::get().connect(shared_from_this(), targetNode, sourceProperty, targetProperty);
-        return *this;
+        return static_cast<NodeType&>(*this);
     }
 
+    // Create and connect in one step
+    template<typename TargetType>
+    NodeType& connect(const char* targetPort = nullptr) {
+        auto target = std::make_shared<TargetType>();
+        NodeManager::get().registerNode(target); // Just for lifetime management
+        return connect(target.get(), targetPort);
+    }
 
     // === Port Management ===
     // Ports are used for UI - visual node graph editor, state, sync, etc.

@@ -12,69 +12,125 @@
 #include "ProceduralManager.h"
 #include "Node.h"
 #include "WavePhysics.h"
-#include "VolumetricTypes.h"
 #include "PhysicsFields.h"
+#include "VolumetricTypes.h"
 
 namespace hd {
 
 // Info struct inherits from NodeInfo - used for metadata/configuration
 struct AtmosphereInfo : public NodeInfo {
     AtmosphereInfo() {
-        NodeType = "Weather/Atmosphere";
+        nodeType = "Weather/Atmosphere";
         
         inputs = {
-            "Temperature",       // Base temperature
-            "Humidity",         // Base humidity
-            "Pressure",         // Air pressure
-            "TimeOfDay",        // Day/night cycle
-            "Season",           // Seasonal influence
-            "Location"          // Geographic position
+            "temperature",       // Base temperature
+            "humidity",         // Base humidity
+            "pressure",         // Air pressure
+            "timeOfDay",        // Day/night cycle
+            "season",           // Seasonal influence
+            "location"          // Geographic position
         };
         
         outputs = {
-            "AtmosphereState",  // Current state
-            "ScatteringParams", // Light scattering
-            "DensityProfile",   // Atmospheric density
-            "OpticalDepth"      // Light transmission
+            "atmosphereState",  // Current state
+            "scatteringParams", // Light scattering
+            "densityProfile",   // Atmospheric density
+            "opticalDepth"      // Light transmission
         };
 
         isSerializable = true;
-        IsEditableInEditor = true;
-        IsProcedural = true;
+        isEditableInEditor = true;
+        isProcedural = true;
     }
 };
 
 // Actual node class inherits from Node - provides functionality
-class Atmosphere : public Node<AtmosphereState, ScatteringParams, DensityProfile> {
+class Atmosphere : public Node {
 public:
+    // === Structure Definitions ===
+    struct AtmosphereState {
+        float temperature;
+        float humidity;
+        float pressure;
+        float timeOfDay;
+        SeasonData season;
+        glm::vec3 location;
+    };
+
+    struct ScatteringParams {
+        float rayleighScattering;
+        float mieScattering;
+        float mieDirectionalG;
+    };
+    struct DensityProfile {
+        float troposphereDensity;
+        float stratosphereDensity;
+        float mesosphereDensity;
+    };
+
+    // === Allocation, Initialization, Loading ===
     explicit Atmosphere(const AtmosphereInfo& info = AtmosphereInfo())
         : Node(info) {}
+    initialize() override {}
+    load() override {}
 
-    void () override {
+    // Set default values
+    AtmosphereState atmosphereState;
+    PhysicsFields::AtmosphereField atmosphereField;
+    ScatteringParams scatteringParams;
+    DensityProfile densityProfile;
+    float opticalDepth;
+
+    // Those should be updated from the atmosphereField. If the atmosphereField is not present, we approximate them.
+    vec3 windDirection;
+    vec3 windSpeed;
+    float density;
+
+    // === Processing ===
+    void processNode() override {
         // Process inputs
-        auto temperature = getInputValue<float>("Temperature");
-        auto humidity = getInputValue<float>("Humidity");
-        auto pressure = getInputValue<float>("Pressure");
-        auto timeOfDay = getInputValue<float>("TimeOfDay");
-        auto season = getInputValue<SeasonData>("Season");
-        auto location = getInputValue<glm::vec3>("Location");
+        auto temperature = getInputValue<float>("temperature");
+        auto humidity = getInputValue<float>("humidity");
+        auto pressure = getInputValue<float>("pressure");
+        auto timeOfDay = getInputValue<float>("timeOfDay");
+        auto season = getInputValue<SeasonData>("season");
+        auto location = getInputValue<glm::vec3>("location");
 
         // Compute atmospheric state
-        AtmosphereState state = computeAtmosphereState(
+        atmosphereState = computeAtmosphereState(
             temperature, humidity, pressure, timeOfDay, season, location
         );
 
         // Calculate derived parameters
-        ScatteringParams scattering = computeScatteringParams(state);
-        DensityProfile density = computeDensityProfile(state);
-        float opticalDepth = computeOpticalDepth(density);
+        scatteringParams = computeScatteringParams(atmosphereState);
+        densityProfile = computeDensityProfile(atmosphereState);
+        opticalDepth = computeOpticalDepth(densityProfile);
 
         // Set outputs
-        setOutputValue("AtmosphereState", state);
-        setOutputValue("ScatteringParams", scattering);
-        setOutputValue("DensityProfile", density);
-        setOutputValue("OpticalDepth", opticalDepth);
+        setOutputValue("atmosphereState", atmosphereState);
+        setOutputValue("scatteringParams", scatteringParams);
+        setOutputValue("densityProfile", densityProfile);
+        setOutputValue("opticalDepth", opticalDepth);
     }
+
+    void computeAtmosphereState(float temperature, float humidity, float pressure, float timeOfDay, const SeasonData& season, const glm::vec3& location) {
+        // Implementation...
+    }
+
+    void computeWindApproximation() {
+        // Implementation...
+    }
+
+    void updateWind() {
+        // Implementation...
+    }
+
+    void update() override {}
+
+    // === Cleanup ===
+    void unload() override {}
+    void cleanup() override {}
+    ~Atmosphere() = default;     // Default destructor
 
 private:
     // Implementation methods...
