@@ -2,8 +2,8 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file Weather.h
- * @brief Weather represents a weather node in the engine's node graph.
+ * @file WeatherManager.h
+ * @brief WeatherManager represents a weather manager node in the engine's node graph.
  */
 #pragma once
 
@@ -13,9 +13,9 @@
 
 namespace hd {
 
-struct WeatherInfo : public NodeInfo {
-    WeatherInfo() {
-        NodeType = "Weather/WeatherSystem";
+struct WeatherManagerInfo : public NodeInfo {
+    WeatherManagerInfo() {
+        NodeType = "Weather/WeatherManager";
         
         inputs = {
             "Time",              // Time of day/year
@@ -24,6 +24,7 @@ struct WeatherInfo : public NodeInfo {
             "Humidity",         // Base humidity
             "WindDirection",    // Wind vector
             "WindSpeed",        // Wind speed
+            "SnowDensity",      // Snow density
             "ProceduralIntent", // For procedural variation
             "FogParams",        // Fog parameters
             "PrecipParams"      // Precipitation parameters
@@ -44,16 +45,16 @@ struct WeatherInfo : public NodeInfo {
     }
 };
 
-class Weather : public Node<WeatherState, AtmosphereParams, CloudData, PrecipitationData> {
+class WeatherManager : public Node {
 public:
-    explicit Weather(const WeatherInfo& info = WeatherInfo())
+    explicit WeatherManager(const WeatherManagerInfo& info = WeatherManagerInfo())
         : Node(info) {
-        auto& orchestrator = ProceduralOrchestrator::getInstance();
-        weatherPatternId = orchestrator.registerPattern(createDefaultWeatherPattern());
+        auto& proceduralManager = ProceduralManager::getInstance();
+        weatherPatternId = proceduralManager.registerPattern(createDefaultWeatherPattern());
     }
 
     void () override {
-        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        auto& proceduralManager = ProceduralManager::getInstance();
         
         // Process inputs
         auto time = getInputValue<float>("Time");
@@ -75,8 +76,8 @@ public:
         params.vectorParams = {windDir, windSpeed};
         
         // Update weather pattern
-        weatherPatternId = orchestrator.createWeatherPattern(params);
-        auto weatherData = orchestrator.getProceduralPattern(weatherPatternId);
+        weatherPatternId = proceduralManager.createWeatherPattern(params);
+        auto weatherData = proceduralManager.getProceduralPattern(weatherPatternId);
         
         // Update outputs
         setOutputValue("WeatherState", computeWeatherState(weatherData));

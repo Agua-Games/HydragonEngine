@@ -47,7 +47,7 @@ namespace nodeEd = ax::NodeEditor;
 #include "PhysicsEditor.h"
 #include "BottomStatusBar.h"
 #include "FileExplorer.h"
-#include "ProcOrchestratorEditor.h"
+#include "ProceduralManagerEditor.h"
 #include "Profiler.h"
 #include "StreamingEditor.h"
 #include "ImageTools.h"
@@ -120,7 +120,7 @@ void initializeWindows(EditorWindowData* windowData){
     PhysicsEditor::initialize();
     BottomStatusBar::initialize();
     FileExplorer::initialize();
-    ProcOrchestrator::initialize();
+    ProceduralManager::initialize();
     Profiler::initialize();
     StreamingEditor::initialize();
     ImageTools::initialize();
@@ -470,7 +470,7 @@ void renderHydragonEditor(EditorWindowData* windowData) {
     // File Explorer
     if (windowData->isFileExplorerWindowOpen) { hd::showFileExplorer(&windowData->isFileExplorerWindowOpen, windowData); }
     // Procedural (Pattern) Orchestrator
-    if (windowData->isProcOrchestratorWindowOpen) { hd::showProcOrchestrator(&windowData->isProcOrchestratorWindowOpen, windowData); }
+    if (windowData->isProceduralManagerWindowOpen) { hd::showProceduralManager(&windowData->isProceduralManagerWindowOpen, windowData); }
     // Profiler
     if (windowData->isProfilerWindowOpen) { hd::showProfiler(&windowData->isProfilerWindowOpen, windowData); }
     // Streaming Editor

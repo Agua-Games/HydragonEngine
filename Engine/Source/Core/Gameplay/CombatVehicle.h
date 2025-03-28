@@ -24,7 +24,7 @@ struct CombatVehicleInfo : public NodeInfo {
         nodeType = "Gameplay/CombatVehicle";
         
         inputs = {
-            "model",
+            "scene",
             "position",
             "rotation",
             "scale",
@@ -36,7 +36,7 @@ struct CombatVehicleInfo : public NodeInfo {
         };
         
         outputs = {
-            "model",
+            "scene",
             "position",
             "rotation",
             "scale",
@@ -58,6 +58,8 @@ public:
     void load() override {}
 
     // === Processing ===
+    void addWeapon(const Weapon& weapon);
+    void addArmor(const Armor& armor);
     void processNode() override {
  
     }

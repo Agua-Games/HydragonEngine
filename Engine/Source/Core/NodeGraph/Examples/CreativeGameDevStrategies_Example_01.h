@@ -42,7 +42,7 @@ public:
 
         // Procedural Generation
         void setupProceduralSystems() {
-            auto procGen = graph.create<ProcOrchestrator>("procGen")
+            auto procGen = graph.create<ProceduralManager>("procGen")
                 .connect<Terrain>("terrain")
                     .setNoiseParams(0.5f, 2.0f)
                     .setDetailLevels(8)

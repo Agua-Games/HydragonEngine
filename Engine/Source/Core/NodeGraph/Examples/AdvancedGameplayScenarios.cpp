@@ -35,42 +35,45 @@ using namespace hd;
 // === Advanced Vehicle Damage System ===
 auto armoredVehicle = Scene::current()
     .add<CombatVehicle>("mbt_challenger")
-        .model("vehicles/tanks/challenger2.fbx")
-        .connect<ArmorSystem>("composite_armor")
-            .addLayer("composite", 150.0f)
-            .addLayer("reactive", 100.0f)
-            .connect<DamageZones>("critical_areas")
-                .addZone("ammo_rack", {
-                    .multiplier = 3.0f,
-                    .detonationChance = 0.7f
-                })
-                .addZone("engine", {
-                    .multiplier = 2.0f,
-                    .fireChance = 0.4f
-                })
-        .connect<SubsystemManager>("vehicle_systems")
-            .addSubsystem("engine", {
-                .health = 100.0f,
-                .degradationRate = 0.1f,
-                .connect<StatusEffect>("engine_damage")
-                    .addEffect("speed", -0.3f)
-                    .addEffect("acceleration", -0.5f)
+        .scene("vehicles/tanks/challenger2.usd")
+        .addArmor("composite", 150.0f)
+        .addArmor("reactive", 100.0f)
+        .addWeapon("main_cannon", {
+            .damage = 1000.0f,
+            .rateOfFire = 1.0f
+        })
+        .connect<DamageZones>("critical_areas")
+            .addZone("ammo_rack", {
+                .multiplier = 3.0f,
+                .detonationChance = 0.7f
             })
-            .addSubsystem("transmission", {
-                .health = 100.0f,
-                .connect<StatusEffect>("transmission_damage")
-                    .addEffect("turning_rate", -0.4f)
+            .addZone("engine", {
+                .multiplier = 2.0f,
+                .fireChance = 0.4f
             })
-        .connect<RepairSystem>("field_repairs")
-            .addRepairKit("basic", {
-                .healAmount = 30.0f,
-                .repairTime = 10.0f
-            })
-            .addRepairKit("advanced", {
-                .healAmount = 70.0f,
-                .repairTime = 20.0f,
-                .requiresCrew = true
-            });
+    .connect<SubsystemManager>("vehicle_systems")
+        .addSubsystem("engine", {
+            .health = 100.0f,
+            .degradationRate = 0.1f,
+            .connect<StatusEffect>("engine_damage")
+                .addEffect("speed", -0.3f)
+                .addEffect("acceleration", -0.5f)
+        })
+        .addSubsystem("transmission", {
+            .health = 100.0f,
+            .connect<StatusEffect>("transmission_damage")
+                .addEffect("turning_rate", -0.4f)
+        })
+    .connect<RepairSystem>("field_repairs")
+        .addRepairKit("basic", {
+            .healAmount = 30.0f,
+            .repairTime = 10.0f
+        })
+        .addRepairKit("advanced", {
+            .healAmount = 70.0f,
+            .repairTime = 20.0f,
+            .requiresCrew = true
+        });
 
 // === Space Exploration Mechanics ===
 auto deepSpaceVessel = Scene::current()

@@ -45,6 +45,7 @@ public:
     load() override {}
 
     // === Processing ===
+    void processBehaviorTree();
     void processNode() override {
  
     }

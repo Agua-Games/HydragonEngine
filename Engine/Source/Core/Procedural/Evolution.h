@@ -20,7 +20,7 @@
 #pragma once
 
 #include "ProceduralTypes.h"
-#include "ProcOrchestrator.h"
+#include "ProceduralManager.h"
 #include "Node.h"
 
 namespace hd {

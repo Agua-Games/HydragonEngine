@@ -12,6 +12,7 @@
  */
 #pragma once
 #include "NodeGraph/Node.h"
+#include "EngineTypes.h"
 
 namespace hd {
 
@@ -42,12 +43,21 @@ public:
     GameplaySettings gameplaySettings;
     GameplayData gameplayData;
     GameplayState gameplayState;
+    Mode m_mode = Mode::GAME_ONLY;                      // Default mode is gameplay enabled, editor disabled, overlays disabled
+    std::vector<std::shared_ptr<Node>> m_subsystems;    // Subsystems, like audio, physics, etc. that are managed by the GameplayManager.
 
     // === Processing ===
     void processNode() override {
+        if (!m_active) return;
+
+        // Process inputs, based on mode
+        auto mode = getInputValue<Mode>("mode");                                // Process the other inputs or not, based on mode.
         gameplaySettings = getInputValue<GameplaySettings>("gameplaySettings");
         gameplayData = getInputValue<GameplayData>("gameplayData");
         gameplayState = getInputValue<GameplayState>("gameplayState");
+
+        // Adjust to Engine Mode - disable gameplay, etc. based on mode.
+        adjustToMode(mode);
 
         // Process gameplay
         auto gameplayStatus = updateGameplay(gameplaySettings, gameplayData, gameplayState);
@@ -56,6 +66,14 @@ public:
         setOutputValue("gameplayStatus", gameplayStatus);
         setOutputValue("gameplayMetrics", computeGameplayMetrics(gameplayStatus));
     }
+    void setMode(Mode mode) {
+        m_mode = mode;
+        // Adjust subsystems but maintain core functionality
+        for (auto& subsystem : m_subsystems) {
+            subsystem->adjustToMode(mode);
+        }
+    }
+    void adjustToMode(Mode mode) override;    // Adjust to the given mode, like disabling gameplay, etc. based on mode.
     void update();
 
     // === Cleanup ===

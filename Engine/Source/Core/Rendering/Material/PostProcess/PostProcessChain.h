@@ -43,8 +43,26 @@ public:
 
     std::unordered_map<std::string, std::shared_ptr<PostProcess>> passes;
     std::unordered_map<std::string, std::any> PostProcessChainParams;
+    std::vector<std::unique_ptr<PostProcessEffect>> effects; // Post-processing effects in the chain
+    RenderGraph::NodeHandle outputNode;                     // 
 
     // === Processing ===
+    /**
+     * @brief Adds a post-processing effect to the chain, using Fluent API.
+     */
+    PostProcessChain& addEffect(std::unique_ptr<PostProcessEffect> effect) {
+        effects.push_back(std::move(effect));
+        return *this;
+    }
+    
+    /**
+     * @brief Adds a post-processing effect to the chain, using Fluent API.
+     */
+    template<typename T, typename... Args>
+    PostProcessChain& add(Args&&... args) {
+        return addEffect(std::make_unique<T>(std::forward<Args>(args)...));
+    }
+
     void addPass(const std::string& name, const std::shared_ptr<PostProcess>& pass);
     void processNode() override {
  

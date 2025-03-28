@@ -2,8 +2,8 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ProcOrchestrator.h
- * @brief ProcOrchestrator represents a singleton class that manages the orchestration of procedural patterns.
+ * @file ProceduralManager.h
+ * @brief ProceduralManager represents a singleton class that manages the orchestration of procedural patterns.
  * 
  * ARCHITECTURAL NOTES:
  * 
@@ -23,32 +23,32 @@
 
 namespace hd {
 
-struct ProcOrchestratorInfo : public NodeInfo {
-    ProcOrchestratorInfo() {
-        NodeType = "Procedural/Orchestrator";
-        Name = "Procedural Orchestrator";
+struct ProceduralManagerInfo : public NodeInfo {
+    ProceduralManagerInfo() {
+        nodeType = "Procedural/ProceduralManager";
+        name = "ProceduralManager";
         
         // Global control inputs
         inputs = {
-            "GlobalIntent",          // Overall procedural behavior intent
-            "HarmonyParams",         // System harmony parameters
-            "TimeScale",             // Time scaling for evolution
-            "Seed",                  // Global seed for consistency
-            "SystemWeights"          // Weight map for different domains
+            "globalIntent",          // Overall procedural behavior intent
+            "harmonyParams",         // System harmony parameters
+            "timeScale",             // Time scaling for evolution
+            "seed",                  // Global seed for consistency
+            "systemWeights"          // Weight map for different domains
         };
         
         // Orchestrated outputs
         outputs = {
             "harmonizedPatterns",    // Collection of harmonized patterns
-            "SystemStates",          // Current state of all systems
-            "EvolutionMetrics",      // Pattern evolution metrics
-            "PerformanceMetrics",    // Performance monitoring data
-            "SystemMetrics"          // System metrics
+            "systemStates",          // Current state of all systems
+            "evolutionMetrics",      // Pattern evolution metrics
+            "performanceMetrics",    // Performance monitoring data
+            "systemMetrics"          // System metrics
         };
 
         isSerializable = true;
-        IsEditableInEditor = true;
-        IsProcedural = true;
+        isEditableInEditor = true;
+        isProcedural = true;
     }
 };
 
@@ -61,20 +61,20 @@ struct IntentTask {
 };
 
 /**
- * @class ProcOrchestrator
- * @brief Represents a procedural orchestrator node in the engine's node graph.
+ * @class ProceduralManager
+ * @brief Represents a procedural manager node in the engine's node graph.
  */
-class ProcOrchestrator : public Node {
+class ProceduralManager : public Node {
 public:
     // === Allocation, Initialization, Loading ===
-    ProcOrchestrator() 
-        : Node(ProcOrchestratorInfo()) {}
+    ProceduralManager() 
+        : Node(ProceduralManagerInfo()) {}
     initialize() override {}
     load() override {}
 
     // Singleton instance
-    static ProcOrchestrator& getInstance() {
-        static ProcOrchestrator instance;
+    static ProceduralManager& getInstance() {
+        static ProceduralManager instance;
         return instance;
     }
 
@@ -88,7 +88,7 @@ public:
     }
 
     // === Processing ===
-    void () override {
+    void processNode() override {
         // Process input intents and parameters
         auto globalIntent = getInputValue<OctaveParams>("GlobalIntent");
         auto harmonyParams = getInputValue<HarmonyParams>("HarmonyParams");
@@ -181,25 +181,11 @@ public:
         return registerPattern(std::move(pattern));
     }
 
+    /**
+     * @brief Draw this node in the Node Graph Editor.
+     * Nodes will be automatically drawn based on their data types, structure, etc. But for custom visualization logic, override this method in derived classes.
+     */
     void drawInNodeGraph() override {
-        ImGui::BeginGroup();
-        ImGui::Text("Procedural Orchestrator");
-        
-        // Draw input ports
-        drawInputPort("GlobalIntent", "Intent");
-        drawInputPort("HarmonyParams", "Harmony");
-        drawInputPort("TimeScale", "Time");
-        drawInputPort("Seed", "Seed");
-        drawInputPort("SystemWeights", "Weights");
-        
-        // Draw output ports
-        drawOutputPort("harmonizedPatterns", "Patterns");
-        drawOutputPort("SystemStates", "States");
-        drawOutputPort("EvolutionMetrics", "Evolution");
-        drawOutputPort("PerformanceMetrics", "Performance");
-        drawOutputPort("SystemMetrics", "SystemMetrics");
-        
-        ImGui::EndGroup();
     }
 
 private:
@@ -237,8 +223,8 @@ private:
 
     // === Cleanup ===
     // Prevent copying of singleton
-    ProcOrchestrator(const ProcOrchestrator&) = delete;
-    ProcOrchestrator& operator=(const ProcOrchestrator&) = delete;
+    ProceduralManager(const ProceduralManager&) = delete;
+    ProceduralManager& operator=(const ProceduralManager&) = delete;
 };
 
 } // namespace hd

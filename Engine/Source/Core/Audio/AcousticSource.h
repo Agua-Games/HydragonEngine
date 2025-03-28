@@ -20,11 +20,15 @@ struct AcousticSourceInfo : public NodeInfo {
     AcousticSourceInfo() {
         nodeType = "Audio/AcousticSource";
         inputs = {
-            "position",      // Wave emission point
-            "orientation",   // Emission direction
-            "velocity",      // For Doppler effect
-            "wavePattern",   // Acoustic wave characteristics
-            "medium"         // Propagation medium properties
+            "position",          // Wave emission point
+            "orientation",       // Emission direction
+            "velocity",          // For Doppler effect
+            "wavePattern",       // Acoustic wave characteristics
+            "medium",            // Propagation medium properties
+            "volumeMultiplier",
+            "pitchMultiplier",
+            "audioBank"          // Audio bank for sound samples
+
         };
         outputs = {
             "waveEmission",  // Generated acoustic waves

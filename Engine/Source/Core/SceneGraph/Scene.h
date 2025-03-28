@@ -36,14 +36,37 @@
  * output/logging text to a imgui window), to validate it's working. Then we move on to refactoring the Vulkan core implementation.
  * 
  * - Check and compare redundancy, conflicts and proper overrides in corresponding methods in Node and Scene. Clean and fix as necessary.
- * - SceneInfo - optimize. Estimated SceneInfo struct size in memory (bytes) per instance, can be reduced from approx. 436 bytes
- * to 128 bytes (436 bytes * 20,000 instances = 8.72 MB) (128 * 20,000 = 2.56 MB):
+ * - SceneInfo - optimize. Estimated SceneInfo struct size in memory (bytes) per instance, can be reduced from approx. 436 bytes to 128 bytes.
+ * 
+ *      MEMORY ALIGNMENT, EXPLICIT DECLARATIONS OF TYPE:
+ *      - Total memory reduction from 436 bytes to 128 bytes (436 bytes * 20,000 instances = 8.72 MB) (128 * 20,000 = 2.56 MB):
+ *      - First of all, for this node and other nodes, we can explictly define the format (bit depth) and size of each struct in bytes, and also count the total
+ *      number of structures inside of the info struct (e.g. SceneInfo) so that we make sure we end up with memory-aligned structs. e.g:
+ *          - 4 structs explicitly defined as uint8_t = 4 bytes. Then we can stick to having 4, 8, 12, 16, 24, (...) structs, to keep memory aligned (4 bytes).
+ *          - 2 structs explicitly defined as uint16_t = 4 bytes. Then we can stick to having 2, 4, 6, 8, 10, 12, 14, 16, 20, 24 structs, and so on.
+ *          - 1 struct explicitly defined as uint32_t = 4 bytes. Then we can stick to having 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 structs, and so on.
+ *          - Or we can also explicitly define the size of each member in bytes, with the syntax (e.g.): "uint8_t myVar : 2" (declare we're only using 2 bits of the byte),
+ *          but in this case we must count all members to make sure we end up with memory-aligned structs.
+ *      SMALLER STRING STORAGE:
+ *      - Use std::string_view instead of std::string: ~10 bytes saved per string
  *      - Use StringID instead of std::string: ~20 bytes saved per string. Thread sync is needed for string table!
+ *      BITFIELDS:
  *      -  Bitfields for flags: ~30-40 bytes saved per node
+ *      -  Bitfields for enums: ~10-15 bytes saved per node
+ *      -  Bitfields for booleans: ~10-15 bytes saved per node
+ *      -  Bitfields for integers: ~10-15 bytes saved per node
+ *      -  Bitfields for floats: ~10-15 bytes saved per node
+ *      -  Bitfields for pointers: ~10-15 bytes saved per node
+ *      -  Bitfields for structs: ~10-15 bytes saved per node
+ *      USE OF VECTOR:
  *      - Use std::vector instead of std::unordered_map: ~100 bytes saved per map
  *      - Unified enums: ~10-15 bytes saved per node
+ *      POOLS:
  *      - Pool-based allocation: Better memory locality and less fragmentation
+ *      - Pool-based memory management: ~10-15 bytes saved per node
+ *      LAZY LOADING:
  *      - Lazy loading: ~55% memory reduction for inactive nodes
+ * 
  * - SceneInfo - add more features:
  *      - Add move constructor/assignment if performance is critical
  *      - Add validation methods for the configuration

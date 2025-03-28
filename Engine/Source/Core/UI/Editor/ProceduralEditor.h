@@ -2,8 +2,8 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ProcOrchestratorEditor.h
- * @brief The Procedural Orchestrator Editor is a specialized view for procedural pattern orchestration.
+ * @file ProceduralEditor.h
+ * @brief The Procedural Editor is a specialized view for procedural pattern orchestration.
  * 
  * ARCHITECTURAL NOTES:
  * - This sub-editor is the UI hook to the engine's procedural pattern orchestration system ("Maestro", consolidated 
@@ -34,6 +34,6 @@ namespace hd {
  * @param p_open Pointer to boolean controlling window visibility
  * @param windowData Editor window data containing global settings
  */
-void showProcOrchestrator(bool* p_open, EditorWindowData* windowData);
+void showProceduralManager(bool* p_open, EditorWindowData* windowData);
 
 } // namespace hd

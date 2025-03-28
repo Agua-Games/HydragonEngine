@@ -1,10 +1,10 @@
 /**
- * Copyright (c) 2024 Agua Games. All rights reserved.
+ * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
  * @file WavePhysics.h
- * @brief WavePhysics is a class that handles energy transfer and transformation in the engine.
- * The name may mislead some users into thinking WavePhysics has a very narrow scope, but in fact the choice of the name is intentional, to make clear our
+ * @brief WavePhysics(c) is a class that handles energy transfer and transformation in the engine.
+ * The name may mislead some users into thinking WavePhysics(c) has a very narrow scope, but in fact the choice of the name is intentional, to make clear our
  * paradigm regarding physics. We could have an even more telling name, like WaveFieldPhysics, but we must also had to consider "marketing", appeal, etc.
  * Computer graphics, historically, has not evolved with "immanent" physics properties as a core thing - you can easily notice the signs of this in the fact
  * that most fundamental data structures, like the vertex, were never designed holding physics attributes in them. This is a testament to the disproportionately

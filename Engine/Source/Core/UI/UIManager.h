@@ -114,7 +114,7 @@ struct EditorWindowData
     bool isPhysicsWindowOpen = true;
     bool isBottomStatusBarWindowOpen = true;
     bool isFileExplorerWindowOpen = true;
-    bool isProcOrchestratorWindowOpen = true;
+    bool isProceduralManagerWindowOpen = true;
 
     bool isProfilerWindowOpen = true;
     bool profilerRecordingEnabled = true;

@@ -18,7 +18,7 @@
 * - Asynchronous streaming and multi-threading are integral.
 * 
 * DESIGN PRINCIPLES:
-* - Everything is a node in the system, including the system itself
+* - Everything is a node in the system
 * - Engine core and UI are totally decoupled. Users can have a productive and pleasing coding experience, where they do most things in code alone.
 * Features like runtime editing of variable values without recompilation, runtime compilation of scripts, execution of single commands, coroutines, etc. are possible.
 * - Procedural generation is deeply integrated at all levels
@@ -28,21 +28,26 @@
 * - Performance is optimized through intelligent task distribution
 * 
 * TODO (Sketch Phase):
-* - Setup basic orchestration systems
-* - Integrate procedural generation framework
-* - Establish communication protocols between systems
-* - Create initial harmony maintenance systems
+* @todo Move implementation to .cpp file
+* @todo (I need to study this design choice better) including the system itself
+* @todo Establish communication protocols between systems
 */
-
 #pragma once
 #include <memory>
 #include <string>
 #include <vector>
-#include "Node.h"                           // Foundation
-#include "ProceduralOrchestrator.h"         // Evolution
-#include "SystemOrchestrator.h"             // Coordination, Harmony, etc.
-#include "ResourceManager.h"                // Assets
-#include "VulkanCore.h"                     // Graphics
+#include "Node.h"                          // Foundational
+#include "NodeManager.h"                   // NodeGraph
+#include "PhysicsManager.h"                // Physics, etc.
+#include "AudioManager.h"                  // Audio, etc.
+#include "GameplayManager.h"               // Gameplay, etc.
+#include "ResourceManager.h"               // Assets
+#include "Renderer.h"                      // Graphics, Rendering, etc.
+#include "InputManager.h"                  // Input, UI, etc.
+#include "TimeManager.h"                   // Time, Profiling, etc.
+#include "ProceduralManager.h"             // Coordination, Harmony, etc.
+#include "UIManager.h"                     // UI, Editor, etc.
+#include "EngineTypes.h"                   // Engine modes, etc.
 
 namespace hd {
 
@@ -51,48 +56,7 @@ namespace hd {
  */
 class Engine {
 public:
-    // === Resource Management ===
-    
-    // === Allocation, Initialization, Loading ===
-    static Engine& getInstance();
-    bool initialize();
-
-    // Core system access
-    NodeGraph& getNodeGraph();
-    ProceduralOrchestrator& getProceduralOrchestrator();
-    SystemOrchestrator& getSystemOrchestrator();
-    
-    // === Processing ===
-    // Runtime control
-    void update(float deltaTime);
-    void processSystems();
-    
-    // System configuration
-    void setSystemIntent(const SystemIntent& intent);
-    void configureHarmonyParameters(const HarmonyParams& params);
-    
-    // Debug and development
-    void enableDebugMode(bool enable);
-    void setProfilerLevel(ProfilerLevel level);
-
-    // === Cleanup ===
-    void shutdown();
-
-private:
-    Engine() = default;
-    ~Engine() = default;
-    Engine(const Engine&) = delete;
-    Engine& operator=(const Engine&) = delete;
-
-    // Core systems
-    std::unique_ptr<NodeGraph> m_nodeGraph;
-    std::unique_ptr<ProceduralOrchestrator> m_proceduralOrchestrator;
-    std::unique_ptr<SystemOrchestrator> m_systemOrchestrator;
-    std::unique_ptr<ResourceManager> m_resourceManager;
-    
-    // Graphics backend
-    std::unique_ptr<Graphics::VulkanCore> m_graphicsBackend;
-    
+    // === Structure Definitions ===
     /**
      * @brief Internal state of the engine.
      * Tracks the state of the engine and its systems, like system health, resource usage, 
@@ -102,17 +66,95 @@ private:
         bool isInitialized = false;
         bool isDebugMode = false;
         ProfilerLevel profilerLevel = ProfilerLevel::Basic;
-        SystemState currentState;      // Holds collective state of all systems
-        HarmonyMetrics harmonyMetrics; // Metrics for system harmony
-    } m_state;
+        SystemState currentState;                           // Holds collective state of all systems
+        HarmonyMetrics harmonyMetrics;                      // Metrics for system harmony
+    };
+
+    // === Resource Management ===
     
+    // === Allocation, Initialization, Loading ===
+    static Engine& getInstance();
+    bool initialize();
+
+    bool shouldClose = false;
+    EngineMode mode = EngineMode::FULL;     // Engine mode, like GAMEPLAY_ONLY, EDITOR_ONLY, etc.
+
+    // Core systems access - for internal use only. Use NodeManager for public access.
+    ProceduralManager& getProceduralManager();
+    NodeManager& getNodeManager();
+    
+    // === Processing ===
+    // Runtime control
+    void update(float deltaTime);
+    EngineMode getMode() const;
+    void setMode(EngineMode mode);                 // Set the engine mode, like gameplay, editor, etc.
+    
+    /**
+     * @brief The main loop of the engine.
+     */
+    void mainLoop() {
+        // Same core loop for both game and editor
+        while (!shouldClose) {
+            // Managers always present, just controlled by mode
+            resourceManager->update();
+            inputManager->processInput();
+            timeManager->update();
+            proceduralManager->update();
+            nodeManager->update();
+            physicsManager->update();
+            audioManager->update();
+            gameplayManager->update();
+            uiManager->update();                    // Editor UI not processed in GAMEPLAY_ONLY. SELECTIVE mode may disable some UI.
+            renderer->update();
+            // ... Add more systems here, as needed.
+        }
+    }
+
+    // === Debugging/Development ===
+    void enableDebugMode(bool enable);
+    void setProfilerLevel(ProfilerLevel level);
+
+    // === Cleanup ===
+    void shutdown();
+    ~Engine() = default;
+    Engine(const Engine&) = delete;
+    Engine& operator=(const Engine&) = delete;
+
+private:
+    // === Allocation, Initialization, Loading ===
+    Engine() = default;
+
+    // Core systems
+    std::unique_ptr<Renderer> renderer;
+    std::unique_ptr<ResourceManager> resourceManager;
+    std::unique_ptr<InputManager> inputManager;
+    std::unique_ptr<TimeManager> timeManager;
+    std::unique_ptr<ProceduralManager> proceduralManager;
+    std::unique_ptr<NodeManager> nodeManager;
+    std::unique_ptr<PhysicsManager> physicsManager;
+    std::unique_ptr<AudioManager> audioManager;
+    std::unique_ptr<GameplayManager> gameplayManager;
+    std::unique_ptr<UIManager> uiManager;
+    std::unique_ptr<EngineState> state;     // Internal state of the engine. System health, resource usage, evolution progress, harmony metrics.
+
     // Internal methods
-    void initializeSystems();
+    void initializeSystems() {
+        // Initialize all systems here
+        renderer = std::make_unique<Renderer>();
+        resourceManager = std::make_unique<ResourceManager>();
+        inputManager = std::make_unique<InputManager>();
+        timeManager = std::make_unique<TimeManager>();
+        proceduralManager = std::make_unique<ProceduralManager>();
+        nodeManager = std::make_unique<NodeManager>();
+        physicsManager = std::make_unique<PhysicsManager>();
+        audioManager = std::make_unique<AudioManager>();
+        gameplayManager = std::make_unique<GameplayManager>();
+        uiManager = std::make_unique<UIManager>();
+        state = std::make_unique<EngineState>();
+
+    }
     void setupDefaultConfiguration();
-    void updateHarmonyMetrics();
-    void processSystemIntents();
-    void maintainSystemHarmony();
-};
+}
 
 } // namespace hd
 

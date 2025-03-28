@@ -13,7 +13,8 @@
  * 
  *      AudioFile --> AudioClip (for settings, some FX) --> AudioProcessor (for FX, modulation. Or use EQ, etc.) --> Montage --> AudioManager
  * 
- * 
+  * @todo to other managers, where applicable: Introduce functionality to them (not here) to disable their processing, so that they can be disabled selectively, when
+  * in the editor.
  */
 #pragma once
 #include <fmod.hpp>
@@ -60,11 +61,21 @@ public:
     // Set default values
     std::vector<AudioClip*> audioClips;
     AudioSettings audioSettings;
+    bool m_active = true;    // Active by default, can be disabled
 
-    // === Processing ===
     void processNode() override {
+        if (!m_active) return;
+        
+        // Normal processing when active
         audioClips = getInputValue<std::vector<AudioClip*>>("audioClips");
         audioSettings = getInputValue<AudioSettings>("audioSettings");
+
+        // Process audio
+        auto audioStatus = updateAudio(audioClips, audioSettings);
+
+        // Set outputs
+        setOutputValue("audioStatus", audioStatus);
+        setOutputValue("audioMetrics", computeAudioMetrics(audioStatus));
     }
     
     void play(const std::string& audioClipName, const vec3& position);

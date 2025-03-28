@@ -2,14 +2,18 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file ProcAtmosphere.h
- * @brief ProcAtmosphere represents a procedural atmosphere node in the engine's node graph.
+ * @file Atmosphere.h
+ * @brief Atmosphere represents a procedural atmosphere node in the engine's node graph.
  */
 #pragma once
 
 #include "ProceduralTypes.h"
-#include "ProceduralOrchestrator.h"
+#include "WeatherTypes.h"
+#include "ProceduralManager.h"
 #include "Node.h"
+#include "WavePhysics.h"
+#include "VolumetricTypes.h"
+#include "PhysicsFields.h"
 
 namespace hd {
 
@@ -41,9 +45,9 @@ struct AtmosphereInfo : public NodeInfo {
 };
 
 // Actual node class inherits from Node - provides functionality
-class ProcAtmosphere : public Node<AtmosphereState, ScatteringParams, DensityProfile> {
+class Atmosphere : public Node<AtmosphereState, ScatteringParams, DensityProfile> {
 public:
-    explicit ProcAtmosphere(const AtmosphereInfo& info = AtmosphereInfo())
+    explicit Atmosphere(const AtmosphereInfo& info = AtmosphereInfo())
         : Node(info) {}
 
     void () override {

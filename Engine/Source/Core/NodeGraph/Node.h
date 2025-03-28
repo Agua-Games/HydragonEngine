@@ -95,8 +95,10 @@
 
 namespace hd {
 
-/*
- * @brief Metadata and attributes for the node
+/**
+ * @brief Metadata and attributes for the node.
+ * @todo Use strategies to drastically reduce memory usage by NodeInfo, Node and its descendants: bitfields, explicitly defined types, packing, StringID, 
+ * pools, etc.
  */
 struct NodeInfo : public ObjectInfo {
     std::string nodeType;               
@@ -289,6 +291,8 @@ public:
     // Constructor and destructor
     explicit Node(const std::string& name = "");
     virtual ~Node() = default;
+
+    bool m_active = true;
 
     /**
      * @brief Create a node of the specified type.
@@ -581,6 +585,23 @@ public:
     virtual void streamAsync();
 
     // === Processing ===
+    /**
+     * @brief Set the active state of this node.
+     * Using this method, nodes can be selectively disabled, without being destroyed.
+     */
+    virtual void setActive(bool state) {
+        m_active = state;
+        // Don't cleanup/destroy - just pause functionality
+        if (!m_active) {
+            pauseAllSounds();
+            // Keep resources loaded, just inactive
+        }
+    }
+
+    virtual bool isActive() const { return m_active; }
+
+    virtual void adjustToMode(Mode mode) {}    // Adjust to the given mode, like disabling gameplay, etc. based on mode.
+
     /**
      * @brief Process this node's data. Responsible for:
      * Input value retrieval; Core node computation; Output value setting; State transformation.

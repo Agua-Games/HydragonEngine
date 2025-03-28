@@ -3,7 +3,7 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @file AdaptiveMesh.h
- * @brief AdaptiveMesh is a mesh node which uses subdivision and adaptive compression.
+ * @brief AdaptiveMesh(c) is a mesh node which uses subdivision and adaptive compression.
  * It results in subdivision meshes which support high polygon counts and details and which are much smaller (in memory and disk) than their original counterparts, 
  * while maintaining high visual fidelity.
  * 

@@ -4,7 +4,7 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @file ProceduralPBRGenerator.h
- * @brief ProceduralPBRGenerator is a class that generates PBR materials procedurally.
+ * @brief ProceduralPBRGenerator(c) is a class that generates PBR materials procedurally.
  * 
  * ARCHITECTURAL NOTES:
 | Texture Type      | Traditional (MB) | Our Method (MB)  | Savings % | Notes                                           |

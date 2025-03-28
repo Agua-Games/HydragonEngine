@@ -19,7 +19,7 @@
 #include "Node.h"
 #include "ProceduralTypes.h"
 #include "Noise.h"
-#include "ProcOrchestrator.h"
+#include "ProceduralManager.h"
 
 namespace hd {
 

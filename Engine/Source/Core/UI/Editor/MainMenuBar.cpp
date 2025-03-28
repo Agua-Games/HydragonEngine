@@ -653,7 +653,7 @@ void showMainMenuBar(bool* p_open, EditorWindowData* windowData) {
             if (ImGui::MenuItem("Montage Editor", "Ctrl+Shift+T")) { windowData->isMontageWindowOpen = true; }
             if (ImGui::MenuItem("Audio Editor", "Ctrl+Shift+A")) { windowData->isAudioWindowOpen = true; }
             if (ImGui::MenuItem("Drama Editor", "Ctrl+Shift+D")) { windowData->isDramaWindowOpen = true; }
-            if (ImGui::MenuItem("Procedural Orchestrator", "Ctrl+Shift+D")) { windowData->isProcOrchestratorWindowOpen = true; }
+            if (ImGui::MenuItem("Procedural Orchestrator", "Ctrl+Shift+D")) { windowData->isProceduralManagerWindowOpen = true; }
             if (ImGui::MenuItem("Streaming Editor", "Ctrl+Shift+M")) { windowData->isStreamingWindowOpen = true; }
             if (ImGui::MenuItem("Networking Editor", "Ctrl+Shift+N")) { windowData->isNetworkingWindowOpen = true; }
             if (ImGui::MenuItem("Input Editor", "Ctrl+Shift+T")) { windowData->isInputWindowOpen = true; }
