@@ -36,6 +36,7 @@ enum class ProceduralStructureType {
     Voronoi,
     Organic,
     Fractal,
+    Evolving,
     Custom
 };
 
@@ -56,6 +57,7 @@ enum class ProceduralPatternType {
     VolumeTexture, // 3D textures (fog, clouds, etc.)
     Noise,         // Base noise patterns
     Geometry,      // Geometric patterns
+    Evolution,     // Evolving patterns
     Custom         // User-defined procedural patterns
 };
 
@@ -68,6 +70,43 @@ enum class SystemDomain {
     Visual,         // Graphics and effects
     Interaction,    // Gameplay and mechanics
     Procedural      // Concrete procedural generation
+};
+
+// Mutation strategies
+enum MutationType {
+    Random,
+    Adaptive,
+    Hybrid
+};
+
+// Crossover strategies
+enum CrossoverType {
+    Uniform,
+    Blend,
+    Hybrid
+};
+
+// Adaptation strategies
+enum AdaptationType {
+    Dynamic,
+    Static,
+    Hybrid
+};
+
+struct EvolutionParameters {
+    float mutationRate = 0.1f;
+    float crossoverRate = 0.7f;
+    float adaptationRate = 0.5f;
+    int generationLimit = 100;
+    int populationSize = 100;
+    float stabilityThreshold = 0.9f;
+};
+
+struct EvolutionState {
+    int currentGeneration = 0;
+    float currentFitness = 0.0f;
+    float bestFitness = 0.0f;
+    ProceduralPatternData bestPattern;
 };
 
 // Procedural structure parameters (from Material)
@@ -109,6 +148,14 @@ struct ProceduralPatternData {
     ProceduralPatternType type;
     ProceduralStructureParams structureParams;
     std::unordered_map<std::string, float> parameters;  // Additional pattern-specific params
+};
+
+// Fitness function for evolution
+struct FitnessFunction {
+    float operator()(const ProceduralPatternData& pattern) const {
+        // Implement fitness calculation logic
+        return 0.0f;
+    }
 };
 
 // Base interface for all patterns

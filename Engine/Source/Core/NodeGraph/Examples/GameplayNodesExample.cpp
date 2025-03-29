@@ -27,76 +27,87 @@
         - Animation integration
         - Lock and key mechanics
  */
-
-#include "Core/Engine.h"
-#include "Core/NodeGraph/Node.h"
-#include "Core/Gameplay/Character.h"
-#include "Core/Gameplay/Inventory.h"
-#include "Core/Gameplay/Quest.h"
-#include "Core/Gameplay/Dialogue.h"
+#pragma once
+#include "Engine.h"
+#include "Node.h"
+#include "Character.h"
+#include "Inventory.h"
+#include "InventoryManager.h"
+#include "CraftingManager.h"
+#include "RecipeSystem.h"
+#include "CraftingStation.h"
+#include "InteractionManager.h"
+#include "ContainerTable.h"
+#include "QuestManager.h"
+#include "DialogueManager.h"
+#include "DialogueTree.h"
+#include "StatsManager.h"
+#include "StatModifier.h"
+#include "SkillTree.h"
+#include "Skill.h"
+#include "ExperienceTree.h"
+#include "DataCurve.h"
 
 using namespace hd;
 
 // RPG Character Progression System
 auto characterSystem = Scene::current()
     .add<Character>("player")
-        .connect<StatsSystem>("base_stats")
+        .connect<StatsManager>("base_stats")
             .addStat("strength", 10)
             .addStat("agility", 8)
             .addStat("intelligence", 12)
             .connect<StatModifier>("equipment_bonus")
-                .addModifier("strength", 2.0f, ModifierType::Multiplicative)
+                .addStat("strength", 2.0f)
             .connect<StatModifier>("buff_bonus")
-                .addModifier("agility", 1.5f, ModifierType::Additive)
+                .addStat("agility", 1.5f)
         .connect<SkillTree>("combat_skills")
-            .addSkill("power_strike")
+            .connect<Skill>("power_strike")
                 .requiredLevel(5)
                 .requiredStat("strength", 15)
                 .connect<Ability>("power_strike_ability")
                     .damage(50.0f)
                     .cooldown(8.0f)
-            .addSkill("quick_dodge")
+            .connect<Skill>("quick_dodge")
                 .requiredLevel(8)
                 .requiredStat("agility", 20)
-        .connect<ExperienceSystem>("xp_system")
+        .connect<ExperienceTree>("xp_system")
             .addXPSource("combat", 1.0f)
             .addXPSource("quests", 1.5f)
-            .connect<LevelSystem>("level_progression")
-                .setLevelCurve({
-                    {1, 1000},
-                    {2, 2500},
-                    {3, 4500}
-                });
+            .connect<DataCurve>("level_progression")
 
 // Interactive Dialogue System
 auto dialogueSystem = Scene::current()
     .add<DialogueManager>("npc_dialogue")
-        .connect<DialogueTree>("merchant_conversation")
-            .addNode("greeting")
+        .connect<DialogueCheckpoint>("merchant_conversation")
+            .connect<DialogueBranch>("greeting")
                 .text("Welcome to my shop!")
-                .connect<DialogueChoice>("shop_choice")
-                    .addOption("Show me your wares", "open_shop")
-                    .addOption("Tell me about your travels", "travel_story")
-                    .addOption("Goodbye", "exit")
-            .addNode("open_shop")
-                .connect<InventorySystem>("merchant_inventory")
-                    .addItem("health_potion", 5)
-                    .addItem("magic_scroll", 3)
-            .addNode("travel_story")
-                .connect<QuestTrigger>("hidden_quest")
-                    .questId("lost_artifact")
-                    .condition("first_time");
+                .addOption("Show me your wares", "open_shop")
+                .addOption("Tell me about your travels", "travel_story")
+                    .connect<DialogueBranch>("Amazing travel story", "travel_story")
+                        .text("I've seen many wonders...")
+                        .addOption("Thank you", "exit")
+                        .addOption("That's interesting", "exit")
+                .addOption("Goodbye", "exit")
+            .connect<DialogueBranch>("open_shop")
+                .text("Here are my items...")
+                .addOption("Buy something", "buy_item")
+                    .connect<Inventory>("merchant_inventory")
+                        .addCategory("weapons")
+                        .addCategory("armor")
+                .addOption("Exit", "exit")   
 
-// Quest and Mission Manager
+// Quest System
 auto questSystem = Scene::current()
     .add<QuestManager>("quest_system")
-        .connect<QuestChain>("main_quest")
-            .addQuest("village_threat")
+        .connect<QuestCheckpoint>("main_quest")
+            .quest("village threat")
+            .action("accept")
+            .connect<QuestBranch>("quest_progress")
+                .quest("village threat")
                 .addObjective("investigate_ruins")
                     .required(true)
                     .connect<LocationTrigger>("ruins_area")
-                        .radius(10.0f)
-                        .position({100.0f, 0.0f, 100.0f})
                 .addObjective("defeat_bandits")
                     .required(true)
                     .count(5)
@@ -104,9 +115,6 @@ auto questSystem = Scene::current()
                         .enemyType("bandit")
                 .addReward("xp", 1000)
                 .addReward("gold", 500)
-            .connect<QuestState>("quest_progress")
-                .trackObjective("investigate_ruins")
-                .trackObjective("defeat_bandits");
 
 // Inventory Crafting System
 auto craftingSystem = Scene::current()

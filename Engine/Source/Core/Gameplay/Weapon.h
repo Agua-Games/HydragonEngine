@@ -20,6 +20,12 @@
 
 namespace hd {
 
+enum class WeaponType {
+    melee,
+    ranged,
+    custom
+};
+
 struct WeaponInfo : public PropInfo {
     WeaponInfo() {
         nodeType = "Gameplay/Weapon";
@@ -90,8 +96,12 @@ public:
     initialize() override {}
     load() override {}
 
-    // Set default values for weapon info struct
+    // Set default values
     WeaponInfo weaponInfo = {};  // Initialize weapon info struct with default values
+    // Temporarily calling them out of the struct for now.
+    WeaponType type = WeaponType::custom;
+    float damage = 0.0f;
+    DataTable weaponData = DataTable();
 
     // === Processing ===
     void processNode() override {

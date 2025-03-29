@@ -47,11 +47,20 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    DataTable weaponMechanicsData;
+
     // === Processing ===
     void processNode() override { }
+    void processWeaponMechanics();     // Process the weapon mechanics. This function is called by the processNode() function. It is responsible for updating the weapon mechanics state.
     void addWeapon(const std::string& weaponName);
     void removeWeapon(const std::string& weaponName);
-    void processWeapon();
+    void fire();
+    void recoil();
+    void reload();
+    void aim();
+    void lockOnTarget();
+    void drop();
     void update();
 
     // === Cleanup ===

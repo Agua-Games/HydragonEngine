@@ -6,9 +6,8 @@
  * @brief Header file for the PhysicsTypes namespace.
  * 
  * ARCHITECTURAL NOTES:
- * - Still a design sketch. We must check how it relates to, integrates with WavePhysics current types, data structures.
  * - PhysicsTypes is a namespace that contains various types and enums related to physics.
- * - It includes types for force fields, collision types, and more.
+ * - It includes types for force fields, collision types, collision responses, and more. It also includes types for energy transfer events, collision events, etc.
  * 
  */
 #pragma once
@@ -25,12 +24,27 @@ enum class ForceFieldType {
     Custom
 };
 
+enum class SimulationSpace {
+    Local,
+    World,
+    Custom
+};
+
 // Define collision types
 enum class CollisionType {
     Box,
     Sphere,
     Capsule,
     Mesh,
+    Custom
+};
+
+// Define collision responses
+enum class CollisionResponse {
+    Elastic,
+    Inelastic,
+    Bouncy,
+    Sticky,
     Custom
 };
 

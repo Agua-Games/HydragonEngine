@@ -11,8 +11,6 @@
  *  - Real-time content adaptation
  *  - Creative tools integration
  */
-#if 0
-
 #pragma once
 #include "Core/NodeGraph/Node.h"
 #include "Core/Materials/MaterialManager.h"
@@ -81,10 +79,10 @@ public:
                 .connect<Particle>("particles")
                     .setMaxParticles(10000)
                     .setSimulationQuality(SimQuality::High)
-                .connect<PostProcess>("post")
-                    .enableBloom(true)
-                    .enableDOF(true)
-                    .setAmbientOcclusion(AOQuality::High);
+                .connect<PostProcessChain>("post")
+                    .bloom(true)
+                    .DOF(true)
+                    .ambientOcclusion(AOQuality::High);
         }
     };
 

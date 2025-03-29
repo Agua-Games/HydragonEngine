@@ -15,7 +15,10 @@
  */
 #pragma once
 #include <vulkan/vulkan.h>
+#include <vector>
+#include <unordered_map>
 #include "Node.h"
+#include "DataTable.h"
 
 namespace hd {
 
@@ -48,6 +51,11 @@ public:
     void processNode() override {
  
     }
+    void addSkill(const std::string& skillName);
+    void removeSkill(const std::string& skillName);
+    void processSkill();
+    void processSkillTree();
+    void computeResult();
     void update();
 
     // === Cleanup ===

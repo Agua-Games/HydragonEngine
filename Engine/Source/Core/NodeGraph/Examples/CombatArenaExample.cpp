@@ -9,7 +9,7 @@
  * 
  *  - Combat arena setup with triggers, particle effects, and music
  */
-#if 0
+
 #include "Engine.h"
 #include "Scene.h"
 #include "PostProcessChain.h"
@@ -27,19 +27,20 @@ class CombatArenaSetup_Example_01 : public Node {
 public:
     void setup() {                                  // Going to be replace with Initialize()
         auto& engine = Engine::getInstance();
-        auto& graph = engine.getNodeGraph();
+        auto& nodeManager = engine.getNodeManager();
 
         // Main scene setup
         auto scene = std::make_shared<Scene>("CombatArena");
         scene->loadFromFile("Levels/Arena/MainGeometry.usd");
         auto lightingSetup = std::make_shared<LightingSetup>("DynamicBattleField");
-        lightingSetup->setAmbient({0.1f, 0.1f, 0.1f})
-                     ->setDirectionalLight({0, -1, 0}, {0.5f, 0.5f, 0.5f})
-                     ->enableDynamicShadows(true);
+                    .setAmbient({0.1f, 0.1f, 0.1f})
+                    .directionalLightDirection(Vector3(0, -1, 0))
+                    .dynamicShadows(true);
 
         // Combat area trigger zones
-        auto combatTrigger = std::make_shared<Trigger>("CombatZone");
-        combatTrigger->setVolume(Box(Vector3(-50, 0, -50), Vector3(50, 20, 50)));
+        auto combatTrigger = std::make_shared<Trigger>("CombatZone")
+                    .extents(Vector3(10.0f, 10.0f, 10.0f))
+                    .position(Vector3(0, 0, 0));
         
         // Dynamic particle effects for combat
         auto combatFXEmitter = std::make_shared<ParticleEmitter>("CombatFXEmittter");
@@ -54,8 +55,8 @@ public:
                          ->setProperty("particleLife", 2.0f);
 
         // Combat music system
-        auto musicSystem = std::make_shared<Montage>("CombatMusic");
-        musicSystem->addTrack("Music/Intro/Ambient.bank")
+        auto soundtrack = std::make_shared<Montage>("CombatMusic");
+        soundtrack->addTrack("Music/Intro/Ambient.bank")
                     ->addTrack("Music/Combat/Intensity.bank")
                     ->setProperty("Volume", 0.8f)
                     ->setProperty("Combat.Volume", 0.2f)
@@ -74,10 +75,10 @@ public:
                    ->addPass<ColorGrading>("LUTs/Combat.cube");
 
         // Connect the nodes
-        graph.connect(combatTrigger, "OnEnter", musicSystem, "Play.Combat");
-        graph.connect(combatTrigger, "OnEnter", combatFXEmitter, "Activate");
-        graph.connect(physics, "EnergyTransferEvent.Location", combatFXEmitter, "Position");
-        graph.connect(combatFXParticles, "ParticleColor.R", postProcess, "BloomIntensity");
+        nodeManager.connect(combatTrigger, "OnEnter", soundtrack, "Play.Combat");
+        nodeManager.connect(combatTrigger, "OnEnter", combatFXEmitter, "Activate");
+        nodeManager.connect(physics, "EnergyTransferEvent.Location", combatFXEmitter, "Position");
+        nodeManager.connect(combatFXParticles, "ParticleColor.R", postProcess, "BloomIntensity");
 
         // Setup feedback loops
         graph.connect(musicSystem, "volume", postProcess, "BloomIntensity");

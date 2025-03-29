@@ -48,9 +48,10 @@ public:
     std::vector<std::shared_ptr<Light>> lights;
     std::string environmentMap;
     bool dynamicShadows = true;
-    glm::vec3 ambientColor = glm::vec3(0.1f);
+    float ambientIntensity = 0.1f;
+    glm::vec3 ambientColor = glm::vec3(1.0f);
     glm::vec3 directionalLightDirection = glm::vec3(0, -1, 0);
-    glm::vec3 directionalLightColor = glm::vec3(0.5f);
+    glm::vec3 directionalLightColor = glm::vec3(1.0f);
 
     // === Processing ===
     void enableDynamicShadows(bool enable);

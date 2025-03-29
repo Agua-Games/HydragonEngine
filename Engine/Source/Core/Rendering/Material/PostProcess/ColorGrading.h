@@ -14,19 +14,20 @@
 #include <string>
 #include <unordered_map>
 #include "PostProcess.h"
+#include "Wave.h"
 
 namespace hd {
 
 struct ColorGradingInfo : public PostProcessInfo {
     ColorGradingInfo() {
-        NodeType = "Rendering/PostProcess/ColorGrading";
+        nodeType = "Rendering/PostProcess/ColorGrading";
         inputs = {
-            "RenderedImage",   // Rendered image to apply color grading to
-            "ColorGradingParams"  // Color grading parameters
+            "renderedImage",   // Rendered image to apply color grading to
+            "colorGradingParams"  // Color grading parameters
         };
         outputs = {
-            "ColorGradedImage",  // Color grading-applied image
-            "ColorGradingMetrics"  // Color grading performance metrics
+            "colorGradedImage",  // Color grading-applied image
+            "colorGradingMetrics"  // Color grading performance metrics
         };
     }
 };
@@ -38,6 +39,17 @@ public:
         : PostProcess(info) {}   
     initialize() override {}
     load() override {}
+
+    // Set default values
+    RenderTarget* source = nullptr;
+    RenderTarget* lut = nullptr;
+    float exposure = 0.0f;
+    float contrast = 0.0f;
+    float saturation = 0.0f;
+    float temperature = 0.0f;
+    float tint = 0.0f;
+    float vibrance = 0.0f;
+    glm::vec3 colorBalance = glm::vec3(0.0f);
 
     // === Processing ===
     void processNode() override {

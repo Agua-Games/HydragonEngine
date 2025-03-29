@@ -50,8 +50,9 @@ public:
     load() override {}
 
     // Set default values
-    // (...)
-
+    range = 10.0f;
+    fov = 90.0f;
+    
     // === Processing ===
     void processNode() override {
  

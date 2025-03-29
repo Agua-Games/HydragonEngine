@@ -43,10 +43,26 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    // (...)
+
+    // Set default values
+    float floatValue = 0.0f;
+    glm::vec2 vector2Value = glm::vec2(0.0f);
+    glm::vec3 vectorValue = glm::vec3(0.0f);
+    glm::vec4 vector4Value = glm::vec4(0.0f);
+    glm::vec4 colorValue = glm::vec4(0.0f);         // Default color is black
+
     // === Processing ===
     void processNode() override {
- 
     }
+    void interpolateValue();
+    void applyEasing();
+    void loopGradient();
+    void addKey(float time, const glm::vec4& value);
+    void removeKey(float time);
+    void setKeyValue(float time, const glm::vec4& value);
+    void setKeyTime(float oldTime, float newTime);
     void update();
 
     // === Cleanup ===

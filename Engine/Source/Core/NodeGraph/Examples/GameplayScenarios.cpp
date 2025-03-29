@@ -11,11 +11,12 @@
     - Pet/companion systems with AI and bonding mechanics
     - Advanced military vehicles with guidance and targeting
  */
-#include "Core/Engine.h"
-#include "Core/NodeGraph/Node.h"
-#include "Core/Gameplay/Vehicle.h"
-#include "Core/Gameplay/CombatVehicle.h"
-#include "Core/Gameplay/Automobile.h"
+#pragma once
+#include "Engine.h"
+#include "Node.h"
+#include "Vehicle.h"
+#include "CombatVehicle.h"
+#include "Automobile.h"
 
 using namespace hd;
 

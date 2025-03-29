@@ -19,18 +19,18 @@ namespace hd {
 
 struct BloomInfo : public PostProcessInfo {
     BloomInfo() {
-        NodeType = "Rendering/PostProcess/Bloom";
+        nodeType = "Rendering/PostProcess/Bloom";
         inputs = {
-            "RenderedImage",   // Rendered image to apply bloom to
-            "Intensity",   // Bloom intensity
-            "Threshold",   // Bloom threshold
-            "Radius",   // Bloom radius
-            "Quality",   // Bloom quality
-            "BloomParams"  // Bloom parameters
+            "renderedImage",   // Rendered image to apply bloom to
+            "intensity",   // Bloom intensity
+            "threshold",   // Bloom threshold
+            "radius",   // Bloom radius
+            "quality",   // Bloom quality
+            "bloomParams"  // Bloom parameters
         };
         outputs = {
-            "BloomedImage",  // Bloom-applied image
-            "BloomMetrics"  // Bloom performance metrics
+            "bloomedImage",  // Bloom-applied image
+            "bloomMetrics"  // Bloom performance metrics
         };
     }
 };
@@ -43,10 +43,10 @@ public:
     initialize() override {}
     load() override {}
 
-    float Intensity = 1.0f;
-    float Threshold = 1.0f;
-    float Radius = 1.0f;
-    float Quality = 1.0f;
+    float intensity = 1.0f;
+    float threshold = 1.0f;
+    float radius = 1.0f;
+    float quality = 1.0f;
 
     // === Processing ===
     void processNode() override {

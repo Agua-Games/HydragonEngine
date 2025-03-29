@@ -16,18 +16,25 @@
 
 namespace hd {
 
+enum class Performance {
+    Low,
+    Medium,
+    High,
+    Maximum
+};
+
 struct QualityAdaptationInfo : public NodeInfo {
     QualityAdaptationInfo() {
-        NodeType = "Scalability/QualityAdaptation";
+        nodeType = "Scalability/QualityAdaptation";
         
         inputs = {
-            "Performance",     // Performance data
-            "QualitySettings"  // Quality settings
+            "performance",     // Performance data
+            "qualitySettings"  // Quality settings
         };
         
         outputs = {
-            "AdaptedQuality",  // Adapted quality settings
-            "AdaptationMetrics" // Adaptation performance metrics
+            "adaptedQuality",  // Adapted quality settings
+            "adaptationMetrics" // Adaptation performance metrics
         };
     }
 };
@@ -39,6 +46,12 @@ public:
         : Node(info) {}   
     initialize() override {}
     load() override {}
+
+    // Set default values
+    float adaptationInterval = 1.0f;
+    std::map<Performance, float> qualityThresholds;
+    bool dynamicLOD = false;
+    float performanceTarget = 60.0f;
 
     // === Processing ===
     void setAdaptationInterval(float interval);

@@ -5,15 +5,15 @@
  * @brief This file contains examples of how to setup a node graph in code.
  *      - The idea is to have sensible defaults so that the user can focus on the unique aspects of their game.
  * 
- * These examples demonstrate:
+ * These examples demonstrate how to setup an animation system/animation-oriented node graph leveraging:
  * 
- *  - Animation blend tree with blend space and state machine
- *  - Animation blending with blend tree
+ *  - Animation blend with blend space and state machine
+ *  - Animation blending with blend
  *  - Animation state machine with transitions
  */
 
  #if 0
-// Animation blend tree
+// Node graph setup for animation
 auto anim = graph.create<AnimationSystem>("characterAnim")
     .connect<BlendSpace>("locomotion")
         .blendParameter("speed", 0.0f)

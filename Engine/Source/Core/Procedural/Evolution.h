@@ -72,21 +72,33 @@ public:
         m_evolutionPatternId = orchestrator.registerPattern(
             std::make_unique<ProceduralPattern>(
                 ProceduralPatternType::Evolution,
-                createInitialEvolutionParams()
+                params
             )
         );
     }
     initialize() override {}
     load() override {}
 
+    // Set default values
+    EvolutionParameters params = createInitialEvolutionParams();
+    EvolutionState evolutionState;
+    std::vector<ProceduralPatternData> populationPool, currentGeneration, nextGeneration, bestGeneration;
+    FitnessFunction fitnessFunction;
+    MutationType mutationStrategy;
+    CrossoverType crossoverStrategy;
+    AdaptationType adaptationStrategy;
+    std::vector<Constraint> constraints;
+    ProceduralPatternData sourcePattern;
+    OctaveParams evolutionRules;
+
     // === Processing ===
     void processNode() override {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         
         // Get inputs
-        auto sourcePattern = getInputValue<ProceduralPatternData>("SourcePattern");
-        auto evolutionRules = getInputValue<OctaveParams>("EvolutionRules");
-        auto constraints = getInputValue<HarmonyParams>("Constraints");
+        auto sourcePattern = getInputValue<ProceduralPatternData>("sourcePattern");
+        auto evolutionRules = getInputValue<OctaveParams>("evolutionRules");
+        auto constraints = getInputValue<HarmonyParams>("constraints");
         
         // Initialize evolution if needed
         if (!m_evolutionState.currentGeneration) {

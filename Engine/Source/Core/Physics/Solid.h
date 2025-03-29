@@ -116,25 +116,7 @@ public:
     bool isDynamic = false;
 
     // === Processing ===
-    void getMaterialsFromMesh();                // Can apply different physics materials from different parts of the mesh using assigned mesh materials and their tags
-    void setDynamic(bool isDynamic);
-    void setShape(const Shape& shape);
-    void setMaterial(const Material& material);
-    void setInitialPosition(const vec3& position);
-    void setInitialVelocity(const vec3& velocity);
-    void setDensity(float density);
-    void setNucleusPotential(float nucleusPotential);
-    void addMomentumPotential(const vec3& momentum);
-    void processEnergyTransfer();
-
-    // These are for compatibility with traditional physics engines.
-    void setMass(float mass);
-    void addForce(const vec3& force);                   // We derive forces directly from energy fields. Mostly for compatibility with traditional physics engines.
-    void processCollisions();
-
-    void processPhysics();
-
-    void () override {
+    void processNode() override {
         // Process inputs
         auto shape = getInputValue<Shape>("Shape");
         auto mass = getInputValue<float>("Mass");
@@ -165,7 +147,22 @@ public:
         setOutputValue("Forces", forces);
         setOutputValue("EnergyState", computeEnergyState(bodyState));
     }
+    void getMaterialsFromMesh();                // Can apply different physics materials from different parts of the mesh using assigned mesh materials and their tags
+    void setDynamic(bool isDynamic);
+    void setShape(const Shape& shape);
+    void setMaterial(const Material& material);
+    void setInitialPosition(const vec3& position);
+    void setInitialVelocity(const vec3& velocity);
+    void setDensity(float density);
+    void setNucleusPotential(float nucleusPotential);
+    void addMomentumPotential(const vec3& momentum);
+    void processEnergyTransfer();
 
+    // These are for compatibility with traditional physics engines.
+    void setMass(float mass);
+    void addForce(const vec3& force);                   // We derive forces directly from energy fields. Mostly for compatibility with traditional physics engines.
+    void processCollisions();
+    void processPhysics();
     void update() override {}
 
     // === Cleanup ===

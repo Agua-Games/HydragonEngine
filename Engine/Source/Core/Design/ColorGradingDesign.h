@@ -7,6 +7,8 @@
  * 
  * ARCHITECTURAL NOTES:
  * - Color grading nodes are used for adjusting image colors.
+ * - For now we're keeping a separate file for design color gradient and rendering postprocess color gradient, because of possible differences in implementation,
+ * as the postprocess effect must comply with Vulkan requirements, setup, etc - but if possible we're going to integrate them into a single node later, versatile.
  * 
  * TODO:
  * - Create .cpp file and move the implementation there.

@@ -59,6 +59,12 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    Volume volume;
+    vec3 position;
+    vec3 extents = vec3(10.0f);
+    vec3 radius = vec3(10.0f);
+
     // === Processing ===
     // Events
     void OnEnter(const std::string& objectName);

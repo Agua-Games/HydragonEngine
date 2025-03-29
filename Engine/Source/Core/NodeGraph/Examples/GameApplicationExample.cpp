@@ -9,8 +9,13 @@
  *  - Game application setup with multiple node graphs
  *  - Interconnection between node graphs
  */
-
 #if 0
+#pragma once
+#include "MultiplayerArenaSetup_Example_01.h"
+#include "NetworkManager_Example_01.h"
+#include "GlobalGameState_Example_01.h"
+
+using namespace hd;
 
 class GameApplicationExample_01 {
 private:

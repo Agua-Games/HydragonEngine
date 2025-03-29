@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "Item.h"
 
 namespace hd {
 
@@ -90,10 +91,11 @@ public:
         setOutputValue("itemFilters", itemFilters);
         setOutputValue("sorts", sorts);
     }
+    void addCategory(const std::string& category);
+    void removeCategory(const std::string& category);
+    void addItem(const Item& item);
+    void removeItem(const Item& item);
     void processInventory();
-    void () override {
-        processInventory(); 
-    }
     void update() override {}
 
     // === Cleanup ===

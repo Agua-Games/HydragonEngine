@@ -55,6 +55,8 @@
 #include <pxr/usd/usdShade/material.h>
 #include <glm/glm.hpp>
 #include "Node.h"
+#include "MaterialTypes.h"
+#include "PhysicsMaterial.h"
 #include "ShaderCache.h"
 #include "RenderTypes.h"
 #include "RuntimeVariants.h"
