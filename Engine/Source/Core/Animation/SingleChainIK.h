@@ -8,6 +8,7 @@
  * ARCHITECTURAL NOTES:
  * - SingleChainIK is a class that represents a single chain inverse kinematics in Hydragon.
  * - It is used to animate a single chain and its associated geometry, joints or any other arbitrary data.
+ * - It supports procedural contact placement using raycasts/traces (e.g. for conforming to surfaces, terrain).
  * - It offers built-in support for procedural modification of imported animations, and for procedural animation generation.
  * - It uses the Vulkan API for animation processing.
  */

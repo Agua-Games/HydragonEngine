@@ -16,8 +16,20 @@
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "Wave.h"
 
 namespace hd {
+
+enum class DamageZoneType {
+    Fire,
+    Lava,
+    Acid,
+    Electricity,
+    Cold,
+    Poison,
+    Radiation,
+    Custom
+};
 
 struct DamageZoneInfo : public NodeInfo {
     struct DamageType {
@@ -51,16 +63,21 @@ struct DamageZoneInfo : public NodeInfo {
         nodeType = "Gameplay/DamageZone";
         
         inputs = {
-            "damageType",      // Type of damage
-            "damageData",      // Damage data
-            "environment",     // Environment data
-            "characterData",   // Character data
-            "damageState"      // Damage state
+            "radius",
+            "extents",
+            "force",             // Optional force applied to affected entities
+            "multiplier",        // Damage multiplier
+            "damageChance",      // Chance of dealing damage
+            "damageZoneType",
+            "damageData", 
+            "environment",
+            "characterData",
+            "damageState"
         };
         
         outputs = {
-            "damageStatus",    // Damage status
-            "damageMetrics"    // Damage performance metrics
+            "damageStatus",
+            "damageMetrics"
         };
     }
 };
@@ -80,10 +97,10 @@ public:
     // Set default values
     float radius = 0.0f;
     vec3 extents = vec3(0.0f);
-    float force = 0.0f;
+    vec3 force = 0.0f;
     float multiplier = 1.0f;
-    float detonationChance = 0.0f;
-    float fireChance = 0.0f;
+    float damageChance = 0.0f;
+    DamageZoneType type = DamageZoneType::Fire;
 
     // === Processing ===
     void calculateDamageFromField();        // Calculate damage from physics field. e.g. fire, lava, etc.
