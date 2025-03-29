@@ -23,25 +23,25 @@ namespace hd {
 
 struct DeformerInfo : public NodeInfo {
     DeformerInfo() {
-        NodeType = "Procedural/Deformer";
-        IsProcedural = true;
+        nodeType = "Procedural/Deformer";
+        isProcedural = true;
         
         // Generic deformer inputs
         inputs = {
-            "PrimitiveIn",    // Generic primitive input (mesh, volume, etc.)
-            "Strength",       // Global deformation strength
-            "Mask",          // Optional deformation mask
-            "BlendMode",     // How to blend with previous deformations
-            "NoiseParams",   // Procedural noise parameters
-            "Structure",     // Procedural structure influence
-            "TimeOffset"     // For time-based procedural deformations
+            "primitiveIn",    // Generic primitive input (mesh, volume, etc.)
+            "strength",       // Global deformation strength
+            "mask",          // Optional deformation mask
+            "blendMode",     // How to blend with previous deformations
+            "noiseParams",   // Procedural noise parameters
+            "structure",     // Procedural structure influence
+            "timeOffset"     // For time-based procedural deformations
         };
         
         outputs = {
-            "PrimitiveOut",   // Deformed primitive
-            "DeformMetrics",  // Performance and quality metrics
-            "ProceduralData", // Generated procedural data
-            "CacheKey"        // For deformation caching
+            "primitiveOut",   // Deformed primitive
+            "deformMetrics",  // Performance and quality metrics
+            "proceduralData", // Generated procedural data
+            "cacheKey"        // For deformation caching
         };
     }
 };
