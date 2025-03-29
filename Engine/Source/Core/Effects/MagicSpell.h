@@ -18,6 +18,7 @@
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "Effect.h"
 
 namespace hd {
 
@@ -27,7 +28,7 @@ enum class MagicSpellType {
     Custom
 };
 
-struct MagicSpellInfo : public NodeInfo {
+struct MagicSpellInfo : public EffectInfo {
     MagicSpellInfo() {
         nodeType = "Effects/MagicSpell";
         
@@ -55,11 +56,11 @@ struct MagicSpellInfo : public NodeInfo {
     }
 };
 
-class MagicSpell : public Node {
+class MagicSpell : public Effect {
 public:
     // === Allocation, Initialization, Loading ===
     explicit MagicSpell(const MagicSpellInfo& info = MagicSpellInfo())
-        : Node(info) {}
+        : Effect(info) {}
     void initialize() override {}
     void load() override {}
 
@@ -68,7 +69,14 @@ public:
     float damage = 0.0f;
     float cooldown = 0.0f;
     float range = 0.0f;
+    float radius = 0.0f;
     float cost = 0.0f;
+    float force = 0.0f;
+    float momentum = 0.0f;
+    float duration = 0.0f;
+    float healing = 0.0f;
+    float freezeChance = 0.0f;
+    float protection = 0.0f;
     std::string targeting = "single";
     float tickRate = 0.0f;
     DataTable magicField = DataTable();

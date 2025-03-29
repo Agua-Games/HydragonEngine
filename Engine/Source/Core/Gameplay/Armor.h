@@ -44,6 +44,11 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    float protection = 0.0f;
+    float weight = 0.0f;
+    float durability = 0.0f;
+
     // === Processing ===
     void processNode() override { }
     void update();

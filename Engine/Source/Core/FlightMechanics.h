@@ -49,7 +49,20 @@ public:
     load() override {}
 
     // Set default values
-    float alitude = 0.0f;
+    float altitude = 0.0f;          // Altitude in meters
+    float wingSpan = 0.0f;          // Wing span in meters
+    float speed = 0.0f;             // Speed in meters per second
+    float altitudeChange = 0.0f;    // Altitude change in meters per second
+    float yaw = 0.0f;               // Yaw in degrees
+    float pitch = 0.0f;             // Pitch in degrees
+    float roll = 0.0f;              // Roll in degrees
+    float bank = 0.0f;              // Bank in degrees
+    float lift = 0.0f;              // Lift in Newtons
+    float drag = 0.0f;              // Drag in Newtons
+    float thrust = 0.0f;            // Thrust in Newtons
+    float weight = 0.0f;            // Weight in Newtons
+    float fuel = 0.0f;              // Fuel in liters
+    float fuelConsumption = 0.0f;   // Fuel consumption in liters per second
 
     // === Processing ===
     void processNode() override { }

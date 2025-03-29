@@ -67,10 +67,14 @@ public:
     void load() override {}
 
     // Set default values
-    AbilityType type = AbilityType::skill;
+    AbilityType type = AbilityType::custom;
+    float force = 0.0f;
+    float momentum = 0.0f;
     float damage = 0.0f;
+    float duration = 0.0f;
     float cooldown = 0.0f;
     float range = 0.0f;
+    float radius = 0.0f;
     float cost = 0.0f;
     std::string targeting = "single";
     float tickRate = 0.0f;
@@ -82,6 +86,8 @@ public:
     // === Processing ===
     void processNode() override {
         type = getInputValue<AbilityType>("type");
+        force = getInputValue<float>("force");
+        momentum = getInputValue<float>("momentum");
         damage = getInputValue<float>("damage");
         cooldown = getInputValue<float>("cooldown");
         range = getInputValue<float>("range");

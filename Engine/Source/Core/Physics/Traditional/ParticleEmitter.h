@@ -82,6 +82,23 @@ public:
     load() override {}
 
     std::unordered_map<std::string, EmitterParams> emitters;
+    // TODO: convert these to use the struct members
+    float rate = 0.0f;
+    int burstCount = 0;
+    float lifetime = 0.0f;
+    float size = 0.0f;
+    float speed = 0.0f;
+    vec3 direction;
+    vec3 position;
+    float seed = 0.0f;
+    std::string id;
+    std::string shape;
+    float radius = 0.0f;
+    float scale = 0.0f;
+    float maxParticles = 0.0f;
+    vec3 initialVelocity;
+    float variation = 0.0f;
+
 
     // === Processing ===
     void activate(const std::string& emitterId);

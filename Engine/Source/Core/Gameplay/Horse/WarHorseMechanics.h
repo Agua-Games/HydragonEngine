@@ -43,6 +43,21 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    float courage = 0.0f;
+    float loyalty = 0.0f;
+    float speed = 0.0f;
+    float health = 0.0f;
+    float stamina = 0.0f;
+    std::string armorType = "none";
+    std::string weaponType = "none";
+    std::string mountType = "none";
+    std::string mountAbility = "none";
+    std::string mountExtension = "none";
+    std::string mountBehavior = "none";
+    std::string mountBehaviorRules = "none";
+
+
     // === Processing ===
     void setArmor(std::string armorType);
     void train(Ability ability, float level);

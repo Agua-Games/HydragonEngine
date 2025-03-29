@@ -78,6 +78,9 @@ public:
     load() override {}
 
     // Set default values
+    float radius = 0.0f;
+    vec3 extents = vec3(0.0f);
+    float force = 0.0f;
     float multiplier = 1.0f;
     float detonationChance = 0.0f;
     float fireChance = 0.0f;

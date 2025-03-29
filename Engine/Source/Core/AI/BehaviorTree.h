@@ -49,6 +49,8 @@ public:
     void processNode() override {
  
     }
+    void addBehavior(const std::string& behaviorName);
+    void removeBehavior(const std::string& behaviorName);
     void update();
 
     // === Cleanup ===

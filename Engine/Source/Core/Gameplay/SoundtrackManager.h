@@ -41,7 +41,10 @@ public:
     load() override {}
 
     // Set default values
-    // (...)
+    float volume = 1.0f;
+    float pitch = 1.0f;
+    bool looping = false;
+    std::unordered_map<std::string, std::any> soundtrackParams;
 
     // === Processing ===
     void processNode() override {

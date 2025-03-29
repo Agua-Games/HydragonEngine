@@ -20,6 +20,12 @@
 namespace hd {
 
 struct BuildingInfo : public NodeInfo {
+    struct Section {
+        std::string name;
+        float height;
+        // Other section properties
+    };
+
     BuildingInfo() {
         nodeType = "Gameplay/Building";
         
@@ -61,6 +67,8 @@ public:
     void processNode() override {
  
     }
+    void addSection(const std::string& sectionName);
+    void removeSection(const std::string& sectionName);
     void update();
 
     // === Cleanup ===

@@ -44,8 +44,10 @@ public:
 
     // === Processing ===
     void processNode() override {
- 
     }
+    void addQuest(const std::string& questName);
+    void removeQuest(const std::string& questName);
+    void processQuest();
     void update();
 
     // === Cleanup ===

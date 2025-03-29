@@ -22,6 +22,23 @@
 
 namespace hd {
 
+enum class NoiseType {
+    Perlin,
+    Simplex,
+    Worley,
+    Value,
+    Gabor,
+    Custom
+};
+
+enum class ProceduralStructureType {
+    Geometric,
+    Voronoi,
+    Organic,
+    Fractal,
+    Custom
+};
+
 // Base pattern types that can emerge in any system
 enum class PatternType {
     Structural,     // Strong organizational patterns

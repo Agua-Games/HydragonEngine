@@ -56,6 +56,14 @@ public:
     Character character;
     BehaviorTree behaviorTree;
     AnimationController animationController;
+    float speed = 0.0f;
+    float health = 0.0f;
+    float stamina = 0.0f;
+    float mana = 0.0f;
+    float jumpHeight = 0.0f;
+    float attackDamage = 0.0f;
+    float defense = 0.0f;
+    
     Environment environment;
     ProceduralParams proceduralParams;
     CharacterState characterState;

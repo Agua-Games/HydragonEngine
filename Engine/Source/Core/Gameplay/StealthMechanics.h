@@ -51,6 +51,8 @@ public:
     void load() override {}
 
     // Set default values
+    float fadeTime = 0.0f;
+    float stealthLevel = 0.0f;
     float visibility = 0.0f;
     float soundEmission = 0.0f;
     float detectionRange = 0.0f;

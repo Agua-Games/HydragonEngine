@@ -29,6 +29,7 @@ struct WeaponInfo : public PropInfo {
             "spread",       // Spread cone of the weapon
             "accuracy",     // Accuracy of the weapon
             "damage",       // Damage of the weapon
+            "armorPiercing", // Armor piercing of the weapon
             "penetration",  // Penetration of the weapon
             "aimTime",      // Aim time of the weapon
             "fireRate",     // Fire rate of the weapon
@@ -55,6 +56,7 @@ struct WeaponInfo : public PropInfo {
             "spread",       // Spread cone of the weapon
             "accuracy",     // Accuracy of the weapon
             "damage",       // Damage of the weapon
+            "armorPiercing", // Armor piercing of the weapon            
             "penetration",  // Penetration of the weapon
             "aimTime",      // Aim time of the weapon
             "fireRate",     // Fire rate of the weapon
@@ -88,6 +90,9 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values for weapon info struct
+    WeaponInfo weaponInfo = {};  // Initialize weapon info struct with default values
+
     // === Processing ===
     void processNode() override {
         
@@ -103,9 +108,6 @@ public:
     void dropWeapon(bool drop);
     void dropAmmo(bool drop);
     void processWeapon();
-    void () override {
-        processWeapon(); 
-    }    
     void update() override { // Override the update() function to call processWeapon() instead of update().
         processWeapon(); // Call the processWeapon() function to update the weapon state.
     }
