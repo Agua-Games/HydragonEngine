@@ -30,6 +30,7 @@
 #pragma once
 #include "Engine.h"
 #include "Node.h"
+#include "Prop.h"
 #include "Character.h"
 #include "Inventory.h"
 #include "InventoryManager.h"
@@ -47,6 +48,7 @@
 #include "Skill.h"
 #include "ExperienceTree.h"
 #include "DataCurve.h"
+#include "AnimationStateMachine.h"
 
 using namespace hd;
 
@@ -78,8 +80,8 @@ auto characterSystem = Scene::current()
 
 // Interactive Dialogue System
 auto dialogueSystem = Scene::current()
-    .add<DialogueManager>("npc_dialogue")
-        .connect<DialogueCheckpoint>("merchant_conversation")
+    .add<DialogueManager>("npcDialogue")
+        .connect<DialogueCheckpoint>("merchantConversation")
             .connect<DialogueBranch>("greeting")
                 .text("Welcome to my shop!")
                 .addOption("Show me your wares", "open_shop")
@@ -99,46 +101,43 @@ auto dialogueSystem = Scene::current()
 
 // Quest System
 auto questSystem = Scene::current()
-    .add<QuestManager>("quest_system")
-        .connect<QuestCheckpoint>("main_quest")
-            .quest("village threat")
+    .add<QuestManager>("questSystem")
+        .connect<QuestCheckpoint>("mainQuest")
+            .quest("villageThreat")
             .action("accept")
-            .connect<QuestBranch>("quest_progress")
-                .quest("village threat")
-                .addObjective("investigate_ruins")
+            .connect<QuestBranch>("questProgress")
+                .quest("villageThreat")
+                .addObjective("investigateRuins")
                     .required(true)
-                    .connect<LocationTrigger>("ruins_area")
-                .addObjective("defeat_bandits")
+                    .connect<LocationTrigger>("ruinsArea")
+                .addObjective("defeatBandits")
                     .required(true)
                     .count(5)
-                    .connect<CombatTrigger>("bandit_defeat")
+                    .connect<CombatTrigger>("banditDefeat")
                         .enemyType("bandit")
                 .addReward("xp", 1000)
                 .addReward("gold", 500)
 
 // Inventory Crafting System
 auto craftingSystem = Scene::current()
-    .add<CraftingManager>("crafting")
-        .connect<RecipeSystem>("recipe_database")
-            .addRecipe("health_potion")
+    .add<CraftingManager>("craftingManager")
+        .connect<Recipe>("recipeDatabase")
+            .addRecipe("healthPotion")
                 .addIngredient("herb", 2)
-                .addIngredient("water_flask", 1)
-                .connect<CraftingResult>("potion_result")
-                    .item("health_potion")
+                .addIngredient("waterFlask", 1)
+                .connect<CraftingResult>("potionResult")
+                    .item("healthPotion")
                     .quantity(1)
-            .addRecipe("magic_sword")
-                .addIngredient("iron_ingot", 3)
-                .addIngredient("magic_crystal", 1)
-                .connect<CraftingResult>("sword_result")
-                    .item("magic_sword")
+            .addRecipe("magicSword")
+                .addIngredient("ironIngot", 3)
+                .addIngredient("magicCrystal", 1)
+                .connect<CraftingResult>("swordResult")
+                    .item("magicSword")
                     .quantity(1)
-        .connect<InventoryGrid>("crafting_grid")
-            .size(3, 3)
-            .connect<ItemValidator>("recipe_validator")
-                .validatePlacement(true)
-                .validateCombination(true)
+        .connect<Inventory>("crafting_grid")
+            .gridSize(3, 3)
         .connect<CraftingStation>("forge")
-            .type(CraftingType::Blacksmith)
+            .type(CraftingStationType::blacksmith)
             .level(2)
             .connect<ParticleSystem>("forge_fx")
                 .addEmitter("sparks")
@@ -147,16 +146,16 @@ auto craftingSystem = Scene::current()
 // Interactive Environment System
 auto environmentSystem = Scene::current()
     .add<InteractionManager>("world_interaction")
-        .connect<InteractiveObject>("treasure_chest")
+        .connect<Prop>("treasure_chest")
             .position({10.0f, 0.0f, 10.0f})
-            .connect<LootTable>("chest_loot")
+            .connect<ContainerTable>("chest_loot")
                 .addItem("gold", {10, 50})
                 .addItem("health_potion", {1, 3})
                 .rarity(0.8f)
-            .connect<AnimationSystem>("chest_anim")
+            .connect<AnimationStateMachine>("chest_anim")
                 .addState("closed", "models/chest_closed.fbx")
                 .addState("open", "models/chest_open.fbx")
-            .connect<LockSystem>("chest_lock")
+            .connect<InteractionEvent>("chest_lock")
                 .difficulty(2)
-                .connect<ItemRequirement>("key_check")
-                    .requireItem("rusty_key");
+                .type(InteractionType::lock)
+                .requireItem("rusty_key")

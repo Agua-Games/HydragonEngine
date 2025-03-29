@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "Vehicle.h"
 
 namespace hd {
 

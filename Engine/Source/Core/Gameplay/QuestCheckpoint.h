@@ -17,8 +17,12 @@
  *
  * - It is used to represent any quest checkpoint in the game world, such as quest checkpoints, quest save points, etc.
  * - It supports interactive features, such as saving, loading, and resetting. Also supports two-way messaging with other quest checkpoints, environment, character, etc.
+ * 
+ * @todo Define if the quest, objectives and rewards names should be directly stored as strings with spaces, capital letter, etc, or if they should have an internal name
+ * and a display name.
  */
 #pragma once
+#include <vulkan/vulkan.h>
 #include <vector>
 #include "Node.h"
 #include "DataTable.h"

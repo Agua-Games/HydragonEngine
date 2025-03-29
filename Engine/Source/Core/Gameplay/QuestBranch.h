@@ -20,6 +20,9 @@
  *      (QuestCheckpoint: "Cross the Bridge") --> (QuestBranch: "Bridge is broken". Option1: "Fix the Bridge". Option2: "Cross the River") --> (QuestCheckpoint: "Quest Completed")
  *
  * - It supports interactive features, such as branching, decision making, and quest flow. Also supports two-way messaging with other quest branches, environment, character, etc.
+ * 
+ *  @todo Define if the quest, objectives and rewards names should be directly stored as strings with spaces, capital letter, etc, or if they should have an internal name
+ * and a display name.
  */
 #pragma once
 #include <vulkan/vulkan.h>

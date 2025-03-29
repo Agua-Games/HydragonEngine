@@ -17,6 +17,7 @@
 #include "Vehicle.h"
 #include "CombatVehicle.h"
 #include "Automobile.h"
+#include "Mount.h"
 
 using namespace hd;
 

@@ -13,6 +13,7 @@
  */
 #pragma once
 #include <vulkan/vulkan.h>
+#include <string>
 #include <vector>
 #include <unordered_map>
 #include "Node.h"
@@ -21,12 +22,17 @@
 
 namespace hd {
 
+struct InventoryGrid {
+    int width;
+    int height;
+};
+
 struct InventoryInfo : public NodeInfo {
     InventoryInfo() {
         nodeType = "Gameplay/Inventory";
         
         inputs = {
-            "items",        // Array of items
+            "items",        // Items in the inventory
             "itemTypes",    // Item type definitions
             "itemCounts",   // Item count for each type
             "itemWeights",  // Item weight for each type
@@ -37,7 +43,7 @@ struct InventoryInfo : public NodeInfo {
         };
         
         outputs = {
-            "items",        // Array of items
+            "items",        // Items in the inventory
             "itemTypes",    // Item type definitions
             "itemCounts",   // Item count for each type
             "itemWeights",  // Item weight for each type
@@ -52,12 +58,16 @@ struct InventoryInfo : public NodeInfo {
 class Inventory : public Node {
 public:
     // === Allocation, Initialization, Loading ===
-    explicit Inventory(const NodeInfo& info = NodeInfo())
+    explicit Inventory(const InventoryInfo& info = InventoryInfo())
         : Node(info) {}    // Call the base class constructor
     initialize() override {}
     load() override {}
 
     // Set default values
+    InventoryInfo inventoryInfo = {};
+    InventoryGrid inventoryGrid;
+    vec2 gridSize = vec2(0.0f, 0.0f);
+    std::vector<std::string> categories;
     std::vector<Item> items;
     std::unordered_map<std::string, ItemType> itemTypes;
     std::unordered_map<std::string, int> itemCounts;

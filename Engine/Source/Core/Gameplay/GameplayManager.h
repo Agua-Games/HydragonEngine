@@ -13,6 +13,7 @@
 #pragma once
 #include "NodeGraph/Node.h"
 #include "EngineTypes.h"
+#include "GameplayData.h"
 
 namespace hd {
 
@@ -40,21 +41,25 @@ public:
     load() override {}
 
     // Set default values
-    GameplaySettings gameplaySettings;
     GameplayData gameplayData;
-    GameplayState gameplayState;
-    Mode m_mode = Mode::GAME_ONLY;                      // Default mode is gameplay enabled, editor disabled, overlays disabled
-    std::vector<std::shared_ptr<Node>> m_subsystems;    // Subsystems, like audio, physics, etc. that are managed by the GameplayManager.
+    GameplayData.Settings gameplaySettings;
+    GameplayData.GlobalFlags gameplayGlobalFlags;
+    GameplayData.LocalFlags gameplayLocalFlags;
+    GameplayData.Stats gameplayStats;
+    GameplayData.Mode gameplayMode;
+    GameplayData.State gameplayState;
+    EngineMode m_mode = Mode::GAME_ONLY;                      // Default mode is gameplay enabled, editor disabled, overlays disabled
+    std::vector<std::shared_ptr<Node>> m_subsystems;          // Subsystems, like audio, physics, etc. that are managed by the GameplayManager.
 
     // === Processing ===
     void processNode() override {
         if (!m_active) return;
 
         // Process inputs, based on mode
-        auto mode = getInputValue<Mode>("mode");                                // Process the other inputs or not, based on mode.
-        gameplaySettings = getInputValue<GameplaySettings>("gameplaySettings");
-        gameplayData = getInputValue<GameplayData>("gameplayData");
-        gameplayState = getInputValue<GameplayState>("gameplayState");
+        auto mode = getInputValue<Mode>("mode");                                        // Process the other inputs or not, based on mode.
+        gameplaySettings = getInputValue<GameplayData.Settings>("gameplaySettings");    // Process the other inputs or not, based on mode.
+        gameplayData = getInputValue<GameplayData>("gameplayData");                     // Process the other inputs or not, based on mode.
+        gameplayState = getInputValue<GameplayData.State>("gameplayState");             // Process the other inputs or not, based on mode.
 
         // Adjust to Engine Mode - disable gameplay, etc. based on mode.
         adjustToMode(mode);
