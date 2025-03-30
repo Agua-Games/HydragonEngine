@@ -46,9 +46,9 @@ public:
     GameplayData.GlobalFlags gameplayGlobalFlags;
     GameplayData.LocalFlags gameplayLocalFlags;
     GameplayData.Stats gameplayStats;
-    GameplayData.Mode gameplayMode;
+    GameplayData.Mode gameplayMode = GameplayData.Mode::Custom;
     GameplayData.State gameplayState;
-    EngineMode m_mode = Mode::GAME_ONLY;                      // Default mode is gameplay enabled, editor disabled, overlays disabled
+    EngineMode engineMode = Mode::GAME_ONLY;                      // Default mode is gameplay enabled, editor disabled, overlays disabled
     std::vector<std::shared_ptr<Node>> m_subsystems;          // Subsystems, like audio, physics, etc. that are managed by the GameplayManager.
 
     // === Processing ===
@@ -71,6 +71,8 @@ public:
         setOutputValue("gameplayStatus", gameplayStatus);
         setOutputValue("gameplayMetrics", computeGameplayMetrics(gameplayStatus));
     }
+    void addMode(Mode mode);
+    void removeMode(Mode mode);
     void setMode(Mode mode) {
         m_mode = mode;
         // Adjust subsystems but maintain core functionality

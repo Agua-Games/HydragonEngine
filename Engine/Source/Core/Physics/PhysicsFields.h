@@ -742,4 +742,32 @@ struct ExtremePhysicsField : public QuantumField, public EMField, public Advance
     }
 }
 
+struct WarpField : public QuantumField, public EMField, public AdvancedFluidField {
+    // Properties are expected to have borderline values, unexpected energy interactions and chain reactions, most of them harmful to
+    // structures with predisposition to chemical reactions, decay through radiation levels, etc. One of the most unpredictable and
+    // creative fields/scenarios.
+    Field<float, 3> extremeEnergyDensity;  // Energy density that can cause chain reactions
+    Field<vec3, 3> extremeGradient;        // Gradient that can cause instabilities
+    Field<float, 3> extremePotential;      // Potential that can cause instabilities
+    Field<vec3, 3> warpPotential;          // Warp potential energy
+    Field<float, 3> stabilityPotential;    // Stability potential energy
+
+    EnergySpectrum extremeEnergySpectrum;
+
+    // References to EMField for interactions    
+    FieldCoupling getFieldCoupling(const WarpField& other) const {
+        // Calculate coupling based on field properties
+        return FieldCoupling{...};
+    }
+
+    // Methods to handle extreme physics
+    void handleInstability(const vec3& position) {
+        // Implement instability handling logic
+    }
+
+    void handleChainReaction(const vec3& position) {
+        // Implement chain reaction handling logic
+    }
+}
+
 } // namespace hd

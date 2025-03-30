@@ -44,10 +44,22 @@ public:
     void load() override {}
 
     // === Processing ===
+    // Node
+    void processNode() override {}
+    void processEnvironmentManager();
+
     // Environment control
     void updateEnvironmentState();
     void processEnvironmentalEffects();
     void broadcastEnvironmentChanges();
+
+    // Environment events
+    void addHazard();
+    void removeHazard();
+    void addEvent();
+    void removeEvent();
+
+    // Environment state
 
     // Sensor management
     void registerSensor(EnvironmentSensor* sensor);
@@ -64,7 +76,6 @@ public:
     void queryGameplayManager();
     void queryEnvironmentSensor();
 
-    void processNode() override {}
     void update() override {}
 
     // === Cleanup ===

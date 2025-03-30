@@ -16,8 +16,18 @@
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "PhysicsFields.h"
+#include "Prop.h"
 
 namespace hd {
+
+enum class HazardType {
+    EMRadiation,
+    Toxic,
+    Chemical,
+    Biological,
+    Custom
+};
 
 struct HazardZoneInfo : public NodeInfo {
     HazardZoneInfo() {
@@ -45,6 +55,16 @@ public:
         : Node(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    HazardType type = HazardType::Custom;
+    vec3 position = vec3(0.0f);
+    EMField emField;
+    FluidField fluidField;
+    float detectionRange = 0.0f;
+    float fallOffRate = 0.0f;
+    float damage = 0.0f;
+    float shrinkRate = 0.0f;
 
     // === Processing ===
     void processNode() override {

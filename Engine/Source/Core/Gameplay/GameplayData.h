@@ -39,6 +39,73 @@ struct GameplayDataInfo : public NodeInfo {
 class GameplayData : public Node {
 public:
     // === Structure Definitions ===
+    enum class Mode {
+        CaptureTheFlag,
+        KingOfTheHill,
+        TeamDeathmatch,
+        FreeForAll,
+        CaptureThePoint,
+        Domination,
+        Elimination,
+        LastManStanding,
+        Objective,
+        Custom
+    };
+
+    struct CaptureTheFlag {
+        float captureTime;   // Time to capture the flag
+        float scoreLimit;    // Score limit to win the game
+        float timeLimit;     // Time limit to win the game
+        bool overtime;        // Enable overtime
+        bool friendlyFire;    // Enable friendly fire
+    };
+
+    struct KingOfTheHill {
+        float hillRadius;    // Radius of the hill
+        float moveInterval;  // Interval to move the hill
+        bool overtime;        // Enable overtime
+        bool friendlyFire;    // Enable friendly fire
+    };
+
+    struct TeamDeathmatch {
+        float scoreLimit;    // Score limit to win the game
+        float timeLimit;     // Time limit to win the game
+        bool overtime;        // Enable overtime
+        bool friendlyFire;    // Enable friendly fire
+    };
+
+    struct FreeForAll {
+        float scoreLimit;    // Score limit to win the game
+        float timeLimit;     // Time limit to win the game
+        bool overtime;        // Enable overtime
+        bool friendlyFire;    // Enable friendly fire
+    };
+
+    struct CaptureThePoint {
+        float captureTime;   // Time to capture the flag
+        float scoreLimit;    // Score limit to win the game
+        float timeLimit;     // Time limit to win the game
+        bool overtime;        // Enable overtime
+    };
+
+    struct Domination {
+        float dominationTime;   // Time to dominate the point
+        float scoreLimit;       // Score limit to win the game
+        float timeLimit;        // Time limit to win the game
+        bool overtime;          // Enable overtime
+    };
+
+    struct Elimination {
+        // Data for Elimination mode
+    };
+
+    struct LastManStanding {
+    };
+
+    struct Objective {
+        // Data for Objective mode
+    };
+
     struct Settings {
         // Settings for gameplay
     };
@@ -55,16 +122,8 @@ public:
         // Stats for gameplay
     };
 
-    struct Mode {
-        // Mode for gameplay
-    };
-
     struct State {
         // State for gameplay
-    };
-
-    struct Mode {
-        // Mode for gameplay
     };
 
     // === Allocation, Initialization, Loading === 

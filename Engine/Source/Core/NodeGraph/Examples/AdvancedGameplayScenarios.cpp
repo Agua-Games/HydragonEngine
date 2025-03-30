@@ -29,8 +29,29 @@
 #include "Engine.h"
 #include "Node.h"
 #include "Vehicle.h"
+#include "Spaceship.h"
 #include "CombatVehicle.h"
 #include "DamageZone.h"
+#include "Propulsion.h"
+#include "SpacePropulsion.h"
+#include "SpaceNavigation.h"
+#include "EnvironmentManager.h"
+#include "PhysicsFields.h"
+#include "ResourceManager.h"
+#include "ScannerDevice.h"
+#include "AnomalyDetector.h"
+#include "LifeSupportMechanics.h"
+#include "EmergencyMechanics.h"
+#include "DockingMechanics.h"
+#include "NavigatorAI.h"
+#include "TradingMechanics.h"
+#include "BattleZone.h"
+#include "Waypoint.h"
+#include "GameplayManager.h"
+#include "BettingMechanics.h"
+#include "SpectatorMechanics.h"
+#include "BattleManager.h"
+#include "TeamManager.h"
 
 using namespace hd;
 
@@ -40,7 +61,7 @@ auto armoredVehicle = Scene::current()
         .scene("vehicles/tanks/challenger2.usd")
         .addArmor("composite", 150.0f)
         .addArmor("reactive", 100.0f)
-        .addWeapon("main_cannon")
+        .addWeapon("mainCannon")
             .damage(1000.0f)
             .rateOfFire(1.0f)
         .connect<DamageZone>("exhaustDamageZone")
@@ -59,7 +80,7 @@ auto armoredVehicle = Scene::current()
         .connect<Equipment>("transmission")
             .health(100.0f)
             .connect<PhysicsPhenomenon>("jamming");
-    .connect<RepairMechanics>("field_repairs")
+    .connect<RepairMechanics>("fieldRepairs")
         .connect<RepairKit>("basicRepairKit")
             .healAmount(30.0f)
             .repairTime(10.0)
@@ -70,103 +91,104 @@ auto armoredVehicle = Scene::current()
 
 // === Space Exploration Mechanics ===
 auto deepSpaceVessel = Scene::current()
-    .add<Vehicle>("deep_space_explorer")
-        .connect<SpaceshipMechanics>("ship_systems")
-            .addSystem<PropulsionSystem>("warp_drive")
+    .add<Spaceship>("deepSpaceExplorer")
+        .connect<SpaceshipMechanics>("shipSystems")
+            .addSystem<SpacePropulsion>("warpDrive")
                 .fuelType("antimatter")
                 .maxWarpFactor(9.5f)
-                .connect<WarpField>("subspace_bubble")
-                    .stability(0.95f)
-                    .connect<NavigationHazard>("subspace_eddies")
+                .connect<WarpField>("subspaceBubble")
+                    .stabilityPotential(Field<float, 3>(1.0f, 0.0f, 0.0f))
+                    .warpPotential(Field<vec3, 3>(0.0f, 1.0f, 0.0f))
+                    .connect<HazardZone>("subspaceEddies")
                         .detectionRange(50000.0f)
-            .addSystem<ScanningSystem>("long_range_scanner")
+            .addSystem<ScannerDevice>("longRangeScanner")
                 .range(100000.0f)
-                .connect<AnomalyDetector>("space_phenomena")
-                    .addSignature("black_holes")
+                .connect<AnomalyDetector>("spacePhenomena")
+                    .addSignature("blackHoles")
                     .addSignature("wormholes")
-                    .connect<AutoNavigator>("hazard_avoidance")
-            .addSystem<ResourceManager>("ship_resources")
+                    .connect<NavigatorAI>("hazardAvoidance")
+            .addSystem<ResourceManager>("shipResources")
                 .addResource("fuel", 10000.0f)
                 .addResource("oxygen", 5000.0f)
-                .connect<RecyclingSystem>("life_support")
+                .connect<LifeSupportMechanics>("lifeSupport")
                     .efficiency(0.98f)
-                    .connect<EmergencyProtocol>("critical_resources")
+                    .connect<EmergencyMechanics>("criticalResources")
                         .threshold(0.1f)  // 10% remaining
-        .connect<SpaceStationDocking>("docking_system")
+        .connect<DockingMechanics>("dockingMechanics")
             .automaticDocking(true)
-            .connect<TradingSystem>("cargo_management")
+            .connect<TradingMechanics>("cargoManagement")
                 .capacity(1000.0f)
                 .autoTrade(true);
 
 // === Battle Arena Game Modes ===
 auto arenaManager = Scene::current()
-    .add<BattleArea>("mega_arena")
+    .add<BattleZone>("megaArena")
         .dimensions({200.0f, 50.0f, 200.0f})
-        .connect<GameModeManager>("arena_modes")
-            .addMode("capture_points")
-                .points({50.0f, 0.0f, 50.0f},
-                    {-50.0f, 0.0f, -50.0f},
-                    {0.0f, 20.0f, 0.0f})
+        .connect<GameplayManager>("arenaModes")
+            .addMode("capturePoints")
+                .connect<Waypoint>("capturePoints")
+                    .addPoint({50.0f, 0.0f, 50.0f})
+                    .addPoint({-50.0f, 0.0f, -50.0f})
                 .captureTime(30.0f)
                 .scoreLimit(1000)
-            .addMode("king_of_hill")
+            .addMode("kingofTheHill")
                 .hillRadius(20.0f)
                 .moveInterval(60.0f)
-                .connect<HazardRing>("closing_circle")
+                .connect<HazardZone>("closingCircle")
                     .shrinkRate(0.5f)
                     .damage(10.0f)
-        .connect<EnvironmentManager>("dynamic_arena")
-            .addHazard("lava_floor")
+        .connect<EnvironmentManager>("dynamicArena")
+            .addHazard("lavaFloor")
                 .damage(50.0f)
                 .spreadRate(0.1f)
-                .connect<ParticleSystem>("lava_fx")
-            .addHazard("lightning_storm")
+                .connect<ParticleSystem>("lavaFx")
+            .addHazard("lightningStorm")
                 .frequency(0.2f)
                 .damage(100.0f)
-        .connect<SpectatorSystem>("arena_viewers")
+        .connect<SpectatorMechanics>("arenaViewers")
             .enableReplay(true)
-            .connect<BettingSystem>("arena_bets")
+            .connect<BettingMechanics>("arenaBets")
                 .oddsCalculation(true);
 
 // === Combined Arms Scenario ===
 auto battleManager = Scene::current()
-    .add<BattleManager>("combined_arms")
+    .add<BattleManager>("combinedArms")
         .connect<TeamManager>("forces")
-            .addTeam("blue_force", {
-                .add<CombatVehicle>("main_tank")
+            .addTeam("blueForce", {
+                .add<CombatVehicle>("mainTank")
                     .type("abrams")
                     .position({100.0f, 0.0f, 100.0f})
-                    .connect<AICommander>("tank_ai")
+                    .connect<AICommander>("tankAi")
                         .strategy("aggressive")
                         .supportRange(50.0f),
-                .add<Vehicle>("transport_helo")
+                .add<Vehicle>("transportHelo")
                     .type("blackhawk")
                     .altitude(100.0f)
-                    .connect<AICommander>("helo_ai")
+                    .connect<AICommander>("heloAi")
                         .strategy("support")
             })
-            .addTeam("red_force", {
+            .addTeam("redForce", {
                 .add<CombatVehicle>("artillery")
                     .type("mlrs")
-                    .connect<IndirectFire>("artillery_ai")
+                    .connect<IndirectFire>("artilleryAi")
                         .maxRange(2000.0f),
                 .add<Vehicle>("drone")
-                    .type("recon_uav")
-                    .connect<ReconAI>("drone_ai")
+                    .type("reconUav")
+                    .connect<ReconAI>("droneAi")
                         .spotting(true)
             })
-        .connect<ObjectiveManager>("mission_control")
-            .addObjective("capture_bridge")
+        .connect<ObjectiveManager>("missionControl")
+            .addObjective("captureBridge")
                 .location(0.0f, 0.0f, 0.0f)
                 .radius(50.0f)
                 .reward(1000)
             .connect<ReinforcementSystem>("support")
-                .addReinforcement("air_strike")
+                .addReinforcement("airStrike")
                     .cooldown(300.0f)
                     .damage(500.0f)
-        .connect<WeatherSystem>("battlefield_conditions")
+        .connect<WeatherSystem>("battlefieldConditions")
             .setWeather("rain")
             .visibility(0.7f)
-            .connect<TerrainSystem>("ground_conditions")
+            .connect<TerrainSystem>("groundConditions")
                 .mudFactor(0.5f)
                 .traction(0.7f);
