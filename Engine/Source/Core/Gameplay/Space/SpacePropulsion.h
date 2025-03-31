@@ -51,6 +51,9 @@ public:
     // Set default values
     SpacePropulsionType type = SpacePropulsionType::solidPropellant;
     FuelType fuelType = FuelType::custom;
+    float mainThrust = 0.0f;
+    vec3 vectorThrust = vec3(0.0f);  // Vector thrust for maneuvering thrusters or engines with multiple thrusters (e.g., ion engines)
+    bool maneuvering = false;
     float warpFactor = 0.0f;
     float maxWarpFactor = 0.0f;
 

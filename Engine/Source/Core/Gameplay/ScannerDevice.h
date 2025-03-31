@@ -51,6 +51,8 @@ public:
     // Set default values
     ScannerDeviceInfo scannerDeviceInfo = {};  // Initialize scanner device info struct with default values
     float range = 0.0f;
+    float jamResistance = 0.0f;
+    DataTable scannerDeviceData;
 
     // === Processing ===
     void processScannerDevice();

@@ -12,12 +12,27 @@
  */
 #pragma once
 #include <vulkan/vulkan.h>
+#include <string>
 #include <vector>
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "Ability.h"
 
 namespace hd {
+
+enum class CombatMechanicsType {
+    Melee,
+    Ranged,
+    Magic,
+    Other
+};
+
+struct ReinforcementData {
+    std::string name;
+    float cooldown;
+    float damage;
+};
 
 struct CombatMechanicsInfo : public NodeInfo {
     CombatMechanicsInfo() {
@@ -45,8 +60,18 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    std::vector<ReinforcementData> reinforcements;
+    ReinforcementData.name = "none";
+    ReinforcementData.cooldown = 0.0f;
+    ReinforcementData.damage = 0.0f;
+    DataTable combatMechanicsData;
+
     // === Processing ===
     void processNode() override { }
+    void addReinforcement(const std::string& reinforcementName);
+    void removeReinforcement(const std::string& reinforcementName);
+    void processReinforcement();
     void update();
 
     // === Cleanup ===

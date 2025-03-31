@@ -16,120 +16,156 @@
 #include "Node.h"
 #include "Vehicle.h"
 #include "CombatVehicle.h"
+#include "Weapon.h"
+#include "Solid.h"
+#include "Pathfinder.h"
+#include "Wheel.h"
 #include "Automobile.h"
+#include "Drone.h"
 #include "Mount.h"
+#include "MountMechanics.h"
+#include "MountedCombat.h"
+#include "BallisticVehicle.h"
+#include "TargetMechanics.h"
+#include "Solid.h"
+#include "SpacePropulsion.h"
+#include "PhysicsFields.h"
+#include "GravitationalField.h"
+#include "LifeSupportMechanics.h"
+#include "NavigationMechanics.h"
+#include "WarHorse.h"
+#include "CreatureAI.h"
+#include "EmotionMechanics.h"
+#include "Weapon.h"
+#include "BattleZone.h"
+#include "EnvironmentManager.h"
+#include "WeatherCondition.h"
+#include "HazardZone.h"
+#include "CrowdMechanics.h"
+#include "CompanionMechanics.h"
+#include "EmotionMechanics.h"
+#include "ScannerDevice.h"
+#include "NavigatorAI.h"
 
 using namespace hd;
 
 // Modern tank with advanced targeting
 auto mainBattleTank = Scene::current()
-    .add<CombatVehicle>("abrams_tank")
-        .model("vehicles/tanks/abrams_m1a2.fbx")
+    .add<CombatVehicle>("abramsTank")
+        .model("vehicles/tanks/abramsM1a2.fbx")
         .mass(62000.0f)
-        .connect<WavePhysics>("tank_physics")
-            .solidShape("tank_hull")
-            .connect<TrackSystem>("tracks")
-                .gripFactor(0.85f)
-                .terrainResponse(true)
-        .connect<WeaponSystem>("main_gun")
-            .type("cannon_120mm")
+        .connect<Solid>("tankPhysics")
+            .shape("tankHull")
+            .connect<Pathfinder>("tracks")
+                .traction(0.8f)
+                .connect<Wheel>("frontLeft")
+                    .radius(0.5f)
+                    .connect<Wheel>("frontRight")
+                        .radius(0.5f)
+                    .connect<Wheel>("rearLeft")
+                        .radius(0.5f)
+                    .connect<Wheel>("rearRight")
+                        .radius(0.5f)
+        .connect<Weapon>("mainGun")
+            .type("cannon120mm")
             .damage(1000.0f)
             .reloadTime(8.0f)
-            .connect<BallisticProjectile>("sabot_round")
+            .connect<BallisticVehicle>("sabotRound")
                 .velocity({0.0f, 0.0f, 1800.0f})
                 .penetration(800.0f)
-        .connect<TargetingSystem>("thermal_sight")
+        .connect<TargetMechanics("thermalSight")
             .range(4000.0f)
             .lockTime(2.0f)
             .thermalVision(true);
 
 // Space exploration vessel
 auto spaceShip = Scene::current()
-    .add<Vehicle>("explorer_ship")
+    .add<Vehicle>("explorerShip")
         .model("vehicles/space/explorer_mk3.fbx")
-        .connect<SpacePhysics>("ship_physics")
+        .connect<Solid>("shipPhysics")
             .mass(250000.0f)
-            .connect<PropulsionSystem>("engines")
+            .connect<SpacePropulsion>("engines")
                 .mainThrust(100000.0f)
                 .maneuvering(true)
-            .connect<GravityField>("artificial_gravity")
-                .strength(9.81f)
-                .radius(50.0f)
-        .connect<LifeSupportSystem>("life_support")
+            .connect<GravitationalField>("artificialGravity")
+                .gravitationalPotential(9.81f)
+        .connect<LifeSupportMechanics>("lifeSupport")
             .oxygenCapacity(10000.0f)
             .recyclingEfficiency(0.95f)
-        .connect<NavigationSystem>("nav_computer")
+        .connect<NavigationMechanics>("navComputer")
             .stellarMapping(true)
             .warpCapability(true);
 
 // Cavalry unit with horse AI
 auto mountedKnight = Scene::current()
-    .add<Mount>("warhorse")
+    .add<WarHorse>("warhorse")
         .breed("destrier")
         .stamina(100.0f)
-        .connect<AnimalAI>("horse_behavior")
+        .connect<CreatureAI>("horseBehavior")
             .courage(0.8f)
             .loyalty(0.9f)
-            .connect<EmotionSystem>("horse_mood")
+            .connect<EmotionMechanics>("horseBood")
                 .stress(0.0f)
-                .calmness(1.0f)
-        .connect<RiderSystem>("knight")
-            .mountedCombat(true)
-            .connect<WeaponSystem>("lance")
+                .socialization(0.5f)
+        .connect<MountMechanics>("knight")
+            .connect<MountedCombat>("combatSkills")
+                .charge(true)
+                .shield(true)
+            .connect<Weapon>("lance")
                 .damage(150.0f)
                 .chargeBonus(2.0f);
 
 // Battle arena with dynamic environment
 auto arena = Scene::current()
-    .add<BattleArea>("colosseum")
-        .dimensions({100.0f, 30.0f, 100.0f})
-        .connect<EnvironmentSystem>("arena_environment")
-            .weather("dynamic")
+    .add<BattleZone>("colosseum")
+        .extents({100.0f, 30.0f, 100.0f})
+        .connect<EnvironmentManager>("arenaEnvironment")
+            .connect<WeatherCondition>("clearSky"))
+                .temperature(25.0f)
+                .windSpeed(5.0f)
             .timeOfDay(14.0f)
-            .connect<HazardSystem>("arena_hazards")
+            .connect<HazardZone>("arenaHazards")
                 .addTrap("flame_jets")
                 .addTrap("spike_pits")
-        .connect<SpectatorSystem>("crowd")
+        .connect<CrowdMechanics>("crowd")
             .density(0.8f)
             .enthusiasm(0.7f)
-            .connect<AudioSystem>("crowd_noise")
+            .connect<AcousticSource>("crowdNoise")
                 .volume(0.6f)
                 .dynamicResponse(true);
 
 // Combat pet system
 auto battlePet = Scene::current()
-    .add<CompanionSystem>("war_wolf")
+    .add<CompanionMechanics>("warWolf")
         .level(10)
         .loyalty(1.0f)
-        .connect<PetAI>("wolf_behavior")
-            .aggression(0.7f)
-            .protection(0.8f)
-            .connect<CombatAbilities>("wolf_skills")
-                .addAbility("fierce_bite")
-                .addAbility("pack_howl")
-        .connect<BondingSystem>("pet_bond")
-            .ownerLink("player_1")
-            .syncLevel(true)
-            .connect<StatusEffect>("pack_strength")
-                .duration(-1.0f)  // Permanent while bonded
-                .damageBonus(0.15f);
+        .aggression(0.7f)
+        .protection(0.8f)
+        .connect<CombatAbilities>("wolfSkills")
+            .addAbility("fierceBite")
+            .addAbility("packHowl")
+    .connect<EmotionMechanics>("petBond")
+        .link("player1")
+        .syncLevel(true)
+        .bonding(0.9f)
+        .damageBonus(0.15f);
 
 // Ballistic missile system
 auto missileLauncher = Scene::current()
-    .add<CombatVehicle>("missile_platform")
-        .type("ballistic_launcher")
-        .connect<TargetingSystem>("guidance")
+    .add<CombatVehicle>("missilePlatform")
+        .type("ballisticLauncher")
+        .connect<TargetMechanics>("guidance")
             .range(25000.0f)
             .accuracy(0.98f)
-            .connect<RadarSystem>("tracking")
-                .scanRange(30000.0f)
+            .connect<ScannerDevice>("tracking")
+                .range(30000.0f)
                 .jamResistance(0.7f)
-        .connect<WeaponSystem>("missile_battery")
+        .connect<Weapon>("missileBattery")
             .capacity(4)
-            .connect<BallisticProjectile>("cruise_missile")
+            .connect<BallisticVehicle>("cruiseMissile")
                 .range(20000.0f)
                 .speed(800.0f)
-                .payload("high_explosive")
-                .connect<GuidanceSystem>("missile_ai")
-                    .trackingMode("terrain_following")
+                .payload("highExplosive")
+                .connect<NavigatorAI>("missileAI")
+                    .trackingMode("terrainFollowing")
                     .evasionCapability(true);

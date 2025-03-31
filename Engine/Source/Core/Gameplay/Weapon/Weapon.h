@@ -17,14 +17,9 @@
 #include "Node.h"
 #include "DataTable.h"
 #include "Prop.h"
+#include "CombatTypes.h"
 
 namespace hd {
-
-enum class WeaponType {
-    melee,
-    ranged,
-    custom
-};
 
 struct WeaponInfo : public PropInfo {
     WeaponInfo() {
@@ -99,8 +94,13 @@ public:
     // Set default values
     WeaponInfo weaponInfo = {};  // Initialize weapon info struct with default values
     // Temporarily calling them out of the struct for now.
-    WeaponType type = WeaponType::custom;
+    WeaponRangeType type = WeaponRangeType::custom;
+    WeaponType weaponType = WeaponType::custom;
+    int capacity = 0;
     float damage = 0.0f;
+    float reloadTime = 0.0f;
+    float chargeTime = 0.0f;    // Time to charge the weapon before firing. This is used for weapons that require a charge time before firing, such as bows and crossbows. Default: 0.0f.
+    float chargeBonus = 0.0f;
     DataTable weaponData = DataTable();
 
     // === Processing ===
@@ -108,6 +108,7 @@ public:
         
     }
     void aim();
+    void charge();                 // Charge the weapon before firing. This is used for weapons that require a charge time before firing, such as bows and crossbows. Default: no charge.
     void reload();
     void fire();
     void updateAmmo();

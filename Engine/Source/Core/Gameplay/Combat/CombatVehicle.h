@@ -16,23 +16,30 @@
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "Weapon.h"
+#include "Armor.h"
 
 namespace hd {
+
+enum class CombatVehicleType {
+    Tank,
+    Helicopter,
+    Jet,
+    Ship,
+    Spaceship,
+    Other
+};
 
 struct CombatVehicleInfo : public NodeInfo {
     CombatVehicleInfo() {
         nodeType = "Gameplay/CombatVehicle";
         
         inputs = {
-            "scene",
-            "position",
-            "rotation",
-            "scale",
-            "material",
-            "animation",
-            "physics",
-            "collision",
-            "script"
+            "combatVehicleType",  // Type of combat vehicle (tank, helicopter, jet, etc.)
+            "combatVehicleData",  // Combat vehicle data
+            "environment",        // Environment data
+            "characterData",      // Character data
+            "combatVehicleState"  // Combat vehicle state
         };
         
         outputs = {
@@ -56,6 +63,12 @@ public:
         : Node(info) {}
     void initialize() override {}
     void load() override {}
+
+    // Set default values
+    CombatVehicleType type = CombatVehicleType::Other;
+    std::vector<Weapon> weapons;
+    std::vector<Armor> armors;
+    DataTable combatData;
 
     // === Processing ===
     void addWeapon(const Weapon& weapon);

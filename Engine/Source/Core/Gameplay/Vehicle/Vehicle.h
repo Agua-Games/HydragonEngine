@@ -12,10 +12,19 @@
  */
 #pragma once
 #include <vulkan/vulkan.h>
+#include <string>
 #include <vector>
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "AdaptiveMesh.h"
+#include "Transform.h"
+#include "PhysicsTypes.h"
+#include "PhysicsMaterial.h"
+#include "Solid.h"
+#include "Pathfinder.h"
+#include "Wheel.h"
+#include "AnimationStateMachine.h"
 
 namespace hd {
 
@@ -30,9 +39,7 @@ struct VehicleInfo : public NodeInfo {
             "scale",        // Scale of the vehicle
             "material",     // Material of the vehicle
             "animation",    // Animation of the vehicle
-            "physics",      // Physics of the vehicle
-            "collision",    // Collision of the vehicle
-            "script"        // Script of the vehicle
+            "solid",      // Physics of the vehicle
         };
         
         outputs = {
@@ -42,9 +49,7 @@ struct VehicleInfo : public NodeInfo {
             "scale",        // Scale of the vehicle
             "material",     // Material of the vehicle
             "animation",    // Animation of the vehicle
-            "physics",      // Physics of the vehicle
-            "collision",    // Collision of the vehicle
-            "script"        // Script of the vehicle
+            "solid",      // Physics of the vehicle
         };
     }
 };
@@ -57,30 +62,28 @@ public:
     load() override {}
 
     // Set default values
-    Model model;
-    glm::vec3 position;
-    glm::vec3 rotation;
-    glm::vec3 scale;
-    Material material;
-    Animation animation;
-    Physics physics;
-    Collision collision;
-    Script script;
+    AdaptiveMesh model;
+    PositionTransform position;
+    RotationTransform rotation;
+    ScaleTransform scale;
+    PhysicsMaterial material;
+    AnimationStateMachine animation;
+    Solid solid;
+    Solid::mass mass;
+    std::vector<Wheel> wheels;
 
     // === Processing ===
     void processNode() override {
-        model = getInputValue<Model>("model");
-        position = getInputValue<glm::vec3>("position");
-        rotation = getInputValue<glm::vec3>("rotation");
-        scale = getInputValue<glm::vec3>("scale");
-        material = getInputValue<Material>("material");
-        animation = getInputValue<Animation>("animation");
-        physics = getInputValue<Physics>("physics");
-        collision = getInputValue<Collision>("collision");
-        script = getInputValue<Script>("script");
+        model = getInputValue<AdaptiveMesh>("model");
+        position = getInputValue<PositionTransform>("position");
+        rotation = getInputValue<RotationTransform>("rotation");
+        scale = getInputValue<ScaleTransform>("scale");
+        material = getInputValue<PhysicsMaterial>("material");
+        animation = getInputValue<AnimationStateMachine>("animation");
+        solid = getInputValue<Solid>("solid");
 
         // Process vehicle
-        auto vehicleState = updateVehicle(model, position, rotation, scale, material, animation, physics, collision, script);
+        auto vehicleState = updateVehicle(model, position, rotation, scale, material, animation, solid);
         
         // Set outputs
         setOutputValue("model", vehicleState.model);
@@ -89,9 +92,7 @@ public:
         setOutputValue("scale", vehicleState.scale);
         setOutputValue("material", vehicleState.material);
         setOutputValue("animation", vehicleState.animation);
-        setOutputValue("physics", vehicleState.physics);
-        setOutputValue("collision", vehicleState.collision);
-        setOutputValue("script", vehicleState.script);
+        setOutputValue("solid", vehicleState.solid);
     }
     void update() override {}
     void processVehicle();

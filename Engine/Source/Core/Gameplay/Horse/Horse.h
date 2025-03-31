@@ -17,10 +17,30 @@
 #include "Node.h"
 #include "DataTable.h"
 #include "Vehicle.h"
+#include "Creature.h"
+#include "CreatureTypes.h"
+#include "HorseMechanics.h"
 
 namespace hd {
 
-struct HorseInfo : public VehicleInfo {
+enum class HorseType {
+    Stallion,
+    Mare,
+    Gelding,
+    Other
+};
+
+enum class HorseBreed {
+    Arabian,
+    Thoroughbred,
+    QuarterHorse,
+    Mustang,
+    Clydesdale,
+    Shetland,
+    Other
+};
+
+struct HorseInfo : public CreatureInfo {
     HorseInfo() {
         nodeType = "Gameplay/Horse";
         
@@ -39,13 +59,21 @@ struct HorseInfo : public VehicleInfo {
     }
 };
 
-class Horse : public Vehicle {
+class Horse : public Creature {
 public:
     // === Allocation, Initialization, Loading ===
     explicit Horse(const HorseInfo& info = HorseInfo())
-        : Node(info) {}
+        : Creature(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    HorseType type = HorseType::Other;
+    HorseBreed breed = HorseBreed::Other;
+    float stamina = 0.0f;
+    float speed = 0.0f;
+    float health = 0.0f;
+    DataTable horseData;
 
     // === Processing ===
     void processNode() override {

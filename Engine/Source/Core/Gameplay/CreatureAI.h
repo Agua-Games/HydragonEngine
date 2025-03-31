@@ -48,6 +48,7 @@ public:
     load() override {}
 
     // Set default values
+    // TODO: move to CreatureAIInfo, Stats
     float aggression = 0.5f;
     float intelligence = 0.5f;
     float speed = 0.5f;
@@ -55,6 +56,8 @@ public:
     float mana = 100.0f;
     float stamina = 100.0f;
     float territoryRadius = 10.0f;
+    float courage = 0.5f;
+    float loyalty = 0.5f;
 
     // === Processing ===
     void processNode() override {

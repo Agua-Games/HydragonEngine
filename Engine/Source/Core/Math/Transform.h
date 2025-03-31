@@ -39,7 +39,7 @@ public:
 };
 
 // Default Position Transformation
-class PositionTransformation : public Transformation {
+class PositionTransform : public Transformation {
 public:
     ImVec3 position = {0, 0, 0};
     ImVec3 velocity = {0, 0, 0};
@@ -62,7 +62,7 @@ public:
 };
 
 // Default Orientation Transformation
-class OrientationTransformation : public Transformation {
+class RotationTransform : public Transformation {
 public:
     ImVec3 rotation = {0, 0, 0}; // Euler angles for simplicity
     ImVec3 angularVelocity = {0, 0, 0};
@@ -85,7 +85,7 @@ public:
 };
 
 // Default Scale Transformation
-class ScaleTransformation : public Transformation {
+class ScaleTransform : public Transformation {
 public:
     ImVec3 scale = {1, 1, 1}; // Default scale is 1x
 
@@ -172,9 +172,9 @@ private:
 
     // Add default transformations (position, orientation, scale)
     void addDefaultTransformations() {
-        Transformations.push_back(std::make_shared<PositionTransformation>());
-        Transformations.push_back(std::make_shared<OrientationTransformation>());
-        Transformations.push_back(std::make_shared<ScaleTransformation>());
+        Transformations.push_back(std::make_shared<PositionTransform>());
+        Transformations.push_back(std::make_shared<RotationTransform>());
+        Transformations.push_back(std::make_shared<ScaleTransform>());
     }
 };
 

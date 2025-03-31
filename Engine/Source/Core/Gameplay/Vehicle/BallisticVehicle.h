@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "Vehicle.h"
 
 namespace hd {
 
@@ -51,11 +52,60 @@ struct BallisticVehicleInfo : public VehicleInfo {
 
 class BallisticVehicle : public Vehicle {
 public:
+    // === Structure Definitions ===
+    enum PayloadType {
+        HighExplosive,
+        Nuclear,
+        Incendiary,
+        Fragmentation,
+        Other
+    };
+    
+    enum GuidanceType {
+        Inertial,
+        TerrainFollowing,
+        TerrainAvoidance,
+        Other
+    };
+    
+    enum EvasionType {
+        None,
+        Active,
+        Passive,
+        Other
+    };
+
+    enum SonicType {
+        Subsonic,
+        Supersonic,
+        Hypersonic,
+        Other
+    };
+
     // === Allocation, Initialization, Loading ===
     explicit BallisticVehicle(const BallisticVehicleInfo& info = BallisticVehicleInfo())
         : Node(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    vec3 velocity = vec3(0.0f);
+    float range = 0.0f;
+    float speed = 0.0f;
+    float damage = 0.0f;
+    float penetration = 0.0f;
+    float guidance = 0.0f;
+    float guidanceRange = 0.0f;
+    float explosionRadius = 0.0f;
+    float explosionDamage = 0.0f;
+    float explosionForce = 0.0f;
+    float explosionDuration = 0.0f;
+    float explosionCooldown = 0.0f;
+    PayloadType payload = PayloadType::Other;
+    GuidanceType guidanceType = GuidanceType::Other;
+    EvasionType evasionType = EvasionType::Other;
+    SonicType sonicType = SonicType::Other;
+
 
     // === Processing ===
     void processNode() override {

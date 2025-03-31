@@ -15,7 +15,9 @@
  */
 #pragma once
 #include <vulkan/vulkan.h>
+#include <string>
 #include "Node.h"
+#include "AgentAI.h"
 
 namespace hd {
 
@@ -43,6 +45,9 @@ public:
         : Node(info) {}   
     initialize() override {}
     load() override {}
+
+    // Set default values
+    AgentAIStrategy strategy = AgentAIStrategy::Passive;
 
     // === Processing ===
     void processBehaviorTree();

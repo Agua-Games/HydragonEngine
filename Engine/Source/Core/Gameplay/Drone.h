@@ -12,14 +12,30 @@
  */
 #pragma once
 #include <vulkan/vulkan.h>
+#include <string>
 #include <vector>
 #include <unordered_map>
 #include "Node.h"
+#include "Transform.h"
 #include "Wave.h"
 #include "PhysicsFields.h"
+#include "PhysicsTypes.h"
 #include "AudioFile.h"
+#include "DataTable.h"
 
 namespace hd {
+
+enum class DronePropulsionType {
+    Quadcopter,
+    Helicopter,
+    Other
+};
+
+enum class DroneType {
+    reconUAV,
+    attackUAV,
+    Other
+};
 
 struct DroneInfo : public NodeInfo {
     DroneInfo() {
@@ -47,6 +63,17 @@ public:
         : Node(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    DronePropulsionType propulsionType = DronePropulsionType::Quadcopter;
+    DroneType type = DroneType::Other;
+    Transform transform;
+    float altitude = 0.0f;
+    float maxAltitude = 0.0f;
+    float speed = 0.0f;
+    PhysicsData physicsData;
+    PhysicsData.velocity = 0.0f;
+    PhysicsData.acceleration = 0.0f;
 
     // === Processing ===
     void processNode() override {

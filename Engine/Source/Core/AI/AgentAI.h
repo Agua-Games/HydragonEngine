@@ -15,9 +15,16 @@
  * @todo Assign all member variables to port inputs inside of processNode(). Also computeResult(), and setOutputValue() for all outputs.
  */
 #pragma once
+#include <string>
 #include "BehaviorTree.h"
 
 namespace hd {
+
+enum class AgentAIStrategy {
+    Passive,
+    Defensive,
+    Aggressive
+};
 
 struct AgentAIInfo : public BehaviorTreeInfo {
     AgentAIInfo() {
@@ -45,6 +52,9 @@ public:
         : BehaviorTree(info) {}    // Default constructor for AgentAI class
     initialize() override {}
     load() override {}
+
+    // Set default values
+    AgentAIStrategy strategy = AgentAIStrategy::Passive;
 
     // === Processing ===
     void processNode() override {

@@ -55,8 +55,9 @@ public:
     std::vector<LifeSupportType> lifeSupportTypes;  // Types of life support (oxygen, water, food, etc.) supported by this life support mechanics node. Default: empty vector.
     float regenerationRate = 0.0f;
     float consumptionRate = 0.0f;
-    float lifeSignal = 0.0f;
-    float efficiency = 0.0f;
+    std::vector<float> lifeSignals;     // This should be get from the character(s) data
+    float oxygenCapacity = 0.0f;
+    float recyclingEfficiency = 0.0f;
 
     // === Processing ===
     void processNode() override { }

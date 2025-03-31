@@ -29,13 +29,16 @@
 #include "Engine.h"
 #include "Node.h"
 #include "Vehicle.h"
+#include "Helicopter.h"
 #include "Spaceship.h"
 #include "CombatVehicle.h"
+#include "Drone.h"
 #include "DamageZone.h"
 #include "Propulsion.h"
 #include "SpacePropulsion.h"
 #include "SpaceNavigation.h"
 #include "EnvironmentManager.h"
+#include "WeatherManager.h"
 #include "PhysicsFields.h"
 #include "ResourceManager.h"
 #include "ScannerDevice.h"
@@ -51,7 +54,13 @@
 #include "BettingMechanics.h"
 #include "SpectatorMechanics.h"
 #include "BattleManager.h"
+#include "QuestManager.h"
+#include "CombatMechanics.h"
 #include "TeamManager.h"
+#include "AIManager.h"
+#include "VehicleAI.h"
+#include "ReconnaissanceAbility.h"
+#include "TerrainLayer.h"
 
 using namespace hd;
 
@@ -158,13 +167,13 @@ auto battleManager = Scene::current()
                 .add<CombatVehicle>("mainTank")
                     .type("abrams")
                     .position({100.0f, 0.0f, 100.0f})
-                    .connect<AICommander>("tankAi")
+                    .connect<VehicleAI>("tankAi")
                         .strategy("aggressive")
                         .supportRange(50.0f),
-                .add<Vehicle>("transportHelo")
+                .add<Helicopter>("transportHelo")
                     .type("blackhawk")
                     .altitude(100.0f)
-                    .connect<AICommander>("heloAi")
+                    .connect<VehicleAI>("heloAi")
                         .strategy("support")
             })
             .addTeam("redForce", {
@@ -172,23 +181,23 @@ auto battleManager = Scene::current()
                     .type("mlrs")
                     .connect<IndirectFire>("artilleryAi")
                         .maxRange(2000.0f),
-                .add<Vehicle>("drone")
-                    .type("reconUav")
-                    .connect<ReconAI>("droneAi")
+                .add<Drone>("drone")
+                    .type("reconUAV")
+                    .connect<ReconnaissanceAbility>("reconAbility")
                         .spotting(true)
             })
-        .connect<ObjectiveManager>("missionControl")
-            .addObjective("captureBridge")
+        .connect<QuestManager>("missionControl")
+            .addQuest("captureBridge")
                 .location(0.0f, 0.0f, 0.0f)
                 .radius(50.0f)
                 .reward(1000)
-            .connect<ReinforcementSystem>("support")
+            .connect<CombatMechanics>("support")
                 .addReinforcement("airStrike")
                     .cooldown(300.0f)
                     .damage(500.0f)
-        .connect<WeatherSystem>("battlefieldConditions")
-            .setWeather("rain")
+        .connect<WeatherManager>("battlefieldConditions")
+            .weather("rain")
             .visibility(0.7f)
-            .connect<TerrainSystem>("groundConditions")
-                .mudFactor(0.5f)
-                .traction(0.7f);
+            .connect<Terrain>("groundConditions")
+                .connect<TerrainLayer>("sandLayer")
+                    .density(0.3f)

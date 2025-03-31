@@ -16,8 +16,16 @@
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "CombatVehicle.h"
+#include "CombatTypes.h"
 
 namespace hd {
+
+enum class HelicopterType {
+    Blackhawk,
+    Apache,
+    Other
+};
 
 struct HelicopterInfo : public CombatVehicleInfo {
     HelicopterInfo() {
@@ -49,6 +57,11 @@ public:
         : Node(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    CombatTypes::CombatVehicleType combatType = CombatTypes::CombatVehicleType::Helicopter;
+    HelicopterType type = HelicopterType::Other;
+    float altitude = 0.0f;
 
     // === Processing ===
     void processNode() override {

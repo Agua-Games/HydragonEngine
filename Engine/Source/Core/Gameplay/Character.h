@@ -18,6 +18,7 @@
 #include "Scene.h"
 #include "BehaviorTree.h"
 #include "AnimationController.h"
+#include "EmotionMechanics.h"
 
 namespace hd {
 
@@ -56,6 +57,7 @@ public:
     Character character;
     BehaviorTree behaviorTree;
     AnimationController animationController;
+    EmotionMechanics emotionMechanics;     // Emotion mechanics for character. Default: empty object.
     float speed = 0.0f;
     float health = 0.0f;
     float stamina = 0.0f;

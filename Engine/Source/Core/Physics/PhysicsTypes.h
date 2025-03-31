@@ -11,9 +11,12 @@
  * 
  */
 #pragma once
+#include "MathTypes.h"              // For vec3 type
+#include "PhysicsMaterial.h"
 
 namespace hd {
 
+// === Fields ===
 // Define force field types
 enum class ForceFieldType {
     Gravity,
@@ -24,12 +27,42 @@ enum class ForceFieldType {
     Custom
 };
 
+// === Energy Transfer ===
+enum class EnergyTransferType {
+    Kinetic,
+    Thermal,
+    Deformation,
+    Particle,
+    Wave,
+    Field,
+    Custom
+};
+
+struct EnergyTransferEvent {
+    EnergyTransferType type;
+    float magnitude;
+    vec3 direction;
+};
+
+// === Entity Data ===
+struct PhysicsData {
+    vec3 position;
+    vec3 velocity;
+    float nucleusPotential;
+    float mass;                 // Derived from nucleusPotential, must always be synced to it
+    float density;
+    PhysicsMaterial material;
+    //BodyState bodyState;
+};
+
+// === Simulation, Solvers ===
 enum class SimulationSpace {
     Local,
     World,
     Custom
 };
 
+// === Collisions ===
 // Define collision types
 enum class CollisionType {
     Box,
@@ -37,6 +70,13 @@ enum class CollisionType {
     Capsule,
     Mesh,
     Custom
+};
+
+struct CollisionEvent {
+    CollisionType type;
+    CollisionResponse response;
+    vec3 normal;
+    float depth;
 };
 
 // Define collision responses

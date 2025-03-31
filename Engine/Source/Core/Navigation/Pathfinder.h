@@ -43,6 +43,10 @@ namespace hd {
         initialize() override {}
         load() override {}
 
+        // Set default values
+        DataTable pathfinderData;
+        float traction = 0.0f;
+
         // === Processing ===
         void findPath();
         void navigatePath();

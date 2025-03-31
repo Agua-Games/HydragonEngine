@@ -38,6 +38,21 @@ struct AutoNavigatorInfo : public NodeInfo {
 
 class AutoNavigator : public Node {
 public:
+    // === Structure Definitions ===
+    enum class AutonomyMode {
+        Autonomous,
+        SemiAutonomous,
+        Manual
+    };
+
+    enum TrackingMode {
+        TerrainFollowing,
+        TerrainAvoidance,
+        ObstacleAvoidance,
+        TargetTracking,
+        PathFollowing
+    };
+
     // === Allocation, Initialization, Loading === 
     explicit AutoNavigator(const AutoNavigatorInfo& info = AutoNavigatorInfo())
         : Node(info) {}   
@@ -46,6 +61,11 @@ public:
 
     // Set default values
     AutoNavigatorInfo autoNavigatorInfo = {};  // Initialize auto navigator info struct with default values
+    DataTable autoNavigatorData;    // Auto navigator data, such as navigation mode, tracking mode, etc.
+    DataTable autoNavigatorState;    // Auto navigator state, such as navigation mode, tracking mode, etc.
+    AutonomyMode autonomyMode = AutonomyMode::Autonomous;
+    TrackingMode trackingMode = TrackingMode::TerrainFollowing;
+    bool evasionCapability = false;
 
     // === Processing ===
     void processNode() override { }

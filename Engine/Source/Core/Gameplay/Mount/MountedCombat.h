@@ -46,12 +46,19 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    DataTable mountedCombatData;
+    DataTable mountedCombatState;
+    bool charge = false;
+    bool shield = false;
+
     // === Processing ===
     void processNode() override { }
     void charge();
     void fire();
     void dodge();
     void evade();
+    void shield();      // Shield against incoming attacks or danger (reduce incoming damage)
     void defend();      // Defend against incoming attacks or danger
     void feignedDefend(); // Feigned defense to avoid being attacked or danger
     void lead();

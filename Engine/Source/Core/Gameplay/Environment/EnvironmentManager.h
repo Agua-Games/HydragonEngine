@@ -43,6 +43,11 @@ public:
     void initialize() override {}
     void load() override {}
 
+    // Set default values
+    DataTable environmentData;    // Environment data, such as weather, time of day, etc.
+    DataTable environmentState;    // Environment state, such as weather, time of day, etc.
+    float timeOfDay = 0.0f;
+
     // === Processing ===
     // Node
     void processNode() override {}

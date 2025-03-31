@@ -54,6 +54,7 @@ public:
     float temperature;
     float humidity;
     float windSpeed;
+    float visibility;
     float snowDensity;
     float fogDensity;
     float precipitationIntensity;

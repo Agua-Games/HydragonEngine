@@ -53,6 +53,8 @@ public:
     vec3 position;
     vec3 orientation;
     vec3 velocity;
+    float volumeMultiplier = 1.0f;
+    bool dynamicResponse = false;
     WavePattern wavePattern;
     MediumProperties medium;
 

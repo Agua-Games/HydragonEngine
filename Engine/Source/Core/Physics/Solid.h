@@ -25,11 +25,13 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include "Node.h"
+#include "Transform.h"
 #include "WavePhysics.h"
 #include "PhysicsTypes.h"             // From WavePhysics, for the body state, collision events, forces, energy state, etc.
 #include "PhysicsFields.h"            // From WavePhysics, for the solidField, fluidField, etc.
 #include "ProceduralTypes.h"          // From WavePhysics, for the procedural shape types, such as Box, Sphere, Cylinder, etc.
 #include "RuntimeVariants.h"        // From our custom usd implementation, optimized for realtime, including LOD support
+#include "PhysicsMaterial.h"
 
 namespace hd {
 
@@ -105,13 +107,15 @@ public:
     load() override {}
 
     SolidField solidField;
-    ShapeType shapeType;
-    vec3 position;
+    PositionTransform position;
+    RotationTransform rotation;
+    ScaleTransform scale;
     vec3 velocity;
     float nucleusPotential;
     float mass;                 // Derived directly from nucleusPotential, kept only to help users not used to WavePhysics. May be removed later.
+    ShapeType shapeType;
     Shape shape;
-    Material material;
+    PhysicsMaterial material;
     BodyState bodyState;
     bool isDynamic = false;
 

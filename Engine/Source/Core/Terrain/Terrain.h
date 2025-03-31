@@ -24,6 +24,7 @@
 #include "Noise.h"
 #include "ProceduralManager.h"
 #include "Heightmap.h"
+#include "TerrainLayer.h"
 
 namespace hd {
 
@@ -94,6 +95,7 @@ public:
     int subdivisionLevel = 1;
     int detailLevels = 1;
     Heightmap heightMap;
+    std::vector<TerrainLayer> layers;
     ProceduralNoiseParams noiseParams;
     TerrainDeformation deformation;
     ErosionParams erosionParams;

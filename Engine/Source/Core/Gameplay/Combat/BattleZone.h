@@ -43,6 +43,9 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    vec3 extents = vec3(0.0f);
+
     // === Processing ===
     void processNode() override {
  

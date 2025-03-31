@@ -2,15 +2,14 @@
  * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file CombatAbilites.h
- * @brief Header file for the CombatAbilites class.
+ * @file CombatAbilities.h
+ * @brief Header file for the CombatAbilities class.
  * 
  * ARCHITECTURAL NOTES:
- * - CombatAbilites is a class that represents combat abilities in Hydragon.
+ * - CombatAbilities is a class that represents combat abilities in Hydragon.
  * - It supports chaining abilities together in a single node, akin to how PostProcessChain chains PostProcess effects.
  * - It supports interactive features, such as dealing damage, taking damage, and healing. Also supports two-way messaging with other combat abilities, environment, character, etc.
  * - It is used to represent any combat abilities in the game world, such as damage, health, etc.
- * - It supports interactive features, such as dealing damage, taking damage, and healing. Also supports two-way messaging with other combat abilities, environment, character, etc.
  */
  #pragma once
 #include <vulkan/vulkan.h>

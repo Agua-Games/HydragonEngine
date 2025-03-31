@@ -70,6 +70,8 @@ public:
     void processNode() override {
  
     }
+    void addTrap(const std::string& trapName);
+    void removeTrap(const std::string& trapName);
     void update();
 
     // === Cleanup ===
