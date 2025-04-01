@@ -60,7 +60,7 @@ public:
         Error
     };
 
-    enum VoiceQuality {
+    enum class SignalQuality {
         Low,
         Medium,
         High
@@ -76,8 +76,15 @@ public:
     DeviceType type = DeviceType::Other;
     DeviceState state = DeviceState::Idle;
     DeviceStatus status = DeviceStatus::Success;
-    VoiceQuality quality = VoiceQuality::Medium;
+    SignalQuality signalQuality = SignalQuality::Medium;
     Noise noise;
+    float range = 0.0f;
+    float batteryLife = 0.0f;
+    float damage = 0.0f;                  // Damage to the device
+    float inflictedDamage = 0.0f;         // Damage inflicted by the device, if applicable. e.g. EM radiation, blasts
+    float damageRadius = 0.0f;            // Radius of the device's damage, if applicable
+    bool limitedRange = false;            // Whether the device has a local signal range
+    float rangeRadius = 0.0f;             // Radius of the device's signal, if applicable
     noise.intensity = 1.0f;
     noise.frequency = 1000.0f;
     noise.staticNoise = 0.0f;

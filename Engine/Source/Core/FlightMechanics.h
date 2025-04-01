@@ -50,6 +50,7 @@ public:
 
     // Set default values
     float altitude = 0.0f;          // Altitude in meters
+    float maxAltitude = 0.0f;       // Maximum altitude in meters
     float wingSpan = 0.0f;          // Wing span in meters
     float speed = 0.0f;             // Speed in meters per second
     float altitudeChange = 0.0f;    // Altitude change in meters per second
@@ -63,6 +64,7 @@ public:
     float weight = 0.0f;            // Weight in Newtons
     float fuel = 0.0f;              // Fuel in liters
     float fuelConsumption = 0.0f;   // Fuel consumption in liters per second
+    float hoverStability = 0.0f;    // Hover stability in percentage
 
     // === Processing ===
     void processNode() override { }

@@ -49,6 +49,12 @@ public:
 
     // Set default values
     DataTable weaponMechanicsData;
+    std::vector<Weapon> weapons;
+    float accuracy = 0.0f;
+    float lockTime = 0.0f;
+    DataTable weaponMechanicsState;
+    DataTable weaponMechanicsStatus;
+    DataTable weaponMechanicsMetrics;
 
     // === Processing ===
     void processNode() override { }

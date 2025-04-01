@@ -41,6 +41,16 @@ namespace hd {
         initialize() override {}
         load() override {}
 
+        // Set default values
+        DataTable navigationMechanicsData;
+        bool pathfinding = false;
+        bool obstacleAvoidance = false;
+        float speed = 0.0f;
+        float acceleration = 0.0f;
+        float deceleration = 0.0f;
+        float steering = 0.0f;
+        DataTable navigationMechanicsState;
+
         // === Processing ===
         void processNode() override { }
         void update();

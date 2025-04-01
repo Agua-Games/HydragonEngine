@@ -14,8 +14,9 @@
 
 namespace hd {
 
-// Define environment types
-enum class EnvironmentType {
+
+    
+enum class EnvironmentConditionType {               // Need to check if it was declared elsewhere already
     // Types for environment conditions and events go here...
 };
 
