@@ -210,11 +210,71 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Effects"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Error"
 				},
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Combat"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Crafting"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Dialogue"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Environment"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Equipment"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Horse"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Interaction"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Magic"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Mount"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Space"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Team"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Trading"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Vehicle"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Weapon"
 				},
 				{
 					"backtrace" : 12,
@@ -254,11 +314,19 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Math/Vector"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Media"
 				},
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Memory"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Navigation"
 				},
 				{
 					"backtrace" : 12,
@@ -303,6 +371,10 @@
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Procedural"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Procedural/Deformer"
 				},
 				{
 					"backtrace" : 12,
@@ -354,6 +426,10 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Rendering/Texture"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Resource"
 				},
 				{
@@ -391,6 +467,10 @@
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Threading"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Time"
 				},
 				{
 					"backtrace" : 12,
@@ -604,7 +684,18 @@
 				96,
 				97,
 				98,
-				99
+				99,
+				100,
+				101,
+				102,
+				103,
+				104,
+				105,
+				106,
+				107,
+				108,
+				109,
+				110
 			]
 		}
 	],
@@ -766,14 +857,25 @@
 				96,
 				97,
 				98,
-				99
+				99,
+				100,
+				101,
+				102,
+				103,
+				104,
+				105,
+				106,
+				107,
+				108,
+				109,
+				110
 			]
 		},
 		{
 			"name" : "Header Files",
 			"sourceIndexes" : 
 			[
-				100
+				111
 			]
 		}
 	],
@@ -812,6 +914,18 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/AbilityExample.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/AdvancedGameplayScenarios.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/AnimationNodesExample.cpp",
 			"sourceGroupIndex" : 0
 		},
@@ -836,6 +950,12 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/CombatAbilitiesExample_01.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/CombatArenaExample.cpp",
 			"sourceGroupIndex" : 0
 		},
@@ -843,6 +963,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/CombinedExample.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/CombinedGameplayScenarios.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -860,7 +986,37 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/DialogueExample_01.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/FantasyMedievalNodes.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/GameApplicationExample.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/GameplayNodesExample.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/GameplayScenarios.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/InitializationExample_01.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -957,6 +1113,18 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/SyntaxExample.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/TacticalGameplayNodes.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Source/Core/NodeGraph/Examples/WarHorseAndPegasusExample_01.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
