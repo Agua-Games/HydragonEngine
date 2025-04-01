@@ -12,6 +12,7 @@
  */
 #pragma once
 #include "Node.h"
+#include "DataTable.h"
 
 namespace hd {
 
@@ -40,6 +41,14 @@ public:
         : Node(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    DataTable spectatorData;    // Spectator data, such as camera, replay, etc.
+    DataTable spectatorState;    // Spectator state, such as camera, replay, etc.
+    int maxSpectators = 0;
+    bool enableFreeCamera = false;
+    bool playerPOV = false;
+    float replayBuffer = 0.0f;
 
     // === Processing ===
     void processNode() override { 

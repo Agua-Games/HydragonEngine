@@ -15,6 +15,7 @@
 #include "Wave.h"
 #include "PhysicsFields.h"
 #include "AudioFile.h"
+#include "Noise.h"
 
 namespace hd {
 
@@ -39,11 +40,48 @@ struct DeviceInfo : public NodeInfo {
 
 class Device : public Node {
 public:
+    enum class DeviceType {
+        Phone,
+        Tablet,
+        Computer,
+        Radio,
+        Other
+    };
+
+    enum class DeviceState {
+        Idle,
+        Active,
+        Error
+    };
+
+    enum class DeviceStatus {
+        Success,
+        Failure,
+        Error
+    };
+
+    enum VoiceQuality {
+        Low,
+        Medium,
+        High
+    };
+
     // === Allocation, Initialization, Loading ===
     explicit Device(const DeviceInfo& info = DeviceInfo())
         : Node(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    DeviceType type = DeviceType::Other;
+    DeviceState state = DeviceState::Idle;
+    DeviceStatus status = DeviceStatus::Success;
+    VoiceQuality quality = VoiceQuality::Medium;
+    Noise noise;
+    noise.intensity = 1.0f;
+    noise.frequency = 1000.0f;
+    noise.staticNoise = 0.0f;
+    noise.dynamicNoise = 0.0f;
 
     // === Processing ===
     void processNode() override {

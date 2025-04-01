@@ -15,6 +15,7 @@
  */
 #pragma once
 #include "Node.h"
+#include "DataTable.h"
 
 namespace hd {
 
@@ -38,10 +39,29 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    int tickRate = 30;
+    bool interpolation = false;
+    bool replication = false;
+    bool prediction = false;
+    int lookAhead = 0;
+    float maxExtrapolation = 0.0f;
+    bool rollback = false;
+    bool rpc = false;
+    bool lagCompensation = false;
+    int maxClients = 10;                // TODO: Decide if calling it maxPlayers instead
+    DataTable networkSettings;
+
     // === Processing ===
     void processNode() override {
  
     }
+    void setupMatchFlow();
+    void setupNetworkPrediction();
+    void setPrediction();
+    void enablePrediction();
+    void setInterpolation();
+    void processNetwork();
     void update();
 
     // === Cleanup ===

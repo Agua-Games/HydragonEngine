@@ -45,6 +45,14 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    DataTable teamData;
+    int maxTeams = 10;
+    int teamCount = 0;
+    int teamSize = 5;
+    bool autoBalance = false;
+    bool enableFriendlyFire = false;
+
     // === Processing ===
     void processNode() override { }
     void addTeam(const std::string& teamName);

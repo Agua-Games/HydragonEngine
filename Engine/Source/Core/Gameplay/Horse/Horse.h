@@ -70,9 +70,11 @@ public:
     // Set default values
     HorseType type = HorseType::Other;
     HorseBreed breed = HorseBreed::Other;
-    float stamina = 0.0f;
+    float courage = 0.0f;
+    float loyalty = 0.0f;
     float speed = 0.0f;
     float health = 0.0f;
+    float stamina = 0.0f;
     DataTable horseData;
 
     // === Processing ===
@@ -80,6 +82,13 @@ public:
  
     }
     void update();
+    void setBreed();
+    void gallop();     // Gallop at a fast speed, like a horse in a race.
+    void trot();       // Trot at a moderate speed, like a horse in a race.
+    void neigh();      // Neigh at a slow speed, like a horse in a race.
+    void herd();       // Herd a group of horses together.
+    void flock();      // Flock a group of horses together.
+    void processHorse();    // Process the horse.
 
     // === Cleanup ===
     void unload() override {}

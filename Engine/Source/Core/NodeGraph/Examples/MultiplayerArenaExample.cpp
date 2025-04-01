@@ -12,14 +12,12 @@
  *  - Powerup system with spawn and collection
  *  - Network prediction and rollback for smooth gameplay
  */
-
-#if 0
-
 #include "Engine.h"
 #include "NetworkManager.h"
 #include "WavePhysics.h"
 #include "TeamManager.h"
 #include "Node.h"
+#include "ScoreManager.h"
 
 namespace hd {
 
@@ -53,7 +51,6 @@ public:
         // Gameplay systems
         GameplayManager gameplay;
         gameplay.setGameMode("TeamDeathmatch")
-                .setScoreLimit(100)
                 .setTimeLimit(600) // seconds
                 .enableOvertime(true);
 
@@ -79,8 +76,7 @@ public:
                 .addType("Damage", 0.3f);
 
         // Match state management
-        MatchStateManager matchState;
-        matchState.addState("Warmup", 30)
+        gameplay.matchState.addState("Warmup", 30)
                  .addState("Playing")
                  .addState("Overtime")
                  .addState("EndGame", 10);
@@ -88,7 +84,7 @@ public:
         // Spectator system
         SpectatorSystem spectators;
         spectators.setMaxSpectators(32)
-                 .enableFreeCam(true)
+                 .enableFreeCamera(true)
                  .enablePlayerPOV(true)
                  .setReplayBuffer(30.0f); // seconds
 

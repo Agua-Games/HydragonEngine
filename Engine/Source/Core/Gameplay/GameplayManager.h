@@ -14,6 +14,7 @@
 #include "NodeGraph/Node.h"
 #include "EngineTypes.h"
 #include "GameplayData.h"
+#include "ScoreManager.h"
 
 namespace hd {
 
@@ -46,10 +47,21 @@ public:
     GameplayData.GlobalFlags gameplayGlobalFlags;
     GameplayData.LocalFlags gameplayLocalFlags;
     GameplayData.Stats gameplayStats;
-    GameplayData.Mode gameplayMode = GameplayData.Mode::Custom;
+    GameplayData.GameplayMode gameplayMode = GameplayData.GameplayMode::Custom;   // Default gameplay mode is Custom.
     GameplayData.State gameplayState;
-    EngineMode engineMode = Mode::GAME_ONLY;                      // Default mode is gameplay enabled, editor disabled, overlays disabled
+    EngineMode engineMode = Mode::GAME_ONLY;                  // Default mode is gameplay enabled, editor disabled, overlays disabled
     std::vector<std::shared_ptr<Node>> m_subsystems;          // Subsystems, like audio, physics, etc. that are managed by the GameplayManager.
+    ScoreManager scoreManager;                                // Score manager for gameplay.
+    gameplayData.maxPlayers = 10;
+    gameplayData.maxSpawns = 10;
+    gameplayData.respawnTime = 5.0f;
+    gameplayData.timeLimit = 600.0f;
+    gameplayData.maxSpectators = 10;
+    gameplayData.overtime = false;
+    gameplayData.killCam = false;
+    gameplayData.classLimits = false;
+
+    scoreManager.initialize();
 
     // === Processing ===
     void processNode() override {
@@ -62,7 +74,7 @@ public:
         gameplayState = getInputValue<GameplayData.State>("gameplayState");             // Process the other inputs or not, based on mode.
 
         // Adjust to Engine Mode - disable gameplay, etc. based on mode.
-        adjustToMode(mode);
+        adjustToGameplayMode(mode);
 
         // Process gameplay
         auto gameplayStatus = updateGameplay(gameplaySettings, gameplayData, gameplayState);
@@ -71,16 +83,18 @@ public:
         setOutputValue("gameplayStatus", gameplayStatus);
         setOutputValue("gameplayMetrics", computeGameplayMetrics(gameplayStatus));
     }
-    void addMode(Mode mode);
-    void removeMode(Mode mode);
-    void setMode(Mode mode) {
-        m_mode = mode;
+    void addGameplayMode(Mode mode);
+    void removeGameplayMode(Mode mode);
+    void setGameplayMode(Mode mode) {
+        gameplayMode = mode;
         // Adjust subsystems but maintain core functionality
         for (auto& subsystem : m_subsystems) {
-            subsystem->adjustToMode(mode);
+            subsystem->adjustToGameplayMode(mode);    // Adjust to the given mode, like disabling gameplay, etc. based on mode.
         }
     }
-    void adjustToMode(Mode mode) override;    // Adjust to the given mode, like disabling gameplay, etc. based on mode.
+    void adjustToGameplayMode(Mode mode) override;    // Adjust to the given mode, like disabling gameplay, etc. based on mode.
+    void addGameplayRuleset(GameplayData::GameplayRules ruleset);
+    void removeGameplayRuleset(GameplayData::GameplayRules ruleset);
     void update();
 
     // === Cleanup ===

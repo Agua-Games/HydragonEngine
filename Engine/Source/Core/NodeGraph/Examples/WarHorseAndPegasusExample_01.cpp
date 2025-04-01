@@ -27,6 +27,12 @@
  *  - Some abilities and extensions may end up integrated into the entity itself, after extensive testing and user demand prove it's the case, if deemed essential, etc.
  *  - Warhorse and Pegasus example with nested nodes
  */
+#include "MountMechanics.h"
+#include "Horse.h"
+#include "WarHorseMechanics.h"
+#include "WarHorse.h"
+#include "DodgeAttackAbility.h"
+
 // 1. Engine level
 Engine::get()
     // 2. GameplayManager level
@@ -51,6 +57,6 @@ Engine::get()
                         
 Scene::current()
     .add<AerialManager>("sky_traffic")            // Clearly a management node
-        .add<FlyingMountMechanics>("pegasi")      // Clearly a behavior rules node
-            .add<Pegasus>("player_mount")         // Clearly an entity node
+        .add<FlyingHorseMechanics>("pegasi")      // Clearly a behavior rules node
+            .add<Horse>("player_mount")           // Clearly an entity node
                 .addAbility<WingAttackAbility>(); // Clearly an ability node

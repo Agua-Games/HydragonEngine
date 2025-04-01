@@ -39,7 +39,7 @@ struct GameplayDataInfo : public NodeInfo {
 class GameplayData : public Node {
 public:
     // === Structure Definitions ===
-    enum class Mode {
+    enum class GameplayMode {
         CaptureTheFlag,
         KingOfTheHill,
         TeamDeathmatch,
@@ -50,6 +50,10 @@ public:
         LastManStanding,
         Objective,
         Custom
+    };
+
+    struct GameplayRules {
+        // Data for gameplay rules
     };
 
     struct CaptureTheFlag {
@@ -108,6 +112,7 @@ public:
 
     struct Settings {
         // Settings for gameplay
+        bool enableDestructibles;
     };
 
     struct GlobalFlags {
@@ -123,7 +128,22 @@ public:
     };
 
     struct State {
-        // State for gameplay
+        enum class MatchState {
+            Warmup,
+            Playing,
+            Overtime,
+            EndGame
+        } MatchState matchState;
+
+        enum class RoundState {
+            RoundStart,
+            RoundInProgress,
+            RoundEnd
+        } RoundState roundState;
+
+        void setMatchState(MatchState state) {
+            matchState = state;
+        }
     };
 
     // === Allocation, Initialization, Loading === 
@@ -131,6 +151,16 @@ public:
         : Node(info) {}
     initialize() override {}
     load() override {}
+
+    // Set default values
+    int maxPlayers = 0;
+    int maxSpawns = 0;
+    float respawnTime = 0.0f;
+    float timeLimit = 0.0f;
+    int maxSpectators = 0;
+    bool overtime = false;
+    bool killCam = false;
+    bool classLimits = false;
 
     // === Processing ===
     void processNode() override {

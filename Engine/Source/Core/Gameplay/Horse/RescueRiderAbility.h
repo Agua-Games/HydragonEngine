@@ -49,6 +49,10 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    float stability = 0.0f;
+    bool rearingAttack = false;
+
     // === Processing ===
     void setStability(float stability);
     void enableRearingAttack(bool enable);

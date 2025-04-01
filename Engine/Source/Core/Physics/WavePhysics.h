@@ -1170,6 +1170,10 @@ public:
     } m_optimizer;
 
     // === Allocation, Initialization, Loading ===
+    explicit WavePhysics(const SolverConfig& config = SolverConfig()) 
+        : Node(config.name), m_config(config) {}
+
+    // Energy representation
     EnergySpectrum m_energy;
     FieldCoupling m_coupling;
 
@@ -1184,11 +1188,13 @@ public:
     GasField m_gasField;
     SolidField m_solidBodyField;
 
-    explicit WavePhysics(const SolverConfig& config = SolverConfig()) 
-        : Node(config.name), m_config(config) {}
-
     // Single unified solver handling all physics through wave-field interactions
     WavePhysicsSolver m_solver;
+    int substeps = 1;
+    int simulationRate = 60;
+    float timeStep = 1.0f / simulationRate;
+    float gravityApprox = 9.81f;
+    bool enableContinuousDetection = true;
 
     // Solid body behavior emerges from field properties
     void setSolidProperties(const Solid* node, float elasticity) {

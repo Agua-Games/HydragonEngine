@@ -55,6 +55,8 @@ public:
     float leanAmount = 0.0f;
     float peekAmount = 0.0f;
     float blendInAmount = 0.0f;
+    float blindFireAccuracy = 0.0f;
+    float blindFireExposure = 0.0f;
     float detectionAmount = 0.0f;
     float detectionRange = 0.0f;
     float detectionAngle = 0.0f;
@@ -70,6 +72,7 @@ public:
     void leaveCover();
     void peek();
     void blendIn();
+    void blindFire(); // Blind fire is a special type of fire that is used when the character is in cover. It is used to simulate the character firing while being hidden. This is used for weapons that require a charge time before firing, such as bows and crossbows. Default: no charge.
     void detect();
     void processCover();
     void processNode() override {}

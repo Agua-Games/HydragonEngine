@@ -57,6 +57,18 @@ public:
         Custom
     };
 
+    struct NoiseParams{
+        uint32_t seed = 0;
+        float frequency = 1.0f;
+        float scale = 1.0f;             // Maybe this is redundant, with frequency
+        float intensity = 1.0f;
+        int octaves = 1;
+        float persistence = 0.5f;
+        float lacunarity = 2.0f;
+        float staticNoise = 0.0f;       // Sketch phase, need thought, testing. If not needed, remove, for memory economy
+        float dynamicNoise = 0.0f;      // Same here
+    };
+
     explicit Noise(const NoiseInfo& info = NoiseInfo())
         : Node(info) {}
 
@@ -68,21 +80,9 @@ public:
         return NoiseInfo.outputs;
     }
 
-    void () override {
+    void processNode() override {
         auto noiseType = getInputValue<NoiseType>("NoiseType");
-        uint32_t seed = getInputValue<uint32_t>("Seed");
-        float scale = getInputValue<float>("Scale");
-        int octaves = getInputValue<int>("Octaves");
-        float persistence = getInputValue<float>("Persistence");
-        float lacunarity = getInputValue<float>("Lacunarity");
-        
-        NoiseParams params{
-            .seed = seed,
-            .scale = scale,
-            .octaves = octaves,
-            .persistence = persistence,
-            .lacunarity = lacunarity
-        };
+        auto params = getInputValue<NoiseParams>("NoiseParams");
         
         auto noiseData = generateNoise(noiseType, params);
         auto derivatives = computeNoiseDerivatives(noiseData);

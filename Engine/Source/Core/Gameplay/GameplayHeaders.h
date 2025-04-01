@@ -13,6 +13,7 @@
  * compiled. For stricter memory economy, prefer explicitly including the headers you need.
  */
 #pragma once
+#include "GameplayArea.h"
 #include "GameplayData.h"
 #include "GameplayEvent.h"
 #include "GameplayManager.h"

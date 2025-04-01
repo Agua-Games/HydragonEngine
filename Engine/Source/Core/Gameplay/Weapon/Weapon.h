@@ -85,6 +85,50 @@ struct WeaponInfo : public PropInfo {
 
 class Weapon : public Node {
 public:
+    // === Structure Definitions ===
+    enum AimType {
+        EyeLevel,
+        HipFire,
+        Scoped,
+        Custom
+    };
+
+    enum AimStance {
+        Standing,
+        Crouching,
+        Prone,
+        Custom
+    };
+
+    struct Aim {
+        float time;
+        vec3 direction;
+        vec3 position;
+        vec3 velocity;
+        AimType type;
+        AimStance stance;
+    };
+
+    struct Breathing {
+        bool enabled;
+        bool noise;
+        float intensity;
+        float frequency;
+        vec3 offset;
+    };
+
+    struct Recoil {
+        float intensity;
+        float recovery;
+        vec3 direction;
+    };
+
+    struct WeaponRangeType {
+        float range;
+        float spread;
+        float accuracy;
+    };
+
     // === Allocation, Initialization, Loading ===
     explicit Weapon(const WeaponInfo& info = WeaponInfo())
         : Node(info) {}
@@ -96,11 +140,13 @@ public:
     // Temporarily calling them out of the struct for now.
     WeaponRangeType type = WeaponRangeType::custom;
     WeaponType weaponType = WeaponType::custom;
+    AimType aimType = AimType::EyeLevel; // Aim type of the weapon. This is used for weapons that require a specific aim type, such as sniper rifles and assault rifles. Default: EyeLevel.
     int capacity = 0;
     float damage = 0.0f;
     float reloadTime = 0.0f;
     float chargeTime = 0.0f;    // Time to charge the weapon before firing. This is used for weapons that require a charge time before firing, such as bows and crossbows. Default: 0.0f.
-    float chargeBonus = 0.0f;
+    float chargeBonus = 0.0f;   // Bonus damage for the weapon. This is used for weapons that require a charge bonus, such as bows and crossbows. Default: 0.0f. This value is added to the damage of the weapon.
+    float recoil = 0.0f;        // Recoil of the weapon. This is used for weapons that require a recoil, such as rifles and machine guns. Default: 0.0f. This value is added to the spread cone of the weapon.
     DataTable weaponData = DataTable();
 
     // === Processing ===

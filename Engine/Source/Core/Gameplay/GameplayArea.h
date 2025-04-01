@@ -12,12 +12,23 @@
  */
 #pragma once
 #include <vulkan/vulkan.h>
+#include <string>
 #include <vector>
 #include <unordered_map>
+//#include "glm/gtx/vector_angle.hpp" // For glm::angle() function
 #include "Node.h"
 #include "DataTable.h"
+#include "Ability.h"
+#include "PlayerSpawner.h"
 
 namespace hd {
+
+enum class GameplayAreaType {
+    Battlefield,
+    Arena,
+    Platforms,          // For platform games
+    Custom
+};
 
 struct GameplayAreaInfo : public NodeInfo {
     GameplayAreaInfo() {
@@ -46,10 +57,18 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    GameplayAreaType type = GameplayAreaType::Custom;
+    std::vector<PlayerSpawner> respawnPoints;
+
     // === Processing ===
     void processNode() override {
  
     }
+    void setRespawnPoint();
+    void enter();
+    void exit();
+    void interact();
     void update();
 
     // === Cleanup ===
