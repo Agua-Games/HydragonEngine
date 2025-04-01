@@ -14,12 +14,14 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <unordered_map>
-#include "Node.h"
+#include "Light.h"
+#include "LightMesh.h"
+#include "Prop.h"
 #include "DataTable.h"
 
 namespace hd {
 
-struct LampInfo : public NodeInfo {
+struct LampInfo : public PropInfo {
     LampInfo() {
         nodeType = "Gameplay/Lamp";
         
@@ -38,11 +40,11 @@ struct LampInfo : public NodeInfo {
     }
 };
 
-class Lamp : public Node {
+class Lamp : public Prop {
 public:
     // === Allocation, Initialization, Loading ===
     explicit Lamp(const LampInfo& info = LampInfo())
-        : Node(info) {}
+        : Prop(info) {}    // Prop constructor is called instead of Node constructor
     initialize() override {}
     load() override {}
 

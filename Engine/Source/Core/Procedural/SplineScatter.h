@@ -7,22 +7,24 @@
  * 
  * ARCHITECTURAL NOTES:
  * - SplineScatter is a class that represents a spline scatter in Hydragon.
- * - It is used to scatter objects along a spline.
+ * - It is used to scatter objects along a spline, from very regular placement patterns (like roads, pathways, railroads, hanging lamps, pipelines etc.), to very irregular 
+ * placement patterns (like trees, rocks, etc.).
  * - It supports different scattering modes, such as uniform, random, and weighted.
  * - It supports different object types, such as particles, meshes, and sprites.
  * - It supports different spline types, such as linear, cubic, and bezier.
  * - It supports different scattering parameters, such as density, spacing, and offset.
+ * - It uses the Vulkan API for spline scatter processing.
  */
 #pragma once
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <unordered_map>
-#include "Node.h"
+#include "SplineCurve.h"
 #include "DataTable.h"
 
 namespace hd {
 
-struct SplineScatterInfo : public NodeInfo {
+struct SplineScatterInfo : public SplineCurveInfo {
     SplineScatterInfo() {
         nodeType = "Procedural/SplineScatter";
         
@@ -44,11 +46,11 @@ struct SplineScatterInfo : public NodeInfo {
     }
 };
 
-class SplineScatter : public Node {
+class SplineScatter : public SplineCurve {
 public:
     // === Allocation, Initialization, Loading ===
     explicit SplineScatter(const SplineScatterInfo& info = SplineScatterInfo())
-        : Node(info) {}
+        : SplineCurve(info) {}    // Default constructor for SplineScatter class, which is derived from SplineCurve class.   
     initialize() override {}
     load() override {}
 

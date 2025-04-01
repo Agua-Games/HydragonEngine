@@ -11,6 +11,12 @@ you feel comfortable with code.
 
 - This submodule contains the gameplay nodes for the Hydragon engine. They are used to represent gameplay elements in the game world, both with a visual representation, such as characters, items, and environments, and without a visual representation, such as gameplay events, gameplay data, and gameplay resources.
 
+- Despite being grouped in directories (only for the sake of organization), the gameplay nodes are meant to be used in creative ways, combined and connected to create unique and interesting gameplay experiences. Think of them more as building blocks, "lego blocks" (pieces of watertight functionality), than components grouped in rigid categories.
+
+- A good minset and workflow for creating gameplay in Hydragon would be: have your ideas, conceive your gameplay, then leverage the existing nodes to achieve it. If there's
+missing functionality, you create a new node (inheriting from Node or the closest relative node) and extend it. If it's a whole new mechanics/subsystem, try to follow our
+architecture standards of having: a manager, a mechanics, an entity, and an ability/extension.
+
 - You can use these nodes both conventionally, as they are standard classes, and procedurally, as they are also nodes in the node graph (and most of them implemented with built-in procedural features), both in "code-node graphs" (code based node graphs in concise fluent style) and in UI based node graphs.
 
 GAMEPLAY SUBSYSTEM 'PACKED' HEADERS
@@ -94,7 +100,7 @@ EXTENDING THE NODES: USAGE
 ABILITIES AND EXTENSIONS
 - Some abilities and extensions may end up integrated into the entity itself, after extensive testing and user demand prove it's the case, if deemed essential, etc.
 
-- Some nodes may still be in design sketch phase, and may not be fully functional yet. But we'll make clear in the node header itself this, and in the documentation.
+- Some nodes may still be in design sketch phase, and may not be fully functional yet. But we'll make clear in the node header itself this state, and in the documentation.
 
 ESSENTIAL MANAGERS
 - The most essential managers are created by default at engine initialization, so there's no need to create them manually. Check the engine source code, or the documentation, 
