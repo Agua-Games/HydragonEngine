@@ -13,17 +13,24 @@
 #if 0
 #include "Core/Engine.h"
 #include "Core/NodeGraph/Node.h"
+#include "ParticleEmitter.h"
+#include "ParticleModifier.h"
+#include "AcousticSource.h"
+#include "Reverb.h"
+#include "Compressor.h"
+#include "Bloom.h"
+#include "ColorGrading.h"
 
 using namespace hd;
 
 // Example 1: Particle system chain
 auto particles = NodeGraph::create("effects")
-    .add<ParticleEmitterNode>("mainEmitter")
+    .add<ParticleEmitter>("mainEmitter")
         .emissionRate(50.0f, runtime)
         .initialVelocity({0.0f, 1.0f, 0.0f})
         .particleLifetime(2.0f, runtime)
         .connect("output", "modifier1.input")
-    .add<ParticleModifierNode>("modifier1")
+    .add<ParticleModifier>("modifier1")
         .mode(ParticleModifierMode::Scale)
         .scaleCurve({
             {0.0f, 1.0f},
@@ -33,21 +40,21 @@ auto particles = NodeGraph::create("effects")
 
 // Example 2: Audio processing chain
 auto audio = NodeGraph::create("audio")
-    .add<AcousticSourceNode>("musicTrack")
+    .add<AcousticSource>("musicTrack")
         .volume(0.8f, runtime)
         .pitch(1.0f, runtime)
         .connect("output", "reverb.input")
-    .add<ReverbNode>("reverb")
+    .add<Reverb>("reverb")
         .roomSize(0.7f, runtime)
         .damping(0.3f, runtime)
         .connect("output", "compressor.input")
-    .add<CompressorNode>("compressor")
+    .add<Compressor>("compressor")
         .threshold(-12.0f, runtime)
         .ratio(4.0f, runtime);
 
 // Example 3: Post-processing chain
 auto post = NodeGraph::create("post")
-    .add<BloomNode>("bloom")
+    .add<Bloom>("bloom")
         .intensity(1.0f, runtime)
         .threshold(1.0f, runtime)
         .connect("output", "colorGrade.input")

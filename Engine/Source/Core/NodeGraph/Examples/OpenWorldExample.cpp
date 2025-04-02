@@ -54,17 +54,17 @@ public:
 
         // Procedural vegetation
         VegetationSystem vegetation;
-        vegetation.setDensity(1000) // per km²
-                 .setVariety(150)   // species
-                 .enableWindEffect(true)
-                 .setLODBias(0.75f);
+        vegetation.density(1000) // per km²
+                 .variation(150)   // species
+                 .windEffect(true)
+                 .LODBias(0.75f);
 
         // Weather and time
         DynamicEnvironment environment;
-        environment.setDayLength(45) // minutes
-                  .setSeasonLength(28) // days
-                  .enableWeatherSystem(true)
-                  .setClimateModel("Realistic");
+        environment.dayLength(45) // minutes
+                  .seasonLength(28) // days
+                  .weatherSystem(true)
+                  .climateModel("Realistic");
 
         // Wildlife AI ecosystem
         EcosystemAI wildlife;

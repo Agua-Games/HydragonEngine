@@ -55,9 +55,19 @@ public:
     void initialize() override {}
     void load() override {}
 
+    // Set default values
+    TerrainData terrain;
+    ClimateData climate;
+    float density = 0.0f;
+    float variation = 0.0f;
+    bool windEffect = false;
+    float LODBias = 0.0f;
+    BiomeType biomeType = BiomeType::Forest;
+    GrowthParams growthParams;
+    OctaveParams intent;
+    std::string vegetationPatternId;
+
     // === Processing ===
-    void setDensity(float density);
-    void setVariation(float variation);
     void processNode() override {
         auto& orchestrator = ProceduralOrchestrator::getInstance();
         
@@ -101,7 +111,6 @@ public:
     ~Vegetation() = default;     // Default destructor
 
 private:
-    std::string vegetationPatternId;
 };
 
 } // namespace hd

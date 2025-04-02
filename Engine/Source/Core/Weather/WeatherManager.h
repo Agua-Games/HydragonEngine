@@ -47,13 +47,44 @@ struct WeatherManagerInfo : public NodeInfo {
 
 class WeatherManager : public Node {
 public:
+    // === Structure Definitions ===
+    enum class WeatherEventType {
+        Lightning,
+        Thunder,
+        Wind,
+        Snowfall,
+        Rainfall,
+        Fog,
+        Other
+    };
+
+    enum class ClimateModel {
+        Realistic,
+        Fantasy,
+        SciFi,
+        Other
+    };
+
+    struct WeatherState {
+        // Define the data structure for weather state
+    };
+
+    // === Allocation, Initialization, Loading ===
     explicit WeatherManager(const WeatherManagerInfo& info = WeatherManagerInfo())
         : Node(info) {
         auto& proceduralManager = ProceduralManager::getInstance();
         weatherPatternId = proceduralManager.registerPattern(createDefaultWeatherPattern());
     }
+    initialize() override {}
+    load() override {}
 
-    void () override {
+    // Set default values
+    std::string weatherPatternId;
+    ClimateModel climateModel = ClimateModel::Realistic;
+    DataTable weatherData;
+
+    // === Processing ===
+    void processNode() override {
         auto& proceduralManager = ProceduralManager::getInstance();
         
         // Process inputs
@@ -87,6 +118,7 @@ public:
         setOutputValue("WeatherEvents", generateWeatherEvents(weatherData));
         setOutputValue("PerformanceMetrics", computePerformanceMetrics());
     }
+    void update();
 
     std::vector<std::string> getInputPorts() const override {
         return getNodeInfo().inputs;
@@ -96,8 +128,12 @@ public:
         return getNodeInfo().outputs;
     }
 
+    // === Cleanup ===
+    void unload() override {}
+    void cleanup() override {}
+    ~WeatherManager() = default;     // Default destructor
+
 private:
-    std::string weatherPatternId;
     
     WeatherState computeWeatherState(const ProceduralPattern& pattern);
     AtmosphereParams computeAtmosphereParams(const ProceduralPattern& pattern);

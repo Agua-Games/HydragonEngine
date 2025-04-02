@@ -147,6 +147,9 @@ public:
     bool gustatoryDetection = false;
     bool chemicalDetection = false;
 
+    float alertnessLevel = 0.0f;
+    float suspicionThreshold = 0.0f;
+
     // === Processing ===
     void sampleEnvironmentData();
     void senseEnvironmentData();

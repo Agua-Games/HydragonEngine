@@ -14,13 +14,16 @@
 
 namespace hd {
 
-enum class WeaponRangeType {
+enum WeaponRangeType {
+    None,             // For when weapon is not equipped, or not equippable.
     Melee,
     Ranged,
-    Custom
+    Thrown,           // Thrown weapons (e.g., grenades, knives, etc.)
+    Custom,           // Custom range type (e.g., for modding)
 };
 
-enum class WeaponType {
+enum WeaponType {
+    None,             // For when weapon is not equipped, or not equippable.
     Club,
     Bola,
     Sword,
@@ -49,7 +52,7 @@ enum class WeaponType {
     Other
 };
 
-enum class CombatVehicleType {
+enum CombatVehicleType {
     None,             // No combat vehicle type specified (e.g., for AI agents)
     Jeep,
     Buggy,
@@ -78,6 +81,17 @@ enum class CombatVehicleType {
     Frigate,
     PatrolBoat,
     Spaceship,
+    Other
+};
+
+enum AmmoType {
+    None,
+    Bullet,
+    Shell,
+    Missile,
+    Rocket,
+    Grenade,
+    Plasma,
     Other
 };
 

@@ -15,6 +15,7 @@
 #include "QuestCheckpoint.h"
 #include "QuestBranch.h"
 #include "LocationTrigger.h"
+#include "CombatTrigger.h"
 
 using namespace hd;
 

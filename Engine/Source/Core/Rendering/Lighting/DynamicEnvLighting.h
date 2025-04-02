@@ -117,6 +117,9 @@ public:
     TimeOfDay timeOfDay;
     Season season;
     Location location;
+    int dayLength = 24;
+    int seasonLength = 365;
+    bool dynamicWeather = true;
 
     // === Processing ===
     void processNode() override {

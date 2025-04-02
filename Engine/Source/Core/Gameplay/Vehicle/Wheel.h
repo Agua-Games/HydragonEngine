@@ -52,6 +52,7 @@ public:
     // Set default values
     PhysicsMaterial material;
     float radius = 0.0f;
+    float width = 0.0f;
     float traction = 0.0f;
     float suspensionRange = 0.0f;
     float suspensionStiffness = 0.0f;

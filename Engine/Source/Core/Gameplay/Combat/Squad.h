@@ -16,6 +16,9 @@
 #include <unordered_map>
 #include "Node.h"
 #include "DataTable.h"
+#include "Rank.h"
+#include "Experience.h"
+#include "Equipment.h"
 
 namespace hd {
 
@@ -39,6 +42,71 @@ struct SquadInfo : public NodeInfo {
 
 class Squad : public Node {
 public:
+    // === Structure Definitions ===
+    enum class SquadRole {
+        Leader,
+        Support,
+        Overwatch,
+        Medic,
+        Engineer,
+        Sniper,
+        Scout,
+        Demolition,
+        Other
+    };
+
+    enum class SquadStatus {
+        Active,
+        Inactive,
+        Deployed,
+        Engaged,
+        Retreating,
+        Reinforcing,
+        Other
+    };
+
+    enum class SquadType {
+        Infantry,
+        Vehicle,
+        Air,
+        Naval,
+        Other
+    };
+
+    enum class FormationType {
+        Line,
+        Wedge,
+        Column,
+        Skirmish,
+        Other
+    };
+
+    // TODO: Maybe this struct is too complex. Optimize after actual usage.
+    struct SquadMember {
+        std::string name;
+        SquadRole role;
+        SquadStatus status;
+        Rank rank;
+        std::vector<Equipment> equipments;
+        float health;
+        int ammo;
+        float morale;
+        Experience experience;
+        std::string squad;
+        std::string team;
+        std::string faction;
+        std::string allegiance;
+        std::string affiliation;
+
+        std::string commander;
+        std::string leader;
+        std::string follower;
+        std::vector<std::string> companion;
+        std::vector<std::string> enemy;
+        std::vector<std::string> friendly;
+        std::vector<std::string> neutral;
+    };     // struct SquadMember
+
     // === Allocation, Initialization, Loading ===
     explicit Squad(const SquadInfo& info = SquadInfo())
         : Node(info) {}
@@ -46,7 +114,8 @@ public:
     load() override {}
 
     // Set default values
-    // (...)
+    FormationType formationType = FormationType::Line;
+    float formationSpacing = 0.0f;
 
     // === Processing ===
     void processNode() override { }

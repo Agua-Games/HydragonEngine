@@ -39,6 +39,62 @@ struct SecurityMechanicsInfo : public NodeInfo {
 
 class SecurityMechanics : public Node {
 public:
+    // === Structure Definitions ===
+    enum class SecurityType {
+        Door,
+        Alarm,
+        WatertightChamber,
+        Dispatch,
+        Other
+    };
+
+    enum class SecurityStatus {
+        Active,
+        Inactive,
+        Other
+    };
+
+    enum class SecurityResponse {
+        Lock,
+        Unlock,
+        Alarm,
+        Other
+    };
+
+    enum class SecurityThreatType {
+        Physical,
+        Chemical,
+        Biological,
+        Other
+    };
+
+    enum class SecurityThreatLevel {
+        Low,
+        Medium,
+        High,
+        Critical
+    };
+
+    enum class SecurityThreatSource {
+        Internal,
+        External,
+        Other
+    };
+
+    enum class SecurityThreatTarget {
+        Character,
+        Environment,
+        Other
+    };
+
+    struct SecurityThreat {
+        SecurityThreatType threatType;
+        SecurityThreatLevel threatLevel;
+        SecurityThreatSource threatSource;
+        SecurityThreatTarget threatTarget;
+        SecurityResponse threatResponse;
+    };
+
     // === Allocation, Initialization, Loading ===
     explicit SecurityMechanics(const SecurityMechanicsInfo& info = SecurityMechanicsInfo())
         : Node(info) {}

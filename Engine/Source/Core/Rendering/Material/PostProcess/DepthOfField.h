@@ -41,6 +41,11 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    float focalDistance = 0.0f;
+    float focalRange = 0.0f;
+    float maxBlur = 0.0f;
+
     // === Processing ===
     void processNode() override {
  

@@ -58,13 +58,17 @@ public:
     BehaviorTree behaviorTree;
     AnimationController animationController;
     EmotionMechanics emotionMechanics;     // Emotion mechanics for character. Default: empty object.
-    float speed = 0.0f;
+    float walkSpeed = 0.0f;
+    float runSpeed = 0.0f;
+    float crouchSpeed = 0.0f;
+    float proneSpeed = 0.0f;
     float health = 0.0f;
     float stamina = 0.0f;
     float mana = 0.0f;
     float jumpHeight = 0.0f;
     float attackDamage = 0.0f;
     float defense = 0.0f;
+    float jumpStamina = 0.0f;
     
     Environment environment;
     ProceduralParams proceduralParams;

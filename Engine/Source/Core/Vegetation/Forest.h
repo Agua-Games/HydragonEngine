@@ -8,6 +8,8 @@
  * ARCHITECTURAL NOTES:
  * - Forest is a class that represents a forest in Hydragon.
  * - It is used to represent any forest in the game world, such as deciduous forests, coniferous forests, etc.
+ * - It is more of a convenience class, derived from LayeredPlacement, with some other functionality, like riverlets, etc. You can achieve a forest using other available
+ * nodes, but this class provides a more convenient way.
  * - It supports procedural features, such as tree generation, tree growth, and tree death. Also supports two-way messaging with other forests, environment, character, etc.
  * - It supports interactive features, such as entering, exiting, and interacting with. Also supports two-way messaging with other forests, environment, character, etc.
  */

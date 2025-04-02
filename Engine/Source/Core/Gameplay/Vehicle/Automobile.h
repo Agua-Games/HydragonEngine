@@ -50,6 +50,13 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    AutomobileType type = AutomobileType::Other;
+    float tireFriction = 0.0f;
+    float tireRadius = 0.0f;
+    float tireWidth = 0.0f;
+    float tirePressure = 0.0f;
+
     // === Processing ===
     void processNode() override {
  

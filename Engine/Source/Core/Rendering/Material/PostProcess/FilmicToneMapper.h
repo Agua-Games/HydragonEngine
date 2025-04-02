@@ -33,11 +33,24 @@ struct FilmicToneMapperInfo : public PostProcessInfo {
 
 class FilmicToneMapper : public PostProcess {
 public:
+    // === Structure Definitions ===
+    enum class TonemapOperator {
+        ACES,
+        Reinhard,
+        Uncharted2,
+        HejlRichardson,
+        None
+    };
+
     // === Allocation, Initialization, Loading === 
     explicit FilmicToneMapper(const FilmicToneMapperInfo& info = FilmicToneMapperInfo())
         : PostProcess(info) {}   
     initialize() override {}
     load() override {}
+
+    // Set default values
+    TonemapOperator operator = TonemapOperator::ACES;
+    float exposure = 0.0f;
 
     // === Processing ===
     void processNode() override {

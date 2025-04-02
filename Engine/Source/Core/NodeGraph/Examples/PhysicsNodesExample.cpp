@@ -12,28 +12,28 @@
 #if 0
 #include "Core/Engine.h"
 #include "Core/NodeGraph/Node.h"
+#include "Solid.h"
+#include "Wheel.h"
 
 using namespace hd;
 
 // Physics setup
-auto physics = graph.create<PhysicsNode>("vehiclePhysics")
-    .mass(1500.0f)
-    .connect<RigidBodyNode>("chassis")
-        .position({0.0f, 0.5f, 0.0f})
-        .connect<BoxColliderNode>("body")
-            .size({4.0f, 1.5f, 2.0f})
-            .offset({0.0f, 0.0f, 0.0f})
-        .connect<WheelNode>("wheelFL")
-            .radius(0.4f)
-            .width(0.2f)
-            .suspension(0.2f)
-            .damping(0.3f)
-            .position({-0.8f, 0.0f, 1.0f})
-        .connect<WheelNode>("wheelFR")
-            .radius(0.4f)
-            .width(0.2f)
-            .suspension(0.2f)
-            .damping(0.3f)
-            .position({0.8f, 0.0f, 1.0f});
+auto physics = graph.create<Solid>("vehiclePhysics")
+    .nucleusPotential(1500.0f)
+    .connect<Solid>("body")
+        .shape({4.0f, 1.5f, 2.0f})
+        .offset({0.0f, 0.0f, 0.0f})
+    .connect<Wheel>("wheelFL")
+        .radius(0.4f)
+        .width(0.2f)
+        .suspensionRange(0.2f)
+        .suspensionDamping(0.3f)
+        .position({-0.8f, 0.0f, 1.0f})
+    .connect<Wheel>("wheelFR")
+        .radius(0.4f)
+        .width(0.2f)
+        .suspensionRange(0.2f)
+        .suspensionDamping(0.3f)
+        .position({0.8f, 0.0f, 1.0f});
 
 #endif

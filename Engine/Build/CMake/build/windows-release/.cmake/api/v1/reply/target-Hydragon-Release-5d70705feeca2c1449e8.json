@@ -222,6 +222,26 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/AI"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Achievement"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Audio"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Building"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Character"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Combat"
 				},
 				{
@@ -230,7 +250,23 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Creature"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Damage"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Device"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Dialogue"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Drone"
 				},
 				{
 					"backtrace" : 12,
@@ -242,11 +278,27 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Event"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Experience"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Horse"
 				},
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Interaction"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Inventory"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Lighting"
 				},
 				{
 					"backtrace" : 12,
@@ -258,11 +310,59 @@
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Memory"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Mount"
 				},
 				{
 					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Pickup"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Prop"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Quest"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/RadioComm"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Repair"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Reward"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Score"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Skill"
+				},
+				{
+					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Space"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Stat"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/State"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Gameplay/Surveillance"
 				},
 				{
 					"backtrace" : 12,
@@ -307,6 +407,10 @@
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Input/GLFW"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Landscape"
 				},
 				{
 					"backtrace" : 12,
@@ -499,6 +603,10 @@
 				{
 					"backtrace" : 12,
 					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Vegetation/Examples"
+				},
+				{
+					"backtrace" : 12,
+					"path" : "D:/AguaGames/HydragonEngine/alpha/Engine/Build/CMake/../../Source/Core/Water"
 				},
 				{
 					"backtrace" : 12,

@@ -71,6 +71,7 @@ public:
     Solid solid;
     Solid::mass mass;
     std::vector<Wheel> wheels;
+    bool enableAerodynamics = false;
 
     // === Processing ===
     void processNode() override {

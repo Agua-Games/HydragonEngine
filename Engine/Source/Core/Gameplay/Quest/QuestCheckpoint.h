@@ -32,15 +32,35 @@ namespace hd {
 struct Quest {
     std::string name;
     std::string description;
-    std::vector<std::string> objectives;
-    std::vector<std::string> rewards;
+    std::vector<QuestObjective> objectives;
+    std::vector<QuestReward> rewards;
 }
 
 enum class QuestAction {
-    accept,
-    complete,
-    fail,
-    abandon
+    Accept,
+    Complete,
+    Fail,
+    Abandon,
+    Custom
+};
+
+struct QuestObjective {
+    std::string name;
+    bool required;
+    int count;
+};
+
+struct QuestReward {
+    std::string name;
+    int amount;
+};
+
+enum class QuestStatus {
+    Active,
+    Completed,
+    Failed,
+    Abandoned,
+    Custom
 };
 
 struct QuestCheckpointInfo : public NodeInfo {

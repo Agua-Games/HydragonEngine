@@ -17,12 +17,12 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include "Node.h"
-#include "BehaviorTree.h"
+#include "TacticalAI.h"
 #include "AgentAI.h"
 
 namespace hd {
 
-struct SquadAIInfo : public BehaviorTreeInfo {
+struct SquadAIInfo : public TacticalAIInfo {
     SquadAIInfo() {
         nodeType = "Gameplay/SquadAI";
         
@@ -40,11 +40,11 @@ struct SquadAIInfo : public BehaviorTreeInfo {
     }
 };
 
-class SquadAI : public BehaviorTree {
+class SquadAI : public TacticalAI {
 public:
     // === Allocation, Initialization, Loading ===
     explicit SquadAI(const SquadAIInfo& info = SquadAIInfo())
-        : BehaviorTree(info) {}   
+        : SquadAI(info) {}   
     initialize() override {}
     load() override {}
 

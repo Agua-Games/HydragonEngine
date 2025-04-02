@@ -10,7 +10,6 @@
  *  - Dynamic difficulty adjustment based on player performance
  *  - Real-time weather and time of day
  */
-#if 0
 #include "Engine.h"
 #include "Scene.h"
 #include "VehiclePhysics.h"

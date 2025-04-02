@@ -19,25 +19,38 @@ namespace hd {
 
 struct ScreenSpaceAOInfo : public PostProcessInfo {
     ScreenSpaceAOInfo() {
-        NodeType = "Rendering/PostProcess/ScreenSpaceAO";
+        nodeType = "Rendering/PostProcess/ScreenSpaceAO";
         inputs = {
-            "RenderedImage",   // Rendered image to apply screen space ambient occlusion to
-            "ScreenSpaceAOParams"  // Screen space ambient occlusion parameters
+            "renderedImage",   // Rendered image to apply screen space ambient occlusion to
+            "screenSpaceAOParams"  // Screen space ambient occlusion parameters
         };
         outputs = {
-            "ScreenSpaceAOedImage",  // Screen space ambient occlusion-applied image
-            "ScreenSpaceAOMetrics"  // Screen space ambient occlusion performance metrics
+            "screenSpaceAOedImage",  // Screen space ambient occlusion-applied image
+            "screenSpaceAOMetrics"  // Screen space ambient occlusion performance metrics
         };
     }
 };
 
 class ScreenSpaceAO : public PostProcess {
 public:
+    // === Structure Definitions ===
+    enum class SSAOQuality {
+        Low,
+        Medium,
+        High
+    };
+
     // === Allocation, Initialization, Loading === 
     explicit ScreenSpaceAO(const ScreenSpaceAOInfo& info = ScreenSpaceAOInfo())
         : PostProcess(info) {}   
     initialize() override {}
     load() override {}
+
+    // Set default values
+    float radius = 0.0f;
+    float bias = 0.0f;
+    float intensity = 0.0f;
+    SSAOQuality quality = SSAOQuality::Low;
 
     // === Processing ===
     void processNode() override {

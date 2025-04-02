@@ -53,13 +53,16 @@ public:
     vec3 position;
     vec3 orientation;
     vec3 velocity;
-    float volumeMultiplier = 1.0f;
+    float volume = 1.0f;
+    float pitch = 1.0f;
     bool dynamicResponse = false;
+    bool useDopplerEffect = false;
+    bool useReverbEffect = false;
+    bool randomPosition = false;
+    bool randomVolume = false;
+    bool randomPitch = false;
     WavePattern wavePattern;
     MediumProperties medium;
-
-    void addAudioBank(const std::string& audioBankPath);
-    void removeAudioBank(const std::string& audioBankPath);
 
     // === Processing ===
     void processNode() override {
@@ -69,6 +72,8 @@ public:
         wavePattern = getInputValue<WavePattern>("wavePattern");
         medium = getInputValue<MediumProperties>("medium");
     }
+    void addAudioBank(const std::string& audioBankPath);
+    void removeAudioBank(const std::string& audioBankPath);
     void update();
 
     // === Cleanup ===

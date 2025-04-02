@@ -7,7 +7,7 @@
  * 
  * ARCHITECTURAL NOTES:
  * - LightSwitch is a class that represents a light switch in Hydragon.
- * - It is used to represent any light switch in the game world, such as light switches, etc.
+ * - It is used to represent any light switch in the game world, such as light switches, including 3-way switches, etc.
  * - It supports interactive features, such as turning lights on and off. Also supports two-way messaging with other light switches, environment, character, etc.
  */
 #pragma once
@@ -24,7 +24,7 @@ struct LightSwitchInfo : public NodeInfo {
         nodeType = "Gameplay/LightSwitch";
         
         inputs = {
-            "lightSwitchType",  // Type of light switch (light switch, etc.)
+            "lightSwitchType",  // Type of light switch (light switch, 3-way switch, etc.)
             "lightSwitchData",  // Light switch data
             "environment",      // Environment data
             "characterData",    // Character data
