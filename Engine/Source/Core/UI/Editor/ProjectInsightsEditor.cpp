@@ -9,7 +9,7 @@
 #include <imgui.h>
 #include "IconsMaterialSymbols.h"
 #include "ProjectInsightsEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

@@ -10,7 +10,7 @@
 #include <string>
 
 #include "RightToolbar.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "IconsMaterialSymbols.h"
 
 namespace hd {

@@ -2,19 +2,19 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file UIManager.h
+ * @file MainEditorUIManager.h
  * @brief Wrapper for window creation, input and UI functionality.
  * 
  * ARCHITECTURAL NOTES:
  * Wrapper for window creation, input and UI functionality. Leverages glfw, Dear imgui, imgui-node-editor and other third-party libraries.
  * 
  * TODO:
- * - Change UIManager to be a class (EditorUIManager or HydragonEditorUIManager), which inherits from a base UIManager class. 
- * - Place HydragonEditorUIManager inside of Core/UI/Editor/ and the base class (UIManager) in Core/UI/Base.
+ * - Change UIManager to be a class (MainEditorUIManager), which inherits from a base UIManager class. 
+ * - Place MainEditorUIManager inside of Core/UI/Editor/ and the base class (UIManager) in Core/UI/Base.
  * - Study if it's the case of wrapping Imgui's main functions into methods to avoid the lower capital case mess imgui uses for functions.
  * - Refactor the architecture to use classes, inheritance, encapsulation, more well-structured code, instead of namespace + free-functions.
  * - Maybe also use classes & methods for the sub-editors. In this case they are UI nodes themselves. If leaving them as namespaces only, they're
- * like UI implementations that could be inside of HydragonEditorUIManager but were place in separate files for better separation.
+ * like UI implementations that could be inside of MainEditorUIManager but were place in separate files for better separation.
  * - Move here the initialization, update and cleanup code blocks currently in main.cpp responsible for glfw, imgui, steps.
  */
 #pragma once
@@ -184,7 +184,7 @@ void initializeImguiNodeEditor(EditorWindowData* windowData);
 #if 0
 void InitializeWindows();
 #endif
-// =========== Styling ===========  
+// =========== Styling ===========
 void styleColorsHydragonDark();
 void styleColorsHydragonLight();
 void styleColorsHydragonClassic();
@@ -218,7 +218,7 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 /**
  * @brief Renders the ImGui user interface.
  */
-void renderHydragonEditor(EditorWindowData* windowData);
+void renderMainEditor(EditorWindowData* windowData);
 
 } // namespace hd
 

@@ -10,7 +10,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "PhysicsEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

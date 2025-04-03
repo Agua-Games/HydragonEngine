@@ -10,7 +10,7 @@
 #include <string>
 
 #include "ImageTools.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 void showImageTools(bool* p_open, EditorWindowData* windowData) 

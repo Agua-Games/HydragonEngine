@@ -9,9 +9,9 @@
  * - Removed boilerplate code to allow compatibility with very old VS compilers.
  * - Removed the #include "imgui_impl_vulkan.h" as it is not used here. Instead, we use our own Core/Graphics/Vulkan/VulkanCore.h
  * - Added code to initialize the engine's resource manager, load resources - fonts etc.
- * - Added includes for UIManager, ResourceManager, and filesystem.
+ * - Added includes for MainEditorUIManager, ResourceManager, and filesystem.
  * - Switched main() to WinMain() to be able to use the Windows API.
- * - Turned off StyleColorsDark(), to use our own style - UIManager::styleColorsHydragonDark().
+ * - Turned off StyleColorsDark(), to use our own style - MainEditorUIManager::styleColorsHydragonDark().
  */
 #pragma once
 #include <windows.h>
@@ -27,7 +27,7 @@
 #include <vulkan/vulkan.h>
 
 #include "Graphics/Vulkan/VulkanCore.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "ResourceManager.h"
 
 // Volk headers
@@ -457,11 +457,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         ImGui::NewFrame();
         
         // =========== Hydragon main window ===========
-        // (Later move most inline code to proper functions in UIManager and probably dedicated files for each sub-editor, to avoid having
-        // too much code in UIManager.h)
+        // (Later move most inline code to proper functions in MainEditorUIManager and probably dedicated files for each sub-editor, to avoid having
+        // too much code in MainEditorUIManager.h)
         if (show_Hydragon_window)
         {
-            hd::renderHydragonEditor(&EditorWindowData);
+            hd::RenderMainEditor(&EditorWindowData);
         }
         // End of Hydragon main window ===========
 

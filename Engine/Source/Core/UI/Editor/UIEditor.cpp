@@ -12,7 +12,7 @@
 #include <algorithm>                 // for std::clamp
 
 #include "UIEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "IconsMaterialSymbols.h"
 #include "VulkanCore.h"           // Add necessary graphics backend
 

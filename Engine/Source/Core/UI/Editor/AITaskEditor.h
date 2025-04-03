@@ -11,7 +11,7 @@
 #include <memory>
 #include <imgui.h>
 
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

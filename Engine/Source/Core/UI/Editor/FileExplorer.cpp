@@ -16,7 +16,7 @@
 #include <imgui.h>
 
 #include "FileExplorer.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "ResourceManager.h"
 
 namespace fs = std::filesystem;

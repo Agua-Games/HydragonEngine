@@ -11,14 +11,15 @@
  *  - Procedural material generation
  *  - Procedural system harmony maintenance
  *  - System intent handling
+ * 
+ * @todo The syntax is a bit outdated. We'll fix it or remove this example altogether.
  */
 #if 0
-
-#include "Core/Engine.h"
-#include "Core/NodeGraph/Node.h"
-#include "Core/Particles/ParticleSystem.h"
-#include "Core/Materials/Material.h"
-#include "Core/Procedural/ProceduralOrchestrator.h"
+#include "Engine.h"
+#include "Node.h"
+#include "ParticleSystem.h"
+#include "Material.h"
+#include "ProceduralManager.h"
 
 namespace hd {
 
@@ -27,7 +28,7 @@ public:
     void setup() {
         auto& engine = Engine::getInstance();
         auto& nodeGraph = engine.getNodeGraph();
-        auto& orchestrator = ProceduralOrchestrator::getInstance();
+        auto& proceduralManager = ProceduralManager::getInstance();
 
         // Create a procedural particle system
         auto particleSystem = std::make_shared<ParticleSystem>();
@@ -49,7 +50,7 @@ public:
         params.type = ProceduralStructureType::Particle;
         params.evolutionRate = 0.5f;
 
-        orchestrator.registerPattern(particleSystem, params);
+        proceduralManager.registerPattern(particleSystem, params);
     }
 
     void update(float deltaTime) {
@@ -59,7 +60,7 @@ public:
         engine.getNodeGraph().processNode();
 
         // Update procedural systems
-        engine.getProceduralOrchestrator().();
+        engine.getProceduralManager().update();
 
         // Example of system harmony maintenance
         HarmonyParams harmonyParams;

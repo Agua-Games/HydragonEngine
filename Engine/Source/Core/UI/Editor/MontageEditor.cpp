@@ -12,7 +12,7 @@
 #include "misc/cpp/imgui_stdlib.h"  // Add this include for std::string support (required for MontageEditor)
 
 #include "MontageEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "IconsMaterialSymbols.h"
 
 namespace hd {

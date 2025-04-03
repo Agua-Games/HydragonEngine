@@ -10,7 +10,7 @@
 #include <string>
 
 #include "SceneGraphEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

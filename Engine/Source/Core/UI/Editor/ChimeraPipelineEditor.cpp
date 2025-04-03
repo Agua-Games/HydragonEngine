@@ -10,7 +10,7 @@
 #include "imgui.h"
 
 #include "ChimeraPipelineEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 void showChimeraPipelineEditor(bool* p_open, EditorWindowData* windowData) 

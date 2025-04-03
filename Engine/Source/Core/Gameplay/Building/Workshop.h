@@ -15,14 +15,14 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include "Node.h"
+#include "Building.h"
 #include "DataTable.h"
 #include "Item.h"
 #include "CraftingResult.h"
 
 namespace hd {
 
-struct WorkshopInfo : public NodeInfo {
+struct WorkshopInfo : public BuildingInfo {
     WorkshopInfo() {
         nodeType = "Gameplay/Workshop";
         
@@ -41,11 +41,11 @@ struct WorkshopInfo : public NodeInfo {
     }
 };
 
-class Workshop : public Node {
+class Workshop : public Building {
 public:
     // === Allocation, Initialization, Loading ===
     explicit Workshop(const WorkshopInfo& info = WorkshopInfo())
-        : Node(info) {}
+        : Building(info) {}
     initialize() override {}
     load() override {}
 

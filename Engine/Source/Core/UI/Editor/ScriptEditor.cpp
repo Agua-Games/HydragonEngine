@@ -11,7 +11,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "ScriptEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

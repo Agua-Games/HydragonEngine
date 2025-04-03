@@ -13,7 +13,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "FontEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 void showFontEditor(bool* p_open, EditorWindowData* windowData) 

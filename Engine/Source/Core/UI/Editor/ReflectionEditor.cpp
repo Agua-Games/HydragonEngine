@@ -13,7 +13,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "ReflectionEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

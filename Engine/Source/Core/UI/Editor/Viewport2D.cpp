@@ -11,7 +11,7 @@
 #include <string>
 
 #include "Viewport2D.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

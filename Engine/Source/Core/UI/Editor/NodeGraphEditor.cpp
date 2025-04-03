@@ -17,7 +17,7 @@ namespace nodeEd = ax::NodeEditor;
 
 #include "NodeGraphEditor.h"
 #include "NodeGraphState.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 //#include "Node.h"                  // For node integration - next (architecture) steps
 #include "PropertyEditor.h"             // For property integration
 
@@ -145,7 +145,7 @@ void initializeNodeGraphEditor(EditorWindowData* windowData) {
 
         if (ensureNodeEditorContext())
         {
-            // Temporary implementation here - move to styleColorsHydragonDark(), in UIManager.cpp later.
+            // Temporary implementation here - move to styleColorsHydragonDark(), in MainEditorUIManager.cpp later.
 
             // Style
             nodeEd::Style& nodesStyle = nodeEd::GetStyle();

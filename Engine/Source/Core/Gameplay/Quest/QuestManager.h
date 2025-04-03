@@ -13,6 +13,7 @@
 #pragma once
 
 #include "Node.h"
+#include "DataTable.h"
 
 namespace hd {
 
@@ -21,10 +22,10 @@ struct QuestManagerInfo : public NodeInfo {
         nodeType = "Gameplay/QuestManager";
         
         inputs = {
-            "quests",        // Array of quests
-            "questState",    // Current state of the quest
-            "questSpeed",    // Speed of the quest
-            "questLoop"      // Whether the quest should loop
+            "questData",        // Array of quests data
+            "questState",    // Current state of the quest data
+            "questSpeed",    // Speed of the quest data
+            "questLoop"      // Whether the quest data should loop
         };
         
         outputs = {
@@ -42,12 +43,18 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    float maxActiveQuests = 10;
+    bool dynamicGeneration = false;
+    int questDensity = 5;
+
     // === Processing ===
     void processNode() override {
     }
     void addQuest(const std::string& questName);
     void removeQuest(const std::string& questName);
     void processQuest();
+    void loadQuestTemplate(const std::string& templatePath);
     void update();
 
     // === Cleanup ===

@@ -7,7 +7,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "AITaskEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

@@ -10,7 +10,7 @@
 #include <vector>
 #include <algorithm>                // for std::count_if
 #include "StreamingEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "IconsMaterialSymbols.h"
 
 namespace hd {

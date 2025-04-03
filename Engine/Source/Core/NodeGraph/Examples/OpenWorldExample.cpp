@@ -71,7 +71,7 @@ public:
         wildlife.addSpecies("Deer", 100)
                .addSpecies("Wolf", 30)
                .addSpecies("Bird", 500)
-               .setInteractionRadius(1000)
+               .interactionRadius(1000)
                .enableMigration(true);
 
         // Quest and POI system
@@ -83,10 +83,10 @@ public:
 
         // Population system for NPCs
         PopulationSystem population;
-        population.setDensity(50) // NPCs per km²
-                 .setTypes("Villager", "Merchant", "Guard")
+        population.density(50) // NPCs per km²
+                 .types("Villager", "Merchant", "Guard")
                  .enableDynamicSchedules(true)
-                 .setActivityRadius(500);
+                 .activityRadius(500);
 
         // Connect systems
         graph.connect(chunks, "LoadedChunk", vegetation, "PopulateChunk");
@@ -110,9 +110,9 @@ public:
 private:
     void setupResourceNodes(NodeGraph& graph) {
         ResourceManager resources;
-        resources.setMemoryBudget(4096) // MB
-                .setPriorityScheme("Distance")
-                .enableBackgroundLoading(true);
+        resources.memoryBudget(4096) // MB
+                .priorityScheme("Distance")
+                .backgroundLoading(true);
 
         // Connect to streaming systems
         graph.connect(resources, "MemoryStatus", "ChunkManager", "LoadBudget");

@@ -12,7 +12,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "TopToolbar.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "ResourceManager.h"
 
 namespace hd {

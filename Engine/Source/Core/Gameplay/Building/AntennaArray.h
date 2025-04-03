@@ -14,7 +14,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <unordered_map>
-#include "Node.h"
+#include "Building.h"
 #include "DataTable.h"
 #include "RadioAntenna.h"
 #include "Placement.h"
@@ -27,7 +27,7 @@ enum class AntennaArrayType {
     Custom
 };
 
-struct AntennaArrayInfo : public RadioAntennaInfo {
+struct AntennaArrayInfo : public BuildingInfo {
     AntennaArrayInfo() {
         nodeType = "Gameplay/AntennaArray";
         
@@ -46,11 +46,11 @@ struct AntennaArrayInfo : public RadioAntennaInfo {
     }
 };
 
-class AntennaArray : public RadioAntenna {
+class AntennaArray : public Building {
 public:
     // === Allocation, Initialization, Loading ===
     explicit AntennaArray(const AntennaArrayInfo& info = AntennaArrayInfo())
-        : RadioAntenna(info) {}
+        : Building(info) {}
     initialize() override {}
     load() override {}
 

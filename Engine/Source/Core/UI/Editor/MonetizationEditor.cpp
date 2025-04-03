@@ -12,7 +12,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "MonetizationEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "misc/cpp/imgui_stdlib.h"
 
 namespace hd {

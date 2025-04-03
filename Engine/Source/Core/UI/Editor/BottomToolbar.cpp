@@ -10,7 +10,7 @@
 #include <string>
 
 #include "BottomToolbar.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 void showBottomToolbar(bool* p_open, EditorWindowData* windowData) 

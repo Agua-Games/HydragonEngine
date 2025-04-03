@@ -16,7 +16,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <unordered_map>
-#include "Node.h"
+#include "Settlement.h"
 #include "DataTable.h"
 #include "Vegetation.h"
 #include "Building.h"
@@ -26,7 +26,7 @@
 
 namespace hd {
     
-struct FarmInfo : public NodeInfo {
+struct FarmInfo : public SettlementInfo {
     FarmInfo() {
         nodeType = "Gameplay/Farm";
         
@@ -45,11 +45,11 @@ struct FarmInfo : public NodeInfo {
     }
 };
 
-class Farm : public Building {
+class Farm : public Settlement {
 public:
     // === Allocation, Initialization, Loading ===
     explicit Farm(const FarmInfo& info = FarmInfo())
-        : Building(info) {}
+        : Settlement(info) {}
     initialize() override {}
     load() override {}
 

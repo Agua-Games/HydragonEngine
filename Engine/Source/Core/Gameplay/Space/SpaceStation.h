@@ -9,17 +9,20 @@
  * - SpaceStation is a class that represents a space station in Hydragon.
  * - It is used to represent any space station in the game world, such as space stations, spaceports, etc.
  * - It supports interactive features, such as docking, undocking, and trading. Also supports two-way messaging with other space stations, environment, character, etc.
+ * 
+ * @todo Decide if using composition of Satellite and Station, or simple inheritance plus an instance member (of Satellite).
  */
 #pragma once
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <unordered_map>
-#include "Node.h"
+#include "Station.h"
+#include "Satellite.h"
 #include "DataTable.h"
 
 namespace hd {
 
-struct SpaceStationInfo : public NodeInfo {
+struct SpaceStationInfo : public StationInfo, public SatelliteInfo {
     SpaceStationInfo() {
         nodeType = "Gameplay/SpaceStation";
         

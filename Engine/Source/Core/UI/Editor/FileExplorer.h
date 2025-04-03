@@ -9,7 +9,7 @@
 #include <imgui.h>
 #include <string>
 
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 void showFileExplorer(bool* p_open, EditorWindowData* windowData);

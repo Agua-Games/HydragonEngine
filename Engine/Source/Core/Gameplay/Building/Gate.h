@@ -14,12 +14,12 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <unordered_map>
-#include "Node.h"
+#include "BuildingElement.h"
 #include "DataTable.h"
 
 namespace hd {
 
-struct GateInfo : public NodeInfo {
+struct GateInfo : public BuildingElementInfo {
     GateInfo() {
         nodeType = "Gameplay/Gate";
         
@@ -38,11 +38,11 @@ struct GateInfo : public NodeInfo {
     }
 };
 
-class Gate : public Node {
+class Gate : public BuildingElement {
 public:
     // === Allocation, Initialization, Loading ===
     explicit Gate(const GateInfo& info = GateInfo())
-        : Node(info) {}
+        : BuildingElement(info) {}
     initialize() override {}
     load() override {}
 

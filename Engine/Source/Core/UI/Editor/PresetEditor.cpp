@@ -14,7 +14,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "PresetEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

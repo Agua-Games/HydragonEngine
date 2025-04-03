@@ -3,6 +3,7 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief This file contains examples of how to setup a node graph in code.
+ * The syntax in these examples is a bit outdated. We'll fix it or remove this example altogether.
  * 
  * These examples demonstrate:
  * 
@@ -15,7 +16,6 @@
  *  - Particle system with templated emitters and modifiers
  *  - Network replication with type safety
  */
-
 #if 0
 using namespace hd;
 
@@ -65,30 +65,30 @@ auto& shader = ShaderCompiler::create("terrain")
 
 // Example 5: UI layout with strong typing and constraints
 auto& ui = UIManager::get().createWindow("inventory")
-    .setSize<Pixels>(800, 600)
+    .extents(800, 600)
     .add<UIPanel>("background")
-        .setColor(Color{0.2f, 0.2f, 0.2f, 0.9f})
+        .color(Color{0.2f, 0.2f, 0.2f, 0.9f})
         .add<UIGrid>("items")
-            .setColumns(5)
-            .setSpacing<Pixels>(10)
-            .setItemSize<Pixels>(64, 64)
+            .columns(5)
+            .spacing(vector2(8, 8))
+            .itemSize(vector2(64, 64))
         .add<UIText>("title")
-            .setText("Inventory")
-            .setFont("fonts/roboto.ttf")
-            .setFontSize<Pixels>(24)
-            .setAlignment(TextAlign::Center);
+            .text("Inventory")
+            .font("fonts/roboto.ttf")
+            .fontSize(24)
+            .alignment(UIText::TextAlignment::Center);
 
 // Example 6: Animation state machine with type-safe transitions
 auto& animator = entity.add<Animator>()
-    .addState<AnimationState>("idle")
+    .addState<AnimationStateMachine>("idle")
         .setClip("animations/idle.anim")
         .setSpeed(1.0f)
         .setLoop(true)
-    .addState<AnimationState>("walk")
+    .addState<AnimationStateMachine>("walk")
         .setClip("animations/walk.anim")
         .setSpeed(1.2f)
         .setLoop(true)
-    .addTransition<BlendTransition>("idle", "walk")
+    .addTransition<AnimationBlend>("idle", "walk")
         .setDuration(0.2f)
         .setCondition([](const AnimationContext& ctx) {
             return ctx.getSpeed() > 0.1f;

@@ -10,7 +10,7 @@
 #include <string>
 
 #include "Viewport3DTools.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

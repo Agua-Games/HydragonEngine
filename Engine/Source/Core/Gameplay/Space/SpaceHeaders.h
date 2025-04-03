@@ -26,3 +26,4 @@
 #include "SpaceStation.h"
 #include "SpaceSuit.h"
 #include "TerraformingDevice.h"
+#include "SpaceColony.h"

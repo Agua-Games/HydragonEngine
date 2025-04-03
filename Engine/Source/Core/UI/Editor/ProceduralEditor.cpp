@@ -10,7 +10,7 @@
 #include <imgui.h>
 
 #include "ProceduralManagerEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
   

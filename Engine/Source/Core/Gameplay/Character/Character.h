@@ -49,7 +49,7 @@ class Character : public Scene {
 public:
     // === Allocation, Initialization, Loading ===
     explicit Character(const CharacterInfo& info = CharacterInfo())
-        : Scene(info), behaviorTree(info) {} 
+        : Scene(info) {}    // Call the base class constructor
     initialize() override {}
     load() override {}
 
@@ -58,6 +58,7 @@ public:
     BehaviorTree behaviorTree;
     AnimationController animationController;
     EmotionMechanics emotionMechanics;     // Emotion mechanics for character. Default: empty object.
+    Solid solid;                             // Solid body for character. Default: empty object.
     float walkSpeed = 0.0f;
     float runSpeed = 0.0f;
     float crouchSpeed = 0.0f;
@@ -66,6 +67,8 @@ public:
     float stamina = 0.0f;
     float mana = 0.0f;
     float jumpHeight = 0.0f;
+    float jumpForce = 0.0f;
+    float attackRange = 0.0f;
     float attackDamage = 0.0f;
     float defense = 0.0f;
     float jumpStamina = 0.0f;
@@ -79,12 +82,8 @@ public:
 
     // === Processing ===
     void processNode() override {
-        // Get inputs
-        auto environment = getInputValue<Environment>("environment");
-        auto params = getInputValue<ProceduralParams>("proceduralParams");
-
         // Update AI
-        behaviorTree.process(environment, params);
+        behaviorTree.processBehaviorTree(); // Pass the environment and params to the behavior tree.
         
         // Update character state
         characterState = updateCharacterState();

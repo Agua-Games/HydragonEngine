@@ -46,7 +46,7 @@
 #include "InputManager.h"                  // Input, UI, etc.
 #include "TimeManager.h"                   // Time, Profiling, etc.
 #include "ProceduralManager.h"             // Coordination, Harmony, etc.
-#include "UIManager.h"                     // UI, Editor, etc.
+#include "MainEditorUIManager.h"                     // UI, Editor, etc.
 #include "EngineTypes.h"                   // Engine modes, etc.
 
 namespace hd {
@@ -104,7 +104,7 @@ public:
             physicsManager->update();
             audioManager->update();
             gameplayManager->update();
-            uiManager->update();                    // Editor UI not processed in GAMEPLAY_ONLY. SELECTIVE mode may disable some UI.
+            MainEditorUIManager->update();                    // Editor UI not processed in GAMEPLAY_ONLY. SELECTIVE mode may disable some UI.
             renderer->update();
             // ... Add more systems here, as needed.
         }
@@ -134,7 +134,7 @@ private:
     std::unique_ptr<PhysicsManager> physicsManager;
     std::unique_ptr<AudioManager> audioManager;
     std::unique_ptr<GameplayManager> gameplayManager;
-    std::unique_ptr<UIManager> uiManager;
+    std::unique_ptr<MainEditorUIManager> MainEditorUIManager;
     std::unique_ptr<EngineState> state;     // Internal state of the engine. System health, resource usage, evolution progress, harmony metrics.
 
     // Internal methods
@@ -149,7 +149,7 @@ private:
         physicsManager = std::make_unique<PhysicsManager>();
         audioManager = std::make_unique<AudioManager>();
         gameplayManager = std::make_unique<GameplayManager>();
-        uiManager = std::make_unique<UIManager>();
+        MainEditorUIManager = std::make_unique<MainEditorUIManager>();
         state = std::make_unique<EngineState>();
 
     }

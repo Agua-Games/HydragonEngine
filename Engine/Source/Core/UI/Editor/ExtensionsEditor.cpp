@@ -12,7 +12,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "ExtensionsEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

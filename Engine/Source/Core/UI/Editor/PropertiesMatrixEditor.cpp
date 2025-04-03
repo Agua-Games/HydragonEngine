@@ -12,7 +12,7 @@
 #include <algorithm>                    // Add this for std::count_if
 #include "IconsMaterialSymbols.h"
 #include "PropertiesMatrixEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "misc/cpp/imgui_stdlib.h"
 
 namespace hd {

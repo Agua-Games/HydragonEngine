@@ -7,7 +7,7 @@
  */
 #include <imgui.h>
 #include "LightingEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "IconsMaterialSymbols.h"
 
 namespace hd {

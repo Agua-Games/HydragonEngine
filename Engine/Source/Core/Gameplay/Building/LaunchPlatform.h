@@ -14,12 +14,12 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <unordered_map>
-#include "Node.h"
+#include "Building.h"
 #include "DataTable.h"
 
 namespace hd {
 
-struct LaunchPlatformInfo : public NodeInfo {
+struct LaunchPlatformInfo : public BuildingInfo {
     LaunchPlatformInfo() {
         nodeType = "Gameplay/LaunchPlatform";
         
@@ -38,11 +38,11 @@ struct LaunchPlatformInfo : public NodeInfo {
     }
 };
 
-class LaunchPlatform : public Node {
+class LaunchPlatform : public Building {
 public:
     // === Allocation, Initialization, Loading ===
     explicit LaunchPlatform(const LaunchPlatformInfo& info = LaunchPlatformInfo())
-        : Node(info) {}
+        : Building(info) {}
     initialize() override {}
     load() override {}
 

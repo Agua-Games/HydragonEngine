@@ -43,7 +43,8 @@ public:
     load() override {}
 
     // Set default values
-    float health = 100.0f;      // TODO: maybe normalize to 0-1?
+    float health = 100.0f;          // TODO: maybe normalize to 0-1?
+    float durability = 100.0f;      // Equipment durability (0-100)
 
     // === Processing ===
     void processNode() override {

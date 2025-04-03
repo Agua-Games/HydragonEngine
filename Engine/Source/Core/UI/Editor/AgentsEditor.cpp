@@ -7,7 +7,7 @@
 #include <string>
 
 #include "AgentsEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 void showAgentsEditor(bool* p_open, EditorWindowData* windowData) 

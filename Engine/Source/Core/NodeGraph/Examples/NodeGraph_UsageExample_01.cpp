@@ -28,21 +28,26 @@ auto& renderer = Engine::get().renderer()
 
 // Example 2: Setting up a character with physics
 auto& character = Scene::current()
-    .add<Transform>()
-        .position({0, 0, 0})
-        .connect<RigidBody>()
-            .mass(70.0f)
-            .connect<CapsuleCollider>()
-                .radius(0.5f)
-                .height(2.0f);
+    .connect<Solid>()
+        .mass(70.0f)
 
 // Example 3: Procedural building generation
 auto& building = Scene::current()
-    .add<ProceduralBuilding>()
+    .add<Building>()                        // Building will also use a node graph for more flexibility
         .floors(5)
         .style("modern")
-        .connect<MeshGenerator>()
-            .connect<CollisionGenerator>();
+        .connect<BuildingRuleset>()
+            .connect<Room>()
+                .size({10, 10, 10})
+                .connect<Door>()
+                    .position({0, 0, 5})
+                    .style("modern")
+                .connect<Window>()
+                    .position({5, 0, 0})
+                    .style("modern")
+            .connect<Staircase>()
+                .position({0, 0, 0})
+
 
 // Example 4: Audio system setup
 auto& audio = Engine::get().audio()

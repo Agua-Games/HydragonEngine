@@ -16,7 +16,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_vulkan.h>
 
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "ResourceManager.h"
 
 float appIdleSleepTime = 60.0f;
@@ -70,13 +70,13 @@ void RunApplication() {
         ImGui::NewFrame();
 
         // Process user interactions to handle wake-up
-        UIManager::ProcessUserInteractions(window);
+        MainEditorUIManager::ProcessUserInteractions(window);
 
         // Auto-sleep logic
-        UIManager::AutoSleepAfterInactivity(appIdleSleepTime);
+        MainEditorUIManager::AutoSleepAfterInactivity(appIdleSleepTime);
 
         // Render your UI here
-        if (!UIManager::IsSleeping()) {
+        if (!MainEditorUIManager::IsSleeping()) {
             // Your application's UI rendering code
             ImGui::Begin("Hydragon Editor");
             ImGui::Text("Hello, world!");

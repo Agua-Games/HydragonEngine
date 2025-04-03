@@ -8,7 +8,7 @@
 #pragma once
 #include <imgui.h>  // Include ImGui's header
 
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

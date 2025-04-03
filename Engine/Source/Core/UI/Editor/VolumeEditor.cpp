@@ -8,7 +8,7 @@
 #include <imgui.h>
 #include <string>
 #include "VolumeEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

@@ -14,7 +14,7 @@
 #pragma once
 #include <imgui.h>
 
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 //#include "Node.h"
 //#include "NetworkNode.h"
 

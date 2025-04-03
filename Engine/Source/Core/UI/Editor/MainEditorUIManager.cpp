@@ -2,7 +2,7 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file UIManager.cpp
+ * @file MainEditorUIManager.cpp
  * @brief Wrapper for window creation, input and UI functionality.
  * 
  * ARCHITECTURAL NOTES:
@@ -23,7 +23,7 @@
 #include "imgui_node_editor.h"
 namespace nodeEd = ax::NodeEditor;
 
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "ResourceManager.h"
 #include "MainMenuBar.h"
 #include "TopToolbar.h"
@@ -418,7 +418,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 }
 #endif
 // =========== Rendering ===================
-void renderHydragonEditor(EditorWindowData* windowData) {
+void RenderMainEditor(EditorWindowData* windowData) {
     // Create docking space
     ImGui::DockSpaceOverViewport(ImGui::GetID("MainDockSpace"));
 

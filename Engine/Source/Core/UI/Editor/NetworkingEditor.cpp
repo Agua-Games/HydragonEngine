@@ -10,7 +10,7 @@
 #include <string>
 
 #include "NetworkingEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 void showNetworkingEditor(bool* p_open, EditorWindowData* windowData) 

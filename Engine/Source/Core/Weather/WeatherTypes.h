@@ -36,4 +36,12 @@ enum class WeatherEvent {
     Custom
 };
 
+enum class CloudType {
+    Cumulus,
+    Stratus,
+    Cirrus,
+    Cumulonimbus,
+    Other
+};
+
 } // namespace hd

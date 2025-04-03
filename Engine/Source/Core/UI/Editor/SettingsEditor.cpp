@@ -10,7 +10,7 @@
 #include <string>
 
 #include "SettingsEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

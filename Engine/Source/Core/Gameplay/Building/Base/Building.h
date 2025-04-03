@@ -8,7 +8,24 @@
  * ARCHITECTURAL NOTES:
  * - Building is a class that represents a building in Hydragon.
  * - It is used to represent any building in the game world, such as houses, offices, factories, etc.
+ * - It's a base class for all buildings, used to fill the placement slots of a settlement, for example.
+ * - It's meant to be used as the first node (the "root" node) in a procedural building graph, as it has the specific features (properties, functionality) of a building
+ * category of buildings (bridge, fortress, etc). These properties can be passed down the graph, to govern and be used by the other nodes.
+ * - We have specialized convenience nodes for each category of buildings, like Bridge, Fortress, etc.
+ * - The basic architecture of a procedural building is:
+ * 
+ *      Building -->BuildingRuleset -> BuildingElement (array) -> BuildingRuleset -> BuildingElement (array) -> BuildingRuleset -> ...
+ * 
+ * So, the ruleset is responsible for the placement/distribution rules. And the building elements are responsible for filling the placement slots with the actual visual 
+ * representation of the building (doors, windows, etc.). We also have convenience specialized elements derived from BuildingElement, like Room, Staircase, etc.
+ * For representing, for example, a windmill:
+ * 
+ *      Mill --> BuildingRuleset (radial placement) -> Walls -> BuildingRuleset (vertical placement) -> Floors -> BuildingRuleset (radial placement) -> Fan
+ *      (of course, the mill would have other ruleset branches, for the door in the first floor, the chimney, roof, Setc.)
+ * 
  * - It supports interactive features, such as entering, exiting, and interacting with. Also supports two-way messaging with other buildings, environment, character, etc.
+ * 
+ * @todo Make sure all proper building categories inherit from Building, instead of Node.
  */
 #pragma once
 #include <vulkan/vulkan.h>

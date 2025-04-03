@@ -9,7 +9,7 @@
 #include <string>
 #include "IconsMaterialSymbols.h"
 #include "ConsoleEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 

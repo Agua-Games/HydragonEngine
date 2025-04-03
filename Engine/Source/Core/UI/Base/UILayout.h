@@ -2,11 +2,11 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file LayoutUI.h
- * @brief LayoutUI node for UI composition.
+ * @file UILayout.h
+ * @brief UILayout node for UI composition.
  * 
  * ARCHITECTURAL NOTES:
- * - LayoutUI nodes are used for composing UI elements.
+ * - UILayout nodes are used for composing UI elements.
  * 
  * TODO:
  * - Create .cpp file and move the implementation there.
@@ -24,14 +24,14 @@ namespace hd {
 
 struct LayoutInfo : public NodeInfo {
     LayoutInfo() {
-        NodeType = "Design/LayoutUI";
+        NodeType = "Design/UILayout";
         
         inputs = {
             "Elements",      // Array of layout elements
             "Container",     // Container constraints
             "GridSystem",    // Grid configuration
             "Spacing",       // Element spacing
-            "Alignment",     // LayoutUI alignment
+            "Alignment",     // UILayout alignment
             "Distribution", // Content distribution
             "Responsive",   // Responsive breakpoints
             "Background"    // Background layer
@@ -45,9 +45,9 @@ struct LayoutInfo : public NodeInfo {
     }
 };
 
-class LayoutUI : public Node<RenderTarget, std::vector<BoundingBox>, GridGuides> {
+class UILayout : public Node<RenderTarget, std::vector<BoundingBox>, GridGuides> {
 public:
-    explicit LayoutUI(const LayoutInfo& info = LayoutInfo())
+    explicit UILayout(const LayoutInfo& info = LayoutInfo())
         : Node(info), LayoutInfo(info) {}
 
     void () override {

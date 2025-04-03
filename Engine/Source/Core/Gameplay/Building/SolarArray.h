@@ -14,12 +14,12 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <unordered_map>
-#include "Node.h"
+#include "Building.h"
 #include "DataTable.h"
 
 namespace hd {
 
-struct SolarArrayInfo : public NodeInfo {
+struct SolarArrayInfo : public BuildingInfo {
     SolarArrayInfo() {
         nodeType = "Gameplay/SolarArray";
         
@@ -38,11 +38,11 @@ struct SolarArrayInfo : public NodeInfo {
     }
 };
 
-class SolarArray : public Node {
+class SolarArray : public Building {
 public:
     // === Allocation, Initialization, Loading ===
     explicit SolarArray(const SolarArrayInfo& info = SolarArrayInfo())
-        : Node(info) {}
+        : Building(info) {}
     initialize() override {}
     load() override {}
 

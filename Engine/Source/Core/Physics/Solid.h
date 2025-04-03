@@ -70,6 +70,7 @@ public:
         Box,
         Sphere,
         Cylinder,
+        Capsule,
         Mesh,
         Custom
     };
@@ -82,23 +83,20 @@ public:
     };
 
     struct Shape {
-        // Define shape properties here
-    };
-
-    struct Material {
-        float restitution;
-        float friction;
-        float density;
+        float radius;
+        float height;
+        vec3 extents;
     };
     
     // Initially, this struct is to allow easy compatibility with, conversion to rigid body dynamics
     struct BodyState {
-        vec3 position;          // Derived from the solidField's momentum potential energy
-        vec3 velocity;          // Derived from the solidField's momentum potential energy
-        float mass;             // Derived from the solidField's nuclear potential energy
-        float density;          // Derived from the solidField's energy density gradient
-        Material material;      // Derived from some solidField's properties/energy values related to material
+        vec3 position;                 // Derived from the solidField's momentum potential energy
+        vec3 velocity;                 // Derived from the solidField's momentum potential energy
+        float mass;                    // Derived from the solidField's nuclear potential energy
+        float density;                 // Derived from the solidField's energy density gradient
+        PhysicsMaterial material;      // Derived from some solidField's properties/energy values related to material
     };
+
 
     // === Allocation, Initialization, Loading ===
     explicit Solid(const SolidInfo& info = SolidInfo())
@@ -112,10 +110,20 @@ public:
     ScaleTransform scale;
     vec3 velocity;
     float nucleusPotential;
-    float mass;                 // Derived directly from nucleusPotential, kept only to help users not used to WavePhysics. May be removed later.
+    float mass;                         // Derived directly from nucleusPotential, kept only to help users not used to WavePhysics. May be removed later.
     ShapeType shapeType;
     Shape shape;
-    PhysicsMaterial material;
+    float meshShapeCaptureStride;       // Set the vertex stride for mesh shape capture, for simpler collision/energy transfer shapes
+    float radius = 0.0f;
+    vec3 extents = vec3(1.0f);
+
+    // We set default physics material proper for the case the Solid has no mesh assigned
+    std::vector<PhysicsMaterial> materials;
+    materials[0]::friction = 0.0f;
+    materials[0]::restitution = 0.0f;
+    materials[0]::density = 0.0f;
+
+    std::vector<vec3> vertices;
     BodyState bodyState;
     bool isDynamic = false;
 
@@ -125,7 +133,7 @@ public:
         auto shape = getInputValue<Shape>("Shape");
         auto mass = getInputValue<float>("Mass");
         auto density = getInputValue<float>("Density");
-        auto material = getInputValue<Material>("Material");
+        auto material = getInputValue<PhysicsMaterial>("Material");        // To override the meshes physics material, normally tagged in the mesh
         auto initialPosition = getInputValue<vec3>("InitialPosition");
         auto initialVelocity = getInputValue<vec3>("InitialVelocity");
 
@@ -154,7 +162,7 @@ public:
     void getMaterialsFromMesh();                // Can apply different physics materials from different parts of the mesh using assigned mesh materials and their tags
     void setDynamic(bool isDynamic);
     void setShape(const Shape& shape);
-    void setMaterial(const Material& material);
+    void setMaterial(const PhysicsMaterial& material);
     void setInitialPosition(const vec3& position);
     void setInitialVelocity(const vec3& velocity);
     void setDensity(float density);

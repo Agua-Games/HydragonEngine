@@ -10,7 +10,7 @@
 #include <string>
 
 #include "MainMenuBar.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 // === Layout variables ===

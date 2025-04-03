@@ -8,7 +8,7 @@
 #pragma once
 #include <imgui.h>
 
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 
 namespace hd {
 void showPresetEditor(bool* p_open, EditorWindowData* windowData);

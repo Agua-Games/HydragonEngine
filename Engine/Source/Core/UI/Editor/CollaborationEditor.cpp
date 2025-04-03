@@ -13,7 +13,7 @@
 #include "IconsMaterialSymbols.h"
 
 #include "CollaborationEditor.h"
-#include "UIManager.h"
+#include "MainEditorUIManager.h"
 #include "misc/cpp/imgui_stdlib.h"  // Fixed: Updated include path relative to imgui directory
 
 namespace hd {
