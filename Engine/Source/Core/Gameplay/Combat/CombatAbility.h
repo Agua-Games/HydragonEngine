@@ -47,6 +47,16 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    float damage = 0.0f;
+    float cooldown = 0.0f;
+    float range = 0.0f;
+    float radius = 0.0f;
+    float cost = 0.0f;
+    float force = 0.0f;
+    float duration = 0.0f;
+    float movementPenalty = 0.0f;
+
     // === Processing ===
     void processNode() override { }
     void addCombatMove(const std::string& combatAbilityName);

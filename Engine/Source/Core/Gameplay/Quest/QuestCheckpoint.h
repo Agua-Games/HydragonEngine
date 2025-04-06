@@ -89,13 +89,23 @@ public:
     load() override {}
 
     // Set default values
-    Quest quest = {};
+    Quest quest;  // The quest this checkpoint belongs to
     Quest.name = "Quest";
     Quest.description = "Quest description";
     Quest.objectives = {"Objective 1", "Objective 2", "Objective 3"};
     Quest.rewards = {"Reward 1", "Reward 2", "Reward 3"};
     QuestAction questAction = QuestAction::accept;
     DataTable questData = DataTable();
+
+    // Spatial properties
+    Vector3 position;
+    float radius = 2.0f;  // Interaction radius
+    float captureTime = 0.0f;  // Time needed to capture/complete this checkpoint
+
+    // Optional properties for different objective types
+    bool isLocationObjective = false;  // Is this a location to find
+    bool isCombatObjective = false;    // Is this a combat encounter
+    bool isInteractionObjective = false;  // Is this an NPC interaction
 
     // === Processing ===
     void processNode() override {
@@ -105,6 +115,26 @@ public:
     void removeObjective(const std::string& objectiveName);
     void addReward(const std::string& rewardName);
     void removeReward(const std::string& rewardName);
+    bool isPlayerInRange(const Vector3& playerPosition);
+    bool isQuestCompleted();
+    bool isQuestFailed();
+    bool isQuestAbandoned();
+    bool isQuestActive();
+    bool isQuestCustom();
+
+    // Events
+    void onPlayerApproach();
+    void onPlayerCapture();
+    void onPlayerDefeat();
+    void onPlayerAbandon();
+    void onPlayerComplete();
+    void onPlayerFail();
+    void onPlayerInteract();
+    void onPlayerEnter();
+    void onPlayerStay(float deltaTime);
+    void onPlayerExit();
+
+    // Process, load, save, reset
     void processQuestAction(QuestAction action);
     void processQuest();
     void saveQuest();

@@ -359,7 +359,6 @@ REAL-TIME CONSTRAINTS:
 #include <memory>
 #include <vector>
 #include <string>
-
 #include "ShortLivedParticle.h"
 #include "Node.h"
 #include "PhysicsFields.h"
@@ -1331,6 +1330,36 @@ public:
         }
     }
 
+    // Relativistic mass adjustment (can be toggled for performance)
+    float calculateRelativisticMass(float restMass, const vec3& velocity) {
+        if (!config.enableRelativisticEffects || glm::length(velocity) < config.relativisticThreshold) {
+            return restMass; // Skip calculation for low velocities
+        }
+        
+        float speedRatio = glm::length(velocity) / SPEED_OF_LIGHT;
+        float gamma = 1.0f / std::sqrt(1.0f - speedRatio * speedRatio);
+        return restMass * gamma;
+    }
+
+    // Time dilation between reference frames
+    float calculateTimeDilation(const vec3& relativeVelocity) {
+        if (!config.enableRelativisticEffects) {
+            return 1.0f; // No dilation when disabled
+        }
+        
+        float speedRatio = glm::length(relativeVelocity) / SPEED_OF_LIGHT;
+        return std::sqrt(1.0f - speedRatio * speedRatio); // Time runs slower by this factor
+    }
+
+    // Enforce light-speed limit on propagation
+    vec3 enforceSpeedLimit(const vec3& velocity) {
+        float speed = glm::length(velocity);
+        if (speed > SPEED_OF_LIGHT * config.lightSpeedFactor) {
+            return velocity * (SPEED_OF_LIGHT * config.lightSpeedFactor / speed);
+        }
+        return velocity;
+    }
+
     void updatePhysics(float deltaTime) {
         // All physics phenomena processed through wave-field interactions
         m_solver.propagateWaves(deltaTime);
@@ -1357,6 +1386,123 @@ public:
     void debugVisualizeReactions() {
         // Visualize spawned reactions and their effects
         // for debugging and analysis
+    }
+
+    // TODO: Move these to the .cpp file
+    // Wave propagation visualization
+    void debugVisualizeWavePropagation(const Wave& wave, DebugRenderer& renderer) {
+        // Draw wave direction
+        renderer.drawArrow(wave.position, 
+                        wave.position + wave.propagation * wave.amplitude, 
+                        Color(0.2f, 0.6f, 1.0f, 0.8f));
+        
+        // Draw amplitude as sphere
+        renderer.drawSphere(wave.position, wave.amplitude * 0.1f, 
+                        Color(1.0f, 0.5f, 0.2f, 0.5f));
+        
+        // Draw frequency as rings
+        float wavelength = wave.velocity / wave.frequency;
+        for (int i = 1; i <= 3; i++) {
+            renderer.drawCircle(wave.position, wavelength * i, 
+                            wave.propagation, 
+                            Color(0.2f, 1.0f, 0.5f, 0.7f / i));
+        }
+    }
+
+    // Energy conservation visualization
+    void debugVisualizeEnergyTransfer(const EnergyTransferEvent& event, DebugRenderer& renderer) {
+        // Draw source energy
+        renderer.drawSphere(event.position, 0.2f, Color(1.0f, 0.0f, 0.0f, 0.7f));
+        
+        // Draw text with energy value
+        renderer.drawText(event.position + vec3(0.0f, 0.3f, 0.0f), 
+                        std::to_string(event.sourceEnergy) + " J", 
+                        Color(1.0f, 1.0f, 1.0f, 1.0f));
+        
+        // Draw output energies
+        float totalOutput = 0.0f;
+        for (const auto& output : event.outputs) {
+            renderer.drawArrow(event.position, output.position, 
+                            Color(0.0f, 1.0f, 0.0f, 0.7f));
+            
+            renderer.drawText(output.position, 
+                            std::to_string(output.energy) + " J", 
+                            Color(1.0f, 1.0f, 1.0f, 1.0f));
+            
+            totalOutput += output.energy;
+        }
+        
+        // Draw conservation status
+        float ratio = totalOutput / event.sourceEnergy;
+        Color conservationColor = (ratio > 0.95f && ratio < 1.05f) ? 
+                                Color(0.0f, 1.0f, 0.0f, 1.0f) : 
+                                Color(1.0f, 0.0f, 0.0f, 1.0f);
+        
+        renderer.drawText(event.position + vec3(0.0f, 0.5f, 0.0f), 
+                        "Conservation: " + std::to_string(ratio * 100.0f) + "%", 
+                        conservationColor);
+    }
+
+    // Convert traditional rigid body to wave field representation
+    void convertRigidBodyToWaveField(const RigidBody& body, SolidField& field) {
+        // Create a sparse field representation centered on the rigid body
+        field.clear();
+        
+        // Set up basic properties
+        field.centerOfMass = body.position;
+        field.totalMass = body.mass;
+        
+        // Create energy distribution based on shape
+        switch (body.shapeType) {
+            case ShapeType::Box: {
+                // For box, create 8 corner points and center
+                vec3 halfExtents = body.dimensions * 0.5f;
+                for (int x = -1; x <= 1; x += 2) {
+                    for (int y = -1; y <= 1; y += 2) {
+                        for (int z = -1; z <= 1; z += 2) {
+                            vec3 localPoint = vec3(x * halfExtents.x, 
+                                                y * halfExtents.y, 
+                                                z * halfExtents.z);
+                            vec3 worldPoint = body.position + 
+                                            body.rotation * localPoint;
+                            
+                            // Add energy point
+                            field.addEnergyPoint(worldPoint, body.mass / 8.0f);
+                        }
+                    }
+                }
+                // Add center point
+                field.addEnergyPoint(body.position, body.mass / 8.0f);
+                break;
+            }
+            // Add other shape types...
+        }
+        
+        // Set momentum based on velocity
+        field.momentumPotential.setUniform(body.velocity * body.mass);
+        
+        // Set angular momentum
+        field.angularMomentumPotential.setUniform(body.angularVelocity * body.inertia);
+    }
+
+    // Convert wave field back to traditional rigid body
+    void convertWaveFieldToRigidBody(const SolidField& field, RigidBody& body) {
+        // Extract center of mass
+        body.position = field.computeCenterOfMass();
+        
+        // Extract total mass
+        body.mass = field.computeTotalMass();
+        
+        // Extract linear momentum and compute velocity
+        vec3 totalMomentum = field.momentumPotential.computeTotal();
+        body.velocity = totalMomentum / body.mass;
+        
+        // Extract angular momentum and compute angular velocity
+        vec3 totalAngularMomentum = field.angularMomentumPotential.computeTotal();
+        body.angularVelocity = totalAngularMomentum / body.inertia;
+        
+        // Estimate shape from energy distribution
+        estimateShapeFromEnergyField(field, body);
     }
 
 private:
@@ -2311,210 +2457,7 @@ private:
     }
     
     OptimizationSystem m_optimizer;
-
-public:
-    void update(float deltaTime) {
-        // Level 1: Local optimizations
-        for (auto& solver : m_activeSolvers) {
-            m_optimizer.local.grid.computeLocalResolution(solver.getPosition());
-            m_optimizer.local.precision.selectPrecision(solver.getEnergy());
-            m_optimizer.local.simd.processWaveBatch(solver.getWaves(), solver.getWaveCount());
-        }
-
-        // Level 2: Domain optimizations
-        vec3 focusPoint = getFocusPoint();
-        m_optimizer.domain.streaming.streamIn(focusPoint);
-        auto& lodLevel = m_optimizer.domain.lod.selectLOD(
-            getDistanceFromFocus(focusPoint)
-        );
-        updateDomainResolution(lodLevel);
-
-        // Level 3: Global optimizations
-        m_optimizer.global.threads.scheduleWaveProcessing(m_activeWaves);
-        m_optimizer.global.balance.balanceLoad();
-
-        // Level 4: Emergency fallback checks
-        if (m_optimizer.emergency.monitor.needsFallback()) {
-            m_optimizer.emergency.fallback.applyFallback(
-                m_optimizer.emergency.monitor
-            );
-        }
-    }
-
-private:
-    void updateDomainResolution(const OptimizationSystem::DomainOptimizer::LODSystem::LODLevel& level) {
-        m_solver.setResolution(level.resolution);
-        m_solver.setMaxWaves(level.maxWaves);
-    }
-
-    vec3 getFocusPoint() const {
-        // Usually the camera or player position
-        return m_activeCamera ? m_activeCamera->getPosition() : vec3(0);
-    }
-
-    float getDistanceFromFocus(const vec3& focusPoint) const {
-        return (m_solver.getPosition() - focusPoint).length();
-    }
 };
-
-/**
- * @brief Solver for wave physics.
- * Internal solver class that handles actual physics calculations. WavePhysicsSolver is meant to be instantiated modularly, managed by WavePhysics, and allow for
- * different solver configurations, from the heavier global solver to the more lightweight local, specialized, effects-oriented solvers.
- * We could have made it into a node, but we opted for an internal class to facilitate user workflow, communications between solvers - they're handled internally,
- * and directly, so we have the best of both worlds, as we can turn on and off connections between solvers, and have them communicate directly.
- */
-class WavePhysicsSolver {
-    public:
-        // === Allocation, Initialization, Loading ===
-        WavePhysicsSolver(const SolverConfig& config) {
-            // Initialize solver with configuration
-        }
-
-        std::unordered_map<SolverId, std::unique_ptr<WavePhysicsSolver>> m_solvers;
-        SolverId m_nextSolverId = 0;
-
-        // TODO: 
-        // - Implement the solver
-        // - Allow, first of all, for different configurations, based on probable workflows, uses, and user preference. For this user will resort to Vulkan-style
-        // configuration info structs, and the implementation details themselves are handled internally.
-        // - Methods, bridges to connect and disconnected transfer of data between solvers, safely.
-        
-        // === Processing ===
-        void processWaves(float deltaTime);
-        void resolveFieldInteractions(float deltaTime);
-        void updateEnergyStates(float deltaTime);
-
-        // === Cleanup ===
-        ~WavePhysicsSolver() {
-            // Cleanup resources
-        }
-};
-
-/**
- * @brief EnergyDimension handles the energy dimension in the wave physics system.
- * It's an experimental novel way of treating energy, conceptually, in a physics system. This allows us to map the energy dimension to
- * topological variations (using a noise field, possibly 4d), to "explain" unexpected effects and phenomena related to energy levels and
- * energy states, like quantum effects.
- */
-class EnergyDimension {
-public:
-    // === Structure Definitions ===
-    struct ExcitationField {
-        // 4D noise field (3D space + energy dimension)
-        float sampleField(const vec3& position, float energyLevel) const;
-
-        // Optimization: Cache frequently accessed regions
-        struct CachedRegion {
-            BoundingBox bounds;
-            float energyMin, energyMax;
-            Grid3D<float> samples;
-        };
-        
-        std::vector<CachedRegion> m_cachedRegions;
-    };
-
-    // Energy level as a dimensional value
-    struct EnergySpectrum {
-        vec4 spectralComponents;  // Different energy manifestations
-        
-        // Project to scalar when needed
-        float toScalar() const {
-            return glm::dot(spectralComponents, 
-                            vec4(0.2f, 0.3f, 0.3f, 0.2f));  // Weighted projection
-        }
-        
-        // Combine with field modulation
-        EnergySpectrum modulate(float fieldValue) const {
-            // Non-linear modulation based on field strength
-            float modFactor = std::pow(1.0f + std::abs(fieldValue), 2.0f);
-            return EnergySpectrum{spectralComponents * modFactor};
-        }
-    };
-
-    // Wave interaction with energy dimension
-    struct ModulatedWave {
-        WaveProperty baseProperties;
-        EnergySpectrum energySpectrum;
-        
-        // Compute interaction with energy field
-        void interact(const ExcitationField& field, const vec3& position);
-    };
-
-    // === Processing ===
-    // Propagate waves through energy landscape (energy dimension topography)
-    void propagateModulatedWave(const vec3& origin, 
-                                const vec3& direction, 
-                                const EnergySpectrum& initialEnergy);
-
-private:
-    // === Allocation, Initialization, Loading ===
-    ExcitationField m_excitationField;
-    float m_baseFrequency = 1.0f;
-    float m_energyScale = 0.1f;
-    float m_warpFactor = 0.5f;
-    int m_octaves = 4;
-    
-    // === Processing ===
-    /**
-     * @brief Trigger quantum effects based on high energy levels, like particle decay, pair production, etc.
-     * Intended for advanced use cases and simulations, or creative workflows.
-     */
-    void triggerQuantumEffects(const EnergySpectrum& energy);
-};
-
-/**
- * @brief WaveTrackingSystem handles wave propagation and tracking. 
- * Integration with ShortLivedParticleSystem.
- */
-class WaveTrackingSystem {
-public:
-    // === Processing ===
-    void updateWavePropagation(float deltaTime);
-
-private:
-    // === Allocation, Initialization, Loading ===
-    ShortLivedParticleSystem m_particleSystem;
-    EnergyField m_energyField;
-    Config m_config;
-
-    // === Processing ===
-    float getWaveSpeed(const WaveProperty& wave) {return wave.frequency * wave.medium.wavelength;}
-    vec3 calculateWaveDirection(const ShortLivedParticle& wavefront, const EnergyField& field);
-};
-
-/**
- * @brief SetConstantGravityForce sets a constant global gravity force. It's used as a simplified way to set gravity, as properly modeled gravity 
- * fields would require enormous processing power, for being enormous (big enough to model gradient variations). For lower res approximations
- * (e.g. space sim games, with planet scales far from actual), such gravity fields are feasible, though.
- */
-void setConstantGravityForce(const vec3& gravityDirection, float strength) {
-    // Set the simplified global gravity field
-}
-
-/**
- * @brief SetConstantWindForce sets a constant global wind force. It's used as a simplified wind force approximation in the absence of a proper
- * AtmosphereField in the scene. It applies a reasonably well modeled combination of directional kineticEnergy and momentumPotential to entities
- * in the scene, with some variations akin to how wind behaves in the real world. It will, for instance, make simulated cloth (solidFields with
- * low stiffness areas) flutter and move in the wind as they receive these energy transfers.
- */
-void setConstantWindForce(const vec3& windDirection, float strength, float turbulence, float gustFrequency, float randomness) {
-    // Set the simplified global wind field
-}
-
-/**
- * @brief EnableEnergyConservation enables or disables the strict keeping of the energy conservation law.
- * This results in the generation of side effects from energy transfer events (like collisions), like debris, sparks, heating of surfaces, 
- * sound punches/shockwaves, all sorts of side effects from collisions which happen as the system tries to solve the proper transfer of energy and 
- * keep the energy conservation law.
- */
-void enableEnergyConservation(bool enable) {
-    // Enable/disable energy conservation
-}
-
-void OnEnergyTransfer(const EnergyTransferEvent& event) {
-    // Handle energy transfer event
-}
 
 /**
  * @brief ForceFieldConfig defines the configuration for force fields.

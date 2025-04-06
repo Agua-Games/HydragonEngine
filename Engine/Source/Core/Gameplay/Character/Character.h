@@ -71,6 +71,7 @@ public:
     float attackRange = 0.0f;
     float attackDamage = 0.0f;
     float defense = 0.0f;
+    float armor = 0.0f;             // Armor is like a layer of protection over defense.
     float jumpStamina = 0.0f;
     
     Environment environment;

@@ -2,12 +2,12 @@
  * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file Lamp.h
- * @brief Header file for the Lamp class.
+ * @file LampStatic.h
+ * @brief Header file for the LampStatic class.
  * 
  * ARCHITECTURAL NOTES:
- * - Lamp is a class that represents a lamp in Hydragon.
- * - It is used to represent any lamp in the game world, such as street lamps, torches, lanterns, etc.
+ * - LampStatic is a class that represents a static lamp in Hydragon.
+ * - It is used to represent any static lamp in the game world, such as street lamps, etc.
  * - It supports interactive features, such as lighting, dimming, and flickering. Also supports two-way messaging with other lamps, environment, character, etc.
  */
 #pragma once
@@ -16,17 +16,17 @@
 #include <unordered_map>
 #include "Light.h"
 #include "LightMesh.h"
-#include "Prop.h"
+#include "BuildingElement.h"
 #include "DataTable.h"
 
 namespace hd {
 
-struct LampInfo : public PropInfo {
-    LampInfo() {
-        nodeType = "Gameplay/Lamp";
+struct LampStaticInfo : public BuildingElementInfo {
+    LampStaticInfo() {
+        nodeType = "Gameplay/LampStatic";
         
         inputs = {
-            "lampType",        // Type of lamp (street lamp, torch, lantern, etc.)
+            "lampType",        // Type of lamp (street lamp, etc.)
             "lampData",        // Lamp data
             "environment",     // Environment data
             "characterData",   // Character data
@@ -40,11 +40,11 @@ struct LampInfo : public PropInfo {
     }
 };
 
-class Lamp : public Prop {
+class LampStatic : public BuildingElement {
 public:
     // === Allocation, Initialization, Loading ===
-    explicit Lamp(const LampInfo& info = LampInfo())
-        : Prop(info) {}    // Prop constructor is called instead of Node constructor
+    explicit LampStatic(const LampStaticInfo& info = LampStaticInfo())
+        : BuildingElement(info) {}
     initialize() override {}
     load() override {}
 
@@ -57,7 +57,7 @@ public:
     // === Cleanup ===
     void unload() override {}
     void cleanup() override {}
-    ~Lamp() = default;     // Default destructor
+    ~LampStatic() = default;     // Default destructor
 };
 
 } // namespace hd

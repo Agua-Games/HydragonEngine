@@ -52,6 +52,27 @@ public:
     initialize() override {}
     load() override {}
 
+    // Set default values
+    DataTable scoreManagerData;
+    std::vector<Score> scores;
+    std::unordered_map<std::string, int> scoreMap;
+    std::unordered_map<std::string, int> scoreRankMap;
+    
+    int killPoints = 10;
+    int deathPoints = -5;
+    int assistPoints = 5;
+    int teamKillPoints = -10;
+    int teamDeathPoints = -5;
+    int teamAssistPoints = 5;
+    int deathPenalty = -10;
+
+    int objectivePoints = 10;
+    int objectiveBonus = 5;
+    int objectiveBonusMultiplier = 2;
+    int objectiveBonusMax = 100;
+    int objectiveBonusMin = 0;
+
+
     // === Processing ===
     void processNode() override { }
     void addScore(const std::string& scoreName, int scoreValue);

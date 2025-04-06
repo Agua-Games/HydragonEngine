@@ -221,6 +221,58 @@ struct EMField {
         // Calculate medium properties based on field properties
         return MediumProperties{...};
     }
+
+    // TODO: Move these implementations to the .cpp file
+    // EM field contribution to spacetime curvature (simplified)
+    void EMField::contributeToGravitationalField(GravitationalField& gravField) {
+        // Einstein's field equations relate energy density to spacetime curvature
+        // E_μν = 8πG/c⁴ * T_μν (where T_μν is the stress-energy tensor)
+        
+        // Simplified implementation for entertainment physics:
+        float energyDensityFactor = 8.0f * PI * GRAVITATIONAL_CONSTANT / 
+                                (SPEED_OF_LIGHT * SPEED_OF_LIGHT * SPEED_OF_LIGHT * SPEED_OF_LIGHT);
+        
+        // Scale factor for artistic control
+        energyDensityFactor *= config.EMGravityCouplingFactor;
+        
+        // For each cell in the field
+        for (size_t i = 0; i < gravField.cells.size(); i++) {
+            // Get EM energy density at this point
+            float emEnergyDensity = computeEnergyDensityAt(gravField.cellPositions[i]);
+            
+            // Add contribution to gravitational potential
+            gravField.potentialEnergy[i] += emEnergyDensity * energyDensityFactor;
+        }
+    }
+
+    // Conservation law enforcement
+    bool validateEnergyConservation(const EnergyTransferEvent& event) {
+        float inputEnergy = event.sourceEnergy;
+        float outputEnergy = 0.0f;
+        
+        // Sum all output energies
+        for (const auto& output : event.outputs) {
+            outputEnergy += output.energy;
+        }
+        
+        // Check conservation within tolerance
+        float ratio = outputEnergy / inputEnergy;
+        bool conserved = (ratio >= (1.0f - config.conservationTolerance) && 
+                        ratio <= (1.0f + config.conservationTolerance));
+        
+        // Log violation if needed
+        if (!conserved && config.logConservationViolations) {
+            logConservationViolation(event, inputEnergy, outputEnergy);
+        }
+        
+        // Apply correction if enabled
+        if (!conserved && config.enforceConservation) {
+            correctEnergyValues(event, inputEnergy, outputEnergy);
+        }
+        
+        return conserved;
+    }
+    
 };
 
 // Advanced EM field with detailed energy interactions

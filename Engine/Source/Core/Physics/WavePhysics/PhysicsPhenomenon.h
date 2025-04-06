@@ -43,6 +43,9 @@ public:
     void processNode() override {
  
     }
+    void processPhysics();
+    void spawnEffect();      // Spawn an effect (e.g. a particle sprite effect) based on the physics data
+    void updatePhysics();
     void update();
 
     // === Cleanup ===

@@ -7,8 +7,8 @@
  * 
  * ARCHITECTURAL NOTES:
  * - SplineScatter is a class that represents a spline scatter in Hydragon.
- * - It is used to scatter objects along a spline, from very regular placement patterns (like roads, pathways, railroads, hanging lamps, pipelines etc.), to very irregular 
- * placement patterns (like trees, rocks, etc.).
+ * - It is used to scatter objects along a spline, from very regular placement patterns (like roads, pathways, railroads, hanging lamps, pipelines, piping, etc.), to 
+ * very irregular placement patterns (like trees, rocks, etc.).
  * - It supports different scattering modes, such as uniform, random, and weighted.
  * - It supports different object types, such as particles, meshes, and sprites.
  * - It supports different spline types, such as linear, cubic, and bezier.

@@ -2,8 +2,10 @@
  * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file Wave.h
- * @brief Header file for the Wave struct and its LOD versions. It also includes specialized waves for specific scenarios.
+ * @file Wave_Legacy.h
+ * @brief Despite the "_Legacy" suffix, in some respects this is also a "_Goals" file. The content here is the first loose draft from which to copy-paste
+ * (adapting, of course) bits and pieces to the final Wave.h. It was written based on our design goals, then, as we've been doing for some headers, we start again from scratch, 
+ * now very cautiously, step-by-step implementing and testing, in cycles.
  * 
  * ARCHITECTURAL NOTES:
  * - Wave is a struct that represents a wave in WavePhysics's physics simulation.
@@ -26,6 +28,7 @@
  *      - Particle decay effects
  * - Other waves for specific scenarios include: GravitationalWave, PlasmaWave, etc.
  */
+#if 0
 #pragma once
 //#include <glm/gtc/matrix_transform.hpp>
 
@@ -466,3 +469,4 @@ struct alignas(4) ChemicalWaveDelta3 : WaveDeltaLOD3 {
 };
 
 } // namespace hd
+#endif

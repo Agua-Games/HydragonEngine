@@ -3,11 +3,16 @@
  * Licensed under the Agua Games License 1.0
  * 
  * @brief Mini-solver for artistic physics simulation with focus on optimization and visual quality
- * Principles:
+ *
+ * ARCHITECTURAL NOTES:
  * - Wave/field-based modeling with discrete sampling
  * - Multi-dimensional approach with strategic dimension reduction
  * - Energy and topology-based calculations
  * - Adaptive precision and memory optimization
+ * 
+ * - Created, at first, to model and simulate localized effects, like localized explosions, sparks, etc. Also dynamic character deformation effects, physicalized animations, etc.
+ * 
+ * @todo Refactor to match the latest WavePhysics design.
  */
 #pragma once
 #include <vulkan/vulkan.h>
@@ -15,12 +20,12 @@
 #include "AdaptiveMesh.h"
 //#include "Core/Math/TopologyUtils.h"
 #include "WavePhysics.h"
+#include "PhysicsFields.h"
 
 namespace hd {
 
 // Forward declarations
 class VoxelGrid;
-class WaveFunction;
 
 struct PhysicsQuantization {
     static constexpr float kBaseExp = 10.0f;  // Base for exponential encoding
@@ -44,8 +49,9 @@ struct LocalSpace {
     vec3 toWorld(const vec3& localPos) const;
 };
 
-class MiniPhysicsSolver {
+class MiniWavePhysicsSolver {
 public:
+    // === Structure Definitions ===
     struct Config {
         uint32_t gridResolution = 32;
         float timeStep = 1.0f/240.0f;
@@ -78,42 +84,24 @@ public:
         } optimization;
     };
 
-    void handleCollision(const CollisionInfo& info) {
-        float impactEnergy = calculateImpactEnergy(info);
-        
-        // Transfer energy instead of just dissipating
-        if (impactEnergy > EnergyManifestationType::kHighEnergyThreshold) {
-            // Spawn major effects (explosions, break-ups)
-            m_energyField.transferEnergy(
-                info.position,
-                impactEnergy,
-                EnergyManifestationType::KINETIC,
-                EnergyManifestationType::THERMAL
-            );
-        } else if (impactEnergy > EnergyManifestationType::kMediumEnergyThreshold) {
-            // Spawn medium effects (deformation, sparks)
-            m_energyField.transferEnergy(
-                info.position,
-                impactEnergy,
-                EnergyManifestationType::KINETIC,
-                EnergyManifestationType::PARTICLE
-            );
-        }
-        
-        // Update wave properties with adaptive precision
-        updateWaveProperties(info.position, impactEnergy);
-    }
+    // === Allocation, Initialization, Loading ===
+    void initializeField(const Config& config);
+
+    // === Processing ===
+    void handleCollision(const CollisionInfo& info);
 
     // Core simulation methods
-    void initializeField(const Config& config);
     void step(float deltaTime);
     void solve();
     
 private:
-    // Optimization structures
+    // === Structure Definitions ===
     std::unique_ptr<VoxelGrid> m_adaptiveGrid;
     std::vector<WaveFunction> m_waveFunctions;
-    
+    EnergyField m_energyField;
+    std::unique_ptr<WaveletCompressor> m_waveletCompressor;
+   
+    // === Processing ===
     // Field management
     void propagateWaves();
     void updateEnergy();
@@ -127,38 +115,7 @@ private:
     void compressWavelets();
     void updateAdaptiveGrid();
     void quantizeValues();
-
-    EnergyField m_energyField;
-    std::unique_ptr<WaveletCompressor> m_waveletCompressor;
-    
-    void updateWaveProperties(const vec3& position, float energy) {
-        // Adjust precision based on energy levels
-        uint32_t bitDepth = energy > EnergyManifestationType::kHighEnergyThreshold ? 32 :
-                           energy > EnergyManifestationType::kMediumEnergyThreshold ? 16 : 8;
-                           
-        // Update wave representation with appropriate precision
-        m_waveletCompressor->setLocalPrecision(position, bitDepth);
-    }
-};
-
-// Helper for wave-particle duality representation
-class WaveFunction {
-public:
-    // Wave characteristics
-    float amplitude;
-    float frequency;
-    float phase;
-    vec3 direction;
-    
-    // Particle characteristics
-    vec3 position;
-    vec3 momentum;
-    float energy;
-    
-    // Methods for wave-particle conversion
-    vec3 evaluatePosition(float time) const;
-    float evaluateEnergy() const;
-    void updateFromField(const EnergyField& field);
+    void updateWaveProperties(const vec3& position, float energy);
 };
 
 } // namespace hd
