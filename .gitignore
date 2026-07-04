@@ -56,3 +56,16 @@ Thumbs.db
 
 #Ignore Roadmap chats
 RoadmapChat/
+
+# ---- HydragonNext (Filament-first rewrite) ----
+# vcpkg clone and installed packages (managed by manifest / setup.ps1)
+/HydragonNext/ThirdParty/vcpkg/
+/HydragonNext/vcpkg_installed/
+# Prebuilt Filament SDK (downloaded by scripts/setup.ps1, large binaries)
+/HydragonNext/ThirdParty/Filament/
+# Visual Studio / MSBuild output
+/HydragonNext/**/x64/
+/HydragonNext/**/Debug/
+/HydragonNext/**/Release/
+/HydragonNext/.vs/
+/HydragonNext/**/*.user
