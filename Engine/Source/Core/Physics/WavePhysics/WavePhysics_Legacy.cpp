@@ -2,9 +2,10 @@
  * Copyright (c) 2024 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file WavePhysics.cpp
+ * @file WavePhysics_Legacy.cpp
  * 
  */
+#if 0
 #include <glm/gtx/vector_angle.hpp>
 #include "WavePhysics.h"
 #include "WaveletTransform.h"           // TODO: a dedicated class for the wavelet transform algorithm
@@ -163,3 +164,4 @@ void WaveBatchProcessor::processBatch(WaveBatch& batch) {
 }
 
 } // namespace hd
+#endif

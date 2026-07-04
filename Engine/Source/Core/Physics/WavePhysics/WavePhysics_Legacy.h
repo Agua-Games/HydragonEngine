@@ -2,7 +2,7 @@
  * Copyright (c) 2025 Agua Games. All rights reserved.
  * Licensed under the Agua Games License 1.0
  * 
- * @file WavePhysics.h
+ * @file WavePhysics_Legacy.h
  * @brief WavePhysics(c) is a class that handles energy transfer and transformation in the engine.
  * The name may mislead some users into thinking WavePhysics(c) has a very narrow scope, but in fact the choice of the name is intentional, to make clear our
  * paradigm regarding physics. We could have an even more telling name, like WaveFieldPhysics, but we must also had to consider "marketing", appeal, etc.
@@ -355,6 +355,7 @@ REAL-TIME CONSTRAINTS:
 * Solver Load      → Balance computations
 * Edge Behaviors   → Generate effects
 */
+#if 0
 #pragma once
 #include <memory>
 #include <vector>
@@ -421,12 +422,120 @@ struct EnergyManifestationType {
     };
 };
 
-class SolidField {
-    // Solid body properties
-    Field<float, 3> density;         // Mass density
-    Field<vec3, 3> velocity;         // Velocity field
-    Field<float, 3> pressure;        // Pressure field
-    Field<vec3, 3> stress;           // Stress tensor field
+/**
+ * @brief WaveBatchProcessor handles batch processing of waves.
+ * Uses SIMD and parallelization for performance.
+ */
+class WaveBatchProcessor {
+    struct WaveBatch {
+        // Unique identifier for the batch
+        uint32_t id;
+        int priority;
+        uint64_t timestamp;
+        static constexpr uint32_t batchSize = 8;
+
+        // Packed wave properties for SIMD processing
+        alignas(32) std::array<float, batchSize> amplitudes;
+        alignas(32) std::array<float, batchSize> frequencies;
+        alignas(32) std::array<float, batchSize> phases;
+        alignas(32) std::array<vec3, batchSize> directions;
+        
+        // Metadata for batch processing
+        uint32_t activeCount;
+        uint32_t startIndex;
+        
+        // Optimization: Pre-calculated trigonometric values
+        alignas(32) std::array<float, batchSize> sinValues;
+        alignas(32) std::array<float, batchSize> cosValues;
+    };
+
+    // Process waves in SIMD-friendly batches
+    void processBatch(WaveBatch& batch);
+};
+
+/**
+ * @brief ForceFieldConfig defines the configuration for force fields.
+ * These are not force fields as their meaning in sci-fi, but rather, they are force fields in the sense that they exert forces on objects.
+ */
+class ForceFieldConfig {
+    /**
+     * @brief RangeProfile defines the range and falloff of a force field.
+     */
+    struct RangeProfile {
+        float dissipationRadius;    // Field reach
+        float falloffExponent;      // How quickly force decreases
+        float baseStrength;         // Initial force magnitude
+        
+        // Configure for different force types
+        static RangeProfile createGravityLike() {
+            return { 100.0f, 2.0f, 0.1f }; // Long range, inverse square
+        }
+        
+        // Configure for different force types
+        static RangeProfile createContactForce() {
+            return { 1.0f, 4.0f, 10.0f };  // Short range, strong
+        }
+    };
+
+    struct WaveSourcePlacement {
+        // Parameters for when placing wave sources on vertices
+        float normalOffset;         // Distance along normal
+        bool useInternalSources;    // Place inside mesh
+        float volumeCoverage;       // Desired volume fill
+    };
+};
+
+/**
+ * @brief FieldGridProcessor handles processing of field grids.
+ * It includes algorithms for optimization, compression, and parallelization.
+ */
+class FieldGridProcessor {
+    struct FieldBatch {
+        // Dense grid representation for field values
+        struct GridBlock {
+            static constexpr uint32_t BLOCK_SIZE = 8;
+            alignas(32) float values[BLOCK_SIZE][BLOCK_SIZE][BLOCK_SIZE];
+            BoundingBox bounds;
+            uint32_t resolution;
+        };
+
+        // Sparse octree for adaptive resolution
+        struct OctreeNode {
+            GridBlock block;
+            std::array<std::unique_ptr<OctreeNode>, 8> children;
+            float importance;  // For adaptive subdivision
+        };
+
+        // Compressed field representation
+        struct CompressedField {
+            // Wavelet compression for low-energy regions
+            std::vector<float> coefficients;
+            uint32_t compressionLevel;
+            
+            // Run-length encoding for homogeneous regions
+            struct RLEBlock {
+                float value;
+                uint32_t count;
+            };
+            std::vector<RLEBlock> rleData;
+        };
+    };
+
+    void processFieldBlock(GridBlock& block);
+};
+
+/**
+ * @brief Refines the field grid adaptively with algorithms based on:
+ *  - Energy density
+ *  - Energy gradient
+ *  - Wave-field boundary
+ *  - Samples taken at mesh vertices positions
+ */
+class AdaptiveGridRefinement {
+    /**
+     * @brief Refines the grid at a specific vertex.
+     */
+    void refineAtVertex(const vec3& vertex, const vec3& normal);
 };
 
 class WavePhysics : public Node {
@@ -2459,123 +2568,9 @@ private:
     OptimizationSystem m_optimizer;
 };
 
-/**
- * @brief ForceFieldConfig defines the configuration for force fields.
- * These are not force fields as their meaning in sci-fi, but rather, they are force fields in the sense that they exert forces on objects.
- */
-class ForceFieldConfig {
-    /**
-     * @brief RangeProfile defines the range and falloff of a force field.
-     */
-    struct RangeProfile {
-        float dissipationRadius;    // Field reach
-        float falloffExponent;      // How quickly force decreases
-        float baseStrength;         // Initial force magnitude
-        
-        // Configure for different force types
-        static RangeProfile createGravityLike() {
-            return { 100.0f, 2.0f, 0.1f }; // Long range, inverse square
-        }
-        
-        // Configure for different force types
-        static RangeProfile createContactForce() {
-            return { 1.0f, 4.0f, 10.0f };  // Short range, strong
-        }
-    };
-
-    struct WaveSourcePlacement {
-        // Parameters for when placing wave sources on vertices
-        float normalOffset;         // Distance along normal
-        bool useInternalSources;    // Place inside mesh
-        float volumeCoverage;       // Desired volume fill
-    };
-};
-
-/**
- * @brief FieldGridProcessor handles processing of field grids.
- * It includes algorithms for optimization, compression, and parallelization.
- */
-class FieldGridProcessor {
-    struct FieldBatch {
-        // Dense grid representation for field values
-        struct GridBlock {
-            static constexpr uint32_t BLOCK_SIZE = 8;
-            alignas(32) float values[BLOCK_SIZE][BLOCK_SIZE][BLOCK_SIZE];
-            BoundingBox bounds;
-            uint32_t resolution;
-        };
-
-        // Sparse octree for adaptive resolution
-        struct OctreeNode {
-            GridBlock block;
-            std::array<std::unique_ptr<OctreeNode>, 8> children;
-            float importance;  // For adaptive subdivision
-        };
-
-        // Compressed field representation
-        struct CompressedField {
-            // Wavelet compression for low-energy regions
-            std::vector<float> coefficients;
-            uint32_t compressionLevel;
-            
-            // Run-length encoding for homogeneous regions
-            struct RLEBlock {
-                float value;
-                uint32_t count;
-            };
-            std::vector<RLEBlock> rleData;
-        };
-    };
-
-    void processFieldBlock(GridBlock& block);
-};
-
-/**
- * @brief WaveBatchProcessor handles batch processing of waves.
- * Uses SIMD and parallelization for performance.
- */
-class WaveBatchProcessor {
-    struct WaveBatch {
-        // Unique identifier for the batch
-        uint32_t id;
-        int priority;
-        uint64_t timestamp;
-        static constexpr uint32_t batchSize = 8;
-
-        // Packed wave properties for SIMD processing
-        alignas(32) std::array<float, batchSize> amplitudes;
-        alignas(32) std::array<float, batchSize> frequencies;
-        alignas(32) std::array<float, batchSize> phases;
-        alignas(32) std::array<vec3, batchSize> directions;
-        
-        // Metadata for batch processing
-        uint32_t activeCount;
-        uint32_t startIndex;
-        
-        // Optimization: Pre-calculated trigonometric values
-        alignas(32) std::array<float, batchSize> sinValues;
-        alignas(32) std::array<float, batchSize> cosValues;
-    };
-
-    // Process waves in SIMD-friendly batches
-    void processBatch(WaveBatch& batch);
-};
-
-/**
- * @brief Refines the field grid adaptively with algorithms based on:
- *  - Energy density
- *  - Energy gradient
- *  - Wave-field boundary
- *  - Samples taken at mesh vertices positions
- */
-class AdaptiveGridRefinement {
-    /**
-     * @brief Refines the grid at a specific vertex.
-     */
-    void refineAtVertex(const vec3& vertex, const vec3& normal);
-};
-
 } // namespace hd
+
+#endif
 
 
 
