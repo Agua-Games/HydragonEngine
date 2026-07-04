@@ -1,7 +1,8 @@
 
 # Ignore intermediate folders, build artifacts
 Bin/
-/Engine/Build/CMake/build/	# Ignore all files inside of ../CMake/build/
+# Ignore CMake build output (e.g. Filament source build)
+/Engine/Build/CMake/build/
 BuildOutput/
 Cache/
 
@@ -40,6 +41,12 @@ CMakeFiles/
 *.tmp
 *.bkp
 
+# Ignore volatile scratch folder (local-only, e.g. external notes/attachments)
+/temp/
+
+# Ignore local-only Copilot agents/skills toolkit (personal, not project code)
+/.github/
+
 # Ignore OS files (Windows, macOS, etc.)
 .DS_Store
 Thumbs.db
@@ -57,15 +64,16 @@ Thumbs.db
 #Ignore Roadmap chats
 RoadmapChat/
 
-# ---- HydragonNext (Filament-first rewrite) ----
+# ---- Hydragon rewrite (Filament-first, VS-native) ----
+# Legacy engine backup copy (preserved in git history + branch alpha-feature-vulkan-backend)
+/EngineLegacy/
 # vcpkg clone and installed packages (managed by manifest / setup.ps1)
-/HydragonNext/ThirdParty/vcpkg/
-/HydragonNext/vcpkg_installed/
-# Prebuilt Filament SDK (downloaded by scripts/setup.ps1, large binaries)
-/HydragonNext/ThirdParty/Filament/
+/Engine/Source/ThirdParty/vcpkg/
+/vcpkg_installed/
+# Filament: source-clone build output + installed SDK (large binaries)
+/Engine/Source/ThirdParty/filament-src/out/
+/Engine/Source/ThirdParty/Filament/
 # Visual Studio / MSBuild output
-/HydragonNext/**/x64/
-/HydragonNext/**/Debug/
-/HydragonNext/**/Release/
-/HydragonNext/.vs/
-/HydragonNext/**/*.user
+/x64/
+/Engine/**/x64/
+*.user
