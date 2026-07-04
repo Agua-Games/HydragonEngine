@@ -70,8 +70,9 @@ RoadmapChat/
 # vcpkg clone and installed packages (managed by manifest / setup.ps1)
 /Engine/Source/ThirdParty/vcpkg/
 /vcpkg_installed/
-# Filament: source-clone build output + installed SDK (large binaries)
-/Engine/Source/ThirdParty/filament-src/out/
+# Filament: full source clone (Option 1: ignored until build validated, then formalized as submodule)
+/Engine/Source/ThirdParty/filament-src/
+# Filament installed/prebuilt SDK (large binaries)
 /Engine/Source/ThirdParty/Filament/
 # Visual Studio / MSBuild output
 /x64/
