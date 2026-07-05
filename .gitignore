@@ -68,7 +68,7 @@ RoadmapChat/
 # Legacy engine backup copy (preserved in git history + branch alpha-feature-vulkan-backend)
 /EngineLegacy/
 # vcpkg clone and installed packages (managed by manifest / setup.ps1)
-/Engine/Source/ThirdParty/vcpkg/
+/Engine/ThirdParty/vcpkg/
 /vcpkg_installed/
 # Filament: full source clone (Option 1: ignored until build validated, then formalized as submodule)
 /Engine/ThirdParty/filament-src/

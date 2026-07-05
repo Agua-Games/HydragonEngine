@@ -25,7 +25,7 @@ $root = Split-Path -Parent $PSScriptRoot   # repo root
 
 # --- 1. vcpkg -------------------------------------------------------------
 if (-not $VcpkgRoot) {
-    $VcpkgRoot = Join-Path $root "Engine\Source\ThirdParty\vcpkg"
+    $VcpkgRoot = Join-Path $root "Engine\ThirdParty\vcpkg"
     if (-not (Test-Path $VcpkgRoot)) {
         Write-Host "Cloning vcpkg into $VcpkgRoot ..." -ForegroundColor Cyan
         git clone https://github.com/microsoft/vcpkg.git $VcpkgRoot
