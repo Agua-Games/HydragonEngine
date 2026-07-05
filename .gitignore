@@ -71,9 +71,9 @@ RoadmapChat/
 /Engine/Source/ThirdParty/vcpkg/
 /vcpkg_installed/
 # Filament: full source clone (Option 1: ignored until build validated, then formalized as submodule)
-/Engine/Source/ThirdParty/filament-src/
+/Engine/ThirdParty/filament-src/
 # Filament installed/prebuilt SDK (large binaries)
-/Engine/Source/ThirdParty/Filament/
+/Engine/ThirdParty/Filament/
 # Visual Studio / MSBuild output
 /x64/
 /Engine/**/x64/

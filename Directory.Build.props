@@ -8,17 +8,28 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!-- Keep Source/ SOURCE-ONLY: redirect every build artifact OUT of the source tree.
+       MSBuild defaults put x64/, obj/, .exe, .pdb next to each .vcxproj (which live under
+       Source/). We override OutDir (final binaries) and IntDir (intermediate obj) so ALL
+       projects write to Engine/Bin and Engine/BuildOutput instead. Set once, applies to all. -->
+  <PropertyGroup>
+    <HydragonRoot>$(MSBuildThisFileDirectory)</HydragonRoot>
+    <OutDir>$(HydragonRoot)Engine\Bin\Windows\$(Configuration)\</OutDir>
+    <IntDir>$(HydragonRoot)Engine\BuildOutput\Intermediate\$(MSBuildProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!-- vcpkg manifest mode: reads vcpkg.json in this folder automatically.
          Requires `vcpkg integrate install` once, or the VS vcpkg integration. -->
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgManifestInstall>true</VcpkgManifestInstall>
 
-    <!-- Filament SDK location, produced by the cmake install step of filament-src into this folder.
+    <!-- Filament SDK location: prebuilt/installed third-party SDK, kept OUTSIDE Source/ (source-only).
+         Lives under Engine/ThirdParty/ alongside other external dependencies (fetched by setup.ps1).
          Layout: include\ (public headers), lib\x86_64\ (static libs, flat), bin\ (matc, mipgen, ...).
          Backends built: Vulkan (primary) + OpenGL (fallback / future WebGL). CRT: /MD (dynamic).
          Override FilamentDir via environment variable if installed elsewhere. -->
-    <FilamentDir Condition="'$(FilamentDir)' == ''">$(MSBuildThisFileDirectory)Engine\Source\ThirdParty\Filament\</FilamentDir>
+    <FilamentDir Condition="'$(FilamentDir)' == ''">$(MSBuildThisFileDirectory)Engine\ThirdParty\Filament\</FilamentDir>
     <FilamentInclude>$(FilamentDir)include\</FilamentInclude>
     <!-- Libs are installed flat under lib\x86_64\ (single Release /MD build). -->
     <FilamentLib>$(FilamentDir)lib\x86_64\</FilamentLib>

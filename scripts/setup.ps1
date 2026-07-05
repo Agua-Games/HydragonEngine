@@ -4,7 +4,7 @@
     Does two things:
       1. Bootstraps vcpkg (for imgui/glfw3/glm/spdlog, and later usd) and wires
          it into Visual Studio via `vcpkg integrate install`.
-      2. Downloads a prebuilt Google Filament SDK into ThirdParty/Filament.
+      2. Downloads a prebuilt Google Filament SDK into Engine/ThirdParty/Filament.
 
     Filament is NOT available as a vcpkg port, so it is handled separately here.
 
@@ -45,7 +45,7 @@ if (Test-Path $bootstrap) {
 
 # --- 2. Filament prebuilt -------------------------------------------------
 if (-not $SkipFilament) {
-    $filamentDir = Join-Path $root "Engine\Source\ThirdParty\Filament"
+    $filamentDir = Join-Path $root "Engine\ThirdParty\Filament"
     if (Test-Path (Join-Path $filamentDir "include")) {
         Write-Host "Filament already present at $filamentDir" -ForegroundColor Green
     } else {

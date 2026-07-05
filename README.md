@@ -14,22 +14,90 @@ HydragonEngine is an open-source game engine licensed under the **Non-Commercial
 
 HydragonEngine is designed to provide a powerful and flexible game engine for developers. It is built with a focus on modularity, extensibility, and ease of use, allowing developers to create high-quality games and applications with minimal effort.
 
+The current effort is a **Filament-first rewrite of the engine core**, on branch `rewrite/filament-core`. The legacy core is preserved in git history, on branch `alpha-feature-vulkan-backend`, and copied under `../EngineLegacy/` (git-ignored) for local reference.
+
+## Architecture & Philosophy
+
+Carried over from the design docs:
+
+- **Bare-mode core**: headless, no windowing/GUI dependency in the core library.
+- **USD as authoritative backend**: scene graph, state and hierarchy live in OpenUSD.
+- **Filament as renderer**: direct USD -> Filament translation (Hydra delegate optional, later).
+- **Agnostic nodes**: every entity is a scene graph node (USD composition arcs / Filament `TransformManager`).
+
+## Repository Layout & Build Pipeline
+
+The folder structure enforces a strict **separation of concerns** so that adding a new
+third-party library (Filament, GLFW, ...) never requires a per-library decision:
+
+| Folder | Contents | Nature | Versioned? |
+| --- | --- | --- | --- |
+| `Engine/Source/` | **Only our own source code** and versioned build-definition files (`.vcxproj`, `.props`, license texts, header-only glue under `Source/ThirdParty/`). | Light, lean | Yes |
+| `Engine/ThirdParty/<lib>/` | Each **external dependency**, self-contained (its own `include/` + `lib/` + `bin/` + source clone if built from source). Fetched once by `setup.ps1`. | Heavy, reproducible | No (git-ignored) |
+| `Engine/Bin/<platform>/<config>/` | **Build artifacts** — our binaries **plus** any third-party runtime DLLs copied here by a post-build step. | Disposable, regenerable | No (git-ignored) |
+| `Engine/BuildOutput/Intermediate/` | Intermediate object files (`.obj`) per project/config. | Disposable | No (git-ignored) |
+
+Key rules that make this automatic:
+
+- **`Source/` is source-only.** MSBuild's default of dumping `x64/`, `.obj`, `.exe`, `.pdb`
+  next to each `.vcxproj` is overridden centrally: `OutDir` -> `Engine/Bin/...` and
+  `IntDir` -> `Engine/BuildOutput/Intermediate/...`, set once in `Directory.Build.props`.
+- **Dependency include/lib paths are centralized** in `Directory.Build.props` — you should
+  not need to hand-edit any `.vcxproj`.
+- **Static vs. dynamic third-party.** A static `.lib` (e.g. Filament, 100% static) is consumed
+  at build time and embedded into the `.exe`, so it contributes nothing to distribution. A
+  runtime `.dll` (e.g. FBX SDK, dynamic GLFW) is copied from `Engine/ThirdParty/<lib>/` into
+  `Bin/` by a post-build step — so shipping still means "grab the `Bin/` folder", while the
+  source of truth for the dependency stays in `Engine/ThirdParty/`.
+- **Project files** (`.vcxproj`) live next to the module they build (e.g.
+  `Engine/Source/Runtime/Runtime.vcxproj`); the solution `Hydragon.sln` at the repo root
+  references them.
+
+## Toolchain
+
+- Visual Studio 2022 (MSBuild, toolset v143, **C++20**).
+- **vcpkg** (manifest mode) for `imgui`, `glfw3`, `glm`, `spdlog`, and later `usd`.
+- **Filament** consumed as a prebuilt SDK under `Engine/ThirdParty/Filament/` (not on vcpkg).
+
+> Google Filament builds its own materials/shaders with CMake upstream, but here it is
+> consumed **prebuilt**, so the day-to-day loop stays 100% in Visual Studio. If you ever
+> prefer CMake + `CMakePresets.json` (VS opens those natively too, and it is how Filament/USD
+> build from source), that path remains available.
+
 ## Building
 
-HydragonEngine is built using CMake. To build the engine, follow these steps:
+### First-time setup
 
-1. Clone the repository.
-2. Create a build directory.
-3. Run CMake to generate the build files.
-4. Build the project using the generated build files.
+```powershell
+# From a Developer PowerShell at the repo root
+./scripts/setup.ps1
+```
 
-For detailed instructions on building HydragonEngine, please refer to the [Building Guide](./Engine/Docs/BuildingGuide.md).
+This bootstraps vcpkg (`vcpkg integrate install`) and downloads the prebuilt Filament SDK
+into `Engine/ThirdParty/Filament/`. Then open `Hydragon.sln` in Visual Studio 2022 and build.
 
-## Basic Usage
+Options:
 
-## CMake Support
+```powershell
+./scripts/setup.ps1 -SkipFilament            # only vcpkg
+./scripts/setup.ps1 -FilamentVersion v1.72.1 # pin a Filament version
+```
 
-- Compiling requires C++17.
+### Enabling Filament
+
+After `setup.ps1` has populated `Engine/ThirdParty/Filament/`, set the project property
+`UseFilament=true` (in `Directory.Build.props` or via `/p:UseFilament=true`), which adds the
+Filament include path, links its static libs and defines `HYDRAGON_USE_FILAMENT`.
+
+## Development Phases
+
+| Phase | Goal | Switch |
+| --- | --- | --- |
+| 0 | Toolchain smoke test (`Runtime` prints and runs) | default |
+| 1 | Filament hello-cube (window + PBR cube) | `<UseFilament>true</UseFilament>` |
+| 2 | ImGui overlay editor (decoupled from core) | vcpkg `imgui` |
+| 3 | OpenUSD backend (traverse prims -> Filament entities) | add `usd` to `vcpkg.json` |
+| 4 | WavePhysics (XPBD + fields) | — |
 
 ## Documentation
 
