@@ -1,0 +1,14 @@
+#ifndef MATERIALS_H_
+#define MATERIALS_H_
+
+#include <stdint.h>
+
+extern "C" {
+    extern const uint8_t MATERIALS_PACKAGE[];
+}
+
+#define MATERIALS_UNLIT_COLOR_OFFSET 0
+#define MATERIALS_UNLIT_COLOR_SIZE 41573
+#define MATERIALS_UNLIT_COLOR_DATA (MATERIALS_PACKAGE + MATERIALS_UNLIT_COLOR_OFFSET)
+
+#endif
