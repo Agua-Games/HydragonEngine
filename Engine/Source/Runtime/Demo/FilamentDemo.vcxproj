@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Isolated Filament cube demo (thin Win32 front-end + headless RenderCore).
+  <!-- Isolated Filament cube demo (thin Win32 front-end + headless HydragonCore).
        Standalone, removable sandbox: delete Demo/ + this file to remove it,
        without touching the Runtime entry point (main.cpp). Release|x64 only,
        because only Release /MD Filament libs exist. -->

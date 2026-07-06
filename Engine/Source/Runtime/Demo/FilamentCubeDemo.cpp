@@ -1,6 +1,6 @@
 // FilamentCubeDemo.cpp
 //
-// Minimal Win32 front-end that drives the headless RenderCore.
+// Minimal Win32 front-end that drives the headless HydragonCore.
 // Serves as a skeleton to rebuild the demo incrementally.
 
 #include <cstdint>
@@ -62,9 +62,9 @@ int main() {
     std::printf("Hydragon Filament Demo Skeleton - starting (backend=Vulkan)\n");
     std::fflush(stdout);
 
-    hydragon::RenderCore core;
+    hydragon::HydragonCore core;
     if (!core.init()) {
-        std::printf("RenderCore::init failed\n");
+        std::printf("HydragonCore::init failed\n");
         return 1;
     }
 
