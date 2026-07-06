@@ -1,14 +1,7 @@
 // FilamentCubeDemo.cpp
 //
-// Thin Win32 front-end that drives the headless RenderCore (see HydragonCore.h).
-//
-// Responsibilities kept here (and ONLY here): create an OS window, pump the
-// message loop, and hand the native handle to the core. All rendering/Filament
-// logic lives in RenderCore, so the same core can run headless or behind a
-// different front-end (editor, game, batch tool).
-//
-// This whole Demo/ folder is an isolated, removable sandbox: delete Demo/ and
-// FilamentDemo.vcxproj to remove it without touching the engine entry point.
+// Minimal Win32 front-end that drives the headless RenderCore.
+// Serves as a skeleton to rebuild the demo incrementally.
 
 #include <cstdint>
 #include <cstdio>
@@ -57,7 +50,7 @@ HWND createWindow() {
     AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
 
     return CreateWindowExW(
-        0, wc.lpszClassName, L"Hydragon - Filament Cube Demo (Vulkan)",
+        0, wc.lpszClassName, L"Hydragon - Filament Demo Skeleton",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
         rect.right - rect.left, rect.bottom - rect.top,
         nullptr, nullptr, instance, nullptr);
@@ -66,7 +59,7 @@ HWND createWindow() {
 } // namespace
 
 int main() {
-    std::printf("Hydragon Filament Cube Demo - starting (backend=Vulkan)\n");
+    std::printf("Hydragon Filament Demo Skeleton - starting (backend=Vulkan)\n");
     std::fflush(stdout);
 
     hydragon::RenderCore core;
@@ -84,14 +77,9 @@ int main() {
     ShowWindow(window, SW_SHOW);
 
     core.attachSurface((void*)window, kWidth, kHeight);
-    core.loadDemoScene();
 
     std::printf("Render loop running. Press ESC or close to quit.\n");
     std::fflush(stdout);
-
-    LARGE_INTEGER freq, start;
-    QueryPerformanceFrequency(&freq);
-    QueryPerformanceCounter(&start);
 
     MSG msg = {};
     while (gRunning) {
@@ -101,10 +89,7 @@ int main() {
         }
         if (!gRunning) break;
 
-        LARGE_INTEGER now;
-        QueryPerformanceCounter(&now);
-        const float t = float(double(now.QuadPart - start.QuadPart) / double(freq.QuadPart));
-        core.renderFrame(t);
+        core.renderFrame();
     }
 
     std::printf("Shutting down.\n");
