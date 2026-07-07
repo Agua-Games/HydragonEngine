@@ -66,9 +66,14 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="HydragonCore.cpp" />
+    <ClCompile Include="..\Core\NodeGraph\Node.cpp" />
+    <ClCompile Include="..\Core\SceneGraph\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HydragonCore.h" />
+    <ClInclude Include="..\Core\NodeGraph\USDStubs.h" />
+    <ClInclude Include="..\Core\NodeGraph\Node.h" />
+    <ClInclude Include="..\Core\SceneGraph\Scene.h" />
   </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

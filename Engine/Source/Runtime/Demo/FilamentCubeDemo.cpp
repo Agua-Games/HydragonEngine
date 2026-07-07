@@ -14,6 +14,8 @@
 #include <windows.h>
 
 #include "../HydragonCore.h"
+#include "../../Core/SceneGraph/Scene.h"
+#include "../../Core/NodeGraph/Node.h"
 
 #include <filament/VertexBuffer.h>
 #include <filament/IndexBuffer.h>
@@ -211,6 +213,25 @@ int main() {
     // Get exposed Filament structures from the generic core
     filament::Engine* engine = core.getEngine();
     filament::Scene* scene = core.getScene();
+
+    // Verification test of NodeGraph and SceneGraph hierarchy
+    std::printf("[demo] Testing NodeGraph and SceneGraph hierarchy...\n");
+    auto rootScene = std::make_shared<hd::Scene>("RootScene", engine);
+    rootScene->loadFromFile("dummy_scene.usd");
+    
+    if (!rootScene->getChildren().empty()) {
+        auto child = rootScene->getChildren()[0];
+        std::printf("[demo] Created Node: %s (USD Path: %s, USD Type: %s)\n", 
+                    child->getName().c_str(), 
+                    child->getUsdPrim().GetPath().c_str(),
+                    child->getUsdPrim().GetTypeName().c_str());
+        
+        // Test property synchronization
+        child->setProperty<float>("roughness", 0.35f);
+        std::printf("[demo] Property 'roughness' directly synced to USD: %.2f\n", 
+                    child->getProperty<float>("roughness"));
+    }
+    std::fflush(stdout);
 
     // 1. Load the compiled lit material filamat package
     auto matBuffer = loadBinaryFile("lit_color.filamat");
