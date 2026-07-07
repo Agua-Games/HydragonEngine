@@ -22,13 +22,16 @@
 #include <filament/MaterialInstance.h>
 #include <filament/TransformManager.h>
 #include <filament/Skybox.h>
+#include <filament/LightManager.h>
+#include <filament/Color.h>
 #include <math/vec3.h>
 #include <math/vec4.h>
 #include <math/mat4.h>
+#include <math/mat3.h>
+#include <math/quat.h>
 #include <utils/EntityManager.h>
 
-using filament::math::float3;
-using filament::math::mat4f;
+using namespace filament::math;
 
 namespace {
 
@@ -108,30 +111,80 @@ constexpr uint32_t packColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) {
 
 struct Vertex {
     float3 position;
+    quatf tangents;
     uint32_t color;
 };
 
-// 8 cube corners, each with a distinct color (colors interpolate across faces).
-const Vertex kVertices[8] = {
-    {{-1.0f, -1.0f, -1.0f}, packColor(255,   0,   0)},  // red
-    {{ 1.0f, -1.0f, -1.0f}, packColor(  0, 255,   0)},  // green
-    {{ 1.0f,  1.0f, -1.0f}, packColor(  0,   0, 255)},  // blue
-    {{-1.0f,  1.0f, -1.0f}, packColor(255, 255,   0)},  // yellow
-    {{-1.0f, -1.0f,  1.0f}, packColor(255,   0, 255)},  // magenta
-    {{ 1.0f, -1.0f,  1.0f}, packColor(  0, 255, 255)},  // cyan
-    {{ 1.0f,  1.0f,  1.0f}, packColor(255, 255, 255)},  // white
-    {{-1.0f,  1.0f,  1.0f}, packColor(255, 128,   0)},  // orange
-};
+// Generates 24 vertices for a cube with correct tangent frames for lighting.
+void createCube(Vertex* vertices, uint16_t* indices) {
+    auto pack = [](float3 normal, float3 tangent) {
+        float3 bitangent = normalize(cross(normal, tangent));
+        mat3f m(tangent, bitangent, normal);
+        return mat3f::packTangentFrame(m);
+    };
 
-// 12 triangles (36 indices), CCW winding.
-const uint16_t kIndices[36] = {
-    0, 1, 2,  0, 2, 3,   // back
-    4, 6, 5,  4, 7, 6,   // front
-    4, 5, 1,  4, 1, 0,   // bottom
-    3, 2, 6,  3, 6, 7,   // top
-    1, 5, 6,  1, 6, 2,   // right
-    4, 0, 3,  4, 3, 7,   // left
-};
+    quatf qFront  = pack({ 0.0f,  0.0f,  1.0f}, { 1.0f,  0.0f,  0.0f});
+    quatf qBack   = pack({ 0.0f,  0.0f, -1.0f}, {-1.0f,  0.0f,  0.0f});
+    quatf qLeft   = pack({-1.0f,  0.0f,  0.0f}, { 0.0f,  0.0f,  1.0f});
+    quatf qRight  = pack({ 1.0f,  0.0f,  0.0f}, { 0.0f,  0.0f, -1.0f});
+    quatf qTop    = pack({ 0.0f,  1.0f,  0.0f}, { 1.0f,  0.0f,  0.0f});
+    quatf qBottom = pack({ 0.0f, -1.0f,  0.0f}, {-1.0f,  0.0f,  0.0f});
+
+    uint32_t cRed     = packColor(220,  50,  50);
+    uint32_t cGreen   = packColor( 50, 180,  50);
+    uint32_t cBlue    = packColor( 50,  50, 220);
+    uint32_t cYellow  = packColor(220, 220,  50);
+    uint32_t cMagenta = packColor(220,  50, 220);
+    uint32_t cCyan    = packColor( 50, 220, 220);
+
+    // Front face (Red)
+    vertices[0]  = {{-1.0f, -1.0f,  1.0f}, qFront, cRed};
+    vertices[1]  = {{ 1.0f, -1.0f,  1.0f}, qFront, cRed};
+    vertices[2]  = {{ 1.0f,  1.0f,  1.0f}, qFront, cRed};
+    vertices[3]  = {{-1.0f,  1.0f,  1.0f}, qFront, cRed};
+
+    // Back face (Green)
+    vertices[4]  = {{-1.0f, -1.0f, -1.0f}, qBack, cGreen};
+    vertices[5]  = {{-1.0f,  1.0f, -1.0f}, qBack, cGreen};
+    vertices[6]  = {{ 1.0f,  1.0f, -1.0f}, qBack, cGreen};
+    vertices[7]  = {{ 1.0f, -1.0f, -1.0f}, qBack, cGreen};
+
+    // Left face (Blue)
+    vertices[8]  = {{-1.0f, -1.0f, -1.0f}, qLeft, cBlue};
+    vertices[9]  = {{-1.0f, -1.0f,  1.0f}, qLeft, cBlue};
+    vertices[10] = {{-1.0f,  1.0f,  1.0f}, qLeft, cBlue};
+    vertices[11] = {{-1.0f,  1.0f, -1.0f}, qLeft, cBlue};
+
+    // Right face (Yellow)
+    vertices[12] = {{ 1.0f, -1.0f, -1.0f}, qRight, cYellow};
+    vertices[13] = {{ 1.0f,  1.0f, -1.0f}, qRight, cYellow};
+    vertices[14] = {{ 1.0f,  1.0f,  1.0f}, qRight, cYellow};
+    vertices[15] = {{ 1.0f, -1.0f,  1.0f}, qRight, cYellow};
+
+    // Top face (Magenta)
+    vertices[16] = {{-1.0f,  1.0f, -1.0f}, qTop, cMagenta};
+    vertices[17] = {{-1.0f,  1.0f,  1.0f}, qTop, cMagenta};
+    vertices[18] = {{ 1.0f,  1.0f,  1.0f}, qTop, cMagenta};
+    vertices[19] = {{ 1.0f,  1.0f, -1.0f}, qTop, cMagenta};
+
+    // Bottom face (Cyan)
+    vertices[20] = {{-1.0f, -1.0f, -1.0f}, qBottom, cCyan};
+    vertices[21] = {{ 1.0f, -1.0f, -1.0f}, qBottom, cCyan};
+    vertices[22] = {{ 1.0f, -1.0f,  1.0f}, qBottom, cCyan};
+    vertices[23] = {{-1.0f, -1.0f,  1.0f}, qBottom, cCyan};
+
+    // Generate indices (6 faces, 2 triangles per face)
+    uint32_t idx = 0;
+    for (uint32_t face = 0; face < 6; ++face) {
+        uint16_t vStart = uint16_t(face * 4);
+        indices[idx++] = vStart;
+        indices[idx++] = uint16_t(vStart + 1);
+        indices[idx++] = uint16_t(vStart + 2);
+        indices[idx++] = vStart;
+        indices[idx++] = uint16_t(vStart + 2);
+        indices[idx++] = uint16_t(vStart + 3);
+    }
+}
 
 } // namespace
 
@@ -159,10 +212,10 @@ int main() {
     filament::Engine* engine = core.getEngine();
     filament::Scene* scene = core.getScene();
 
-    // 1. Load the compiled material filamat package
-    auto matBuffer = loadBinaryFile("unlit_color.filamat");
+    // 1. Load the compiled lit material filamat package
+    auto matBuffer = loadBinaryFile("lit_color.filamat");
     if (matBuffer.empty()) {
-        std::printf("[demo] FAILED to load unlit_color.filamat\n");
+        std::printf("[demo] FAILED to load lit_color.filamat\n");
         std::fflush(stdout);
         core.shutdown();
         DestroyWindow(window);
@@ -180,26 +233,32 @@ int main() {
         return 1;
     }
 
-    // 2. Allocate and set Vertex Buffer
+    // 2. Generate Cube vertices and indices
+    Vertex cubeVertices[24];
+    uint16_t cubeIndices[36];
+    createCube(cubeVertices, cubeIndices);
+
+    // 3. Allocate and set Vertex Buffer
     filament::VertexBuffer* vb = filament::VertexBuffer::Builder()
-        .vertexCount(8)
+        .vertexCount(24)
         .bufferCount(1)
-        .attribute(filament::VertexAttribute::POSITION, 0, filament::VertexBuffer::AttributeType::FLOAT3, 0, sizeof(Vertex))
-        .attribute(filament::VertexAttribute::COLOR, 0, filament::VertexBuffer::AttributeType::UBYTE4, 12, sizeof(Vertex))
+        .attribute(filament::VertexAttribute::POSITION, 0, filament::VertexBuffer::AttributeType::FLOAT3, offsetof(Vertex, position), sizeof(Vertex))
+        .attribute(filament::VertexAttribute::TANGENTS, 0, filament::VertexBuffer::AttributeType::FLOAT4, offsetof(Vertex, tangents), sizeof(Vertex))
+        .attribute(filament::VertexAttribute::COLOR, 0, filament::VertexBuffer::AttributeType::UBYTE4, offsetof(Vertex, color), sizeof(Vertex))
         .normalized(filament::VertexAttribute::COLOR)
         .build(*engine);
     vb->setBufferAt(*engine, 0,
-        filament::VertexBuffer::BufferDescriptor(kVertices, sizeof(kVertices), nullptr));
+        filament::VertexBuffer::BufferDescriptor(cubeVertices, sizeof(cubeVertices), nullptr));
 
-    // 3. Allocate and set Index Buffer
+    // 4. Allocate and set Index Buffer
     filament::IndexBuffer* ib = filament::IndexBuffer::Builder()
         .indexCount(36)
         .bufferType(filament::IndexBuffer::IndexType::USHORT)
         .build(*engine);
     ib->setBuffer(*engine,
-        filament::IndexBuffer::BufferDescriptor(kIndices, sizeof(kIndices), nullptr));
+        filament::IndexBuffer::BufferDescriptor(cubeIndices, sizeof(cubeIndices), nullptr));
 
-    // 4. Create Renderable Entity (Cube)
+    // 5. Create Renderable Entity (Cube)
     utils::Entity cube = utils::EntityManager::get().create();
     filament::RenderableManager::Builder(1)
         .boundingBox({{-1.0f, -1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}})
@@ -212,7 +271,17 @@ int main() {
 
     scene->addEntity(cube);
 
-    // 5. Create basic Skybox background
+    // 6. Create basic Directional Light
+    utils::Entity light = utils::EntityManager::get().create();
+    filament::LightManager::Builder(filament::LightManager::Type::DIRECTIONAL)
+        .color(filament::Color::toLinear(filament::RgbType::sRGB, {0.98f, 0.92f, 0.89f}))
+        .intensity(100000.0f) // Lux
+        .direction({-0.5f, -1.0f, -0.5f})
+        .castShadows(false)
+        .build(*engine, light);
+    scene->addEntity(light);
+
+    // 7. Create basic Skybox background
     filament::Skybox* skybox = filament::Skybox::Builder().color({0.1f, 0.1f, 0.2f, 1.0f}).build(*engine);
     scene->setSkybox(skybox);
 
@@ -229,6 +298,9 @@ int main() {
         while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
+            if (msg.message == WM_QUIT) {
+                gRunning = false;
+            }
         }
         if (!gRunning) break;
 
@@ -253,6 +325,7 @@ int main() {
     std::fflush(stdout);
 
     // Cleanup resources in reverse order
+    engine->destroy(light);
     engine->destroy(cube);
     engine->destroy(material);
     engine->destroy(ib);
