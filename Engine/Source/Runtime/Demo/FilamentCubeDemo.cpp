@@ -79,6 +79,7 @@ std::vector<uint8_t> loadBinaryFile(const std::string& filename) {
     std::vector<std::string> paths = {
         filename,
         "Engine/Source/Runtime/Demo/" + filename,
+        "../../../Source/Runtime/Demo/" + filename,
         "../../Source/Runtime/Demo/" + filename,
         "../Engine/Source/Runtime/Demo/" + filename
     };
