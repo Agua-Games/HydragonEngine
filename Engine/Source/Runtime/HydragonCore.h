@@ -37,6 +37,11 @@ public:
 
   bool hasSurface() const { return mSwapChain != nullptr; }
 
+  filament::Engine* getEngine() const { return mEngine; }
+  filament::Scene* getScene() const { return mScene; }
+  filament::View* getView() const { return mView; }
+  filament::Camera* getCamera() const { return mCamera; }
+
 private:
   filament::Engine *mEngine = nullptr;
   filament::SwapChain *mSwapChain = nullptr;
