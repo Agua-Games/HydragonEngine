@@ -16,6 +16,13 @@
 #include "../HydragonCore.h"
 #include "../../Core/SceneGraph/Scene.h"
 #include "../../Core/NodeGraph/Node.h"
+#include "../../Core/UI/Base/UIManager.h"
+#include "../../Core/UI/Base/UIPanel.h"
+#include "../../Core/UI/Base/UIButton.h"
+#include "../../Core/UI/Base/UIText.h"
+#include "../../Core/UI/Base/UISlider.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 #include <filament/VertexBuffer.h>
 #include <filament/IndexBuffer.h>
@@ -43,6 +50,9 @@ constexpr uint32_t kHeight = 720;
 bool gRunning = true;
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+    if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
+        return true;
+    }
     switch (msg) {
         case WM_CLOSE:
         case WM_DESTROY:
@@ -306,6 +316,23 @@ int main() {
     filament::Skybox* skybox = filament::Skybox::Builder().color({0.1f, 0.1f, 0.2f, 1.0f}).build(*engine);
     scene->setSkybox(skybox);
 
+    // 8. Initialize Nodal UI Subsystem
+    auto uiManager = std::make_shared<hd::UIManager>("UIManager", engine);
+    uiManager->initialize(window, kWidth, kHeight);
+    core.registerView(uiManager->getUIView());
+
+    auto uiPanel = std::make_shared<hd::UIPanel>("ConfigPanel", "Hydragon Config Panel");
+    uiManager->addChild(uiPanel);
+
+    auto uiText = std::make_shared<hd::UIText>("RotationSpeedText", "Cube Rotation Settings");
+    uiPanel->addChild(uiText);
+
+    auto speedSlider = std::make_shared<hd::UISlider>("SpeedSlider", "Speed Multiplier", 1.0f, 0.0f, 5.0f);
+    uiPanel->addChild(speedSlider);
+
+    auto colorButton = std::make_shared<hd::UIButton>("ColorButton", "Toggle Skybox Color");
+    uiPanel->addChild(colorButton);
+
     std::printf("Render loop running. Press ESC or close to quit.\n");
     std::fflush(stdout);
 
@@ -313,6 +340,7 @@ int main() {
     LARGE_INTEGER freq, start;
     QueryPerformanceFrequency(&freq);
     QueryPerformanceCounter(&start);
+    LARGE_INTEGER lastTime = start;
 
     MSG msg = {};
     while (gRunning) {
@@ -325,19 +353,49 @@ int main() {
         }
         if (!gRunning) break;
 
-        // Apply rotation to the cube
+        // Apply rotation to the cube and calculate deltaTime
         LARGE_INTEGER now;
         QueryPerformanceCounter(&now);
         const float t = float(double(now.QuadPart - start.QuadPart) / double(freq.QuadPart));
+        const float deltaTime = float(double(now.QuadPart - lastTime.QuadPart) / double(freq.QuadPart));
+        lastTime = now;
+
+        // Start new UI frame
+        uiManager->newFrame(deltaTime);
+
+        // Read slider value to apply rotation speed
+        float speedMultiplier = speedSlider->getProperty<float>("Value", 1.0f);
 
         auto& tcm = engine->getTransformManager();
         const auto inst = tcm.getInstance(cube);
         if (inst) {
             const mat4f model =
-                mat4f::rotation(t * 0.9f, float3{0.0f, 1.0f, 0.0f}) *
-                mat4f::rotation(t * 0.6f, float3{1.0f, 0.0f, 0.0f});
+                mat4f::rotation(t * 0.9f * speedMultiplier, float3{0.0f, 1.0f, 0.0f}) *
+                mat4f::rotation(t * 0.6f * speedMultiplier, float3{1.0f, 0.0f, 0.0f});
             tcm.setTransform(inst, model);
         }
+
+        // Handle color toggle button click
+        static bool alternateColor = false;
+        if (colorButton->getProperty<bool>("Clicked", false)) {
+            alternateColor = !alternateColor;
+            auto* oldSkybox = skybox;
+            if (alternateColor) {
+                skybox = filament::Skybox::Builder().color({0.3f, 0.1f, 0.1f, 1.0f}).build(*engine);
+            } else {
+                skybox = filament::Skybox::Builder().color({0.1f, 0.1f, 0.2f, 1.0f}).build(*engine);
+            }
+            scene->setSkybox(skybox);
+            engine->destroy(oldSkybox);
+        }
+
+        // Update the dynamic text block
+        char speedStr[64];
+        sprintf_s(speedStr, sizeof(speedStr), "Current Speed: %.2fx", speedMultiplier);
+        uiText->setProperty<std::string>("Text", speedStr);
+
+        // Process and draw the ImGui drawlists
+        uiManager->render();
 
         core.tick();
     }
@@ -353,6 +411,7 @@ int main() {
     engine->destroy(vb);
     engine->destroy(skybox);
 
+    uiManager->shutdown();
     core.shutdown();
     DestroyWindow(window);
     return 0;

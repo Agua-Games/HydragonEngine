@@ -68,12 +68,22 @@
     <ClCompile Include="HydragonCore.cpp" />
     <ClCompile Include="..\Core\NodeGraph\Node.cpp" />
     <ClCompile Include="..\Core\SceneGraph\Scene.cpp" />
+    <ClCompile Include="..\Core\UI\Base\UIManager.cpp" />
+    <ClCompile Include="..\Core\UI\Base\UIPanel.cpp" />
+    <ClCompile Include="..\Core\UI\Base\UIButton.cpp" />
+    <ClCompile Include="..\Core\UI\Base\UIText.cpp" />
+    <ClCompile Include="..\Core\UI\Base\UISlider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HydragonCore.h" />
     <ClInclude Include="..\Core\NodeGraph\USDStubs.h" />
     <ClInclude Include="..\Core\NodeGraph\Node.h" />
     <ClInclude Include="..\Core\SceneGraph\Scene.h" />
+    <ClInclude Include="..\Core\UI\Base\UIManager.h" />
+    <ClInclude Include="..\Core\UI\Base\UIPanel.h" />
+    <ClInclude Include="..\Core\UI\Base\UIButton.h" />
+    <ClInclude Include="..\Core\UI\Base\UIText.h" />
+    <ClInclude Include="..\Core\UI\Base\UISlider.h" />
   </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

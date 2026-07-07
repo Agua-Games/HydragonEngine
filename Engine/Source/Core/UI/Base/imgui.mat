@@ -1,0 +1,18 @@
+material {
+    name : imgui,
+    shadingModel : unlit,
+    blending : transparent,
+    culling : none,
+    depthWrite : false,
+    parameters : [
+        { type : sampler2d, name : albedo }
+    ],
+    requires : [ color, uv0 ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        material.baseColor = getColor() * texture(materialParams_albedo, getUV0());
+    }
+}

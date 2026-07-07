@@ -6,6 +6,7 @@
 #include "HydragonCore.h"
 
 #include <cstdio>
+#include <algorithm>
 #include <filament/Viewport.h>
 #include <utils/EntityManager.h>
 
@@ -68,7 +69,23 @@ void HydragonCore::renderFrame() {
 
   if (mRenderer->beginFrame(mSwapChain)) {
     mRenderer->render(mView);
+    for (auto* view : mViews) {
+      mRenderer->render(view);
+    }
     mRenderer->endFrame();
+  }
+}
+
+void HydragonCore::registerView(filament::View* view) {
+  if (view) {
+    mViews.push_back(view);
+  }
+}
+
+void HydragonCore::unregisterView(filament::View* view) {
+  auto it = std::find(mViews.begin(), mViews.end(), view);
+  if (it != mViews.end()) {
+    mViews.erase(it);
   }
 }
 

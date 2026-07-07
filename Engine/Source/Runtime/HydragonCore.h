@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 
 #include <filament/Camera.h>
 #include <filament/Engine.h>
@@ -42,6 +43,9 @@ public:
   filament::View* getView() const { return mView; }
   filament::Camera* getCamera() const { return mCamera; }
 
+  void registerView(filament::View* view);
+  void unregisterView(filament::View* view);
+
 private:
   // Advance and render one frame.
   void renderFrame();
@@ -52,6 +56,8 @@ private:
   filament::View *mView = nullptr;
   filament::Camera *mCamera = nullptr;
   utils::Entity mCameraEntity;
+
+  std::vector<filament::View*> mViews;
 
   uint32_t mWidth = 0;
   uint32_t mHeight = 0;
