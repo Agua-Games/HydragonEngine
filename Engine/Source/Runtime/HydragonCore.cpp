@@ -56,6 +56,11 @@ void HydragonCore::attachSurface(void *nativeWindow, uint32_t width,
   mCamera->lookAt({0.0f, 0.0f, 5.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
 }
 
+void HydragonCore::tick() {
+  // In the future: update input, physics, scene graph delta sync, etc.
+  renderFrame();
+}
+
 void HydragonCore::renderFrame() {
   if (mSwapChain == nullptr) {
     return;

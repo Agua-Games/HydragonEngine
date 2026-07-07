@@ -245,7 +245,7 @@ int main() {
             tcm.setTransform(inst, model);
         }
 
-        core.renderFrame();
+        core.tick();
     }
 
     std::printf("Shutting down.\n");

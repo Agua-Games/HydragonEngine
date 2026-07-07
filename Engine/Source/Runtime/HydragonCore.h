@@ -29,8 +29,8 @@ public:
   // handle.
   void attachSurface(void *nativeWindow, uint32_t width, uint32_t height);
 
-  // Advance and render one frame.
-  void renderFrame();
+  // Tick the engine (updates systems, physics, scene and renders a frame).
+  void tick();
 
   // Tear everything down in reverse order of creation.
   void shutdown();
@@ -43,6 +43,8 @@ public:
   filament::Camera* getCamera() const { return mCamera; }
 
 private:
+  // Advance and render one frame.
+  void renderFrame();
   filament::Engine *mEngine = nullptr;
   filament::SwapChain *mSwapChain = nullptr;
   filament::Renderer *mRenderer = nullptr;
