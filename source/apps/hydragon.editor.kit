@@ -82,8 +82,8 @@ template_name = "kit_base_editor"
 "omni.anim.curve_editor" = {}
 "omni.anim.graph.bundle" = {} # Animation state machines and blend trees
 "omni.anim.motion_path.bundle" = {}
-"omni.anim.retarget.bundle" = {}
-"omni.anim.navigation.bundle" = {}
+#"omni.anim.retarget.bundle" = {} # Disabled by default: runs background Hydra preview viewports that drop FPS.
+#"omni.anim.navigation.bundle" = {} # Disabled by default: runs background navigation grid calculations.
 "omni.kit.widget.timeline" = {}
 "omni.kit.scripting" = {} # Python scrpting component (beta).
 "omni.kit.window.material_graph" = {}
@@ -99,7 +99,7 @@ template_name = "kit_base_editor"
 "omni.physx.fabric" = {} # Convert physics scenes to fabric internally, for optimization
 "omni.ui" = {} # UI framework
 #"omni.audioplayer" = {}
-"omni.scene.optimizer.bundle" = {}
+#"omni.scene.optimizer.bundle" = {} # Disabled by default: runs background stage checkers that cause high CPU notice overhead.
 "hydragon.editor.core" = {}
 
 
@@ -123,6 +123,8 @@ telemetry.disableInternalSessionCheck = true
 telemetry.enableAnonymousAppName = true
 telemetry.enableAnonymousData = true
 privacy.externalBuild = true
+carb.eventdispatcher.observers = true
+
 
 
 [settings.app]
