@@ -66,25 +66,37 @@ template_name = "kit_base_editor"
 "omni.uiaudio" = {} # for audio playback.
 "omni.usd.metrics.assembler.ui" = {}
 "omni.usd.schema.metrics.assembler" = {}
+# Extensions for Hydragon.
+"omni.graph.window.core" = {}
+"omni.graph.window.generic" = {}
+"omni.graph.window.action" = {}
 "omni.warp.core" = {} # Warp support
 "omni.warp" = {} # Warp is for multi-threaded asyncm bypass CPU, less mem-copy, keep procesing loop in GPU
+"omni.warp.graph" = {}
+"omni.warp.menu" = {}
+"omni.asset_validator.ui" = {}
+"omni.fabric.commands" = {}
 "omni.anim.timeline" = {}
 "omni.anim.window.timeline" = {}
 "omni.anim.curve.bundle" = {}
 "omni.anim.curve_editor" = {}
 "omni.anim.graph.bundle" = {} # Animation state machines and blend trees
+"omni.anim.motion_path.bundle" = {}
+"omni.anim.retarget.bundle" = {}
+"omni.anim.navigation.bundle" = {}
 "omni.kit.widget.timeline" = {}
 "omni.kit.scripting" = {} # Python scrpting component (beta).
 "omni.kit.window.material_graph" = {}
 "omni.kit.browser.material" = {}
+"omni.kit.browser.asset" = {} # Installed because Content Browser was lacking thumbnails for textures, etc.
+"omni.kit.variant.editor" = {} # For character, vehicle, props customization. Also level area states (switchable).
 "omni.kit.tool.measure" = {}
 "omni.kit.window.sequencer" = {} # for non-linear tracks editor, Sequencer.
 "omni.physx.bundle" = {}
-"omni.ui" = {} # UI framework
 "omni.physx.cct" = {} # Kinematic character controller (capsule)
-"omni.physx.fabric" = {} # Convert physics scenes to fabric internally, for optimization
-"omni.fabric.commands" = {}
-"omni.audioplayer" = {}
+#"omni.physx.fabric" = {} # Convert physics scenes to fabric internally, for optimization
+"omni.ui" = {} # UI framework
+#"omni.audioplayer" = {}
 "omni.scene.optimizer.bundle" = {}
 
 
@@ -107,6 +119,9 @@ telemetry.disableInternalSessionCheck = true
 telemetry.enableAnonymousAppName = true
 telemetry.enableAnonymousData = true
 privacy.externalBuild = true
+app.extensions.exclude = [
+	"omni.warp.menu"
+]
 
 
 [settings.app]
@@ -117,6 +132,8 @@ hangDetector.enabled = true
 hangDetector.timeout = 120
 renderer.skipWhileMinimized = true
 window.title = "Hydragon Editor"
+
+
 
 
 [settings.app.environment]
