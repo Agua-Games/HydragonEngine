@@ -1,0 +1,12 @@
+[package]
+title = "Hydragon Editor Core"
+description = "Core functionality and monkeypatches for Hydragon Editor."
+version = "0.1.0"
+category = "Editor"
+keywords = ["editor", "core"]
+
+[dependencies]
+"omni.kit.menu.utils" = {}
+
+[[python.module]]
+name = "hydragon.editor.core"
