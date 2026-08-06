@@ -70,13 +70,14 @@ class SetupExtension(omni.ext.IExt):
             asyncio.ensure_future(self.__open_stage(stage_url))
 
         self._await_layout = asyncio.ensure_future(self._delayed_layout())
-        get_main_window().get_main_menu_bar().visible = False
+        get_main_window().get_main_menu_bar().visible = True
 
     async def _delayed_layout(self):
         """This function is used to delay the layout loading until the
         application has finished its initial setup."""
         main_menu_bar = get_main_window().get_main_menu_bar()
-        main_menu_bar.visible = False
+        main_menu_bar.visible = True
+
         # few frame delay to allow automatic Layout of window that want their
         # own positions
         app = omni.kit.app.get_app()
@@ -85,7 +86,7 @@ class SetupExtension(omni.ext.IExt):
 
         settings = carb.settings.get_settings()
         # setup the Layout for your app
-        token = "${% raw %}{{% endraw %}hydragon.viewer.setup{% raw %}}{% endraw %}/layouts"
+        token = "${hydragon.viewer.setup}/layouts"
 
         layouts_path = carb.tokens.get_tokens_interface().resolve(token)
         layout_name = settings.get("/app/layout/name")
