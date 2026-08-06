@@ -11,18 +11,35 @@
                     "dock_id": 5,
                     "dock_tab_bar_enabled": true,
                     "dock_tab_bar_visible": true,
-
                     "height": 500.0,
                     "position_x": 0.0,
                     "position_y": 26.0,
                     "selected_in_dock": true,
                     "title": "Viewport",
                     "visible": true,
-                    "width": 727.0
+                    "width": 500.0
                   }
                 ],
                 "dock_id": 5,
                 "position": "LEFT"
+              },
+              {
+                "children": [
+                  {
+                    "dock_id": 6,
+                    "dock_tab_bar_enabled": true,
+                    "dock_tab_bar_visible": true,
+                    "height": 500.0,
+                    "position_x": 500.0,
+                    "position_y": 26.0,
+                    "selected_in_dock": true,
+                    "title": "Stage",
+                    "visible": true,
+                    "width": 227.0
+                  }
+                ],
+                "dock_id": 6,
+                "position": "RIGHT"
               }
             ],
             "dock_id": 3,
@@ -35,4 +52,4 @@
     ],
     "dock_id": 3358485147
   }
-]
+]
