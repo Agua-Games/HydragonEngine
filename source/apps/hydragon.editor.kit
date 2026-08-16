@@ -113,14 +113,13 @@ template_name = "kit_base_editor"
 "omni.ui" = {} # UI framework
 #"omni.audioplayer" = {}
 #"omni.scene.optimizer.bundle" = {} # Disabled by default: runs background stage checkers that cause high CPU notice overhead.
+"omni.kit.client.alias" = {} # to support third-party (game) assets paths outside of Hydragon engine's repo/folder.
 "hydragon.editor.core" = {}
-
 
 
 
 [settings.persistent.app]
 viewport.autoFrame.mode = "first_open"  # Auto frame the first time the viewport is opened
-
 
 [settings]
 crashreporter.compressDumpFiles = true
@@ -139,8 +138,6 @@ telemetry.enableAnonymousData = true
 privacy.externalBuild = true
 carb.eventdispatcher.observers = true
 
-
-
 [settings.app]
 content.emptyStageOnStart = true
 font.file = "${fonts}/OpenSans-SemiBold.ttf"
@@ -150,12 +147,8 @@ hangDetector.timeout = 120
 renderer.skipWhileMinimized = true
 window.title = "Hydragon Editor"
 
-
-
-
 [settings.app.environment]
 name = "Hydragon Editor"
-
 
 [settings.app.exts]
 folders.'++' = [  # Search paths for extensions.
@@ -163,10 +156,8 @@ folders.'++' = [  # Search paths for extensions.
 	"${app}/../extscache/"
 ]
 
-
 [settings.app.viewport.defaults]
 fillViewport = true  # default to fill viewport
-
 
 [[test]]
 args = [

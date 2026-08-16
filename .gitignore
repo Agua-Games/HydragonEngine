@@ -36,3 +36,6 @@ deps/**/user.toml
 
 # Streaming EventTrace
 *.etli
+
+# Hydragon assets, non-versioned (for now)
+/source/extensions/hydragon.editor.core/data/
