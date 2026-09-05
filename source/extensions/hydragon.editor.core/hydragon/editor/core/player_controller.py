@@ -22,10 +22,16 @@ try:
         get_physx_scene_query_interface,
     )
     from pxr import Usd, UsdGeom, Sdf, Gf, UsdUtils, UsdPhysics, PhysicsSchemaTools
+    try:
+        from pxr import PhysxSchema
+    except ImportError:
+        PhysxSchema = None
     HAS_KIT = True
 except ImportError:
     HAS_KIT = False
     carb = None
+    UsdPhysics = None
+    PhysxSchema = None
 
 from .schemas import HydragonPlayerController
 
@@ -45,6 +51,7 @@ class HydragonPlayerControllerSystem:
         self._jump_consumed = False
         self._cached_player_path: Optional[str] = None
         self._cached_rb_path: Optional[str] = None
+        self._configured_rb_paths: Set[str] = set()
         self._last_log_time = 0.0
 
     def startup(self):
@@ -70,6 +77,7 @@ class HydragonPlayerControllerSystem:
         self._jump_consumed = False
         self._cached_player_path = None
         self._cached_rb_path = None
+        self._configured_rb_paths.clear()
 
         if not HAS_KIT:
             return
@@ -170,6 +178,7 @@ class HydragonPlayerControllerSystem:
                 self._keys_down.clear()
                 self._jump_requested = False
                 self._jump_consumed = False
+                self._configured_rb_paths.clear()
                 if carb:
                     carb.log_info("[hydragon.editor.core] Play mode stopped/paused. Player Controller INACTIVE.")
         except Exception:
@@ -293,6 +302,81 @@ class HydragonPlayerControllerSystem:
 
         # Fallback to player prim itself
         return player_prim
+
+    def _get_rigid_body_world_pos(self, rb_prim, rb_path_str: str) -> Tuple[float, float, float]:
+        """Queries real-time simulated world position from PhysX interface, falling back to USD."""
+        if not HAS_KIT:
+            return 0.0, 0.0, 0.0
+
+        # 1. Query real-time simulated transform from PhysX C++ interface
+        try:
+            physx_iface = get_physx_interface()
+            if physx_iface and hasattr(physx_iface, "get_rigidbody_transformation"):
+                rb_data = physx_iface.get_rigidbody_transformation(rb_path_str)
+                if rb_data and rb_data.get("ret_val", False):
+                    p = rb_data.get("position")
+                    if p is not None:
+                        return (float(p[0]), float(p[1]), float(p[2]))
+        except Exception:
+            pass
+
+        # 2. Fallback to USD transform
+        try:
+            if rb_prim and rb_prim.IsValid():
+                xformable = UsdGeom.Xformable(rb_prim)
+                tf = xformable.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
+                t = (
+                    tf.ExtractTranslation()
+                    if hasattr(tf, "ExtractTranslation")
+                    else (tf.GetTranslation() if hasattr(tf, "GetTranslation") else Gf.Vec3d(0.0))
+                )
+                return (float(t[0]), float(t[1]), float(t[2]))
+        except Exception:
+            pass
+
+        return 0.0, 0.0, 0.0
+
+    def _ensure_rigid_body_damping(self, rb_prim, controller: HydragonPlayerController):
+        """Ensures angular damping, linear damping, and max angular velocity for smooth rolling."""
+        if not HAS_KIT or not rb_prim or not rb_prim.IsValid():
+            return
+
+        try:
+            if UsdPhysics:
+                rb_api = UsdPhysics.RigidBodyAPI(rb_prim)
+                if rb_api:
+                    ang_attr = rb_api.GetAngularDampingAttr()
+                    if not ang_attr or not ang_attr.IsValid():
+                        rb_api.CreateAngularDampingAttr(1.0)
+                    elif ang_attr.Get() is None or ang_attr.Get() < 0.1:
+                        ang_attr.Set(1.0)
+
+                    lin_attr = rb_api.GetLinearDampingAttr()
+                    if not lin_attr or not lin_attr.IsValid():
+                        rb_api.CreateLinearDampingAttr(0.2)
+                    elif lin_attr.Get() is None or lin_attr.Get() < 0.05:
+                        lin_attr.Set(0.2)
+        except Exception:
+            pass
+
+        try:
+            if PhysxSchema and hasattr(PhysxSchema, "PhysxRigidBodyAPI"):
+                physx_rb = PhysxSchema.PhysxRigidBodyAPI(rb_prim)
+                if not physx_rb and hasattr(PhysxSchema.PhysxRigidBodyAPI, "Apply"):
+                    physx_rb = PhysxSchema.PhysxRigidBodyAPI.Apply(rb_prim)
+                if physx_rb:
+                    max_ang_attr = physx_rb.GetMaxAngularVelocityAttr()
+                    max_val = (
+                        controller.max_angular_velocity
+                        if controller.max_angular_velocity > 0.0
+                        else 25.0
+                    )
+                    if not max_ang_attr or not max_ang_attr.IsValid():
+                        physx_rb.CreateMaxAngularVelocityAttr(max_val)
+                    elif max_ang_attr.Get() is None or max_ang_attr.Get() <= 0.0:
+                        max_ang_attr.Set(max_val)
+        except Exception:
+            pass
 
     # -------------------------------------------------------------------------
     # Camera Vectors & Input Processing
@@ -439,7 +523,16 @@ class HydragonPlayerControllerSystem:
         rb_path_str = rb_prim.GetPath().pathString
         prim_id = PhysicsSchemaTools.sdfPathToInt(rb_path_str)
 
+        # Configure damping and stability clamp once per play session
+        if rb_path_str not in self._configured_rb_paths:
+            self._ensure_rigid_body_damping(rb_prim, controller)
+            self._configured_rb_paths.add(rb_path_str)
+
         sim_iface = get_physx_simulation_interface()
+
+        # Query real-time simulated world position for applying force directly at center of mass
+        world_pos = self._get_rigid_body_world_pos(rb_prim, rb_path_str)
+        force_pos = carb.Float3(world_pos[0], world_pos[1], world_pos[2])
 
         # 1. Rolling Movement
         fwd_input, right_input = self._compute_input_vector()
@@ -455,7 +548,7 @@ class HydragonPlayerControllerSystem:
 
             force_vec = carb.Float3(world_move_x, 0.0, world_move_z)
             sim_iface.apply_force_at_pos(
-                stage_id, prim_id, force_vec, carb.Float3(0.0, 0.0, 0.0), "Force"
+                stage_id, prim_id, force_vec, force_pos, "Force"
             )
 
             import time
@@ -480,7 +573,7 @@ class HydragonPlayerControllerSystem:
 
                 jump_force = carb.Float3(0.0, jump_impulse, 0.0)
                 sim_iface.apply_force_at_pos(
-                    stage_id, prim_id, jump_force, carb.Float3(0.0, 0.0, 0.0), "Impulse"
+                    stage_id, prim_id, jump_force, force_pos, "Impulse"
                 )
                 self._jump_consumed = True
                 if carb:
@@ -503,30 +596,7 @@ class HydragonPlayerControllerSystem:
                 if radius_attr.IsValid():
                     radius = float(radius_attr.Get())
 
-            world_pos = None
-            # 1. Query real-time simulated transform from PhysX C++ interface
-            try:
-                physx_iface = get_physx_interface()
-                if physx_iface and hasattr(physx_iface, "get_rigidbody_transformation"):
-                    rb_data = physx_iface.get_rigidbody_transformation(rb_path)
-                    if rb_data and rb_data.get("ret_val", False):
-                        p = rb_data.get("position")
-                        if p is not None:
-                            world_pos = (float(p[0]), float(p[1]), float(p[2]))
-            except Exception:
-                pass
-
-            # 2. Fallback to USD transform
-            if world_pos is None:
-                xformable = UsdGeom.Xformable(rb_prim)
-                tf = xformable.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
-                t = (
-                    tf.ExtractTranslation()
-                    if hasattr(tf, "ExtractTranslation")
-                    else (tf.GetTranslation() if hasattr(tf, "GetTranslation") else Gf.Vec3d(0.0))
-                )
-                world_pos = (float(t[0]), float(t[1]), float(t[2]))
-
+            world_pos = self._get_rigid_body_world_pos(rb_prim, rb_path)
             origin = carb.Float3(world_pos[0], world_pos[1], world_pos[2])
             down_dir = carb.Float3(0.0, -1.0, 0.0)
             max_dist = radius + 15.0  # 15 cm tolerance

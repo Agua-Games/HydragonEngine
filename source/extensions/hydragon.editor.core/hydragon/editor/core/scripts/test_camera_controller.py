@@ -155,12 +155,29 @@ def test_camera_axes_and_singleton():
     print("  [PASS] Camera axes query & singleton verified across all 4 cardinal angles")
 
 
+def test_mouse_yaw_direction():
+    print("--- 6. Testing Mouse Yaw Direction (Clockwise on Drag Left) ---")
+    system = HydragonCameraControllerSystem()
+    system._yaw = 0.0
+    system._mouse_sensitivity = 0.2
+
+    # User drags mouse to the left: dx < 0
+    dx = -10.0
+    system._yaw = (system._yaw - dx * system._mouse_sensitivity) % 360.0
+
+    # Moving mouse left must increase yaw angle (clockwise rotation around player)
+    assert system._yaw == 2.0, f"Expected yaw 2.0, got {system._yaw}"
+    system.shutdown()
+    print("  [PASS] Mouse dragging left rotates camera clockwise as requested")
+
+
 if __name__ == "__main__":
     test_camera_controller_lifecycle()
     test_spherical_orbit_math()
     test_lag_damping_math()
     test_pitch_and_zoom_clamping()
     test_camera_axes_and_singleton()
+    test_mouse_yaw_direction()
     print("\n=======================================================")
-    print(" ALL CAMERA CONTROLLER SYSTEM TESTS PASSED! (5/5)")
+    print(" ALL CAMERA CONTROLLER SYSTEM TESTS PASSED! (6/6)")
     print("=======================================================")

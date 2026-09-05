@@ -244,7 +244,7 @@ class HydragonCameraControllerSystem:
                     dy = cur_y - self._last_mouse_pos[1]
                     # Filter out huge single-frame teleport jumps (e.g. window focus/teleport)
                     if 0.0 < abs(dx) < 500.0 or 0.0 < abs(dy) < 500.0:
-                        self._yaw = (self._yaw + dx * self._mouse_sensitivity) % 360.0
+                        self._yaw = (self._yaw - dx * self._mouse_sensitivity) % 360.0
                         self._pitch = max(
                             self._min_pitch,
                             min(self._max_pitch, self._pitch + dy * self._mouse_sensitivity),
