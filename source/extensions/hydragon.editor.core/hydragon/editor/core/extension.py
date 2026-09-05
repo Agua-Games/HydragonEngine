@@ -1,13 +1,43 @@
-import carb
-import omni.ext
+try:
+    import carb
+    import omni.ext
+    _IExt = omni.ext.IExt
+except ImportError:
+    carb = None
+    omni = None
+    class _IExt:
+        pass
 
-class HydragonEditorCoreExtension(omni.ext.IExt):
+class HydragonEditorCoreExtension(_IExt):
     def on_startup(self, ext_id):
-        carb.log_info("[hydragon.editor.core] Startup...")
+        if carb:
+            carb.log_info("[hydragon.editor.core] Startup...")
         self._patch_menu_utils()
 
+        from .menu import HydragonMenuManager
+        self._menu_manager = HydragonMenuManager(ext_id)
+        self._menu_manager.startup()
+
+        from .player_controller import HydragonPlayerControllerSystem
+        self._player_controller_system = HydragonPlayerControllerSystem()
+        self._player_controller_system.startup()
+
+        from .camera_controller import HydragonCameraControllerSystem
+        self._camera_controller_system = HydragonCameraControllerSystem()
+        self._camera_controller_system.startup()
+
     def on_shutdown(self):
-        carb.log_info("[hydragon.editor.core] Shutdown...")
+        if hasattr(self, "_camera_controller_system") and self._camera_controller_system:
+            self._camera_controller_system.shutdown()
+            self._camera_controller_system = None
+        if hasattr(self, "_player_controller_system") and self._player_controller_system:
+            self._player_controller_system.shutdown()
+            self._player_controller_system = None
+        if hasattr(self, "_menu_manager") and self._menu_manager:
+            self._menu_manager.shutdown()
+            self._menu_manager = None
+        if carb:
+            carb.log_info("[hydragon.editor.core] Shutdown...")
 
     def _patch_menu_utils(self):
         try:

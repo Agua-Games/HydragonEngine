@@ -7,4 +7,5 @@ project_ext (ext)
 repo_build.prebuild_link {
     { "config", ext.target_dir.."/config" },
     { "hydragon", ext.target_dir.."/hydragon" },
+    { "data", ext.target_dir.."/data" },
 }

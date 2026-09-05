@@ -1,4 +1,4 @@
-﻿# All folders starting with _ are local.
+# All folders starting with _ are local.
 _*/
 
 # Compiled python files.
@@ -39,3 +39,8 @@ deps/**/user.toml
 
 # Hydragon assets, non-versioned (for now)
 /source/extensions/hydragon.editor.core/data/
+
+# Local scratch files
+scratch/
+test_rot.txt
+

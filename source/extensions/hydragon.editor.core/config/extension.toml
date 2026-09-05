@@ -7,6 +7,8 @@ keywords = ["editor", "core"]
 
 [dependencies]
 "omni.kit.menu.utils" = {}
+"omni.physx" = {}
+"omni.timeline" = {}
 
 [[python.module]]
 name = "hydragon.editor.core"
