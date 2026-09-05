@@ -175,9 +175,10 @@ class HydragonCameraControllerSystem:
                 self._is_simulating = True
                 self._sync_attributes_from_stage()
                 self._bind_viewport_camera()
-                self._set_camera_lock(False)
+                self._set_camera_lock(True)
+                self._last_mouse_pos = None
                 if carb:
-                    carb.log_info("[hydragon.editor.core] Simulation started. Follow Camera ACTIVE.")
+                    carb.log_info("[hydragon.editor.core] Simulation started. Follow Camera ACTIVE (cameraLock=True).")
             elif event_type in (int(omni.timeline.TimelineEventType.STOP), int(omni.timeline.TimelineEventType.PAUSE)):
                 self._is_simulating = False
                 self._is_rmb_down = False
@@ -185,7 +186,7 @@ class HydragonCameraControllerSystem:
                 self._last_mouse_pos = None
                 self._set_camera_lock(False)
                 if carb:
-                    carb.log_info("[hydragon.editor.core] Simulation stopped/paused. Follow Camera INACTIVE.")
+                    carb.log_info("[hydragon.editor.core] Simulation stopped/paused. Follow Camera INACTIVE (cameraLock=False).")
         except Exception:
             pass
 
@@ -194,58 +195,17 @@ class HydragonCameraControllerSystem:
             return True
 
         try:
-            event_type = event.type
+            event_type = int(event.type) if hasattr(event, "type") else None
 
-            # Mouse Button Down / Up
-            if event_type == carb.input.MouseEventType.RIGHT_BUTTON_DOWN:
-                self._is_rmb_down = True
-            elif event_type == carb.input.MouseEventType.RIGHT_BUTTON_UP:
-                self._is_rmb_down = False
-            elif event_type == carb.input.MouseEventType.MIDDLE_BUTTON_DOWN:
-                self._is_mmb_down = True
-            elif event_type == carb.input.MouseEventType.MIDDLE_BUTTON_UP:
-                self._is_mmb_down = False
-
-            # Orbit on Mouse Move:
-            # During play mode, horizontal mouse directly controls Yaw, and vertical directly controls Pitch!
-            elif event_type == carb.input.MouseEventType.MOVE:
-                coords = getattr(event, "pixel_coords", None)
-                x, y = None, None
-                if coords is not None:
-                    try:
-                        x = float(coords[0])
-                        y = float(coords[1])
-                    except (IndexError, TypeError):
-                        x = getattr(coords, "x", None)
-                        y = getattr(coords, "y", None)
-                if x is None or y is None:
-                    x = getattr(event, "x", None)
-                    y = getattr(event, "y", None)
-
-                if x is not None and y is not None:
-                    if self._last_mouse_pos is not None:
-                        dx = x - self._last_mouse_pos[0]
-                        dy = y - self._last_mouse_pos[1]
-
-                        # Ignore massive single-frame jumps (e.g. window focus/teleports)
-                        if abs(dx) < 500.0 and abs(dy) < 500.0:
-                            # Orbit Yaw (Horizontal) and Pitch (Vertical)
-                            self._yaw = (self._yaw + dx * self._mouse_sensitivity) % 360.0
-                            self._pitch = max(
-                                self._min_pitch,
-                                min(self._max_pitch, self._pitch + dy * self._mouse_sensitivity),
-                            )
-                    self._last_mouse_pos = (x, y)
-
-            # Zoom on Scroll
-            elif event_type == carb.input.MouseEventType.SCROLL:
+            # Zoom on Scroll event
+            if event_type == int(carb.input.MouseEventType.SCROLL):
                 scroll_delta = getattr(event, "scrollDelta", None)
                 scroll_val = None
                 if scroll_delta is not None:
                     try:
                         scroll_val = float(scroll_delta[1])
-                    except (IndexError, TypeError):
-                        scroll_val = getattr(scroll_delta, "y", None)
+                    except Exception:
+                        pass
                 if scroll_val is None:
                     scroll_val = getattr(event, "value", None)
                 if scroll_val is None:
@@ -262,6 +222,52 @@ class HydragonCameraControllerSystem:
 
         return True
 
+    def _poll_mouse(self):
+        """Directly polls hardware mouse position and wheel from the OS window every frame."""
+        try:
+            input_iface = carb.input.acquire_input_interface()
+            appwindow = omni.appwindow.get_default_app_window()
+            if not appwindow or not input_iface:
+                return
+
+            mouse = appwindow.get_mouse()
+            if not mouse:
+                return
+
+            # A. Pixel Coordinates for Orbit (Yaw & Pitch)
+            coords = input_iface.get_mouse_coords_pixel(mouse)
+            if coords is not None:
+                cur_x = float(coords[0])
+                cur_y = float(coords[1])
+                if self._last_mouse_pos is not None:
+                    dx = cur_x - self._last_mouse_pos[0]
+                    dy = cur_y - self._last_mouse_pos[1]
+                    # Filter out huge single-frame teleport jumps (e.g. window focus/teleport)
+                    if 0.0 < abs(dx) < 500.0 or 0.0 < abs(dy) < 500.0:
+                        self._yaw = (self._yaw + dx * self._mouse_sensitivity) % 360.0
+                        self._pitch = max(
+                            self._min_pitch,
+                            min(self._max_pitch, self._pitch + dy * self._mouse_sensitivity),
+                        )
+                self._last_mouse_pos = (cur_x, cur_y)
+
+            # B. Scroll Delta for Spring-Arm Zoom
+            scroll_up = input_iface.get_mouse_value(mouse, carb.input.MouseInput.SCROLL_UP)
+            scroll_down = input_iface.get_mouse_value(mouse, carb.input.MouseInput.SCROLL_DOWN)
+            if scroll_up > 0.0:
+                self._arm_length = max(
+                    self._min_arm_length,
+                    min(self._max_arm_length, self._arm_length - scroll_up * 60.0),
+                )
+            elif scroll_down > 0.0:
+                self._arm_length = max(
+                    self._min_arm_length,
+                    min(self._max_arm_length, self._arm_length + scroll_down * 60.0),
+                )
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Mouse polling error: {e}")
+
     def _on_app_update(self, e):
         if not self._is_simulating or not HAS_KIT:
             return
@@ -270,10 +276,14 @@ class HydragonCameraControllerSystem:
         if hasattr(e, "payload") and isinstance(e.payload, dict):
             dt = e.payload.get("dt", 1.0 / 60.0)
 
+        # 1. Real-time hardware mouse polling (Yaw, Pitch, Zoom)
+        self._poll_mouse()
+
         stage = omni.usd.get_context().get_stage()
         if not stage:
             return
 
+        # 2. Update FollowCamera
         self._update_camera(stage, dt)
 
     # -------------------------------------------------------------------------
