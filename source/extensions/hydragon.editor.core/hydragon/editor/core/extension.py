@@ -26,7 +26,28 @@ class HydragonEditorCoreExtension(_IExt):
         self._camera_controller_system = HydragonCameraControllerSystem()
         self._camera_controller_system.startup()
 
+        from .foes_controller import HydragonFoesControllerSystem
+        self._foes_controller_system = HydragonFoesControllerSystem()
+        self._foes_controller_system.startup()
+
+        from .trigger_controller import HydragonTriggerSystem
+        self._trigger_system = HydragonTriggerSystem()
+        self._trigger_system.startup()
+
+        from .property_widgets import HydragonPropertyWidgetsManager
+        self._property_widgets_manager = HydragonPropertyWidgetsManager()
+        self._property_widgets_manager.startup()
+
     def on_shutdown(self):
+        if hasattr(self, "_property_widgets_manager") and self._property_widgets_manager:
+            self._property_widgets_manager.shutdown()
+            self._property_widgets_manager = None
+        if hasattr(self, "_trigger_system") and self._trigger_system:
+            self._trigger_system.shutdown()
+            self._trigger_system = None
+        if hasattr(self, "_foes_controller_system") and self._foes_controller_system:
+            self._foes_controller_system.shutdown()
+            self._foes_controller_system = None
         if hasattr(self, "_camera_controller_system") and self._camera_controller_system:
             self._camera_controller_system.shutdown()
             self._camera_controller_system = None

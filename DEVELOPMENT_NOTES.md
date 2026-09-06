@@ -33,3 +33,16 @@ To maintain optimal editor performance, these extensions are **commented out by 
 * Investigate the exact reference leaks in `omni.anim.retarget.preview` and `omni.scene.optimizer.core` using memory profiling tools.
 * Implement a runtime patch (similar to our menu monkeypatch) that intercepts these extensions' `on_startup` and forces them to unsubscribe from the `on_update` stream unless their UI panel is active.
 * Report the reference leaks to NVIDIA Omniverse developer forums.
+
+---
+
+## Coding Standards & Architectural Conventions
+
+### 1. English-Only Language Policy
+* All code comments, docstrings, variable/function/class names, and logging messages in source files must strictly be in **English**.
+
+### 2. Entity-Component System (ECS) Architecture via OpenUSD API Schemas
+* Treat OpenUSD API Schemas as components attached to prim entities.
+* **No Per-Frame Stage Traversals:** Never execute `stage.Traverse()` or broad hierarchy searches inside frame update loops (`_on_physics_step` / `_on_app_update`). Entities must be discovered once upon simulation start or via USD stage change notices (`Usd.Notice.ObjectsChanged`) and cached in memory dictionaries (`Dict[str, Component]`).
+* **Entity Destruction:** Destroyed entities must be deactivated using `prim.SetActive(False)`, ensuring PhysX unloads their physics bodies, Hydra stops rendering them, and active component update loops unregister them.
+

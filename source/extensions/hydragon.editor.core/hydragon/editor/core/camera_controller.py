@@ -27,6 +27,54 @@ except ImportError:
 from .schemas import HydragonFollowCamera
 
 
+def _is_rigid_body(prim) -> bool:
+    """Checks whether a prim has rigid body physics enabled using multiple schema inspection techniques."""
+    if not prim or not hasattr(prim, "IsValid") or not prim.IsValid():
+        return False
+
+    # 1. Attribute check (fastest and most standard in OpenUSD physics)
+    if prim.HasAttribute("physics:rigidBodyEnabled"):
+        val = prim.GetAttribute("physics:rigidBodyEnabled").Get()
+        return bool(val) if val is not None else True
+
+    # 2. Applied schemas check
+    if hasattr(prim, "GetAppliedSchemas"):
+        applied = prim.GetAppliedSchemas() or []
+        if "PhysicsRigidBodyAPI" in applied or "PhysxRigidBodyAPI" in applied:
+            return True
+
+    # 3. String token HasAPI check
+    try:
+        if prim.HasAPI("PhysicsRigidBodyAPI") or prim.HasAPI("PhysxRigidBodyAPI"):
+            return True
+    except Exception:
+        pass
+
+    return False
+
+
+def _find_rigid_body_descendant(prim) -> Optional[object]:
+    """Locates the prim with rigid body physics, checking root, standard subpaths, and descendants."""
+    if not prim or not hasattr(prim, "IsValid") or not prim.IsValid():
+        return None
+    if _is_rigid_body(prim):
+        return prim
+    try:
+        mesh_prim = prim.GetPrimAtPath("geometry/ball_mesh")
+        if mesh_prim and mesh_prim.IsValid() and _is_rigid_body(mesh_prim):
+            return mesh_prim
+    except Exception:
+        pass
+    for child in prim.GetChildren():
+        if _is_rigid_body(child):
+            return child
+    for child in prim.GetAllChildren():
+        rb = _find_rigid_body_descendant(child)
+        if rb:
+            return rb
+    return None
+
+
 class HydragonCameraControllerSystem:
     """
     Spring-arm orbit camera system for Hydragon Engine.
@@ -57,9 +105,12 @@ class HydragonCameraControllerSystem:
         self._collision_offset: float = 30.0
         self._elevation_offset: float = 35.0  # Look slightly above ball center
 
-        # Lag Damping state
+        # Lag Damping and Inertia state (ease in/out)
         self._current_focus_pos: Optional[Tuple[float, float, float]] = None
-        self._lag_speed: float = 12.0  # Smooth follow speed
+        self._position_damping: float = 8.0  # Smooth position follow damping
+        self._rotation_damping: float = 12.0  # Smooth rotational orbit inertia
+        self._target_yaw: float = 0.0
+        self._target_pitch: float = 25.0
 
         # Mouse input tracking
         self._mouse_sub = None
@@ -244,10 +295,10 @@ class HydragonCameraControllerSystem:
                     dy = cur_y - self._last_mouse_pos[1]
                     # Filter out huge single-frame teleport jumps (e.g. window focus/teleport)
                     if 0.0 < abs(dx) < 500.0 or 0.0 < abs(dy) < 500.0:
-                        self._yaw = (self._yaw - dx * self._mouse_sensitivity) % 360.0
-                        self._pitch = max(
+                        self._target_yaw = (self._target_yaw - dx * self._mouse_sensitivity) % 360.0
+                        self._target_pitch = max(
                             self._min_pitch,
-                            min(self._max_pitch, self._pitch + dy * self._mouse_sensitivity),
+                            min(self._max_pitch, self._target_pitch + dy * self._mouse_sensitivity),
                         )
                 self._last_mouse_pos = (cur_x, cur_y)
 
@@ -294,19 +345,39 @@ class HydragonCameraControllerSystem:
         if not cam_prim or not cam_prim.IsValid():
             return
 
-        target_pos = self._resolve_target_world_position(stage)
+        target_pos = self.get_target_world_pos(stage, cam_prim)
         if target_pos is None:
             return
 
-        # 1. Smooth Position Lag Damping
+        # 1. Smooth Position Lag Damping (Ease-in / Ease-out)
         if self._current_focus_pos is None:
             self._current_focus_pos = target_pos
         else:
-            blend_factor = min(1.0, self._lag_speed * dt)
-            fx = self._current_focus_pos[0] + (target_pos[0] - self._current_focus_pos[0]) * blend_factor
-            fy = self._current_focus_pos[1] + (target_pos[1] - self._current_focus_pos[1]) * blend_factor
-            fz = self._current_focus_pos[2] + (target_pos[2] - self._current_focus_pos[2]) * blend_factor
+            pos_blend = (
+                1.0 - math.exp(-self._position_damping * dt)
+                if self._position_damping > 0.0
+                else 1.0
+            )
+            pos_blend = max(0.0, min(1.0, pos_blend))
+            fx = self._current_focus_pos[0] + (target_pos[0] - self._current_focus_pos[0]) * pos_blend
+            fy = self._current_focus_pos[1] + (target_pos[1] - self._current_focus_pos[1]) * pos_blend
+            fz = self._current_focus_pos[2] + (target_pos[2] - self._current_focus_pos[2]) * pos_blend
             self._current_focus_pos = (fx, fy, fz)
+
+        # 2. Smooth Rotation Lag Damping (Ease-in / Ease-out rotational inertia)
+        rot_blend = (
+            1.0 - math.exp(-self._rotation_damping * dt)
+            if self._rotation_damping > 0.0
+            else 1.0
+        )
+        rot_blend = max(0.0, min(1.0, rot_blend))
+
+        # Shortest angular distance for yaw wrap-around (0..360)
+        yaw_diff = (self._target_yaw - self._yaw + 180.0) % 360.0 - 180.0
+        self._yaw = (self._yaw + yaw_diff * rot_blend) % 360.0
+
+        pitch_diff = self._target_pitch - self._pitch
+        self._pitch = self._pitch + pitch_diff * rot_blend
 
         focus_x, focus_y, focus_z = self._current_focus_pos
         focus_center = (focus_x, focus_y + self._elevation_offset, focus_z)
@@ -366,37 +437,94 @@ class HydragonCameraControllerSystem:
     # -------------------------------------------------------------------------
     # Target Resolution & PhysX Live Transform
     # -------------------------------------------------------------------------
-    def _resolve_target_world_position(self, stage) -> Optional[Tuple[float, float, float]]:
-        """Queries the true real-time simulated position of the player target."""
-        # 1. Resolve RigidBody prim path for PhysX query
-        if not self._cached_target_rb_path:
-            player_root = stage.GetPrimAtPath("/World/Player")
-            if player_root and player_root.IsValid():
-                ball_mesh = stage.GetPrimAtPath("/World/Player/geometry/ball_mesh")
-                if ball_mesh and ball_mesh.IsValid():
-                    self._cached_target_rb_path = ball_mesh.GetPath().pathString
-                else:
-                    self._cached_target_rb_path = player_root.GetPath().pathString
-            else:
-                return None
+    def _resolve_target_world_position(self, stage, cam_prim=None) -> Optional[Tuple[float, float, float]]:
+        """Resolves real-time simulated world position of the tracked target."""
+        return self.get_target_world_pos(stage, cam_prim)
 
-        # 2. Query PhysX C++ interface for real-time simulated rigid body transform
+    def get_target_world_pos(self, stage, cam_prim=None) -> Optional[Tuple[float, float, float]]:
+        """Queries real-time simulated world position of the target tracked by this camera."""
+        if not stage:
+            return None
+
+        # 1. Fast path: If target is player or default, read cached player pos from player controller system
         try:
-            physx_iface = get_physx_interface()
-            if physx_iface and hasattr(physx_iface, "get_rigidbody_transformation"):
-                rb_data = physx_iface.get_rigidbody_transformation(self._cached_target_rb_path)
-                if rb_data and rb_data.get("ret_val", False):
-                    p = rb_data.get("position")
-                    if p is not None:
-                        return (float(p[0]), float(p[1]), float(p[2]))
+            from .player_controller import HydragonPlayerControllerSystem
+            p_sys = HydragonPlayerControllerSystem.get_instance()
+            if p_sys and p_sys.is_active_and_simulating():
+                p_rb = p_sys.get_player_rb_path()
+                # If target is player or not yet bound, use player controller's cached world pos
+                if not self._cached_target_rb_path or self._cached_target_rb_path == p_rb:
+                    pos = p_sys.get_player_world_pos()
+                    if pos and (pos[0] != 0.0 or pos[1] != 0.0 or pos[2] != 0.0):
+                        if not self._cached_target_rb_path and p_rb:
+                            self._cached_target_rb_path = p_rb
+                        return pos
         except Exception:
             pass
 
-        # 3. Fallback to USD transform
-        try:
-            target_prim = stage.GetPrimAtPath(self._cached_target_rb_path or "/World/Player")
+        if not cam_prim:
+            cam_prim = self.find_camera_prim(stage)
+
+        # 2. Resolve Target RigidBody path
+        target_path_str = self._cached_target_rb_path
+        if not target_path_str:
+            target_prim = None
+            if cam_prim:
+                cam = HydragonFollowCamera(cam_prim)
+                if cam.target_path:
+                    target_prim = stage.GetPrimAtPath(str(cam.target_path))
+
+            # If relationship points to an actor root (e.g. /World/Player), find its rigid body!
             if target_prim and target_prim.IsValid():
-                xformable = UsdGeom.Xformable(target_prim)
+                rb_prim = _find_rigid_body_descendant(target_prim)
+                if rb_prim:
+                    self._cached_target_rb_path = rb_prim.GetPath().pathString
+                elif _is_rigid_body(target_prim):
+                    self._cached_target_rb_path = target_prim.GetPath().pathString
+
+            # Fallback: query active player rigid body from player controller
+            if not self._cached_target_rb_path:
+                try:
+                    from .player_controller import HydragonPlayerControllerSystem
+                    p_sys = HydragonPlayerControllerSystem.get_instance()
+                    if p_sys:
+                        self._cached_target_rb_path = p_sys.get_player_rb_path()
+                except Exception:
+                    pass
+
+            # Fallback: search stage for HydragonPlayerController and find its rigid body
+            if not self._cached_target_rb_path:
+                from .schemas import HydragonPlayerController
+                for prim in stage.Traverse():
+                    if prim.IsValid() and prim.IsActive() and HydragonPlayerController.is_applied(prim):
+                        rb_p = _find_rigid_body_descendant(prim)
+                        if rb_p:
+                            self._cached_target_rb_path = rb_p.GetPath().pathString
+                            break
+
+            target_path_str = self._cached_target_rb_path
+
+        if not target_path_str:
+            return None
+
+        # 3. Query PhysX C++ interface ONLY if target prim has rigid body and is active
+        t_prim = stage.GetPrimAtPath(target_path_str)
+        if t_prim and t_prim.IsValid() and t_prim.IsActive() and _is_rigid_body(t_prim):
+            try:
+                physx_iface = get_physx_interface()
+                if physx_iface and hasattr(physx_iface, "get_rigidbody_transformation"):
+                    rb_data = physx_iface.get_rigidbody_transformation(target_path_str)
+                    if rb_data and rb_data.get("ret_val", False):
+                        p = rb_data.get("position")
+                        if p is not None:
+                            return (float(p[0]), float(p[1]), float(p[2]))
+            except Exception:
+                pass
+
+        # 4. Fallback to USD transform
+        try:
+            if t_prim and t_prim.IsValid():
+                xformable = UsdGeom.Xformable(t_prim)
                 tf = xformable.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
                 t = (
                     tf.ExtractTranslation()
@@ -435,14 +563,14 @@ class HydragonCameraControllerSystem:
             direction = carb.Float3(nx, ny, nz)
 
             closest_hit_dist = dist
-            player_root = "/World/Player"
+            target_root = self._cached_target_rb_path or ""
 
             def _on_probe_hit(hit):
                 nonlocal closest_hit_dist
                 hit_rb = str(getattr(hit, "rigid_body", "") or "")
                 hit_col = str(getattr(hit, "collision", "") or "")
-                # Ignore self
-                if hit_rb.startswith(player_root) or hit_col.startswith(player_root):
+                # Ignore self/target
+                if target_root and (hit_rb.startswith(target_root) or hit_col.startswith(target_root)):
                     return True
 
                 hit_pos = getattr(hit, "position", None)
@@ -472,18 +600,36 @@ class HydragonCameraControllerSystem:
         return desired_cam_pos
 
     # -------------------------------------------------------------------------
-    # Prim Discovery & Sync
+    # Prim Discovery & Sync (Agnostic - Zero Hardcoded Paths)
     # -------------------------------------------------------------------------
     def find_camera_prim(self, stage) -> Optional[object]:
+        """Locates the active follow camera prim, prioritizing viewport binding and applied schemas."""
         if not stage:
             return None
 
-        cam_prim = stage.GetPrimAtPath(self._cached_cam_path or "/World/FollowCamera")
-        if cam_prim and cam_prim.IsValid():
-            return cam_prim
+        # 1. Check cached path
+        if self._cached_cam_path:
+            prim = stage.GetPrimAtPath(self._cached_cam_path)
+            if prim and prim.IsValid() and prim.IsActive() and HydragonFollowCamera.is_applied(prim):
+                return prim
+            self._cached_cam_path = None
 
+        # 2. Check active viewport bound camera
+        try:
+            from omni.kit.viewport.utility.camera_state import ViewportCameraState
+            cam_state = ViewportCameraState()
+            bound_path = cam_state.get_camera_path()
+            if bound_path:
+                prim = stage.GetPrimAtPath(bound_path)
+                if prim and prim.IsValid() and prim.IsActive() and HydragonFollowCamera.is_applied(prim):
+                    self._cached_cam_path = bound_path
+                    return prim
+        except Exception:
+            pass
+
+        # 3. Discover camera prim with HydragonFollowCameraAPI on the stage
         for prim in stage.Traverse():
-            if prim.IsA(UsdGeom.Camera) and HydragonFollowCamera.is_applied(prim):
+            if prim.IsValid() and prim.IsActive() and HydragonFollowCamera.is_applied(prim):
                 self._cached_cam_path = prim.GetPath().pathString
                 return prim
 
@@ -499,10 +645,14 @@ class HydragonCameraControllerSystem:
                 self._arm_length = cam.arm_length
                 self._pitch = cam.pitch
                 self._yaw = cam.yaw
+                self._target_yaw = cam.yaw
+                self._target_pitch = cam.pitch
                 self._mouse_sensitivity = cam.mouse_sensitivity
                 self._min_pitch = cam.min_pitch
                 self._max_pitch = cam.max_pitch
                 self._collision_offset = cam.collision_offset
+                self._position_damping = cam.position_damping
+                self._rotation_damping = cam.rotation_damping
         except Exception:
             pass
 

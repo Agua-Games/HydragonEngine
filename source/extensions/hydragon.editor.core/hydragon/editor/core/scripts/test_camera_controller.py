@@ -81,19 +81,31 @@ def test_spherical_orbit_math():
 
 
 def test_lag_damping_math():
-    print("--- 3. Testing Lag Damping Interpolation ---")
+    print("--- 3. Testing Position and Rotation Lag Damping (Ease-in / Ease-out) ---")
     pos_a = (0.0, 50.0, -1000.0)
     pos_b = (100.0, 50.0, -900.0)
     dt = 1.0 / 60.0
-    lag_speed = 12.0
-    factor = min(1.0, lag_speed * dt)
+    pos_damping = 8.0
+    pos_factor = 1.0 - math.exp(-pos_damping * dt)
 
-    lerp_x = pos_a[0] + (pos_b[0] - pos_a[0]) * factor
-    lerp_z = pos_a[2] + (pos_b[2] - pos_a[2]) * factor
+    lerp_x = pos_a[0] + (pos_b[0] - pos_a[0]) * pos_factor
+    lerp_z = pos_a[2] + (pos_b[2] - pos_a[2]) * pos_factor
 
     assert 0.0 < lerp_x < 100.0, f"Interpolated X should be between 0 and 100, got {lerp_x}"
     assert -1000.0 < lerp_z < -900.0, f"Interpolated Z should be between -1000 and -900, got {lerp_z}"
-    print(f"  [PASS] Lag damping verified (blend factor={factor:.3f})")
+
+    # Test rotational inertia & shortest angle interpolation
+    cur_yaw = 350.0
+    target_yaw = 10.0
+    rot_damping = 12.0
+    rot_factor = 1.0 - math.exp(-rot_damping * dt)
+
+    yaw_diff = (target_yaw - cur_yaw + 180.0) % 360.0 - 180.0
+    assert abs(yaw_diff - 20.0) < 1e-4, f"Yaw diff across 0/360 boundary should be +20 deg, got {yaw_diff}"
+    new_yaw = (cur_yaw + yaw_diff * rot_factor) % 360.0
+    assert new_yaw > 350.0 or new_yaw < 10.0, f"New yaw should rotate forward through 0 deg boundary, got {new_yaw}"
+
+    print(f"  [PASS] Position & rotation damping verified (pos_factor={pos_factor:.3f}, rot_factor={rot_factor:.3f})")
 
 
 def test_pitch_and_zoom_clamping():
@@ -171,6 +183,22 @@ def test_mouse_yaw_direction():
     print("  [PASS] Mouse dragging left rotates camera clockwise as requested")
 
 
+def test_target_resolution_methods():
+    print("--- 7. Testing Target Resolution Methods ---")
+    system = HydragonCameraControllerSystem()
+    assert hasattr(system, "_resolve_target_world_position"), "Must expose _resolve_target_world_position"
+    assert hasattr(system, "get_target_world_pos"), "Must expose get_target_world_pos"
+
+    res1 = system._resolve_target_world_position(None)
+    assert res1 is None, f"Expected None outside Kit, got {res1}"
+
+    res2 = system.get_target_world_pos(None)
+    assert res2 is None, f"Expected None outside Kit, got {res2}"
+
+    system.shutdown()
+    print("  [PASS] Target resolution methods verified")
+
+
 if __name__ == "__main__":
     test_camera_controller_lifecycle()
     test_spherical_orbit_math()
@@ -178,6 +206,7 @@ if __name__ == "__main__":
     test_pitch_and_zoom_clamping()
     test_camera_axes_and_singleton()
     test_mouse_yaw_direction()
+    test_target_resolution_methods()
     print("\n=======================================================")
-    print(" ALL CAMERA CONTROLLER SYSTEM TESTS PASSED! (6/6)")
+    print(" ALL CAMERA CONTROLLER SYSTEM TESTS PASSED! (7/7)")
     print("=======================================================")

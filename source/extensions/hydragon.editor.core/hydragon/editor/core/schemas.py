@@ -291,6 +291,8 @@ class HydragonFollowCamera:
         cam.min_pitch = -20.0
         cam.max_pitch = 80.0
         cam.collision_offset = 0.2
+        cam.position_damping = 8.0
+        cam.rotation_damping = 12.0
         return cam
 
     @classmethod
@@ -379,6 +381,22 @@ class HydragonFollowCamera:
     def collision_offset(self, val: float):
         _set_attr_value(self._prim, "camera:collisionOffset", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
 
+    @property
+    def position_damping(self) -> float:
+        return float(_get_attr_value(self._prim, "camera:positionDamping", 8.0))
+
+    @position_damping.setter
+    def position_damping(self, val: float):
+        _set_attr_value(self._prim, "camera:positionDamping", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def rotation_damping(self) -> float:
+        return float(_get_attr_value(self._prim, "camera:rotationDamping", 12.0))
+
+    @rotation_damping.setter
+    def rotation_damping(self, val: float):
+        _set_attr_value(self._prim, "camera:rotationDamping", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
 
 # ==============================================================================
 # HydragonChaserAI
@@ -458,6 +476,34 @@ class HydragonChaserAI:
     @state.setter
     def state(self, val: str):
         _set_attr_value(self._prim, "ai:state", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def target_faction(self) -> str:
+        return str(_get_attr_value(self._prim, "ai:targetFaction", "Player"))
+
+    @target_faction.setter
+    def target_faction(self, val: str):
+        _set_attr_value(self._prim, "ai:targetFaction", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def target_prim(self):
+        if not HAS_PXR or not self._prim:
+            return None
+        rel = self._prim.GetRelationship("ai:targetPrim")
+        if not rel or not rel.IsValid():
+            return None
+        targets = rel.GetTargets()
+        return targets[0] if targets else None
+
+    @target_prim.setter
+    def target_prim(self, path):
+        if not HAS_PXR or not self._prim:
+            return
+        rel = self._prim.GetRelationship("ai:targetPrim")
+        if not rel or not rel.IsValid():
+            rel = self._prim.CreateRelationship("ai:targetPrim")
+        target_sdf = Sdf.Path(str(path)) if not isinstance(path, Sdf.Path) else path
+        rel.SetTargets([target_sdf])
 
 
 # ==============================================================================
