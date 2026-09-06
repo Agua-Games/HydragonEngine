@@ -199,6 +199,81 @@ def test_target_resolution_methods():
     print("  [PASS] Target resolution methods verified")
 
 
+def test_camera_dirty_checking_and_probe_caching():
+    print("--- 8. Testing Camera Dirty Checking & Probe Caching ---")
+    system = HydragonCameraControllerSystem()
+
+    # 1. Test probe cache hit
+    focus = (0.0, 50.0, 0.0)
+    desired = (0.0, 100.0, -800.0)
+    res1 = system._probe_camera_collision(focus, desired)
+    assert res1 == desired
+    assert system._last_probe_focus == focus
+    assert system._last_probe_desired == desired
+    assert system._last_probe_result == desired
+
+    # Call again with identical coordinates: should hit cache immediately
+    res2 = system._probe_camera_collision(focus, desired)
+    assert res2 == desired
+
+    # Call with slightly jittered coordinates (< 1e-4): should also hit cache
+    jitter_focus = (0.000001, 50.0, 0.0)
+    jitter_desired = (0.0, 100.000001, -800.0)
+    res3 = system._probe_camera_collision(jitter_focus, jitter_desired)
+    assert res3 == desired
+
+    # Call with moving coordinates: should re-evaluate and update cache
+    new_desired = (10.0, 100.0, -800.0)
+    res4 = system._probe_camera_collision(focus, new_desired)
+    assert res4 == new_desired
+    assert system._last_probe_desired == new_desired
+
+    # 2. Test transform dirty-checking
+    class MockAttr:
+        def __init__(self):
+            self.set_calls = 0
+        def IsValid(self):
+            return True
+        def Set(self, val):
+            self.set_calls += 1
+
+    class MockCamPrim:
+        def __init__(self):
+            self.trans_attr = MockAttr()
+            self.rot_attr = MockAttr()
+        def GetAttribute(self, name):
+            if name == "xformOp:translate":
+                return self.trans_attr
+            elif name == "xformOp:rotateXYZ":
+                return self.rot_attr
+            return None
+
+    mock_prim = MockCamPrim()
+    pos1 = (100.0, 200.0, 300.0)
+    rot1 = (155.0, 0.0, -180.0)
+
+    # First apply sets attributes
+    system.apply_camera_transform(mock_prim, pos1, rot1)
+    assert mock_prim.trans_attr.set_calls == 1
+    assert mock_prim.rot_attr.set_calls == 1
+    assert system._last_applied_pos == pos1
+    assert system._last_applied_rot == rot1
+
+    # Second apply with identical pos/rot must be skipped by dirty-checking!
+    system.apply_camera_transform(mock_prim, pos1, rot1)
+    assert mock_prim.trans_attr.set_calls == 1, "Should not write to USD when transform is unchanged"
+    assert mock_prim.rot_attr.set_calls == 1, "Should not write to USD when rotation is unchanged"
+
+    # Apply with changed pos should write
+    pos2 = (110.0, 200.0, 300.0)
+    system.apply_camera_transform(mock_prim, pos2, rot1)
+    assert mock_prim.trans_attr.set_calls == 2
+    assert mock_prim.rot_attr.set_calls == 2
+
+    system.shutdown()
+    print("  [PASS] Camera dirty checking & probe caching verified")
+
+
 if __name__ == "__main__":
     test_camera_controller_lifecycle()
     test_spherical_orbit_math()
@@ -207,6 +282,7 @@ if __name__ == "__main__":
     test_camera_axes_and_singleton()
     test_mouse_yaw_direction()
     test_target_resolution_methods()
+    test_camera_dirty_checking_and_probe_caching()
     print("\n=======================================================")
-    print(" ALL CAMERA CONTROLLER SYSTEM TESTS PASSED! (7/7)")
+    print(" ALL CAMERA CONTROLLER SYSTEM TESTS PASSED! (8/8)")
     print("=======================================================")

@@ -12,11 +12,13 @@ try:
     import carb
     import omni.kit.app
     import omni.kit.window.property as property_window
-    from omni.kit.property.usd import UsdPropertiesWidget
+    from omni.kit.property.usd import UsdPropertiesWidget, UsdPropertyUiEntry
+    from pxr import Sdf
     HAS_PROPERTY_WINDOW = True
 except ImportError:
     HAS_PROPERTY_WINDOW = False
     UsdPropertiesWidget = object
+    UsdPropertyUiEntry = None
     property_window = None
 
 from .schemas import (
@@ -41,6 +43,7 @@ if HAS_PROPERTY_WINDOW:
             super().__init__(title=title, collapsed=False, enable_adapter=True)
             self._prefix: str = prefix
             self._schema_check_fn = schema_check_fn
+            self._resolved_target_path = None
 
         def _matches_schema(self, prim) -> bool:
             """Checks whether a prim has this schema or authors attributes with the target prefix."""
@@ -67,6 +70,7 @@ if HAS_PROPERTY_WINDOW:
             if not self._payload or len(self._payload) == 0:
                 return False
 
+            self._resolved_target_path = None
             for prim_path in self._payload:
                 prim = self._get_prim(prim_path)
                 if not prim or not prim.IsValid():
@@ -74,47 +78,53 @@ if HAS_PROPERTY_WINDOW:
 
                 # 1. Check prim directly
                 if self._matches_schema(prim):
+                    self._resolved_target_path = prim.GetPath()
                     return True
 
-                # 2. Check parent (e.g. user selected ball_mesh under /World/Player/geometry)
+                # 2. Check parent and ancestors (e.g. user selected ball_mesh under /World/Player/geometry)
                 parent = prim.GetParent() if hasattr(prim, "GetParent") else None
-                if parent and parent.IsValid() and self._matches_schema(parent):
-                    return True
-
-                # 3. Check grandparent
-                grandparent = parent.GetParent() if parent and hasattr(parent, "GetParent") else None
-                if grandparent and grandparent.IsValid() and self._matches_schema(grandparent):
-                    return True
+                while parent and parent.IsValid() and not parent.IsPseudoRoot():
+                    if self._matches_schema(parent):
+                        self._resolved_target_path = parent.GetPath()
+                        return True
+                    parent = parent.GetParent()
 
             return False
 
         def _get_prim_properties(self, prim):
             """
-            Queries properties from the prim. If the prim is a child mesh with no matching
-            properties, falls back to parent prims where the API schema is authored.
+            Queries properties from the prim or the resolved target ancestor prim where
+            the API schema is authored.
             """
-            props = super()._get_prim_properties(prim)
-            matching = [p for p in props if p.GetName().startswith(self._prefix)]
-            if matching:
-                return props
+            if self._resolved_target_path and prim:
+                stage = prim.GetStage()
+                if stage:
+                    target = stage.GetPrimAtPath(self._resolved_target_path)
+                    if target and target.IsValid():
+                        return target.GetProperties()
+            return super()._get_prim_properties(prim)
 
-            # Search parent hierarchy if child geometry was clicked in viewport
-            parent = prim.GetParent() if hasattr(prim, "GetParent") else None
-            while parent and parent.IsValid() and not parent.IsPseudoRoot():
-                parent_props = parent.GetProperties()
-                if any(p.GetName().startswith(self._prefix) for p in parent_props):
-                    return parent_props
-                parent = parent.GetParent()
-
-            return props
+        def _create_property_entry(self, name: str, display_group: str, metadata: dict, prop_type):
+            paths = [self._resolved_target_path] if self._resolved_target_path else None
+            return UsdPropertyUiEntry(name, display_group, metadata, prop_type, prim_paths=paths)
 
         def _filter_props_to_build(self, props):
             """Filters USD properties to only show those belonging to this schema prefix."""
             return [p for p in props if p.GetName().startswith(self._prefix)]
 
         def _customize_props_layout(self, props):
-            """Secondary layout hook ensuring only schema-prefixed UI entries are emitted."""
-            return [p for p in props if getattr(p, "prop_name", "").startswith(self._prefix)]
+            """Secondary layout hook ensuring only schema-prefixed UI entries are emitted and targeted."""
+            res = []
+            for p in props:
+                if getattr(p, "prop_name", "").startswith(self._prefix):
+                    if self._resolved_target_path and not getattr(p, "prim_paths", None):
+                        p.prim_paths = [self._resolved_target_path]
+                    res.append(p)
+            return res
+
+        def reset(self):
+            self._resolved_target_path = None
+            super().reset()
 
 
     class HydragonPlayerPropertyWidget(HydragonBasePropertyWidget):

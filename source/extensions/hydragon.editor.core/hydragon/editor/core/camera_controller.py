@@ -122,6 +122,15 @@ class HydragonCameraControllerSystem:
         self._app_update_sub = None
         self._timeline_sub = None
 
+        # Applied transform dirty checking (skip USD writes when camera hasn't moved)
+        self._last_applied_pos: Optional[Tuple[float, float, float]] = None
+        self._last_applied_rot: Optional[Tuple[float, float, float]] = None
+
+        # Raycast collision probe caching
+        self._last_probe_focus: Optional[Tuple[float, float, float]] = None
+        self._last_probe_desired: Optional[Tuple[float, float, float]] = None
+        self._last_probe_result: Optional[Tuple[float, float, float]] = None
+
         # Viewport restoration
         self._previous_viewport_cam: Optional[str] = None
         self._viewport_bound: bool = False
@@ -235,6 +244,11 @@ class HydragonCameraControllerSystem:
                 self._is_rmb_down = False
                 self._is_mmb_down = False
                 self._last_mouse_pos = None
+                self._last_applied_pos = None
+                self._last_applied_rot = None
+                self._last_probe_focus = None
+                self._last_probe_desired = None
+                self._last_probe_result = None
                 self._set_camera_lock(False)
                 if carb:
                     carb.log_info("[hydragon.editor.core] Simulation stopped/paused. Follow Camera INACTIVE (cameraLock=False).")
@@ -412,8 +426,40 @@ class HydragonCameraControllerSystem:
         self.apply_camera_transform(cam_prim, actual_cam_pos, rot_euler_deg)
 
     def apply_camera_transform(self, cam_prim, pos: Tuple[float, float, float], rot_deg: Tuple[float, float, float]):
-        """Sets translation and rotation on the USD camera prim."""
+        """Sets translation and rotation on the USD camera prim if values have changed."""
         try:
+            # Dirty checking: skip writing to USD if camera has not noticeably moved or rotated
+            if self._last_applied_pos is not None and self._last_applied_rot is not None:
+                dp = (
+                    (pos[0] - self._last_applied_pos[0]) ** 2
+                    + (pos[1] - self._last_applied_pos[1]) ** 2
+                    + (pos[2] - self._last_applied_pos[2]) ** 2
+                )
+                dr = (
+                    abs(rot_deg[0] - self._last_applied_rot[0])
+                    + abs(rot_deg[1] - self._last_applied_rot[1])
+                    + abs(rot_deg[2] - self._last_applied_rot[2])
+                )
+                if dp < 1e-4 and dr < 1e-4:
+                    return
+
+            self._last_applied_pos = pos
+            self._last_applied_rot = rot_deg
+
+            if not cam_prim:
+                return
+
+            if not HAS_KIT:
+                # Outside Kit (e.g. pytest unit tests with mock prims)
+                if hasattr(cam_prim, "GetAttribute"):
+                    translate_attr = cam_prim.GetAttribute("xformOp:translate")
+                    if translate_attr:
+                        translate_attr.Set(pos)
+                    rotate_attr = cam_prim.GetAttribute("xformOp:rotateXYZ")
+                    if rotate_attr:
+                        rotate_attr.Set(rot_deg)
+                return
+
             xformable = UsdGeom.Xformable(cam_prim)
 
             # 1. Update xformOp:translate
@@ -546,17 +592,42 @@ class HydragonCameraControllerSystem:
         desired_cam_pos: Tuple[float, float, float],
     ) -> Tuple[float, float, float]:
         """Probes from focus to desired camera position and pulls camera in front of obstacles."""
+        if (
+            self._last_probe_focus is not None
+            and self._last_probe_desired is not None
+            and self._last_probe_result is not None
+        ):
+            df = (
+                (focus_pos[0] - self._last_probe_focus[0]) ** 2
+                + (focus_pos[1] - self._last_probe_focus[1]) ** 2
+                + (focus_pos[2] - self._last_probe_focus[2]) ** 2
+            )
+            dd = (
+                (desired_cam_pos[0] - self._last_probe_desired[0]) ** 2
+                + (desired_cam_pos[1] - self._last_probe_desired[1]) ** 2
+                + (desired_cam_pos[2] - self._last_probe_desired[2]) ** 2
+            )
+            if df < 1e-4 and dd < 1e-4:
+                return self._last_probe_result
+
+        result_pos = desired_cam_pos
         try:
             sq_iface = get_physx_scene_query_interface()
             if not sq_iface:
-                return desired_cam_pos
+                self._last_probe_focus = focus_pos
+                self._last_probe_desired = desired_cam_pos
+                self._last_probe_result = result_pos
+                return result_pos
 
             vx = desired_cam_pos[0] - focus_pos[0]
             vy = desired_cam_pos[1] - focus_pos[1]
             vz = desired_cam_pos[2] - focus_pos[2]
             dist = math.sqrt(vx * vx + vy * vy + vz * vz)
             if dist < 1e-4:
-                return desired_cam_pos
+                self._last_probe_focus = focus_pos
+                self._last_probe_desired = desired_cam_pos
+                self._last_probe_result = result_pos
+                return result_pos
 
             nx, ny, nz = vx / dist, vy / dist, vz / dist
             origin = carb.Float3(focus_pos[0], focus_pos[1], focus_pos[2])
@@ -588,7 +659,7 @@ class HydragonCameraControllerSystem:
 
             if closest_hit_dist < dist:
                 clamped_dist = max(100.0, closest_hit_dist - self._collision_offset)
-                return (
+                result_pos = (
                     focus_pos[0] + nx * clamped_dist,
                     focus_pos[1] + ny * clamped_dist,
                     focus_pos[2] + nz * clamped_dist,
@@ -597,7 +668,10 @@ class HydragonCameraControllerSystem:
         except Exception:
             pass
 
-        return desired_cam_pos
+        self._last_probe_focus = focus_pos
+        self._last_probe_desired = desired_cam_pos
+        self._last_probe_result = result_pos
+        return result_pos
 
     # -------------------------------------------------------------------------
     # Prim Discovery & Sync (Agnostic - Zero Hardcoded Paths)

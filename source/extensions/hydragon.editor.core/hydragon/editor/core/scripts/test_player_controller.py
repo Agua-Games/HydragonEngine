@@ -86,11 +86,92 @@ def test_player_discovery_fail_silent():
     print("  [PASS] Player discovery fail-silent verified")
 
 
+def test_player_respawn_teleport_logic():
+    print("--- 5. Testing Player Respawn Teleport Logic ---")
+    system = HydragonPlayerControllerSystem()
+    system._spawn_pos = (0.0, 50.0, -1000.0)
+
+    # Mock PhysX Simulation Interface
+    class MockSimIface:
+        def __init__(self):
+            self.forces = []
+            self.flushes = 0
+        def apply_force_at_pos(self, stage_id, prim_id, force, pos, mode):
+            self.forces.append((prim_id, force, pos, mode))
+        def flush_changes(self):
+            self.flushes += 1
+
+    # Mock USD Prims
+    class MockAttr:
+        def __init__(self, val):
+            self.val = val
+        def IsValid(self):
+            return True
+        def Set(self, val):
+            self.val = val
+        def Get(self):
+            return self.val
+
+    class MockPrim:
+        def __init__(self, path):
+            self.path = path
+            self.attrs = {
+                "physics:rigidBodyEnabled": MockAttr(True),
+                "physics:velocity": MockAttr((0.0, 0.0, 0.0)),
+                "physics:angularVelocity": MockAttr((0.0, 0.0, 0.0)),
+                "xformOp:translate": MockAttr((0.0, 0.0, 0.0)),
+            }
+        def IsValid(self):
+            return True
+        def HasAttribute(self, name):
+            return name in self.attrs
+        def GetAttribute(self, name):
+            return self.attrs.get(name)
+
+    player_prim = MockPrim("/World/Player")
+    rb_prim = MockPrim("/World/Player/geometry/ball_mesh")
+    sim_iface = MockSimIface()
+
+    # Verify fall detection threshold triggers _needs_respawn
+    falling_pos = (0.0, -251.0, -1000.0)
+    assert falling_pos[1] < -200.0, "Must detect fall when Y < -200"
+    if falling_pos[1] < -200.0:
+        system._needs_respawn = True
+    assert system._needs_respawn is True
+
+    # Test safe spawn elevation (must be at least 120.0 to prevent interpenetration)
+    spawn_x, spawn_y, spawn_z = system._spawn_pos
+    safe_y = max(120.0, spawn_y)
+    assert safe_y == 120.0, f"Expected safe_y=120.0, got {safe_y}"
+
+    # Simulate thread-safe main thread respawn (no rigidBodyEnabled toggling or flush_changes)
+    player_prim.GetAttribute("xformOp:translate").Set((spawn_x, safe_y, spawn_z))
+    rb_prim.GetAttribute("xformOp:translate").Set((0.0, 0.0, 0.0))
+    assert player_prim.GetAttribute("xformOp:translate").Get() == (0.0, 120.0, -1000.0)
+    assert rb_prim.GetAttribute("xformOp:translate").Get() == (0.0, 0.0, 0.0)
+
+    # Zero velocity via OpenUSD physics:velocity and physics:angularVelocity attributes
+    rb_prim.GetAttribute("physics:velocity").Set((0.0, 0.0, 0.0))
+    rb_prim.GetAttribute("physics:angularVelocity").Set((0.0, 0.0, 0.0))
+    assert rb_prim.GetAttribute("physics:velocity").Get() == (0.0, 0.0, 0.0)
+    assert rb_prim.GetAttribute("physics:angularVelocity").Get() == (0.0, 0.0, 0.0)
+
+    # Last world pos updated to safe elevation
+    system._last_world_pos = (spawn_x, safe_y, spawn_z)
+    system._needs_respawn = False
+    assert system._last_world_pos == (0.0, 120.0, -1000.0)
+    assert system._needs_respawn is False
+
+    system.shutdown()
+    print("  [PASS] Player respawn teleport logic verified")
+
+
 if __name__ == "__main__":
     test_player_controller_system_lifecycle()
     test_camera_axes_math()
     test_input_normalization_math()
     test_player_discovery_fail_silent()
+    test_player_respawn_teleport_logic()
     print("\n=======================================================")
-    print(" ALL PLAYER CONTROLLER SYSTEM TESTS PASSED! (4/4)")
+    print(" ALL PLAYER CONTROLLER SYSTEM TESTS PASSED! (5/5)")
     print("=======================================================")

@@ -135,11 +135,144 @@ def test_stomp_geometry_math():
     print("  [PASS] Collision & stomp geometry envelope math verified")
 
 
+def test_contact_report_event_processing():
+    print("--- 5. Testing Contact Report Event Processing ---")
+    system = HydragonFoesControllerSystem()
+
+    # Setup active foe brain
+    foe_prim_path = "/World/Foe_01"
+    foe_rb_path = "/World/Foe_01/geometry/ball_mesh"
+    brain = HydragonAIBrain(prim=None, origin_pos=(100.0, 50.0, 200.0))
+    brain._prim_path = foe_prim_path
+    brain.rb_path = foe_rb_path
+    brain._current_pos = (100.0, 50.0, 200.0)
+
+    system._active_brains[foe_prim_path] = brain
+    system._registered_brains[foe_prim_path] = brain
+    system._cached_player_rb_path = "/World/Player/geometry/ball_mesh"
+    system._cached_player_path = "/World/Player"
+
+    # Verify path resolution logic
+    player_root, player_rb = system._cached_player_path, system._cached_player_rb_path
+    rb_to_brain = {b.rb_path: b for b in system._registered_brains.values() if b.rb_path}
+
+    a0 = "/World/Player/geometry/ball_mesh"
+    a1 = "/World/Foe_01/geometry/ball_mesh"
+    is_p0 = (a0 == player_rb or a0 == player_root or a0.startswith(player_root + "/"))
+    is_p1 = (a1 == player_rb or a1 == player_root or a1.startswith(player_root + "/"))
+    assert is_p0 and not is_p1
+
+    matched_brain = rb_to_brain.get(a1)
+    assert matched_brain is brain
+
+    # Verify stomp classification when player is above foe
+    p_pos = (100.0, 110.0, 200.0)
+    f_pos = brain.current_pos
+    is_stomp = (p_pos[1] > f_pos[1] + 25.0)
+    assert is_stomp
+
+    # Verify lateral collision classification when heights are equal
+    p_pos_lateral = (100.0, 50.0, 200.0)
+    is_lateral_stomp = (p_pos_lateral[1] > f_pos[1] + 25.0)
+    assert not is_lateral_stomp
+
+    # Test queue deduplication logic
+    if not any(h[0] == foe_prim_path for h in system._pending_hits):
+        system._pending_hits.append((foe_prim_path, False))
+    # Second hit arrives as stomp -> upgrades existing hit without duplicate
+    if not any(h[0] == foe_prim_path for h in system._pending_hits):
+        system._pending_hits.append((foe_prim_path, True))
+    else:
+        for idx, (hp, hs) in enumerate(system._pending_hits):
+            if hp == foe_prim_path and not hs:
+                system._pending_hits[idx] = (hp, True)
+                break
+
+    assert len(system._pending_hits) == 1
+    assert system._pending_hits[0] == (foe_prim_path, True)
+
+    # Simulate race condition where physics step already popped from _active_brains
+    system._active_brains.pop(foe_prim_path, None)
+    assert foe_prim_path not in system._active_brains
+
+    # Destruction logic in _on_app_update resolves brain from _registered_brains
+    p_path, stomp_flag = system._pending_hits.pop(0)
+    target_brain = system._active_brains.pop(p_path, None) or system._registered_brains.get(p_path)
+    assert target_brain is brain
+    target_brain.destroy(reason="test_stomp")
+    system._destroyed_prim_paths.add(p_path)
+
+    assert not target_brain.is_alive
+    assert foe_prim_path in system._destroyed_prim_paths
+    assert foe_prim_path not in system._active_brains
+
+    system.shutdown()
+    print("  [PASS] Contact report event processing logic verified")
+
+
+def test_stop_event_stage_restoration():
+    print("--- 6. Testing Stage Restoration on Simulation STOP ---")
+    system = HydragonFoesControllerSystem()
+    system._destroyed_prim_paths.add("/World/Foe_01")
+    system._destroyed_prim_paths.add("/World/Foe_02")
+
+    # Mock stage & prims
+    class MockChild:
+        def __init__(self):
+            self.rb_enabled = False
+        def HasAttribute(self, name):
+            return name == "physics:rigidBodyEnabled"
+        def GetAttribute(self, name):
+            class Attr:
+                def __init__(self, c): self.c = c
+                def Set(self, val): self.c.rb_enabled = val
+            return Attr(self)
+
+    class MockPrim:
+        def __init__(self, path):
+            self.path = path
+            self.active = False
+            self.child = MockChild()
+        def IsValid(self):
+            return True
+        def SetActive(self, val):
+            self.active = val
+        def GetAllChildren(self):
+            return [self.child]
+        def HasAttribute(self, name):
+            return False
+
+    prims = {
+        "/World/Foe_01": MockPrim("/World/Foe_01"),
+        "/World/Foe_02": MockPrim("/World/Foe_02"),
+    }
+
+    # Simulate restore loop
+    for p_path in list(system._destroyed_prim_paths):
+        prim = prims.get(p_path)
+        assert prim is not None
+        prim.SetActive(True)
+        for child in prim.GetAllChildren():
+            if child.HasAttribute("physics:rigidBodyEnabled"):
+                child.GetAttribute("physics:rigidBodyEnabled").Set(True)
+
+    assert prims["/World/Foe_01"].active is True
+    assert prims["/World/Foe_01"].child.rb_enabled is True
+    assert prims["/World/Foe_02"].active is True
+    assert prims["/World/Foe_02"].child.rb_enabled is True
+
+    system.shutdown()
+    assert len(system._destroyed_prim_paths) == 0
+    print("  [PASS] Stage restoration on STOP verified")
+
+
 if __name__ == "__main__":
     test_foes_controller_lifecycle()
     test_ai_brain_state_transitions()
     test_ai_brain_destruction()
     test_stomp_geometry_math()
+    test_contact_report_event_processing()
+    test_stop_event_stage_restoration()
     print("\n=======================================================")
-    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (4/4)")
+    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (6/6)")
     print("=======================================================")

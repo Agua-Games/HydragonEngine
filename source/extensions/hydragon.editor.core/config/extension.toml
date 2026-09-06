@@ -9,6 +9,8 @@ keywords = ["editor", "core"]
 "omni.kit.menu.utils" = {}
 "omni.physx" = {}
 "omni.timeline" = {}
+"omni.kit.window.property" = {}
+"omni.kit.property.usd" = {}
 
 [[python.module]]
 name = "hydragon.editor.core"

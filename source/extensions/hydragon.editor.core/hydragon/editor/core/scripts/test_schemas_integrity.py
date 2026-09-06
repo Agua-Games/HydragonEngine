@@ -90,7 +90,7 @@ def test_syntax_usda_files():
         else:
             all_passed = False
 
-    return all_passed
+    assert all_passed, "All USDA files must have valid syntax"
 
 
 def test_python_module():
@@ -158,8 +158,6 @@ def test_python_module():
     assert menu_mgr is not None
     print("  [PASS] HydragonMenuManager import and initialization verified")
 
-    return True
-
 
 def test_pxr_stage():
     """If pxr is available, tests in-memory stage creation and attribute setting."""
@@ -169,7 +167,7 @@ def test_pxr_stage():
     except ImportError:
         print("  [INFO] pxr (OpenUSD) runtime not in system python path (standard when running outside Kit process).")
         print("  [INFO] Static analysis and schema validation passed.")
-        return True
+        return
 
     stage = Usd.Stage.CreateInMemory()
     world = stage.DefinePrim("/World", "Xform")
@@ -211,18 +209,12 @@ def test_pxr_stage():
     assert gm.state == "Victory"
     print("  [PASS] HydragonGameManager state transition verified on Usd.Stage")
 
-    return True
-
 
 if __name__ == "__main__":
-    ok1 = test_syntax_usda_files()
-    ok2 = test_python_module()
-    ok3 = test_pxr_stage()
-    if ok1 and ok2 and ok3:
-        print("\n==========================================")
-        print(" ALL HYDRAGON SCHEMAS TESTS PASSED! (3/3)")
-        print("==========================================")
-        sys.exit(0)
-    else:
-        print("\n[ERROR] One or more tests failed.")
-        sys.exit(1)
+    test_syntax_usda_files()
+    test_python_module()
+    test_pxr_stage()
+    print("\n==========================================")
+    print(" ALL HYDRAGON SCHEMAS TESTS PASSED! (3/3)")
+    print("==========================================")
+    sys.exit(0)

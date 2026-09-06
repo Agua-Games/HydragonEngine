@@ -269,16 +269,16 @@ class HydragonAIBrain:
         Deactivates this entity cleanly according to OpenUSD ECS guidelines.
         Sets prim.SetActive(False) to immediately cease PhysX simulation and Hydra draw calls.
         """
-        if not self._is_alive:
-            return
-
         self._is_alive = False
         if self._actor:
             self._actor.is_alive = False
 
         if HAS_KIT and self._prim and hasattr(self._prim, "IsValid") and self._prim.IsValid():
             try:
-                self._prim.SetActive(False)
+                if self._prim.IsActive():
+                    self._prim.SetActive(False)
+                if hasattr(UsdGeom, "Imageable"):
+                    UsdGeom.Imageable(self._prim).MakeInvisible()
             except Exception as e:
                 if carb:
                     carb.log_warn(f"[hydragon.editor.core] Failed to deactivate prim {self._prim_path}: {e}")
@@ -305,9 +305,15 @@ class HydragonFoesControllerSystem:
         self._app_update_sub = None
 
         self._active_brains: Dict[str, HydragonAIBrain] = {}
+        self._registered_brains: Dict[str, HydragonAIBrain] = {}
+        self._cached_player_path: Optional[str] = None
         self._cached_player_rb_path: Optional[str] = None
         self._cached_game_manager_path: Optional[str] = None
         self._configured_rb_paths: set = set()
+        self._destroyed_prim_paths: set = set()
+        self._contact_report_sub = None
+        self._pending_hits: List[Tuple[str, bool]] = []
+        self._pending_bounce: bool = False
         self._last_log_time: float = 0.0
 
     @classmethod
@@ -335,7 +341,12 @@ class HydragonFoesControllerSystem:
         self._is_active = False
         self._is_simulating = False
         self._active_brains.clear()
+        self._registered_brains.clear()
         self._configured_rb_paths.clear()
+        self._destroyed_prim_paths.clear()
+        self._pending_hits.clear()
+        self._pending_bounce = False
+        self._cached_player_path = None
         self._cached_player_rb_path = None
         self._cached_game_manager_path = None
 
@@ -343,6 +354,8 @@ class HydragonFoesControllerSystem:
             HydragonFoesControllerSystem._instance = None
             return
 
+        if self._contact_report_sub:
+            self._contact_report_sub = None
         if self._physics_step_sub:
             self._physics_step_sub = None
         if self._app_update_sub:
@@ -386,7 +399,14 @@ class HydragonFoesControllerSystem:
                 self._physics_step_sub = physx_iface.subscribe_physics_step_events(self._on_physics_step)
                 if carb:
                     carb.log_info("[hydragon.editor.core] Foes controller subscribed to PhysX steps.")
-                return True
+
+            sim_iface = get_physx_simulation_interface()
+            if sim_iface and self._contact_report_sub is None:
+                self._contact_report_sub = sim_iface.subscribe_contact_report_events(self._on_contact_report_event)
+                if carb:
+                    carb.log_info("[hydragon.editor.core] Foes controller subscribed to PhysX contact report events.")
+
+            return self._physics_step_sub is not None
         except Exception:
             pass
         return False
@@ -411,8 +431,37 @@ class HydragonFoesControllerSystem:
                     )
             elif event_type in (int(omni.timeline.TimelineEventType.STOP), int(omni.timeline.TimelineEventType.PAUSE)):
                 self._is_simulating = False
+
+                if event_type == int(omni.timeline.TimelineEventType.STOP):
+                    # Automatic stage restoration on STOP: restore destroyed foes so USD file is never corrupted
+                    stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+                    if stage and self._destroyed_prim_paths:
+                        restored_count = 0
+                        for p_path in list(self._destroyed_prim_paths):
+                            try:
+                                prim = stage.GetPrimAtPath(p_path)
+                                if prim and prim.IsValid():
+                                    prim.SetActive(True)
+                                    UsdGeom.Imageable(prim).MakeVisible()
+                                    actor = HydragonActor(prim)
+                                    if actor:
+                                        actor.is_alive = True
+                                    for child in prim.GetAllChildren():
+                                        if child.HasAttribute("physics:rigidBodyEnabled"):
+                                            child.GetAttribute("physics:rigidBodyEnabled").Set(True)
+                                    restored_count += 1
+                            except Exception:
+                                pass
+                        if carb:
+                            carb.log_info(
+                                f"[hydragon.editor.core] Re-activated {restored_count} destroyed foes on simulation STOP."
+                            )
+                        self._destroyed_prim_paths.clear()
+
                 self._active_brains.clear()
+                self._registered_brains.clear()
                 self._configured_rb_paths.clear()
+                self._cached_player_path = None
                 self._cached_player_rb_path = None
                 self._cached_game_manager_path = None
                 if carb:
@@ -435,6 +484,34 @@ class HydragonFoesControllerSystem:
         if not self._is_simulating:
             return
 
+        # Process pending foe hits collected from PhysX contact reports safely on the main thread.
+        # This completely prevents carb::tasking::Mutex recursion assertions.
+        if self._pending_hits:
+            stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+            while self._pending_hits:
+                p_path, is_stomp = self._pending_hits.pop(0)
+                brain = self._active_brains.pop(p_path, None) or self._registered_brains.get(p_path)
+                if brain:
+                    reason = "contact_report_stomp" if is_stomp else "contact_report_collision"
+                    brain.destroy(reason=reason)
+                self._destroyed_prim_paths.add(p_path)
+
+                # Direct OpenUSD deactivation fallback on stage to guarantee prim removal from PhysX & Hydra
+                if stage:
+                    try:
+                        prim = stage.GetPrimAtPath(p_path)
+                        if prim and prim.IsValid() and prim.IsActive():
+                            prim.SetActive(False)
+                            if hasattr(UsdGeom, "Imageable"):
+                                UsdGeom.Imageable(prim).MakeInvisible()
+                    except Exception as ex:
+                        if carb:
+                            carb.log_warn(f"[hydragon.editor.core] Failed to deactivate prim at {p_path}: {ex}")
+                    self._notify_game_manager_foe_destroyed(stage)
+
+                if is_stomp:
+                    self._pending_bounce = True
+
         if self._physics_step_sub is None:
             if not self._subscribe_physics():
                 dt = e.payload.get("dt", 1.0 / 60.0) if hasattr(e, "payload") else 1.0 / 60.0
@@ -443,31 +520,40 @@ class HydragonFoesControllerSystem:
     # -------------------------------------------------------------------------
     # One-Time Discovery on Simulation Start
     # -------------------------------------------------------------------------
-    def _get_player_rb_path(self, stage) -> Optional[str]:
-        """Locates the player rigid body path agnostically without hardcoded paths."""
-        if self._cached_player_rb_path:
-            return self._cached_player_rb_path
+    def _get_player_paths(self, stage) -> Tuple[Optional[str], Optional[str]]:
+        """Locates the player root prim and rigid body prim agnostically."""
+        if self._cached_player_path and self._cached_player_rb_path:
+            return self._cached_player_path, self._cached_player_rb_path
 
         try:
             from .player_controller import HydragonPlayerControllerSystem
             p_sys = HydragonPlayerControllerSystem.get_instance()
             if p_sys:
-                p_rb = p_sys.get_player_rb_path()
-                if p_rb:
-                    self._cached_player_rb_path = p_rb
-                    return p_rb
+                if not self._cached_player_rb_path:
+                    self._cached_player_rb_path = p_sys.get_player_rb_path()
+                if not self._cached_player_path:
+                    self._cached_player_path = p_sys.get_player_root_path()
+                if self._cached_player_path and self._cached_player_rb_path:
+                    return self._cached_player_path, self._cached_player_rb_path
         except Exception:
             pass
 
         if stage:
             for prim in stage.Traverse():
                 if prim.IsValid() and prim.IsActive() and HydragonPlayerController.is_applied(prim):
+                    self._cached_player_path = prim.GetPath().pathString
                     p_rb_prim = _find_rigid_body_descendant(prim)
                     if p_rb_prim:
                         self._cached_player_rb_path = p_rb_prim.GetPath().pathString
-                        return self._cached_player_rb_path
+                    else:
+                        self._cached_player_rb_path = self._cached_player_path
+                    return self._cached_player_path, self._cached_player_rb_path
 
-        return None
+        return self._cached_player_path, self._cached_player_rb_path
+
+    def _get_player_rb_path(self, stage) -> Optional[str]:
+        """Locates the player rigid body path agnostically without hardcoded paths."""
+        return self._get_player_paths(stage)[1]
 
     def _discover_entities_once(self, stage):
         """
@@ -475,19 +561,22 @@ class HydragonFoesControllerSystem:
         NEVER run this per-frame.
         """
         self._active_brains.clear()
+        self._registered_brains.clear()
         self._configured_rb_paths.clear()
+        self._cached_player_path = None
         self._cached_player_rb_path = None
         self._cached_game_manager_path = None
 
         if not stage:
             return
 
-        # Query player rigid body from player controller singleton if ready
+        # Query player paths from player controller singleton if ready
         try:
             from .player_controller import HydragonPlayerControllerSystem
             p_sys = HydragonPlayerControllerSystem.get_instance()
             if p_sys:
                 self._cached_player_rb_path = p_sys.get_player_rb_path()
+                self._cached_player_path = p_sys.get_player_root_path()
         except Exception:
             pass
 
@@ -516,13 +605,17 @@ class HydragonFoesControllerSystem:
                         carb.log_warn(f"[hydragon.editor.core] Foe '{prim_path}' has no rigid body descendant.")
 
                 self._active_brains[prim_path] = brain
+                self._registered_brains[prim_path] = brain
 
             # Discover Player RigidBody for target tracking if not already resolved
             if self._cached_player_rb_path is None:
                 if HydragonPlayerController.is_applied(prim):
+                    self._cached_player_path = prim.GetPath().pathString
                     rb_p = _find_rigid_body_descendant(prim)
                     if rb_p:
                         self._cached_player_rb_path = rb_p.GetPath().pathString
+                    else:
+                        self._cached_player_rb_path = self._cached_player_path
 
             # Discover Game Manager
             if self._cached_game_manager_path is None:
@@ -620,6 +713,24 @@ class HydragonFoesControllerSystem:
                         physx_rb.CreateEnableCCDAttr(True)
                     elif not ccd_attr.Get():
                         ccd_attr.Set(True)
+
+            # Contact Reporting API for native event-based collision detection
+            if PhysxSchema and hasattr(PhysxSchema, "PhysxContactReportAPI"):
+                targets = [rb_prim]
+                if hasattr(rb_prim, "GetAllDescendants"):
+                    for desc in rb_prim.GetAllDescendants():
+                        if desc.IsValid() and (desc.HasAttribute("physics:collisionEnabled") or (hasattr(desc, "HasAPI") and UsdPhysics and desc.HasAPI(UsdPhysics.CollisionAPI))):
+                            targets.append(desc)
+                for target_p in targets:
+                    contact_api = PhysxSchema.PhysxContactReportAPI(target_p)
+                    if not contact_api and hasattr(PhysxSchema.PhysxContactReportAPI, "Apply"):
+                        contact_api = PhysxSchema.PhysxContactReportAPI.Apply(target_p)
+                    if contact_api:
+                        thresh_attr = contact_api.GetThresholdAttr()
+                        if not thresh_attr or not thresh_attr.IsValid():
+                            contact_api.CreateThresholdAttr(0.0)
+                        else:
+                            thresh_attr.Set(0.0)
         except Exception:
             pass
 
@@ -643,6 +754,123 @@ class HydragonFoesControllerSystem:
         return self._compute_prim_usd_world_pos(rb_prim)
 
     # -------------------------------------------------------------------------
+    # Native PhysX Contact Report Event Handler (Event-Driven Collision)
+    # -------------------------------------------------------------------------
+    def _on_contact_report_event(self, contact_headers, contact_data):
+        """Native PhysX contact report callback triggered when rigid bodies collide."""
+        if not self._is_simulating or not HAS_KIT or not self._registered_brains:
+            return
+
+        stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+        if not stage:
+            return
+
+        stage_id = UsdUtils.StageCache.Get().GetId(stage).ToLongInt()
+        sim_iface = get_physx_simulation_interface()
+        player_root, player_rb = self._get_player_paths(stage)
+        if not player_rb:
+            return
+
+        def _is_player_path(path_str: str) -> bool:
+            if not path_str:
+                return False
+            if path_str == player_rb or path_str == player_root:
+                return True
+            if player_root and path_str.startswith(player_root + "/"):
+                return True
+            if player_rb and path_str.startswith(player_rb + "/"):
+                return True
+            return False
+
+        # Build reverse lookup map from rigid body path or prim path to brain
+        rb_to_brain: Dict[str, HydragonAIBrain] = {}
+        for prim_path, brain in self._registered_brains.items():
+            if brain.is_alive:
+                rb_to_brain[prim_path] = brain
+                if brain.rb_path:
+                    rb_to_brain[brain.rb_path] = brain
+
+        stomped_brains = []
+        collided_brains = []
+
+        for header in contact_headers:
+            # Decode actor paths
+            actor0_sdf = PhysicsSchemaTools.intToSdfPath(header.actor0)
+            actor1_sdf = PhysicsSchemaTools.intToSdfPath(header.actor1)
+            collider0_sdf = PhysicsSchemaTools.intToSdfPath(header.collider0)
+            collider1_sdf = PhysicsSchemaTools.intToSdfPath(header.collider1)
+
+            a0 = str(actor0_sdf)
+            a1 = str(actor1_sdf)
+            c0 = str(collider0_sdf)
+            c1 = str(collider1_sdf)
+
+            is_p0 = _is_player_path(a0) or _is_player_path(c0)
+            is_p1 = _is_player_path(a1) or _is_player_path(c1)
+
+            if not (is_p0 ^ is_p1):
+                # Contact does not involve exactly one player body
+                continue
+
+            foe_candidates = [a1, c1] if is_p0 else [a0, c0]
+
+            # Find matching brain
+            brain = None
+            for candidate in foe_candidates:
+                if not candidate:
+                    continue
+                if candidate in rb_to_brain:
+                    brain = rb_to_brain[candidate]
+                    break
+                for b_path, b in self._registered_brains.items():
+                    if candidate == b_path or candidate.startswith(b_path + "/"):
+                        brain = b
+                        break
+                    if b.rb_path and (candidate == b.rb_path or candidate.startswith(b.rb_path + "/")):
+                        brain = b
+                        break
+                if brain:
+                    break
+
+            if not brain or not brain.is_alive:
+                continue
+
+            # Determine stomp vs lateral collision
+            p_prim = stage.GetPrimAtPath(player_rb)
+            p_pos = self._get_rigid_body_world_pos(p_prim, player_rb)
+            f_pos = brain.current_pos
+            is_stomp = (p_pos[1] > f_pos[1] + 25.0)
+
+            # Check contact normal from contact_data if available
+            offset = header.contact_data_offset
+            num_data = header.num_contact_data
+            if not is_stomp and num_data > 0 and offset < len(contact_data):
+                c_norm = contact_data[offset].normal
+                norm_y = c_norm[1] if is_p0 else -c_norm[1]
+                if norm_y > 0.4:
+                    is_stomp = True
+
+            if is_stomp:
+                stomped_brains.append(brain)
+            else:
+                collided_brains.append(brain)
+
+        # Safely queue hits for destruction on the main thread (outside the PhysX simulation lock).
+        # Avoid duplicates and upgrade to stomp if previously recorded as lateral
+        for b in stomped_brains:
+            if not any(h[0] == b.prim_path for h in self._pending_hits):
+                self._pending_hits.append((b.prim_path, True))
+            else:
+                for idx, (hp, hs) in enumerate(self._pending_hits):
+                    if hp == b.prim_path and not hs:
+                        self._pending_hits[idx] = (hp, True)
+                        break
+
+        for b in collided_brains:
+            if not any(h[0] == b.prim_path for h in self._pending_hits):
+                self._pending_hits.append((b.prim_path, False))
+
+    # -------------------------------------------------------------------------
     # Physics Simulation Step (O(N) iteration - ZERO per-frame traversals)
     # -------------------------------------------------------------------------
     def _on_physics_step(self, dt: float):
@@ -657,6 +885,11 @@ class HydragonFoesControllerSystem:
         sim_iface = get_physx_simulation_interface()
         if not sim_iface:
             return
+
+        # Apply pending bounce impulse if player stomped a foe
+        if self._pending_bounce:
+            self._pending_bounce = False
+            self._apply_player_bounce(stage, stage_id, sim_iface)
 
         # 1. Query Player position once for all brains
         player_pos: Optional[Tuple[float, float, float]] = None
@@ -700,18 +933,43 @@ class HydragonFoesControllerSystem:
                 p = rb_data.get("position")
                 world_pos = (float(p[0]), float(p[1]), float(p[2])) if p is not None else (0.0, 0.0, 0.0)
             else:
-                world_pos = self._get_rigid_body_world_pos(rb_prim, rb_path)
+                world_pos = self._compute_prim_usd_world_pos(rb_prim)
 
             brain.set_current_pos(world_pos)
 
             # Check if fallen below stage boundary (kill floor)
             if world_pos[1] < -300.0:
-                brain.destroy(reason="fell_off_arena")
-                self._notify_game_manager_foe_destroyed(stage)
+                if not any(h[0] == prim_path for h in self._pending_hits):
+                    self._pending_hits.append((prim_path, False))
                 dead_paths.append(prim_path)
                 continue
 
-            # Resolve target position (custom targetPrim relationship or active player)
+            # Check player collision fallback (stomp or lateral contact)
+            if player_pos is not None:
+                dx = player_pos[0] - world_pos[0]
+                dy = player_pos[1] - world_pos[1]
+                dz = player_pos[2] - world_pos[2]
+                horiz_dist = math.sqrt(dx * dx + dz * dz)
+                dist_3d = math.sqrt(dx * dx + dy * dy + dz * dz)
+
+                # Contact envelope: spheres have radius ~50cm each (center-to-center contact ~100cm)
+                # Expand threshold to 135cm to reliably catch dynamic high-velocity collisions and post-solver bounces
+                if dist_3d <= 135.0 or (horiz_dist < 120.0 and abs(dy) < 110.0):
+                    is_stomp = (horiz_dist < 90.0 and 20.0 < dy < 150.0)
+                    if not any(h[0] == prim_path for h in self._pending_hits):
+                        self._pending_hits.append((prim_path, is_stomp))
+                    elif is_stomp:
+                        for idx, (hp, hs) in enumerate(self._pending_hits):
+                            if hp == prim_path and not hs:
+                                self._pending_hits[idx] = (hp, True)
+                                break
+                    if is_stomp:
+                        self._pending_bounce = True
+                    brain._is_alive = False
+                    dead_paths.append(prim_path)
+                    continue
+
+            # Resolve target position for AI state machine (custom targetPrim relationship or active player)
             target_pos = player_pos
             if brain.target_prim_path:
                 t_prim = stage.GetPrimAtPath(brain.target_prim_path)
@@ -719,25 +977,6 @@ class HydragonFoesControllerSystem:
                     t_rb = _find_rigid_body_descendant(t_prim)
                     t_rb_path = t_rb.GetPath().pathString if t_rb else brain.target_prim_path
                     target_pos = self._get_rigid_body_world_pos(t_rb or t_prim, t_rb_path)
-
-            # Check player collision (stomp or lateral contact)
-            if target_pos is not None:
-                dx = target_pos[0] - world_pos[0]
-                dy = target_pos[1] - world_pos[1]
-                dz = target_pos[2] - world_pos[2]
-                horiz_dist = math.sqrt(dx * dx + dz * dz)
-                dist_3d = math.sqrt(dx * dx + dy * dy + dz * dz)
-
-                # Contact envelope: spheres have radius ~50cm each (center-to-center contact ~100cm)
-                if dist_3d <= 115.0 or (horiz_dist < 100.0 and abs(dy) < 90.0):
-                    is_stomp = (horiz_dist < 80.0 and 30.0 < dy < 130.0)
-                    reason = "stomped_by_player" if is_stomp else "player_collision"
-                    brain.destroy(reason=reason)
-                    self._notify_game_manager_foe_destroyed(stage)
-                    if is_stomp:
-                        self._apply_player_bounce(stage, stage_id, sim_iface)
-                    dead_paths.append(prim_path)
-                    continue
 
             # Update state machine and calculate horizontal actuation force
             state, (fx, fz) = brain.update_state_machine(dt, target_pos)

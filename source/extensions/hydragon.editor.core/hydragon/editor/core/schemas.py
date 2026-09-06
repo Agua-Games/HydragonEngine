@@ -101,12 +101,16 @@ def _get_attr_value(prim, attr_name: str, default):
 
 
 def _set_attr_value(prim, attr_name: str, value, type_name):
-    """Safe setter for an attribute, creating it if it doesn't exist."""
-    if not HAS_PXR or not prim:
+    """Safe setter for an attribute, only writing if the value has changed."""
+    if not HAS_PXR or not prim or not hasattr(prim, "IsValid") or not prim.IsValid():
         return
     attr = prim.GetAttribute(attr_name)
     if not attr or not attr.IsValid():
         attr = prim.CreateAttribute(attr_name, type_name)
+    else:
+        current_val = attr.Get()
+        if current_val == value:
+            return
     attr.Set(value)
 
 

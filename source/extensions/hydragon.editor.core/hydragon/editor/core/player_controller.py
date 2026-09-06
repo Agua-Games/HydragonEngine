@@ -91,6 +91,7 @@ class HydragonPlayerControllerSystem:
         self._configured_rb_paths: Set[str] = set()
         self._last_world_pos: Tuple[float, float, float] = (0.0, 0.0, 0.0)
         self._spawn_pos: Tuple[float, float, float] = (0.0, 50.0, -1000.0)
+        self._needs_respawn: bool = False
         self._last_log_time = 0.0
 
     @classmethod
@@ -102,6 +103,9 @@ class HydragonPlayerControllerSystem:
 
     def get_player_rb_path(self) -> Optional[str]:
         return self._cached_rb_path
+
+    def get_player_root_path(self) -> Optional[str]:
+        return self._cached_player_path
 
     def get_player_world_pos(self) -> Tuple[float, float, float]:
         return self._last_world_pos
@@ -257,6 +261,11 @@ class HydragonPlayerControllerSystem:
 
         if not self._is_simulating:
             return
+
+        # Safely execute player respawn on main thread outside PhysX simulation lock
+        if self._needs_respawn:
+            self._needs_respawn = False
+            self._respawn_player_main_thread()
 
         # Attempt to lazily acquire PhysX if not already subscribed
         if self._physics_step_sub is None:
@@ -479,6 +488,24 @@ class HydragonPlayerControllerSystem:
                         physx_rb.CreateEnableCCDAttr(True)
                     elif not ccd_attr.Get():
                         ccd_attr.Set(True)
+
+            # Contact Reporting API for native event-based collision detection
+            if PhysxSchema and hasattr(PhysxSchema, "PhysxContactReportAPI"):
+                targets = [rb_prim]
+                if hasattr(rb_prim, "GetAllDescendants"):
+                    for desc in rb_prim.GetAllDescendants():
+                        if desc.IsValid() and (desc.HasAttribute("physics:collisionEnabled") or (hasattr(desc, "HasAPI") and UsdPhysics and desc.HasAPI(UsdPhysics.CollisionAPI))):
+                            targets.append(desc)
+                for target_p in targets:
+                    contact_api = PhysxSchema.PhysxContactReportAPI(target_p)
+                    if not contact_api and hasattr(PhysxSchema.PhysxContactReportAPI, "Apply"):
+                        contact_api = PhysxSchema.PhysxContactReportAPI.Apply(target_p)
+                    if contact_api:
+                        thresh_attr = contact_api.GetThresholdAttr()
+                        if not thresh_attr or not thresh_attr.IsValid():
+                            contact_api.CreateThresholdAttr(0.0)
+                        else:
+                            thresh_attr.Set(0.0)
         except Exception:
             pass
 
@@ -638,9 +665,9 @@ class HydragonPlayerControllerSystem:
         world_pos = self._get_rigid_body_world_pos(rb_prim, rb_path_str)
         self._last_world_pos = world_pos
 
-        # Floor drop / tunneling safeguard: if player falls below arena boundary (-200cm), respawn safely
+        # Floor drop / tunneling safeguard: if player falls below arena boundary (-200cm), queue respawn
         if world_pos[1] < -200.0:
-            self._respawn_player(stage, stage_id, rb_prim, rb_path_str, sim_iface, world_pos)
+            self._needs_respawn = True
             return
 
         force_pos = carb.Float3(world_pos[0], world_pos[1], world_pos[2])
@@ -746,45 +773,69 @@ class HydragonPlayerControllerSystem:
                 carb.log_warn(f"[hydragon.editor.core] Ground check error: {e}")
         return False
 
-    def _respawn_player(
-        self,
-        stage,
-        stage_id: int,
-        rb_prim,
-        rb_path_str: str,
-        sim_iface,
-        fallen_pos: Tuple[float, float, float],
-    ):
-        """Safely teleports player back to initial spawn position and zeroes linear and angular velocities."""
-        spawn_x, spawn_y, spawn_z = self._spawn_pos
-        self._last_world_pos = (spawn_x, spawn_y, spawn_z)
+    def _respawn_player_main_thread(self):
+        """
+        Safely teleports player back to spawn on the main thread outside the PhysX simulation lock.
+        Does NOT toggle rigidBodyEnabled or call flush_changes, eliminating mutex recursion assertions.
+        """
+        if not HAS_KIT:
+            return
 
-        # 1. Reset translation on root actor or rigid body in USD
+        stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+        if not stage:
+            return
+
+        player_prim = self.find_player_prim(stage)
+        if not player_prim:
+            return
+
+        rb_prim = self.get_rigid_body_prim(player_prim)
+        rb_path_str = rb_prim.GetPath().pathString if rb_prim else None
+
+        spawn_x, spawn_y, spawn_z = self._spawn_pos
+        # Safe spawn height (at least 120cm above floor) to prevent ground box interpenetration and tunneling
+        safe_y = max(120.0, spawn_y)
+        self._last_world_pos = (spawn_x, safe_y, spawn_z)
+
         try:
-            player_prim = self.find_player_prim(stage)
-            target_prim = player_prim if player_prim else rb_prim
+            # 1. Teleport parent Player prim in USD
+            target_prim = player_prim
             if target_prim and target_prim.IsValid():
                 xformable = UsdGeom.Xformable(target_prim)
                 for op in xformable.GetOrderedXformOps():
                     if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
-                        op.Set(Gf.Vec3d(spawn_x, spawn_y, spawn_z))
+                        op.Set(Gf.Vec3d(spawn_x, safe_y, spawn_z))
                         break
-        except Exception:
-            pass
 
-        # 2. Reset velocities in USD RigidBodyAPI
-        try:
-            if hasattr(rb_prim, "GetAttribute"):
+            # 2. Reset child rigid body local translation and rotation to origin
+            if rb_prim and rb_prim != target_prim and rb_prim.IsValid():
+                rb_xformable = UsdGeom.Xformable(rb_prim)
+                for op in rb_xformable.GetOrderedXformOps():
+                    if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
+                        op.Set(Gf.Vec3d(0.0, 0.0, 0.0))
+                    elif op.GetOpType() == UsdGeom.XformOp.TypeRotateXYZ:
+                        op.Set(Gf.Vec3f(0.0, 0.0, 0.0))
+                    elif op.GetOpType() == UsdGeom.XformOp.TypeOrient:
+                        op.Set(Gf.Quatf(1.0, 0.0, 0.0, 0.0))
+
+            # 3. Reset velocities in USD RigidBodyAPI
+            if rb_prim and rb_prim.IsValid() and hasattr(rb_prim, "GetAttribute"):
                 vel_attr = rb_prim.GetAttribute("physics:velocity")
                 if vel_attr and vel_attr.IsValid():
                     vel_attr.Set(Gf.Vec3f(0.0, 0.0, 0.0))
                 ang_attr = rb_prim.GetAttribute("physics:angularVelocity")
                 if ang_attr and ang_attr.IsValid():
                     ang_attr.Set(Gf.Vec3f(0.0, 0.0, 0.0))
-        except Exception:
-            pass
 
-        if carb:
-            carb.log_info(
-                f"[hydragon.editor.core] Player fell below arena ({fallen_pos[1]:.1f}cm). Respawned at ({spawn_x:.1f}, {spawn_y:.1f}, {spawn_z:.1f})."
-            )
+            # 4. OpenUSD physics:velocity and physics:angularVelocity attributes reset in step 3
+            # are synchronized to the PhysX simulation on the next tick, cleanly stopping all momentum.
+            # Avoid calling sim_iface.apply_force_at_pos with 'Velocity' mode as PxRigidBodyExt does not support it.
+
+            if carb:
+                carb.log_info(
+                    f"[hydragon.editor.core] Player safely respawned at ({spawn_x:.1f}, {safe_y:.1f}, {spawn_z:.1f})."
+                )
+
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Player respawn error: {e}")
