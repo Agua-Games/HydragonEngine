@@ -882,6 +882,15 @@ class HydragonTriggerSystem:
         except Exception:
             self._show_victory_ui_overlay(score, elapsed, foes)
 
+        # 5. Transition soundtrack to victory track if available
+        try:
+            from .soundtrack_controller import HydragonSoundtrackSystem
+            st_sys = HydragonSoundtrackSystem.get_instance()
+            if st_sys:
+                st_sys.play_track("victory", fade=True)
+        except Exception:
+            pass
+
         if carb:
             carb.log_info("================================================================")
             carb.log_info(f"*** HYDRAGON VICTORY! Level completed in {elapsed:.2f}s! Final Score: {score} (Foes: {foes}) ***")

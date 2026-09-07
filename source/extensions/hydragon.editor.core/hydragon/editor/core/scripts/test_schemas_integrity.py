@@ -106,8 +106,9 @@ def test_python_module():
             HydragonTrigger,
             HydragonGameManager,
             HydragonUICanvas,
+            HydragonSoundtrack,
         )
-        print("  [PASS] Successfully imported all 7 Hydragon API schema classes from hydragon.editor.core")
+        print("  [PASS] Successfully imported all 8 Hydragon API schema classes from hydragon.editor.core")
     except Exception as e:
         print(f"  [FAIL] Failed to import from hydragon.editor.core: {e}")
         return False
@@ -120,6 +121,7 @@ def test_python_module():
     assert HydragonTrigger.SCHEMA_NAME == "HydragonTriggerAPI"
     assert HydragonGameManager.SCHEMA_NAME == "HydragonGameAPI"
     assert HydragonUICanvas.SCHEMA_NAME == "HydragonUICanvasAPI"
+    assert HydragonSoundtrack.SCHEMA_NAME == "HydragonSoundtrackAPI"
     print("  [PASS] All SCHEMA_NAME constants verified")
 
     # Test fallback behavior when prim is None (Fail-Silent)
@@ -166,6 +168,16 @@ def test_python_module():
     assert canvas.show_score_popups is True
     assert canvas.auto_activate_on_play is True
     print("  [PASS] HydragonUICanvas fail-silent defaults verified")
+
+    st = HydragonSoundtrack(None)
+    assert st.current_track == "ambient"
+    assert st.track_state == "Playing"
+    assert st.volume == 0.8
+    assert st.auto_play is True
+    assert st.is_looping is True
+    assert st.fade_duration == 1.5
+    assert "lounge_soundtrack_01.wav" in st.ambient_asset_path
+    print("  [PASS] HydragonSoundtrack fail-silent defaults verified")
 
     from hydragon.editor.core.menu import HydragonMenuManager
     menu_mgr = HydragonMenuManager("hydragon.editor.core")
@@ -236,11 +248,34 @@ def test_pxr_stage():
     print("  [PASS] HydragonUICanvas schema applied, queried and mutated on Usd.Stage")
 
 
+def test_ball_mesh_refinement():
+    """Validates that Player Ball, Foe Ball, and test stage Player have smooth refinement attributes."""
+    print("\n--- 4. Validating Ball Mesh Refinement Attributes ---")
+    gameplay_dir = os.path.join(ext_dir, "data", "assets", "gameplay")
+
+    files_to_check = [
+        os.path.join(gameplay_dir, "hydragon_player_ball", "player_ball.usda"),
+        os.path.join(gameplay_dir, "hydragon_foe_ball", "foe_ball.usda"),
+        os.path.join(gameplay_dir, "test_stage_rolling_ball.usda"),
+    ]
+
+    for file_path in files_to_check:
+        assert os.path.exists(file_path), f"File missing: {file_path}"
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        assert "refinementEnableOverride" in content, f"Missing refinementEnableOverride in {os.path.basename(file_path)}"
+        assert "refinementLevel" in content, f"Missing refinementLevel in {os.path.basename(file_path)}"
+        assert "refinementLevel = 2" in content, f"Expected refinementLevel = 2 in {os.path.basename(file_path)}"
+        print(f"  [PASS] Smooth refinement verified in {os.path.basename(file_path)}")
+
+
 if __name__ == "__main__":
     test_syntax_usda_files()
     test_python_module()
+    test_ball_mesh_refinement()
     test_pxr_stage()
     print("\n==========================================")
-    print(" ALL HYDRAGON SCHEMAS TESTS PASSED! (3/3)")
+    print(" ALL HYDRAGON SCHEMAS TESTS PASSED! (4/4)")
     print("==========================================")
     sys.exit(0)

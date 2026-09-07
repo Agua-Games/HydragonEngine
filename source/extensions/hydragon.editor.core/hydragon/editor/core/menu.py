@@ -29,6 +29,7 @@ from .schemas import (
     HydragonTrigger,
     HydragonGameManager,
     HydragonUICanvas,
+    HydragonSoundtrack,
 )
 
 
@@ -183,6 +184,24 @@ class HydragonMenuManager:
                 if carb:
                     carb.log_error(f"[hydragon.editor.core] Direct USD fallback failed: {e}")
 
+        # Ensure smooth geometry subdivision on instantiated ball meshes (Player Ball, Foe Ball)
+        try:
+            mesh_prim = stage.GetPrimAtPath(f"{prim_path}/geometry/ball_mesh")
+            if mesh_prim and mesh_prim.IsValid():
+                refine_ovr = mesh_prim.GetAttribute("refinementEnableOverride")
+                if not refine_ovr or not refine_ovr.IsValid():
+                    mesh_prim.CreateAttribute("refinementEnableOverride", Sdf.ValueTypeNames.Bool, custom=True).Set(True)
+                else:
+                    refine_ovr.Set(True)
+
+                refine_lvl = mesh_prim.GetAttribute("refinementLevel")
+                if not refine_lvl or not refine_lvl.IsValid():
+                    mesh_prim.CreateAttribute("refinementLevel", Sdf.ValueTypeNames.Int, custom=True).Set(2)
+                else:
+                    refine_lvl.Set(2)
+        except Exception:
+            pass
+
         omni.usd.get_context().get_selection().set_selected_prim_paths([prim_path], True)
         arc_type = "Payload" if as_payload else "Reference"
         if carb:
@@ -242,6 +261,10 @@ class HydragonMenuManager:
                 name="Character (Kowra)",
                 onclick_fn=lambda: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=True)
             ),
+            MenuItemDescription(
+                name="Soundtrack Manager",
+                onclick_fn=lambda: self._instantiate_asset("assets/audio/hydragon_sountrack/hydragon_soundtrack.usda", "SoundtrackManager", as_payload=False)
+            ),
             # Separator
             MenuItemDescription(name=""),
             # API Schemas Submenu
@@ -276,6 +299,10 @@ class HydragonMenuManager:
                         name="Apply HydragonUICanvasAPI",
                         onclick_fn=lambda: self._apply_schema(HydragonUICanvas)
                     ),
+                    MenuItemDescription(
+                        name="Apply HydragonSoundtrackAPI",
+                        onclick_fn=lambda: self._apply_schema(HydragonSoundtrack)
+                    ),
                 ]
             )
         ]
@@ -305,6 +332,7 @@ class HydragonMenuManager:
                 {"name": "Apply HydragonTriggerAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonTrigger)},
                 {"name": "Apply HydragonGameAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonGameManager)},
                 {"name": "Apply HydragonUICanvasAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonUICanvas)},
+                {"name": "Apply HydragonSoundtrackAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonSoundtrack)},
             ]
 
             hydragon_items = [
@@ -331,6 +359,10 @@ class HydragonMenuManager:
                 {
                     "name": "Character (Kowra)",
                     "onclick_fn": lambda *_: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=True)
+                },
+                {
+                    "name": "Soundtrack Manager",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/audio/hydragon_sountrack/hydragon_soundtrack.usda", "SoundtrackManager", as_payload=False)
                 },
                 {"name": ""},
                 {

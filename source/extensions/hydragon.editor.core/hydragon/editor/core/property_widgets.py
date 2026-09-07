@@ -29,6 +29,7 @@ from .schemas import (
     HydragonTrigger,
     HydragonGameManager,
     HydragonUICanvas,
+    HydragonSoundtrack,
 )
 
 
@@ -197,6 +198,16 @@ if HAS_PROPERTY_WINDOW:
                 schema_check_fn=HydragonUICanvas.is_applied,
             )
 
+
+    class HydragonSoundtrackPropertyWidget(HydragonBasePropertyWidget):
+        """Dedicated property panel for HydragonSoundtrackAPI."""
+        def __init__(self):
+            super().__init__(
+                title="Hydragon Soundtrack",
+                prefix="soundtrack:",
+                schema_check_fn=HydragonSoundtrack.is_applied,
+            )
+
 else:
     class HydragonBasePropertyWidget:
         def __init__(self, *args, **kwargs):
@@ -221,6 +232,9 @@ else:
         pass
 
     class HydragonUICanvasPropertyWidget(HydragonBasePropertyWidget):
+        pass
+
+    class HydragonSoundtrackPropertyWidget(HydragonBasePropertyWidget):
         pass
 
 
@@ -279,6 +293,7 @@ class HydragonPropertyWidgetsManager:
                 ("hydragon_trigger", HydragonTriggerPropertyWidget()),
                 ("hydragon_game", HydragonGamePropertyWidget()),
                 ("hydragon_ui_canvas", HydragonUICanvasPropertyWidget()),
+                ("hydragon_soundtrack", HydragonSoundtrackPropertyWidget()),
             ]
 
             for name, widget in self._widgets:
@@ -286,7 +301,7 @@ class HydragonPropertyWidgetsManager:
 
             self._registered = True
             if carb:
-                carb.log_info("[hydragon.editor.core] Successfully registered 7 dedicated Hydragon property widgets.")
+                carb.log_info("[hydragon.editor.core] Successfully registered 8 dedicated Hydragon property widgets.")
             return True
         except Exception as e:
             if carb:

@@ -46,7 +46,14 @@ class HydragonEditorCoreExtension(_IExt):
         self._effects_system = HydragonEffectsSystem()
         self._effects_system.startup()
 
+        from .soundtrack_controller import HydragonSoundtrackSystem
+        self._soundtrack_system = HydragonSoundtrackSystem()
+        self._soundtrack_system.startup()
+
     def on_shutdown(self):
+        if hasattr(self, "_soundtrack_system") and self._soundtrack_system:
+            self._soundtrack_system.shutdown()
+            self._soundtrack_system = None
         if hasattr(self, "_effects_system") and self._effects_system:
             self._effects_system.shutdown()
             self._effects_system = None

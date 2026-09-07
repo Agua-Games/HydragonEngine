@@ -88,7 +88,7 @@ DEFAULT_BURST_LIFETIME: float = 0.55              # Total particle sparks lifeti
 DEFAULT_NUM_SPARKS: int = 6                      # Number of diamond sparks per explosion (pre-allocated mesh pool)
 DEFAULT_SPARK_EMISSION: float = 60000.0           # Emissive intensity on diamond sparks
 DEFAULT_SPARK_RADIUS: float = 20.0                 # Diamond radius in centimeters (9 cm)
-DEFAULT_AUDIO_VOLUME: float = 1.0                 # Audio playback volume level (0.0 silent to 1.0 full)
+DEFAULT_AUDIO_VOLUME: float = 0.4                 # Audio playback volume level (0.0 silent to 1.0 full)
 DEFAULT_TAUNT_DELAY: float = 1.5                  # Delay in seconds before playing random taunt after foe defeat
 TAUNT_SOUND_NAMES: Tuple[str, ...] = ("taunt_01.wav", "taunt_02.wav", "taunt_03.wav", "taunt_04.wav")
 
@@ -585,16 +585,17 @@ class HydragonEffectsSystem:
         self._set_audio_volume(val)
 
     def _set_audio_volume(self, volume: float):
-        """Sets the audio playback volume level (0.0 to 1.0) via carb.settings."""
+        """Sets the audio playback volume level (0.0 to 1.0) via carb.settings for UI and Master buses."""
         self._audio_volume = max(0.0, min(1.0, float(volume)))
         if carb and hasattr(carb, "settings"):
             try:
                 settings = carb.settings.get_settings()
                 if settings:
-                    try:
-                        settings.set_float("/persistent/audio/context/uiVolume", self._audio_volume)
-                    except AttributeError:
-                        settings.set("/persistent/audio/context/uiVolume", self._audio_volume)
+                    for key in ("/persistent/audio/context/uiVolume", "/persistent/audio/context/masterVolume"):
+                        try:
+                            settings.set_float(key, self._audio_volume)
+                        except AttributeError:
+                            settings.set(key, self._audio_volume)
             except Exception:
                 pass
 
@@ -767,6 +768,7 @@ class HydragonEffectsSystem:
         try:
             event_type = int(e.type)
             if event_type == int(omni.timeline.TimelineEventType.PLAY):
+                self._set_audio_volume(DEFAULT_AUDIO_VOLUME)
                 stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
                 if stage:
                     self._ensure_pool(stage)
@@ -1024,6 +1026,9 @@ class HydragonEffectsSystem:
         Activates a pre-allocated pool slot at world_pos and triggers low-latency
         pre-cached sound immediately.
         """
+        # Dynamically sync volume in case user changed DEFAULT_AUDIO_VOLUME without restarting editor
+        self._set_audio_volume(DEFAULT_AUDIO_VOLUME)
+
         # Always trigger defeat sound cue immediately
         self._play_cached_sound()
 

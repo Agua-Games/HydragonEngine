@@ -7,6 +7,7 @@ from .schemas import (
     HydragonTrigger,
     HydragonGameManager,
     HydragonUICanvas,
+    HydragonSoundtrack,
 )
 from .player_controller import HydragonPlayerControllerSystem
 from .camera_controller import HydragonCameraControllerSystem
@@ -15,4 +16,5 @@ from .trigger_controller import HydragonTriggerSystem, HydragonTriggerZone
 from .property_widgets import HydragonPropertyWidgetsManager
 from .game_hud import HydragonGameHUD
 from .effects_controller import HydragonEffectsSystem, ActiveExplosionVFX
+from .soundtrack_controller import HydragonSoundtrackSystem, HydragonSoundtrackEntity
 

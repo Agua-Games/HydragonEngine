@@ -91,27 +91,35 @@ def _has_api_schema(prim, schema_name: str) -> bool:
 
 def _get_attr_value(prim, attr_name: str, default):
     """Fail-silent getter for an attribute."""
-    if not HAS_PXR or not prim:
+    if not prim or not hasattr(prim, "GetAttribute"):
         return default
-    attr = prim.GetAttribute(attr_name)
-    if not attr or not attr.IsValid():
+    try:
+        attr = prim.GetAttribute(attr_name)
+        if not attr or (hasattr(attr, "IsValid") and not attr.IsValid()):
+            return default
+        val = attr.Get()
+        return default if val is None else val
+    except Exception:
         return default
-    val = attr.Get()
-    return default if val is None else val
 
 
 def _set_attr_value(prim, attr_name: str, value, type_name):
     """Safe setter for an attribute, only writing if the value has changed."""
-    if not HAS_PXR or not prim or not hasattr(prim, "IsValid") or not prim.IsValid():
+    if not prim or not hasattr(prim, "IsValid") or not prim.IsValid():
         return
-    attr = prim.GetAttribute(attr_name)
-    if not attr or not attr.IsValid():
-        attr = prim.CreateAttribute(attr_name, type_name)
-    else:
-        current_val = attr.Get()
-        if current_val == value:
-            return
-    attr.Set(value)
+    try:
+        attr = prim.GetAttribute(attr_name)
+        if not attr or (hasattr(attr, "IsValid") and not attr.IsValid()):
+            if hasattr(prim, "CreateAttribute"):
+                attr = prim.CreateAttribute(attr_name, type_name)
+        else:
+            current_val = attr.Get()
+            if current_val == value:
+                return
+        if attr and hasattr(attr, "Set"):
+            attr.Set(value)
+    except Exception:
+        pass
 
 
 # ==============================================================================
@@ -772,3 +780,140 @@ class HydragonUICanvas:
     @auto_activate_on_play.setter
     def auto_activate_on_play(self, val: bool):
         _set_attr_value(self._prim, "hud:autoActivateOnPlay", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+
+# ==============================================================================
+# HydragonSoundtrack
+# ==============================================================================
+DEFAULT_AMBIENT_SOUNDTRACK: str = "data/assets/audio/sound_fx_samples/lounge_soundtrack_01.wav"
+
+
+class HydragonSoundtrack:
+    SCHEMA_NAME = "HydragonSoundtrackAPI"
+
+    def __init__(self, prim):
+        self._prim = prim
+
+    @classmethod
+    def apply(
+        cls,
+        prim,
+        current_track: str = "ambient",
+        track_state: str = "Playing",
+        volume: float = 0.8,
+        auto_play: bool = True,
+        is_looping: bool = True,
+        fade_duration: float = 1.5,
+        ambient_asset_path: str = DEFAULT_AMBIENT_SOUNDTRACK,
+        combat_asset_path: str = "",
+        victory_asset_path: str = "",
+    ):
+        _ensure_api_schema(prim, cls.SCHEMA_NAME)
+        st = cls(prim)
+        st.current_track = current_track
+        st.track_state = track_state
+        st.volume = volume
+        st.auto_play = auto_play
+        st.is_looping = is_looping
+        st.fade_duration = fade_duration
+        st.ambient_asset_path = ambient_asset_path
+        st.combat_asset_path = combat_asset_path
+        st.victory_asset_path = victory_asset_path
+        return st
+
+    @classmethod
+    def is_applied(cls, prim) -> bool:
+        return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
+            prim and hasattr(prim, "HasAttribute") and (
+                prim.HasAttribute("soundtrack:currentTrack") or prim.HasAttribute("soundtrack:ambientAssetPath")
+            )
+        )
+
+    @property
+    def prim(self):
+        return self._prim
+
+    @property
+    def current_track(self) -> str:
+        return str(_get_attr_value(self._prim, "soundtrack:currentTrack", "ambient"))
+
+    @current_track.setter
+    def current_track(self, val: str):
+        _set_attr_value(self._prim, "soundtrack:currentTrack", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def track_state(self) -> str:
+        return str(_get_attr_value(self._prim, "soundtrack:trackState", "Playing"))
+
+    @track_state.setter
+    def track_state(self, val: str):
+        _set_attr_value(self._prim, "soundtrack:trackState", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def volume(self) -> float:
+        return float(_get_attr_value(self._prim, "soundtrack:volume", 0.8))
+
+    @volume.setter
+    def volume(self, val: float):
+        _set_audio_val = max(0.0, min(1.0, float(val)))
+        _set_attr_value(self._prim, "soundtrack:volume", _set_audio_val, Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def auto_play(self) -> bool:
+        return bool(_get_attr_value(self._prim, "soundtrack:autoPlay", True))
+
+    @auto_play.setter
+    def auto_play(self, val: bool):
+        _set_attr_value(self._prim, "soundtrack:autoPlay", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def is_looping(self) -> bool:
+        return bool(_get_attr_value(self._prim, "soundtrack:isLooping", True))
+
+    @is_looping.setter
+    def is_looping(self, val: bool):
+        _set_attr_value(self._prim, "soundtrack:isLooping", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def fade_duration(self) -> float:
+        return float(_get_attr_value(self._prim, "soundtrack:fadeDuration", 1.5))
+
+    @fade_duration.setter
+    def fade_duration(self, val: float):
+        _set_attr_value(self._prim, "soundtrack:fadeDuration", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def ambient_asset_path(self) -> str:
+        val = _get_attr_value(self._prim, "soundtrack:ambientAssetPath", DEFAULT_AMBIENT_SOUNDTRACK)
+        if hasattr(val, "path"):
+            return str(val.path)
+        return str(val) if val is not None else DEFAULT_AMBIENT_SOUNDTRACK
+
+    @ambient_asset_path.setter
+    def ambient_asset_path(self, val: str):
+        asset_val = Sdf.AssetPath(str(val)) if HAS_PXR else str(val)
+        _set_attr_value(self._prim, "soundtrack:ambientAssetPath", asset_val, Sdf.ValueTypeNames.Asset if HAS_PXR else None)
+
+    @property
+    def combat_asset_path(self) -> str:
+        val = _get_attr_value(self._prim, "soundtrack:combatAssetPath", "")
+        if hasattr(val, "path"):
+            return str(val.path)
+        return str(val) if val is not None else ""
+
+    @combat_asset_path.setter
+    def combat_asset_path(self, val: str):
+        asset_val = Sdf.AssetPath(str(val)) if HAS_PXR else str(val)
+        _set_attr_value(self._prim, "soundtrack:combatAssetPath", asset_val, Sdf.ValueTypeNames.Asset if HAS_PXR else None)
+
+    @property
+    def victory_asset_path(self) -> str:
+        val = _get_attr_value(self._prim, "soundtrack:victoryAssetPath", "")
+        if hasattr(val, "path"):
+            return str(val.path)
+        return str(val) if val is not None else ""
+
+    @victory_asset_path.setter
+    def victory_asset_path(self, val: str):
+        asset_val = Sdf.AssetPath(str(val)) if HAS_PXR else str(val)
+        _set_attr_value(self._prim, "soundtrack:victoryAssetPath", asset_val, Sdf.ValueTypeNames.Asset if HAS_PXR else None)
