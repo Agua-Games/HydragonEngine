@@ -202,6 +202,18 @@ def test_explosion_pool_slot_lifecycle():
     for p in slot.positions:
         assert p == [0.0, 0.0, 0.0]
 
+    # Verify base_scales are scaled directly by spark_radius
+    for s in slot.base_scales:
+        assert (DEFAULT_SPARK_RADIUS * 0.8) <= s <= (DEFAULT_SPARK_RADIUS * 1.3)
+
+    # Verify dynamic radius modification
+    slot.spark_radius = 15.0
+    slot.activate(world_pos=world_pos)
+    for s in slot.base_scales:
+        assert (15.0 * 0.8) <= s <= (15.0 * 1.3)
+    slot.spark_radius = DEFAULT_SPARK_RADIUS
+    slot.activate(world_pos=world_pos)
+
     # Step simulation to t = 0.10s (within light duration)
     alive = slot.update(0.10)
     assert alive is True

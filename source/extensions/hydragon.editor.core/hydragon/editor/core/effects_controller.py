@@ -85,9 +85,9 @@ DEFAULT_FLASH_LIGHT_INTENSITY: float = 5000000.0  # Peak SphereLight intensity o
 DEFAULT_FLASH_LIGHT_RADIUS: float = 80.0          # SphereLight radius in centimeters
 DEFAULT_FLASH_LIGHT_DURATION: float = 0.22        # Light flash duration in seconds
 DEFAULT_BURST_LIFETIME: float = 0.55              # Total particle sparks lifetime in seconds
-DEFAULT_NUM_SPARKS: int = 16                      # Number of diamond sparks per explosion (pre-allocated mesh pool)
+DEFAULT_NUM_SPARKS: int = 6                      # Number of diamond sparks per explosion (pre-allocated mesh pool)
 DEFAULT_SPARK_EMISSION: float = 60000.0           # Emissive intensity on diamond sparks
-DEFAULT_SPARK_RADIUS: float = 9.0                 # Diamond radius in centimeters (9 cm)
+DEFAULT_SPARK_RADIUS: float = 6.0                 # Diamond radius in centimeters (9 cm)
 
 
 class ExplosionPoolSlot:
@@ -119,8 +119,8 @@ class ExplosionPoolSlot:
         self.light_duration: float = light_duration if light_duration is not None else DEFAULT_FLASH_LIGHT_DURATION
         self.flash_intensity: float = flash_intensity if flash_intensity is not None else DEFAULT_FLASH_LIGHT_INTENSITY
         self.flash_radius: float = flash_radius if flash_radius is not None else DEFAULT_FLASH_LIGHT_RADIUS
-        self.num_sparks: int = num_sparks if num_sparks is not None else DEFAULT_NUM_SPARKS
-        self.spark_radius: float = spark_radius if spark_radius is not None else DEFAULT_SPARK_RADIUS
+        self._num_sparks: Optional[int] = num_sparks
+        self._spark_radius: Optional[float] = spark_radius
         self.drag: float = 3.5
 
         # World space origin for current burst
@@ -143,6 +143,22 @@ class ExplosionPoolSlot:
         self._cached_spark_scale_ops = []
         self._cached_spark_imageables = []
         self._active_color_theme: Optional[str] = None
+
+    @property
+    def num_sparks(self) -> int:
+        return self._num_sparks if self._num_sparks is not None else DEFAULT_NUM_SPARKS
+
+    @num_sparks.setter
+    def num_sparks(self, val: Optional[int]):
+        self._num_sparks = val
+
+    @property
+    def spark_radius(self) -> float:
+        return self._spark_radius if self._spark_radius is not None else DEFAULT_SPARK_RADIUS
+
+    @spark_radius.setter
+    def spark_radius(self, val: Optional[float]):
+        self._spark_radius = val
 
     def clear_cached_handles(self):
         """Clears cached USD handles to force safe re-query on timeline resets or stage reloads."""
@@ -172,8 +188,18 @@ class ExplosionPoolSlot:
         self._light_stage = 0
         self._light_extinguished = False
 
+        # Ensure kinematics buffers dynamically match current num_sparks
+        n_sparks = self.num_sparks
+        if len(self.positions) != n_sparks:
+            self.positions = [[0.0, 0.0, 0.0] for _ in range(n_sparks)]
+            self.velocities = [[0.0, 0.0, 0.0] for _ in range(n_sparks)]
+            self.base_scales = [1.0 for _ in range(n_sparks)]
+            self.phase_offsets = [0.0 for _ in range(n_sparks)]
+
+        radius = self.spark_radius
+
         # In-place update of spark kinematics buffers (zero GC allocation)
-        for i in range(self.num_sparks):
+        for i in range(n_sparks):
             self.positions[i][0] = 0.0
             self.positions[i][1] = 0.0
             self.positions[i][2] = 0.0
@@ -189,7 +215,7 @@ class ExplosionPoolSlot:
             self.velocities[i][0] = (nx / mag) * speed
             self.velocities[i][1] = (ny / mag) * speed
             self.velocities[i][2] = (nz / mag) * speed
-            self.base_scales[i] = random.uniform(0.85, 1.25)
+            self.base_scales[i] = radius * random.uniform(0.85, 1.25)
             self.phase_offsets[i] = random.uniform(0.0, 2.0 * math.pi)
 
         if HAS_KIT and stage:
@@ -251,8 +277,9 @@ class ExplosionPoolSlot:
                     self._cached_sparks_group_imageable.GetVisibilityAttr().Set(UsdGeom.Tokens.inherited)
 
                 # 4. Populate spark handle caches if empty or stale
+                target_cache_count = max(self.num_sparks, 16)
                 needs_spark_cache = (
-                    len(self._cached_spark_trans_ops) != self.num_sparks
+                    len(self._cached_spark_trans_ops) < self.num_sparks
                     or not self._cached_spark_imageables
                     or not self._cached_spark_imageables[0].GetPrim().IsValid()
                 )
@@ -260,7 +287,7 @@ class ExplosionPoolSlot:
                     self._cached_spark_trans_ops.clear()
                     self._cached_spark_scale_ops.clear()
                     self._cached_spark_imageables.clear()
-                    for j in range(self.num_sparks):
+                    for j in range(target_cache_count):
                         spark_path = f"{self.sparks_group_path}/Spark_{j:02d}"
                         spark_prim = stage.GetPrimAtPath(spark_path)
                         if spark_prim and spark_prim.IsValid():
@@ -279,7 +306,7 @@ class ExplosionPoolSlot:
                             self._cached_spark_scale_ops.append(s_op)
                             self._cached_spark_imageables.append(UsdGeom.Imageable(spark_prim))
 
-                # Reset each diamond to local center (0, 0, 0), initial scale, and visible
+                # Reset active diamonds to local center (0, 0, 0), dynamic initial scale, and visible
                 for j in range(min(self.num_sparks, len(self._cached_spark_trans_ops))):
                     t_op = self._cached_spark_trans_ops[j]
                     s_op = self._cached_spark_scale_ops[j]
@@ -292,6 +319,16 @@ class ExplosionPoolSlot:
                         s_op.Set(Gf.Vec3f(s, s, s))
                     if img and img.GetPrim().IsValid():
                         img.GetVisibilityAttr().Set(UsdGeom.Tokens.inherited)
+
+                # Ensure any extra pre-allocated meshes beyond num_sparks remain invisible
+                for j in range(self.num_sparks, len(self._cached_spark_imageables)):
+                    img = self._cached_spark_imageables[j]
+                    if img and img.GetPrim().IsValid():
+                        img.GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
+                    if j < len(self._cached_spark_scale_ops):
+                        s_op = self._cached_spark_scale_ops[j]
+                        if s_op:
+                            s_op.Set(Gf.Vec3f(0.0, 0.0, 0.0))
 
                 # 5. Material check: rebind sparks if theme dynamically changes
                 if self._active_color_theme != color_theme:
@@ -757,15 +794,15 @@ class HydragonEffectsSystem:
             if protos_prim.IsValid():
                 protos_prim.SetActive(False)
 
-            # Diamond mesh definition (8 faces, 6 vertices, radius SPARK_RADIUS = 9.0cm)
-            s = self.SPARK_RADIUS
+            # Standard unit diamond octahedron (radius = 1.0 cm, height ratio = 1.3)
+            unit_s = 1.0
             pts = [
-                Gf.Vec3f(0.0, s * 1.3, 0.0),   # Top (0)
-                Gf.Vec3f(0.0, -s * 1.3, 0.0),  # Bottom (1)
-                Gf.Vec3f(s, 0.0, 0.0),          # Right +X (2)
-                Gf.Vec3f(-s, 0.0, 0.0),         # Left -X (3)
-                Gf.Vec3f(0.0, 0.0, s),          # Front +Z (4)
-                Gf.Vec3f(0.0, 0.0, -s),         # Back -Z (5)
+                Gf.Vec3f(0.0, unit_s * 1.3, 0.0),   # Top (0)
+                Gf.Vec3f(0.0, -unit_s * 1.3, 0.0),  # Bottom (1)
+                Gf.Vec3f(unit_s, 0.0, 0.0),          # Right +X (2)
+                Gf.Vec3f(-unit_s, 0.0, 0.0),         # Left -X (3)
+                Gf.Vec3f(0.0, 0.0, unit_s),          # Front +Z (4)
+                Gf.Vec3f(0.0, 0.0, -unit_s),         # Back -Z (5)
             ]
             face_counts = [3] * 8
             # Outward CCW face winding for positive normals
@@ -781,7 +818,7 @@ class HydragonEffectsSystem:
                 1, 3, 5,  # -X, -Z
                 1, 5, 2,  # +X, -Z
             ]
-            extent = [Gf.Vec3f(-s, -s * 1.3, -s), Gf.Vec3f(s, s * 1.3, s)]
+            extent = [Gf.Vec3f(-unit_s, -unit_s * 1.3, -unit_s), Gf.Vec3f(unit_s, unit_s * 1.3, unit_s)]
 
             # 2. Author Pre-allocated Mesh Pools for each slot under /World/Effects/Pool_{i}/Diamonds
             for i in range(self.POOL_SIZE):
@@ -826,8 +863,9 @@ class HydragonEffectsSystem:
 
                 UsdGeom.Imageable(diamonds_prim).GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
 
-                # Pre-allocate 16 individual diamond meshes directly in pool slot
-                for j in range(self.NUM_SPARKS):
+                # Pre-allocate diamond meshes directly in pool slot (at least max(NUM_SPARKS, 16))
+                alloc_sparks = max(self.NUM_SPARKS, 16)
+                for j in range(alloc_sparks):
                     spark_path = diamonds_path.AppendChild(f"Spark_{j:02d}")
                     spark_prim = stage.GetPrimAtPath(spark_path)
                     if not spark_prim.IsValid():
@@ -847,6 +885,25 @@ class HydragonEffectsSystem:
 
                         if gold_mat_prim and gold_mat_prim.IsValid() and hasattr(UsdShade, "MaterialBindingAPI"):
                             UsdShade.MaterialBindingAPI(mesh.GetPrim()).Bind(UsdShade.Material(gold_mat_prim))
+                    else:
+                        # Normalize points and attributes on existing meshes so dynamic scale op controls real-time size
+                        mesh = UsdGeom.Mesh(spark_prim)
+                        if mesh.GetPointsAttr().IsValid():
+                            mesh.GetPointsAttr().Set(Vt.Vec3fArray(pts))
+                        else:
+                            mesh.CreatePointsAttr(Vt.Vec3fArray(pts))
+                        if mesh.GetExtentAttr().IsValid():
+                            mesh.GetExtentAttr().Set(Vt.Vec3fArray(extent))
+                        else:
+                            mesh.CreateExtentAttr(Vt.Vec3fArray(extent))
+                        if mesh.GetFaceVertexCountsAttr().IsValid():
+                            mesh.GetFaceVertexCountsAttr().Set(Vt.IntArray(face_counts))
+                        if mesh.GetFaceVertexIndicesAttr().IsValid():
+                            mesh.GetFaceVertexIndicesAttr().Set(Vt.IntArray(face_indices))
+                        if not mesh.GetDoubleSidedAttr().IsValid():
+                            mesh.CreateDoubleSidedAttr(True)
+                        else:
+                            mesh.GetDoubleSidedAttr().Set(True)
 
             self._pool_initialized = True
             if carb:
@@ -891,6 +948,12 @@ class HydragonEffectsSystem:
                 target_slot = max(self._slots, key=lambda s: s.elapsed)
 
             if target_slot:
+                target_slot.spark_radius = DEFAULT_SPARK_RADIUS
+                target_slot.num_sparks = DEFAULT_NUM_SPARKS
+                target_slot.flash_intensity = DEFAULT_FLASH_LIGHT_INTENSITY
+                target_slot.flash_radius = DEFAULT_FLASH_LIGHT_RADIUS
+                target_slot.light_duration = DEFAULT_FLASH_LIGHT_DURATION
+                target_slot.lifetime = DEFAULT_BURST_LIFETIME
                 target_slot.activate(world_pos=world_pos, color_theme=color_theme, stage=stage)
                 if carb:
                     carb.log_info(
