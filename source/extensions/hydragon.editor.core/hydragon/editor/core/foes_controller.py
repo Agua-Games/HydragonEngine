@@ -492,11 +492,13 @@ class HydragonFoesControllerSystem:
             stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
             while self._pending_hits:
                 p_path, is_stomp = self._pending_hits.pop(0)
+                if p_path in self._destroyed_prim_paths:
+                    continue
+                self._destroyed_prim_paths.add(p_path)
                 brain = self._active_brains.pop(p_path, None) or self._registered_brains.get(p_path)
                 if brain:
                     reason = "contact_report_stomp" if is_stomp else "contact_report_collision"
                     brain.destroy(reason=reason)
-                self._destroyed_prim_paths.add(p_path)
 
                 # Direct OpenUSD deactivation fallback on stage to guarantee prim removal from PhysX & Hydra
                 if stage:
