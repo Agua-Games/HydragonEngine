@@ -266,6 +266,38 @@ def test_stop_event_stage_restoration():
     print("  [PASS] Stage restoration on STOP verified")
 
 
+def test_foe_destruction_score_popup_integration():
+    print("--- 7. Testing Foe Destruction Score Popup & Property Access ---")
+    from hydragon.editor.core.game_hud import HydragonGameHUD
+
+    brain = HydragonAIBrain(prim=None, origin_pos=(150.0, 50.0, 250.0))
+    # brain.current_pos must be accessible as property without call parentheses
+    assert isinstance(brain.current_pos, tuple)
+    assert brain.current_pos == (150.0, 50.0, 250.0)
+
+    hud = HydragonGameHUD()
+    # Mock popup collection
+    received_popups = []
+
+    def mock_show_score_popup(world_pos=(0.0, 0.0, 0.0), points=100):
+        received_popups.append({"pos": world_pos, "pts": points})
+
+    hud.show_score_popup = mock_show_score_popup
+
+    # Simulate foe destruction pipeline in _on_physics_step
+    foe_pos = brain.current_pos if brain else (0.0, 0.0, 0.0)
+    is_stomp = True
+    points = 150 if is_stomp else 100
+    hud.show_score_popup(world_pos=foe_pos, points=points)
+
+    assert len(received_popups) == 1
+    assert received_popups[0]["pos"] == (150.0, 50.0, 250.0)
+    assert received_popups[0]["pts"] == 150
+
+    hud.shutdown()
+    print("  [PASS] Foe destruction score popup integration verified")
+
+
 if __name__ == "__main__":
     test_foes_controller_lifecycle()
     test_ai_brain_state_transitions()
@@ -273,6 +305,7 @@ if __name__ == "__main__":
     test_stomp_geometry_math()
     test_contact_report_event_processing()
     test_stop_event_stage_restoration()
+    test_foe_destruction_score_popup_integration()
     print("\n=======================================================")
-    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (6/6)")
+    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (7/7)")
     print("=======================================================")

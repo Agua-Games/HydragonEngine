@@ -141,12 +141,50 @@ def test_canvas_config_binding():
     print("  [PASS] Canvas config binding and popups filtering verified")
 
 
+def test_controls_frame_and_window_lifecycle():
+    print("--- 6. Testing Controls Overlay (Frame & Window) Cleanup Lifecycle ---")
+    hud = HydragonGameHUD()
+
+    class MockFrame:
+        def __init__(self):
+            self.cleared = False
+            self.visible = True
+        def clear(self):
+            self.cleared = True
+
+    class MockWindow:
+        def __init__(self):
+            self.visible = True
+
+    hud._controls_frame = MockFrame()
+    hud._controls_window = MockWindow()
+
+    # _destroy_controls_ui must clear frame and hide window
+    hud._destroy_controls_ui()
+    assert hud._controls_frame is None
+    assert hud._controls_window is None
+
+    # Re-assign and test shutdown cleans them up as well
+    mock_frame = MockFrame()
+    mock_window = MockWindow()
+    hud._controls_frame = mock_frame
+    hud._controls_window = mock_window
+
+    hud.shutdown()
+    assert mock_frame.cleared is True
+    assert mock_window.visible is False
+    assert hud._controls_frame is None
+    assert hud._controls_window is None
+    print("  [PASS] Controls overlay frame & window cleanup verified")
+
+
 if __name__ == "__main__":
     test_game_hud_lifecycle()
     test_countdown_state_machine()
     test_score_popup_and_victory_modal_fail_silent()
     test_timeline_event_handling()
     test_canvas_config_binding()
+    test_controls_frame_and_window_lifecycle()
     print("\n=======================================================")
-    print(" ALL GAME HUD TESTS PASSED! (5/5)")
+    print(" ALL GAME HUD TESTS PASSED! (6/6)")
     print("=======================================================")

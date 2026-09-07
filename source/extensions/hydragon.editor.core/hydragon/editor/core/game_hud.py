@@ -46,6 +46,7 @@ class HydragonGameHUD:
 
         # Controls HUD State
         self._controls_window = None
+        self._controls_frame = None
 
         # Floating Score Popups
         self._active_popups: List[dict] = []
@@ -391,12 +392,67 @@ class HydragonGameHUD:
     # 2. Controls / Hotkeys Card (Non-intrusive Semi-Transparent HUD)
     # -------------------------------------------------------------------------
     def _show_controls_ui(self):
-        """Displays non-intrusive hotkeys panel in viewport."""
+        """Displays non-intrusive hotkeys panel anchored inside active viewport."""
         if not HAS_KIT or ui is None:
             return
 
         self._destroy_controls_ui()
 
+        # Primary approach: inject directly into active Viewport's frame.
+        # Overlays attached to viewport_window.get_frame() reside in the viewport's
+        # internal z_stack and persist through presentation (F7) and fullscreen (F11) modes.
+        try:
+            import omni.kit.viewport.utility as vp_util
+            vp_win = vp_util.get_active_viewport_window()
+            if vp_win and hasattr(vp_win, "get_frame"):
+                frame = vp_win.get_frame("HydragonControlsOverlay")
+                if frame:
+                    frame.clear()
+                    with frame:
+                        with ui.VStack():
+                            ui.Spacer(height=20)
+                            with ui.HStack():
+                                ui.Spacer(width=20)
+                                with ui.ZStack(width=240, height=155):
+                                    ui.Rectangle(
+                                        style={
+                                            "background_color": 0x66141822,
+                                            "border_radius": 6,
+                                            "border_color": 0x4488AACC,
+                                            "border_width": 1,
+                                        }
+                                    )
+                                    with ui.VStack(alignment=ui.Alignment.LEFT, spacing=4):
+                                        ui.Spacer(height=6)
+                                        ui.Label(
+                                            "  CONTROLS",
+                                            style={
+                                                "color": 0xFF40D0FF,
+                                                "font_size": 15,
+                                            },
+                                        )
+                                        with ui.HStack(spacing=6):
+                                            ui.Label("  W, A, S, D", style={"color": 0xFFFFFFFF, "font_size": 13, "width": 85})
+                                            ui.Label("Roll Marble", style={"color": 0xFFCCCCCC, "font_size": 13})
+                                        with ui.HStack(spacing=6):
+                                            ui.Label("  Space / C", style={"color": 0xFFFFFFFF, "font_size": 13, "width": 85})
+                                            ui.Label("Jump", style={"color": 0xFFCCCCCC, "font_size": 13})
+                                        with ui.HStack(spacing=6):
+                                            ui.Label("  Right Drag", style={"color": 0xFFFFFFFF, "font_size": 13, "width": 85})
+                                            ui.Label("Orbit Camera", style={"color": 0xFFCCCCCC, "font_size": 13})
+                                        with ui.HStack(spacing=6):
+                                            ui.Label("  Scroll", style={"color": 0xFFFFFFFF, "font_size": 13, "width": 85})
+                                            ui.Label("Zoom Camera", style={"color": 0xFFCCCCCC, "font_size": 13})
+                                        ui.Spacer(height=6)
+                                ui.Spacer()
+                            ui.Spacer()
+                    self._controls_frame = frame
+                    return
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Viewport frame overlay creation failed, falling back to window: {e}")
+
+        # Fallback: Floating omni.ui.Window
         try:
             vp_x, vp_y, vp_w, vp_h = self._get_viewport_bounds()
             window = ui.Window(
@@ -454,6 +510,12 @@ class HydragonGameHUD:
                 carb.log_warn(f"[hydragon.editor.core] Failed to build controls overlay: {e}")
 
     def _destroy_controls_ui(self):
+        if self._controls_frame:
+            try:
+                self._controls_frame.clear()
+            except Exception:
+                pass
+            self._controls_frame = None
         if self._controls_window:
             try:
                 self._controls_window.visible = False

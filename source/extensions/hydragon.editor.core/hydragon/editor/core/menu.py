@@ -13,6 +13,7 @@ try:
     import omni.usd
     import omni.kit.commands
     import omni.kit.menu.utils
+    import omni.kit.context_menu
     from omni.kit.menu.utils import MenuItemDescription
     from pxr import Sdf
     HAS_KIT = True
@@ -27,6 +28,7 @@ from .schemas import (
     HydragonChaserAI,
     HydragonTrigger,
     HydragonGameManager,
+    HydragonUICanvas,
 )
 
 
@@ -59,16 +61,35 @@ class HydragonMenuManager:
                     carb.log_warn(f"[hydragon.editor.core] Failed to remove Create menu items: {e}")
             self._create_menu_items = []
 
+        if self._context_menu_entries:
+            try:
+                for entry in self._context_menu_entries:
+                    try:
+                        omni.kit.context_menu.remove_menu(entry)
+                    except Exception:
+                        pass
+            except Exception as e:
+                if carb:
+                    carb.log_warn(f"[hydragon.editor.core] Failed to remove context menu items: {e}")
+            self._context_menu_entries = []
+
+    def _get_menu_glyph(self) -> Optional[str]:
+        """Resolves gamepad SVG icon path for Hydragon menu entries."""
         try:
-            import omni.kit.context_menu
-            for entry in self._context_menu_entries:
-                try:
-                    omni.kit.context_menu.remove_menu(entry)
-                except Exception:
-                    pass
-        except ImportError:
+            # 1. Try extension root icons folder
+            source_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+            candidate = os.path.normpath(os.path.join(source_root, "icons", "gamepad.svg")).replace("\\", "/")
+            if os.path.exists(candidate):
+                return candidate
+
+            # 2. Try data folder
+            data_dir = self._get_extension_data_dir()
+            candidate = os.path.normpath(os.path.join(data_dir, "icons", "gamepad.svg")).replace("\\", "/")
+            if os.path.exists(candidate):
+                return candidate
+        except Exception:
             pass
-        self._context_menu_entries = []
+        return "gamepad.svg"
 
     # -------------------------------------------------------------------------
     # Asset Instantiation Helpers
@@ -194,6 +215,7 @@ class HydragonMenuManager:
     # -------------------------------------------------------------------------
     def _build_create_menu(self):
         """Builds top-bar Create -> Hydragon menu."""
+        glyph = self._get_menu_glyph()
         sub_items = [
             # Gameplay Entities / Smart Assets
             MenuItemDescription(
@@ -211,6 +233,10 @@ class HydragonMenuManager:
             MenuItemDescription(
                 name="Game Manager",
                 onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_game_manager/game_manager.usda", "GameManager", as_payload=False)
+            ),
+            MenuItemDescription(
+                name="UI Canvas (Game HUD)",
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_ui_canvas/ui_canvas.usda", "UICanvas", as_payload=False)
             ),
             MenuItemDescription(
                 name="Character (Kowra)",
@@ -246,6 +272,10 @@ class HydragonMenuManager:
                         name="Apply HydragonGameAPI",
                         onclick_fn=lambda: self._apply_schema(HydragonGameManager)
                     ),
+                    MenuItemDescription(
+                        name="Apply HydragonUICanvasAPI",
+                        onclick_fn=lambda: self._apply_schema(HydragonUICanvas)
+                    ),
                 ]
             )
         ]
@@ -253,6 +283,7 @@ class HydragonMenuManager:
         self._create_menu_items = [
             MenuItemDescription(
                 name="Hydragon",
+                glyph=glyph,
                 sub_menu=sub_items
             )
         ]
@@ -264,8 +295,7 @@ class HydragonMenuManager:
     def _build_context_menu(self):
         """Hooks into Kit's right-click context menu under CREATE and STAGE."""
         try:
-            import omni.kit.context_menu
-
+            glyph = self._get_menu_glyph()
             # In omni.kit.widget.context_menu, submenus must use {"name": {"SubmenuTitle": [items]}}
             schemas_sub_menu = [
                 {"name": "Apply HydragonActorAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonActor)},
@@ -274,6 +304,7 @@ class HydragonMenuManager:
                 {"name": "Apply HydragonChaserAIAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonChaserAI)},
                 {"name": "Apply HydragonTriggerAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonTrigger)},
                 {"name": "Apply HydragonGameAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonGameManager)},
+                {"name": "Apply HydragonUICanvasAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonUICanvas)},
             ]
 
             hydragon_items = [
@@ -294,6 +325,10 @@ class HydragonMenuManager:
                     "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_game_manager/game_manager.usda", "GameManager", as_payload=False)
                 },
                 {
+                    "name": "UI Canvas (Game HUD)",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_ui_canvas/ui_canvas.usda", "UICanvas", as_payload=False)
+                },
+                {
                     "name": "Character (Kowra)",
                     "onclick_fn": lambda *_: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=True)
                 },
@@ -304,7 +339,8 @@ class HydragonMenuManager:
             ]
 
             context_dict = {
-                "name": {"Hydragon": hydragon_items}
+                "name": {"Hydragon": hydragon_items},
+                "glyph": glyph,
             }
 
             # Register in "CREATE" context menu (right click in Stage / Viewport create submenu)
