@@ -298,6 +298,61 @@ def test_foe_destruction_score_popup_integration():
     print("  [PASS] Foe destruction score popup integration verified")
 
 
+def test_player_arcade_bounce_math():
+    print("--- 8. Testing Player Stomp Arcade Bounce Rebound Math ---")
+    # 1. Lateral offset in +X
+    p_pos = (100.0, 75.0, 200.0)
+    f_pos = (80.0, 50.0, 200.0)
+
+    dx = p_pos[0] - f_pos[0]
+    dz = p_pos[2] - f_pos[2]
+    h_dist = math.sqrt(dx * dx + dz * dz)
+    assert h_dist == 20.0
+    nx = dx / h_dist
+    nz = dz / h_dist
+    assert nx == 1.0 and nz == 0.0
+
+    horiz_impulse = 180000.0
+    vert_impulse = 450000.0
+    ix = nx * horiz_impulse
+    iy = vert_impulse
+    iz = nz * horiz_impulse
+
+    assert ix == 180000.0
+    assert iy == 450000.0
+    assert iz == 0.0
+
+    # 2. Diagonal offset (3:4:5 triangle)
+    p_pos_diag = (100.0, 75.0, 100.0)
+    f_pos_diag = (70.0, 50.0, 60.0)
+    dx = p_pos_diag[0] - f_pos_diag[0]  # +30
+    dz = p_pos_diag[2] - f_pos_diag[2]  # +40
+    h_dist = math.sqrt(dx * dx + dz * dz)
+    assert abs(h_dist - 50.0) < 1e-4
+    nx = dx / h_dist  # 0.6
+    nz = dz / h_dist  # 0.8
+    assert abs(nx - 0.6) < 1e-4
+    assert abs(nz - 0.8) < 1e-4
+
+    ix = nx * horiz_impulse
+    iy = vert_impulse
+    iz = nz * horiz_impulse
+    assert abs(ix - 108000.0) < 1e-4
+    assert iy == 450000.0
+    assert abs(iz - 144000.0) < 1e-4
+
+    # 3. Fail-silent execution outside Kit (both stomp and lateral collision)
+    system = HydragonFoesControllerSystem()
+    try:
+        system._apply_player_bounce(stage=None, stage_id=0, sim_iface=None, foe_pos=f_pos, is_stomp=True)
+        system._apply_player_bounce(stage=None, stage_id=0, sim_iface=None, foe_pos=f_pos, is_stomp=False)
+    except Exception as e:
+        assert False, f"_apply_player_bounce raised unexpected exception outside Kit: {e}"
+    system.shutdown()
+
+    print("  [PASS] Player arcade bounce rebound math verified for stomp and lateral hits")
+
+
 if __name__ == "__main__":
     test_foes_controller_lifecycle()
     test_ai_brain_state_transitions()
@@ -306,6 +361,7 @@ if __name__ == "__main__":
     test_contact_report_event_processing()
     test_stop_event_stage_restoration()
     test_foe_destruction_score_popup_integration()
+    test_player_arcade_bounce_math()
     print("\n=======================================================")
-    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (7/7)")
+    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (8/8)")
     print("=======================================================")

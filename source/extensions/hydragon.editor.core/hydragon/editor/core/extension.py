@@ -42,7 +42,14 @@ class HydragonEditorCoreExtension(_IExt):
         self._game_hud = HydragonGameHUD()
         self._game_hud.startup()
 
+        from .effects_controller import HydragonEffectsSystem
+        self._effects_system = HydragonEffectsSystem()
+        self._effects_system.startup()
+
     def on_shutdown(self):
+        if hasattr(self, "_effects_system") and self._effects_system:
+            self._effects_system.shutdown()
+            self._effects_system = None
         if hasattr(self, "_game_hud") and self._game_hud:
             self._game_hud.shutdown()
             self._game_hud = None

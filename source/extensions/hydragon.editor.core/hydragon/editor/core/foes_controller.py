@@ -314,6 +314,7 @@ class HydragonFoesControllerSystem:
         self._contact_report_sub = None
         self._pending_hits: List[Tuple[str, bool]] = []
         self._pending_bounce: bool = False
+        self._pending_bounce_foe_pos: Optional[Tuple[float, float, float]] = None
         self._last_log_time: float = 0.0
 
     @classmethod
@@ -346,6 +347,7 @@ class HydragonFoesControllerSystem:
         self._destroyed_prim_paths.clear()
         self._pending_hits.clear()
         self._pending_bounce = False
+        self._pending_bounce_foe_pos = None
         self._cached_player_path = None
         self._cached_player_rb_path = None
         self._cached_game_manager_path = None
@@ -508,11 +510,11 @@ class HydragonFoesControllerSystem:
                         if carb:
                             carb.log_warn(f"[hydragon.editor.core] Failed to deactivate prim at {p_path}: {ex}")
                     self._notify_game_manager_foe_destroyed(stage)
+                    foe_pos = brain.current_pos if brain else (0.0, 0.0, 0.0)
                     try:
                         from .game_hud import HydragonGameHUD
                         hud = HydragonGameHUD.get_instance()
                         if hud:
-                            foe_pos = brain.current_pos if brain else (0.0, 0.0, 0.0)
                             points = 150 if is_stomp else 100
                             hud.show_score_popup(world_pos=foe_pos, points=points)
                             if carb:
@@ -521,8 +523,20 @@ class HydragonFoesControllerSystem:
                         if carb:
                             carb.log_warn(f"[hydragon.editor.core] Failed to show score popup: {ex}")
 
-                if is_stomp:
-                    self._pending_bounce = True
+                    try:
+                        from .effects_controller import HydragonEffectsSystem
+                        effects_sys = HydragonEffectsSystem.get_instance()
+                        if effects_sys:
+                            effects_sys.spawn_foe_destruction_vfx(stage=stage, world_pos=foe_pos, color_theme="gold")
+                    except Exception as ex:
+                        if carb:
+                            carb.log_warn(f"[hydragon.editor.core] Failed to spawn foe destruction VFX: {ex}")
+
+                    try:
+                        self._apply_player_bounce(stage, foe_pos=foe_pos, is_stomp=is_stomp)
+                    except Exception as ex:
+                        if carb:
+                            carb.log_warn(f"[hydragon.editor.core] Failed to trigger player bounce: {ex}")
 
         if self._physics_step_sub is None:
             if not self._subscribe_physics():
@@ -901,7 +915,9 @@ class HydragonFoesControllerSystem:
         # Apply pending bounce impulse if player stomped a foe
         if self._pending_bounce:
             self._pending_bounce = False
-            self._apply_player_bounce(stage, stage_id, sim_iface)
+            foe_pos = self._pending_bounce_foe_pos
+            self._pending_bounce_foe_pos = None
+            self._apply_player_bounce(stage, stage_id=stage_id, sim_iface=sim_iface, foe_pos=foe_pos, is_stomp=True)
 
         # 1. Query Player position once for all brains
         player_pos: Optional[Tuple[float, float, float]] = None
@@ -975,8 +991,13 @@ class HydragonFoesControllerSystem:
                             if hp == prim_path and not hs:
                                 self._pending_hits[idx] = (hp, True)
                                 break
-                    if is_stomp:
-                        self._pending_bounce = True
+                    self._apply_player_bounce(
+                        stage,
+                        stage_id=stage_id,
+                        sim_iface=sim_iface,
+                        foe_pos=world_pos,
+                        is_stomp=is_stomp,
+                    )
                     brain._is_alive = False
                     dead_paths.append(prim_path)
                     continue
@@ -1004,23 +1025,105 @@ class HydragonFoesControllerSystem:
         for dead_path in dead_paths:
             self._active_brains.pop(dead_path, None)
 
-    def _apply_player_bounce(self, stage, stage_id: int, sim_iface):
-        """Applies an upward vertical impulse to the player rigid body upon stomping a foe."""
+    def _apply_player_bounce(
+        self,
+        stage,
+        stage_id: Optional[int] = None,
+        sim_iface=None,
+        foe_pos: Optional[Tuple[float, float, float]] = None,
+        is_stomp: bool = False,
+    ):
+        """
+        Applies a high-velocity arcade rebound impulse to the player rigid body:
+        - Calculates horizontal rebound direction away from the foe (nx, nz)
+        - Direct PhysX linear velocity kick (stomp: vy += 1200 cm/s; lateral: vy += 650 cm/s, recoil 850 cm/s)
+        - PhysX solver impulse via sim_iface.apply_force_at_pos(..., "Impulse")
+        """
         player_rb = self._get_player_rb_path(stage)
         if not player_rb:
             return
         try:
             player_prim = stage.GetPrimAtPath(player_rb)
-            if player_prim and player_prim.IsValid():
-                world_pos = self._get_rigid_body_world_pos(player_prim, player_rb)
+            if not (player_prim and player_prim.IsValid()):
+                return
+
+            world_pos = self._get_rigid_body_world_pos(player_prim, player_rb)
+
+            # 1. Calculate horizontal rebound unit vector away from foe
+            nx, nz = 0.0, 0.0
+            if foe_pos is not None:
+                dx = world_pos[0] - foe_pos[0]
+                dz = world_pos[2] - foe_pos[2]
+                h_dist = math.sqrt(dx * dx + dz * dz)
+                if h_dist > 1e-4:
+                    nx = dx / h_dist
+                    nz = dz / h_dist
+            if nx == 0.0 and nz == 0.0:
+                nz = 1.0
+
+            # 2. Instantaneous Velocity Kick via PhysX Interface
+            physx_iface = get_physx_interface()
+            new_vx, new_vy, new_vz = 0.0, 0.0, 0.0
+            if physx_iface:
+                cur_v = None
+                for get_m in ("get_rigidbody_linear_velocity", "get_linear_velocity"):
+                    if hasattr(physx_iface, get_m):
+                        try:
+                            cur_v = getattr(physx_iface, get_m)(player_rb)
+                            if cur_v is not None:
+                                break
+                        except Exception:
+                            pass
+
+                vx = float(cur_v[0]) if cur_v is not None else 0.0
+                vy = float(cur_v[1]) if cur_v is not None else 0.0
+                vz = float(cur_v[2]) if cur_v is not None else 0.0
+
+                if is_stomp:
+                    new_vy = max(vy, 0.0) + 1200.0
+                    new_vx = vx * 0.4 + nx * 350.0
+                    new_vz = vz * 0.4 + nz * 350.0
+                else:
+                    new_vy = max(vy, 0.0) + 650.0
+                    new_vx = nx * 850.0
+                    new_vz = nz * 850.0
+
+                for set_m in ("set_rigidbody_linear_velocity", "set_linear_velocity"):
+                    if hasattr(physx_iface, set_m):
+                        try:
+                            getattr(physx_iface, set_m)(player_rb, carb.Float3(new_vx, new_vy, new_vz))
+                            break
+                        except Exception:
+                            pass
+
+            # 3. Apply PhysX solver impulse as complementary kinetic force
+            if sim_iface is None:
+                sim_iface = get_physx_simulation_interface()
+            if stage_id is None and stage:
+                try:
+                    stage_id = UsdUtils.StageCache.Get().GetId(stage).ToLongInt()
+                except Exception:
+                    stage_id = None
+
+            if sim_iface and stage_id is not None:
                 prim_id = PhysicsSchemaTools.sdfPathToInt(player_rb)
-                bounce_vec = carb.Float3(0.0, 25000.0, 0.0)
+                if is_stomp:
+                    horiz_imp = 15000.0
+                    vert_imp = 35000.0
+                else:
+                    horiz_imp = 25000.0
+                    vert_imp = 18000.0
+                bounce_vec = carb.Float3(nx * horiz_imp, vert_imp, nz * horiz_imp)
                 force_pos = carb.Float3(world_pos[0], world_pos[1], world_pos[2])
                 sim_iface.apply_force_at_pos(stage_id, prim_id, bounce_vec, force_pos, "Impulse")
-                if carb:
-                    carb.log_info("[hydragon.editor.core] Player bounced off foe!")
-        except Exception:
-            pass
+
+            if carb:
+                carb.log_info(
+                    f"[hydragon.editor.core] Player arcade bounce applied: is_stomp={is_stomp}, new_v=({new_vx:.0f}, {new_vy:.0f}, {new_vz:.0f})"
+                )
+        except Exception as ex:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to apply player bounce: {ex}")
 
     def _notify_game_manager_foe_destroyed(self, stage):
         """Notifies HydragonGameManager if present on stage to increment score and count."""

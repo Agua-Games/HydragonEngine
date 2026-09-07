@@ -42,6 +42,7 @@ class HydragonGameHUD:
         self._countdown_elapsed: float = 0.0
         self._countdown_active: bool = False
         self._countdown_window = None
+        self._countdown_frame = None
         self._countdown_label = None
 
         # Controls HUD State
@@ -51,9 +52,11 @@ class HydragonGameHUD:
         # Floating Score Popups
         self._active_popups: List[dict] = []
         self._popup_counter: int = 0
+        self._popups_frame = None
 
         # Victory Modal
         self._victory_window = None
+        self._victory_frame = None
 
         # Declarative Canvas Settings (defaults to True for fallback compatibility)
         self._show_controls: bool = True
@@ -112,6 +115,56 @@ class HydragonGameHUD:
                         screen_x = max(vp_x + 20, min(vp_x + vp_w - 180, screen_x))
                         screen_y = max(vp_y + 20, min(vp_y + vp_h - 80, screen_y))
                         return screen_x, screen_y
+        except Exception:
+            pass
+
+        return default_x, default_y
+
+    def _get_viewport_size(self) -> Tuple[int, int]:
+        """Returns (width, height) of the active viewport."""
+        try:
+            import omni.kit.viewport.utility as vp_util
+            vp_win = vp_util.get_active_viewport_window()
+            if vp_win:
+                w = int(getattr(vp_win, "width", 800))
+                h = int(getattr(vp_win, "height", 600))
+                if w > 100 and h > 100:
+                    return w, h
+        except Exception:
+            pass
+        return 800, 600
+
+    def _world_to_viewport_local(self, world_pos: Tuple[float, float, float]) -> Tuple[int, int]:
+        """Projects 3D world coordinates to 2D local coordinates within the active viewport frame."""
+        vp_w, vp_h = self._get_viewport_size()
+        default_x = int(vp_w * 0.5 - 50)
+        default_y = int(vp_h * 0.45)
+
+        try:
+            from pxr import Usd, UsdGeom, Gf
+            import omni.usd
+            stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+            if stage:
+                from .camera_controller import HydragonCameraControllerSystem
+                cam_sys = HydragonCameraControllerSystem.get_instance()
+                cam_prim = cam_sys.find_camera_prim(stage) if cam_sys else None
+                if cam_prim and cam_prim.IsValid():
+                    usd_cam = UsdGeom.Camera(cam_prim)
+                    gf_cam = usd_cam.GetCamera(Usd.TimeCode.Default())
+                    frustum = gf_cam.frustum
+                    view_matrix = frustum.ComputeViewMatrix()
+                    proj_matrix = frustum.ComputeProjectionMatrix()
+                    pt = Gf.Vec4d(float(world_pos[0]), float(world_pos[1]), float(world_pos[2]), 1.0)
+                    clip_pt = pt * view_matrix * proj_matrix
+                    w = clip_pt[3]
+                    if w > 0.01:
+                        ndc_x = clip_pt[0] / w
+                        ndc_y = clip_pt[1] / w
+                        local_x = int((ndc_x + 1.0) * 0.5 * vp_w - 50)
+                        local_y = int((1.0 - ndc_y) * 0.5 * vp_h - 20)
+                        local_x = max(20, min(vp_w - 120, local_x))
+                        local_y = max(20, min(vp_h - 60, local_y))
+                        return local_x, local_y
         except Exception:
             pass
 
@@ -303,7 +356,7 @@ class HydragonGameHUD:
     # 1. Start Countdown Banner ("3... 2... 1... MARBLE GAME START!")
     # -------------------------------------------------------------------------
     def _start_countdown(self):
-        """Spawns the transparent, centered countdown banner on simulation start."""
+        """Spawns the transparent, centered countdown banner inside active viewport frame."""
         if not HAS_KIT or ui is None:
             return
 
@@ -311,6 +364,39 @@ class HydragonGameHUD:
         self._countdown_elapsed = 0.0
         self._countdown_active = True
 
+        # Primary approach: inject directly into active Viewport's frame (visible in F7/F11 fullscreen)
+        try:
+            import omni.kit.viewport.utility as vp_util
+            vp_win = vp_util.get_active_viewport_window()
+            if vp_win and hasattr(vp_win, "get_frame"):
+                frame = vp_win.get_frame("HydragonCountdownOverlay")
+                if frame:
+                    frame.clear()
+                    with frame:
+                        with ui.VStack():
+                            ui.Spacer(height=ui.Percent(22))
+                            with ui.HStack():
+                                ui.Spacer()
+                                self._countdown_label = ui.Label(
+                                    "3...",
+                                    width=650,
+                                    height=90,
+                                    alignment=ui.Alignment.CENTER,
+                                    style={
+                                        "color": 0xFF20E0FF,  # Bright Gold / Amber
+                                        "font_size": 48,
+                                        "alignment": ui.Alignment.CENTER,
+                                    },
+                                )
+                                ui.Spacer()
+                            ui.Spacer()
+                    self._countdown_frame = frame
+                    return
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to build countdown frame overlay: {e}")
+
+        # Fallback: Floating omni.ui.Window
         try:
             vp_x, vp_y, vp_w, vp_h = self._get_viewport_bounds()
             window = ui.Window(
@@ -334,10 +420,13 @@ class HydragonGameHUD:
             window.position_y = int(vp_y + vp_h * 0.25)
 
             with window.frame:
-                with ui.VStack(alignment=ui.Alignment.CENTER):
+                with ui.VStack():
                     ui.Spacer(height=20)
                     self._countdown_label = ui.Label(
                         "3...",
+                        width=650,
+                        height=90,
+                        alignment=ui.Alignment.CENTER,
                         style={
                             "color": 0xFF20E0FF,  # Bright Gold / Amber
                             "font_size": 48,
@@ -380,6 +469,12 @@ class HydragonGameHUD:
 
     def _destroy_countdown_ui(self):
         self._countdown_active = False
+        if self._countdown_frame:
+            try:
+                self._countdown_frame.clear()
+            except Exception:
+                pass
+            self._countdown_frame = None
         if self._countdown_window:
             try:
                 self._countdown_window.visible = False
@@ -422,7 +517,7 @@ class HydragonGameHUD:
                                             "border_width": 1,
                                         }
                                     )
-                                    with ui.VStack(alignment=ui.Alignment.LEFT, spacing=4):
+                                    with ui.VStack(spacing=4):
                                         ui.Spacer(height=6)
                                         ui.Label(
                                             "  CONTROLS",
@@ -482,7 +577,7 @@ class HydragonGameHUD:
                 "border_width": 1,
             }
             with window.frame:
-                with ui.VStack(alignment=ui.Alignment.LEFT, spacing=4):
+                with ui.VStack(spacing=4):
                     ui.Label(
                         "CONTROLS",
                         style={
@@ -529,116 +624,204 @@ class HydragonGameHUD:
     def show_score_popup(self, world_pos: Tuple[float, float, float] = (0.0, 0.0, 0.0), points: int = 100):
         """
         Triggers a transient floating score text (+100) that floats upward and fades out.
-        Also triggers Kit notification feedback.
+        Anchored directly inside active viewport frame so it is always visible in F7/F11 fullscreen.
         """
         if not HAS_KIT or not self._show_score_popups:
             return
-
-        try:
-            # Post lightweight feedback notification in Kit Notification Manager
-            import omni.kit.notification_manager as nm
-            if nm and hasattr(nm, "post_notification"):
-                nm.post_notification(
-                    f"💥 Foe Defeated! +{points} pts",
-                    duration=3,
-                    status=nm.NotificationStatus.INFO,
-                )
-        except Exception:
-            pass
 
         if ui is None:
             return
 
         try:
             self._popup_counter += 1
-            screen_x, screen_y = self._world_to_screen(world_pos)
-            badge_window = ui.Window(
-                f"HydragonScorePopup_{self._popup_counter}",
-                width=160,
-                height=60,
-                flags=ui.WINDOW_FLAGS_NO_TITLE_BAR
-                | ui.WINDOW_FLAGS_NO_RESIZE
-                | ui.WINDOW_FLAGS_NO_MOVE
-                | ui.WINDOW_FLAGS_NO_SCROLLBAR
-                | ui.WINDOW_FLAGS_NO_COLLAPSE
-                | ui.WINDOW_FLAGS_NO_BACKGROUND,
-            )
-            if getattr(badge_window, "docked", False):
-                try:
-                    badge_window.undock()
-                except Exception:
-                    pass
-
-            badge_window.position_x = screen_x
-            badge_window.position_y = screen_y
-
-            with badge_window.frame:
-                with ui.VStack(alignment=ui.Alignment.CENTER):
-                    ui.Label(
-                        f"+{points}",
-                        style={
-                            "color": 0xFF00E6FF,  # Glowing gold
-                            "font_size": 34,
-                            "alignment": ui.Alignment.CENTER,
-                        },
-                    )
-
-            self._active_popups.append({
-                "window": badge_window,
+            local_x, local_y = self._world_to_viewport_local(world_pos)
+            popup = {
+                "id": self._popup_counter,
+                "points": points,
+                "x": local_x,
+                "initial_y": local_y,
+                "current_y": local_y,
                 "elapsed": 0.0,
                 "duration": 1.4,
-                "initial_y": screen_y,
-            })
+                "placer": None,
+            }
+            self._active_popups.append(popup)
+            self._attach_popup_widget(popup)
         except Exception as e:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Failed to spawn score popup: {e}")
 
+    def _attach_popup_widget(self, popup: dict):
+        """Builds retained Placer and Label widgets for a new popup once, avoiding per-frame rebuilds."""
+        if not HAS_KIT or ui is None:
+            return
+
+        try:
+            import omni.kit.viewport.utility as vp_util
+            vp_win = vp_util.get_active_viewport_window()
+            if not (vp_win and hasattr(vp_win, "get_frame")):
+                return
+
+            if self._popups_frame is None:
+                self._popups_frame = vp_win.get_frame("HydragonScorePopupsOverlay")
+                self._popups_frame.clear()
+
+            px = int(popup.get("x", 100))
+            py = int(popup.get("current_y", 100))
+            pts = popup.get("points", 100)
+
+            with self._popups_frame:
+                placer = ui.Placer(offset_x=px, offset_y=py, width=180, height=50)
+                with placer:
+                    ui.Label(
+                        f"+{pts}",
+                        width=180,
+                        height=50,
+                        alignment=ui.Alignment.CENTER,
+                        style={
+                            "color": 0xFF20E0FF if pts >= 150 else 0xFF00E6FF,
+                            "font_size": 36,
+                            "alignment": ui.Alignment.CENTER,
+                        },
+                    )
+                popup["placer"] = placer
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to attach score popup widget: {e}")
+
     def _update_popups(self, dt: float):
+        """Animates floating score popups by updating placer offset_y directly with zero frame rebuilding."""
+        if not self._active_popups:
+            return
+
         remaining = []
         for popup in self._active_popups:
             popup["elapsed"] += dt
             progress = popup["elapsed"] / popup["duration"]
-            window = popup.get("window")
-
             if progress < 1.0:
-                if window:
-                    if not window.visible:
-                        window.visible = True
-                    if hasattr(window, "position_y"):
-                        try:
-                            window.position_y = popup["initial_y"] - int(progress * 50.0)
-                        except Exception:
-                            pass
+                new_y = popup["initial_y"] - int(progress * 60.0)
+                popup["current_y"] = new_y
+                placer = popup.get("placer")
+                if placer:
+                    try:
+                        placer.offset_y = new_y
+                    except Exception:
+                        pass
                 remaining.append(popup)
             else:
-                if window:
+                placer = popup.get("placer")
+                if placer:
                     try:
-                        window.visible = False
+                        placer.visible = False
                     except Exception:
                         pass
 
         self._active_popups = remaining
+        if not self._active_popups and self._popups_frame:
+            try:
+                self._popups_frame.clear()
+            except Exception:
+                pass
+            self._popups_frame = None
 
     def _destroy_all_popups(self):
-        for popup in self._active_popups:
-            w = popup.get("window")
-            if w:
-                try:
-                    w.visible = False
-                except Exception:
-                    pass
         self._active_popups.clear()
+        if self._popups_frame:
+            try:
+                self._popups_frame.clear()
+            except Exception:
+                pass
+            self._popups_frame = None
 
     # -------------------------------------------------------------------------
     # 4. Polished Victory Modal ("Mission Accomplished!")
     # -------------------------------------------------------------------------
     def show_victory(self, score: int, elapsed: float, foes: int):
-        """Displays a polished, high-contrast victory screen with final statistics."""
+        """Displays a polished, high-contrast victory screen anchored in active viewport frame."""
         if not HAS_KIT or ui is None:
             return
 
         self._destroy_victory_ui()
 
+        # Primary approach: viewport frame (always visible in F7/F11 fullscreen)
+        try:
+            import omni.kit.viewport.utility as vp_util
+            vp_win = vp_util.get_active_viewport_window()
+            if vp_win and hasattr(vp_win, "get_frame"):
+                frame = vp_win.get_frame("HydragonVictoryOverlay")
+                if frame:
+                    frame.clear()
+                    with frame:
+                        with ui.VStack():
+                            ui.Spacer()
+                            with ui.HStack():
+                                ui.Spacer()
+                                with ui.ZStack(width=460, height=220):
+                                    ui.Rectangle(
+                                        style={
+                                            "background_color": 0xDD111824,
+                                            "border_radius": 8,
+                                            "border_color": 0xFF20D040,
+                                            "border_width": 2,
+                                        }
+                                    )
+                                    with ui.VStack(spacing=8):
+                                        ui.Spacer(height=8)
+                                        ui.Label(
+                                            "🏆 MISSION ACCOMPLISHED!",
+                                            width=440,
+                                            height=40,
+                                            alignment=ui.Alignment.CENTER,
+                                            style={
+                                                "color": 0xFF20E050,
+                                                "font_size": 26,
+                                                "alignment": ui.Alignment.CENTER,
+                                            },
+                                        )
+                                        ui.Label(
+                                            f"FINAL SCORE: {score}",
+                                            width=440,
+                                            height=35,
+                                            alignment=ui.Alignment.CENTER,
+                                            style={
+                                                "color": 0xFFFFFFFF,
+                                                "font_size": 22,
+                                                "alignment": ui.Alignment.CENTER,
+                                            },
+                                        )
+                                        ui.Label(
+                                            f"Time: {elapsed:.1f}s   |   Foes Defeated: {foes}",
+                                            width=440,
+                                            height=25,
+                                            alignment=ui.Alignment.CENTER,
+                                            style={
+                                                "color": 0xFFCCCCCC,
+                                                "font_size": 15,
+                                                "alignment": ui.Alignment.CENTER,
+                                            },
+                                        )
+                                        ui.Spacer(height=4)
+                                        ui.Label(
+                                            "[ Press STOP and PLAY to restart! ]",
+                                            width=440,
+                                            height=25,
+                                            alignment=ui.Alignment.CENTER,
+                                            style={
+                                                "color": 0xFF50D0FF,
+                                                "font_size": 13,
+                                                "alignment": ui.Alignment.CENTER,
+                                            },
+                                        )
+                                        ui.Spacer(height=8)
+                                ui.Spacer()
+                            ui.Spacer()
+                    self._victory_frame = frame
+                    return
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to build victory frame overlay: {e}")
+
+        # Fallback: Floating omni.ui.Window
         try:
             vp_x, vp_y, vp_w, vp_h = self._get_viewport_bounds()
             window = ui.Window(
@@ -668,7 +851,7 @@ class HydragonGameHUD:
                 "border_width": 2,
             }
             with window.frame:
-                with ui.VStack(alignment=ui.Alignment.CENTER, spacing=8):
+                with ui.VStack(spacing=8):
                     ui.Spacer(height=8)
                     ui.Label(
                         "🏆 MISSION ACCOMPLISHED!",
@@ -711,6 +894,12 @@ class HydragonGameHUD:
                 carb.log_warn(f"[hydragon.editor.core] Failed to build victory modal: {e}")
 
     def _destroy_victory_ui(self):
+        if self._victory_frame:
+            try:
+                self._victory_frame.clear()
+            except Exception:
+                pass
+            self._victory_frame = None
         if self._victory_window:
             try:
                 self._victory_window.visible = False

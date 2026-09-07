@@ -16,7 +16,9 @@ This document defines the core engineering standards and conventions for all AI 
 ### A. OpenUSD & Component-Driven Architecture (API Schemas)
 * Treat OpenUSD API Schemas (HydragonActorAPI, HydragonPlayerControllerAPI, HydragonFollowCameraAPI, HydragonChaserAIAPI) as components in an Entity-Component-System (ECS).
 * Each interactive prim is an Entity; applied API schemas are its Components.
-* Wrap USD schemas with lightweight, fail-silent Python classes (schemas.py).
+* **Schema Fallbacks vs Engine Codebase Debugging:**
+  - "Fail-silent" applies strictly to OpenUSD custom schema architecture (graceful degradation when a DCC tool or stage does not have custom schemas/attributes registered).
+  - For Python engine code, systems, and active development: **do not hide errors silently**. Use explicit error logging (`carb.log_error`), informative exceptions, or temporary debug assertions whenever needed to pinpoint issues quickly rather than guessing.
 
 ### B. Avoid Stage Traversal Anti-Patterns
 * **NEVER** run stage.Traverse() or full hierarchy scans inside per-frame loops (_on_physics_step or _on_app_update).

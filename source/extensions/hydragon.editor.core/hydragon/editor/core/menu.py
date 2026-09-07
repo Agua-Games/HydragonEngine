@@ -76,15 +76,15 @@ class HydragonMenuManager:
     def _get_menu_glyph(self) -> Optional[str]:
         """Resolves gamepad SVG icon path for Hydragon menu entries."""
         try:
-            # 1. Try extension root icons folder
+            # 1. Try extension data/assets/icons folder
             source_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-            candidate = os.path.normpath(os.path.join(source_root, "icons", "gamepad.svg")).replace("\\", "/")
+            candidate = os.path.normpath(os.path.join(source_root, "data", "assets", "icons", "gamepad.svg")).replace("\\", "/")
             if os.path.exists(candidate):
                 return candidate
 
-            # 2. Try data folder
+            # 2. Try data_dir via extension manager
             data_dir = self._get_extension_data_dir()
-            candidate = os.path.normpath(os.path.join(data_dir, "icons", "gamepad.svg")).replace("\\", "/")
+            candidate = os.path.normpath(os.path.join(data_dir, "assets", "icons", "gamepad.svg")).replace("\\", "/")
             if os.path.exists(candidate):
                 return candidate
         except Exception:
@@ -113,10 +113,10 @@ class HydragonMenuManager:
         if os.path.exists(candidate):
             return candidate
 
-        # 3. Try repo source path
-        repo_data = os.path.abspath("d:/AguaGames/HydragonEngine/alpha/source/extensions/hydragon.editor.core/data")
-        if os.path.exists(repo_data):
-            return repo_data
+        # 3. Try fallback relative to current working directory
+        cwd_candidate = os.path.abspath(os.path.join(os.getcwd(), "source", "extensions", "hydragon.editor.core", "data"))
+        if os.path.exists(cwd_candidate):
+            return cwd_candidate
 
         return candidate
 

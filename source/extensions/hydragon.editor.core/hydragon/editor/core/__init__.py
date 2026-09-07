@@ -14,4 +14,5 @@ from .foes_controller import HydragonFoesControllerSystem, HydragonAIBrain
 from .trigger_controller import HydragonTriggerSystem, HydragonTriggerZone
 from .property_widgets import HydragonPropertyWidgetsManager
 from .game_hud import HydragonGameHUD
+from .effects_controller import HydragonEffectsSystem, ActiveExplosionVFX
 

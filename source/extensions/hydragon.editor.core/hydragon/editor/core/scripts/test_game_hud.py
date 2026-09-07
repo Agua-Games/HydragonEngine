@@ -142,7 +142,7 @@ def test_canvas_config_binding():
 
 
 def test_controls_frame_and_window_lifecycle():
-    print("--- 6. Testing Controls Overlay (Frame & Window) Cleanup Lifecycle ---")
+    print("--- 6. Testing All Overlays (Frame & Window) Cleanup Lifecycle ---")
     hud = HydragonGameHUD()
 
     class MockFrame:
@@ -158,24 +158,55 @@ def test_controls_frame_and_window_lifecycle():
 
     hud._controls_frame = MockFrame()
     hud._controls_window = MockWindow()
+    hud._countdown_frame = MockFrame()
+    hud._countdown_window = MockWindow()
+    hud._popups_frame = MockFrame()
+    hud._victory_frame = MockFrame()
+    hud._victory_window = MockWindow()
 
-    # _destroy_controls_ui must clear frame and hide window
+    # Destroy calls must clear frames and hide windows
     hud._destroy_controls_ui()
     assert hud._controls_frame is None
     assert hud._controls_window is None
 
-    # Re-assign and test shutdown cleans them up as well
-    mock_frame = MockFrame()
-    mock_window = MockWindow()
-    hud._controls_frame = mock_frame
-    hud._controls_window = mock_window
+    hud._destroy_countdown_ui()
+    assert hud._countdown_frame is None
+    assert hud._countdown_window is None
+
+    hud._destroy_all_popups()
+    assert hud._popups_frame is None
+
+    hud._destroy_victory_ui()
+    assert hud._victory_frame is None
+    assert hud._victory_window is None
+
+    # Re-assign and test shutdown cleans them all up
+    f_ctrl = MockFrame()
+    w_ctrl = MockWindow()
+    f_count = MockFrame()
+    w_count = MockWindow()
+    f_pop = MockFrame()
+    f_vic = MockFrame()
+    w_vic = MockWindow()
+
+    hud._controls_frame = f_ctrl
+    hud._controls_window = w_ctrl
+    hud._countdown_frame = f_count
+    hud._countdown_window = w_count
+    hud._popups_frame = f_pop
+    hud._victory_frame = f_vic
+    hud._victory_window = w_vic
 
     hud.shutdown()
-    assert mock_frame.cleared is True
-    assert mock_window.visible is False
+    assert f_ctrl.cleared and w_ctrl.visible is False
+    assert f_count.cleared and w_count.visible is False
+    assert f_pop.cleared
+    assert f_vic.cleared and w_vic.visible is False
     assert hud._controls_frame is None
-    assert hud._controls_window is None
-    print("  [PASS] Controls overlay frame & window cleanup verified")
+    assert hud._countdown_frame is None
+    assert hud._popups_frame is None
+    assert hud._victory_frame is None
+    print("  [PASS] All overlays frame & window cleanup verified")
 
 
 if __name__ == "__main__":

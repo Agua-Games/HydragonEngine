@@ -806,7 +806,7 @@ class HydragonTriggerSystem:
                 | ui.WINDOW_FLAGS_NO_COLLAPSE,
             )
             with window.frame:
-                with ui.VStack(alignment=ui.Alignment.CENTER, spacing=6):
+                with ui.VStack(spacing=6):
                     ui.Spacer(height=6)
                     ui.Label(
                         "MISSION ACCOMPLISHED!",
