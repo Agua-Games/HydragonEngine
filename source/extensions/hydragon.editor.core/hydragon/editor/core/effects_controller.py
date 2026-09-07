@@ -123,6 +123,10 @@ class ExplosionPoolSlot:
         self.spark_radius: float = spark_radius if spark_radius is not None else DEFAULT_SPARK_RADIUS
         self.drag: float = 3.5
 
+        # World space origin for current burst
+        self.origin: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+        self._light_extinguished: bool = False
+
         # Pre-allocate particle simulation buffers (CPU state)
         self.positions: List[List[float]] = [[0.0, 0.0, 0.0] for _ in range(self.num_sparks)]
         self.velocities: List[List[float]] = [[0.0, 0.0, 0.0] for _ in range(self.num_sparks)]
@@ -138,6 +142,7 @@ class ExplosionPoolSlot:
         # Cached USD handles
         self._cached_slot_trans_op = None
         self._cached_light_prim = None
+        self._cached_light_trans_op = None
         self._cached_instancer = None
         self._cached_instancer_imageable = None
         self._active_color_theme: Optional[str] = None
@@ -151,6 +156,8 @@ class ExplosionPoolSlot:
         """Activates and positions the pool slot at the given 3D world coordinates."""
         self.is_active = True
         self.elapsed = 0.0
+        self.origin = (float(world_pos[0]), float(world_pos[1]), float(world_pos[2]))
+        self._light_extinguished = False
 
         # In-place update of spark kinematics buffers (zero GC allocation)
         for i in range(self.num_sparks):
@@ -178,63 +185,78 @@ class ExplosionPoolSlot:
                 self._wp_positions = wp.array([wp.vec3(0.0, 0.0, 0.0) for _ in range(self.num_sparks)], dtype=wp.vec3, device=self._wp_device)
                 self._wp_velocities = wp.array([wp.vec3(v[0], v[1], v[2]) for v in self.velocities], dtype=wp.vec3, device=self._wp_device)
                 self._wp_phases = wp.array(self.phase_offsets, dtype=float, device=self._wp_device)
-            except Exception:
+            except Exception as ex:
+                if carb:
+                    carb.log_warn(f"[hydragon.editor.core] Failed to initialize Warp arrays: {ex}")
                 self._wp_positions = None
 
         if HAS_KIT and stage:
             try:
-                # 1. Position pool slot Xform at world_pos using cached trans_op
-                if self._cached_slot_trans_op is None:
-                    slot_prim = stage.GetPrimAtPath(self.slot_path)
-                    if slot_prim and slot_prim.IsValid():
-                        xformable = UsdGeom.Xformable(slot_prim)
-                        for op in xformable.GetOrderedXformOps():
-                            if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
-                                self._cached_slot_trans_op = op
-                                break
-                        if not self._cached_slot_trans_op:
-                            self._cached_slot_trans_op = xformable.AddTranslateOp()
+                ox, oy, oz = self.origin
 
-                if self._cached_slot_trans_op:
-                    self._cached_slot_trans_op.Set(Gf.Vec3d(float(world_pos[0]), float(world_pos[1]), float(world_pos[2])))
-
-                # 2. Configure and ignite the SphereLight flash (single-source tuning parameters)
+                # 1. Position pool slot and SphereLight explicitly at world_pos
                 if self._cached_light_prim is None:
                     light_prim = stage.GetPrimAtPath(self.light_path)
                     if light_prim and light_prim.IsValid():
                         self._cached_light_prim = light_prim
 
                 if self._cached_light_prim:
+                    if self._cached_light_trans_op is None:
+                        xformable = UsdGeom.Xformable(self._cached_light_prim)
+                        for op in xformable.GetOrderedXformOps():
+                            if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
+                                self._cached_light_trans_op = op
+                                break
+                        if not self._cached_light_trans_op:
+                            self._cached_light_trans_op = xformable.AddTranslateOp()
+
+                    if self._cached_light_trans_op:
+                        self._cached_light_trans_op.Set(Gf.Vec3d(ox, oy, oz))
+
                     light = UsdLux.SphereLight(self._cached_light_prim)
                     light_col = Gf.Vec3f(0.2, 0.85, 1.0) if color_theme == "cyan" else Gf.Vec3f(1.0, 0.78, 0.18)
                     light.GetColorAttr().Set(light_col)
                     light.GetIntensityAttr().Set(self.flash_intensity)
                     light.GetRadiusAttr().Set(self.flash_radius)
 
-                # 3. Make PointInstancer visible and initialize batch transforms
+                # 2. Make PointInstancer visible and initialize batch transforms directly in world space
                 if self._cached_instancer is None:
                     inst_prim = stage.GetPrimAtPath(self.sparks_group_path)
                     if inst_prim and inst_prim.IsValid():
                         self._cached_instancer = UsdGeom.PointInstancer(inst_prim)
                         self._cached_instancer_imageable = UsdGeom.Imageable(inst_prim)
 
+                if self._cached_instancer:
+                    init_pos = Vt.Vec3fArray([Gf.Vec3f(ox, oy, oz)] * self.num_sparks)
+                    initial_scales = Vt.Vec3fArray([Gf.Vec3f(s, s, s) for s in self.base_scales])
+                    orientations = Vt.QuathArray([Gf.Quath(1.0, 0.0, 0.0, 0.0)] * self.num_sparks)
+
+                    self._cached_instancer.GetPositionsAttr().Set(init_pos)
+                    self._cached_instancer.GetScalesAttr().Set(initial_scales)
+
+                    if self._cached_instancer.GetOrientationsAttr().IsValid():
+                        self._cached_instancer.GetOrientationsAttr().Set(orientations)
+
+                    # Author initial bounding box extent to prevent frustum culling
+                    r = 300.0
+                    extent = Vt.Vec3fArray([Gf.Vec3f(ox - r, oy - r, oz - r), Gf.Vec3f(ox + r, oy + r, oz + r)])
+                    if self._cached_instancer.GetExtentAttr().IsValid():
+                        self._cached_instancer.GetExtentAttr().Set(extent)
+
                 if self._cached_instancer_imageable:
                     self._cached_instancer_imageable.GetVisibilityAttr().Set(UsdGeom.Tokens.inherited)
 
-                if self._cached_instancer:
-                    zeros = Vt.Vec3fArray([Gf.Vec3f(0.0, 0.0, 0.0)] * self.num_sparks)
-                    initial_scales = Vt.Vec3fArray([Gf.Vec3f(s, s, s) for s in self.base_scales])
-                    self._cached_instancer.GetPositionsAttr().Set(zeros)
-                    self._cached_instancer.GetScalesAttr().Set(initial_scales)
-
-                # 4. Material check: rebind prototype if theme dynamically changes
+                # 3. Material check: rebind prototype and instancer if theme dynamically changes
                 if self._active_color_theme != color_theme:
                     self._active_color_theme = color_theme
                     mat_path = "/World/Effects/Materials/SparkCyanMat" if color_theme == "cyan" else "/World/Effects/Materials/SparkGoldMat"
                     mat_prim = stage.GetPrimAtPath(mat_path)
                     proto_prim = stage.GetPrimAtPath("/World/Effects/Prototypes/DiamondSpark")
-                    if proto_prim and proto_prim.IsValid() and mat_prim and mat_prim.IsValid() and hasattr(UsdShade, "MaterialBindingAPI"):
-                        UsdShade.MaterialBindingAPI(proto_prim).Bind(UsdShade.Material(mat_prim))
+                    if mat_prim and mat_prim.IsValid() and hasattr(UsdShade, "MaterialBindingAPI"):
+                        if proto_prim and proto_prim.IsValid():
+                            UsdShade.MaterialBindingAPI(proto_prim).Bind(UsdShade.Material(mat_prim))
+                        if self._cached_instancer:
+                            UsdShade.MaterialBindingAPI(self._cached_instancer.GetPrim()).Bind(UsdShade.Material(mat_prim))
             except Exception as ex:
                 if carb:
                     carb.log_warn(f"[hydragon.editor.core] Failed to activate pool slot {self.slot_index}: {ex}")
@@ -251,7 +273,7 @@ class ExplosionPoolSlot:
             self.deactivate(stage)
             return False
 
-        # 1. Light Flash Decay with quadratic falloff
+        # 1. Light Flash Decay with quadratic falloff (cleans up strictly once upon cutoff)
         if HAS_KIT and stage and self._cached_light_prim:
             try:
                 light = UsdLux.SphereLight(self._cached_light_prim)
@@ -259,10 +281,12 @@ class ExplosionPoolSlot:
                     progress = t / self.light_duration
                     intensity = self.flash_intensity * ((1.0 - progress) ** 2.0)
                     light.GetIntensityAttr().Set(intensity)
-                else:
+                elif not self._light_extinguished:
+                    self._light_extinguished = True
                     light.GetIntensityAttr().Set(0.0)
-            except Exception:
-                pass
+            except Exception as ex:
+                if carb:
+                    carb.log_warn(f"[hydragon.editor.core] Failed to update light in slot {self.slot_index}: {ex}")
 
         # 2. Kinematics computation: GPU Warp if available, otherwise vector CPU
         speed_factor = math.exp(-self.drag * t)
@@ -293,7 +317,9 @@ class ExplosionPoolSlot:
                     self.positions[i][1] = float(pos_np[i][1])
                     self.positions[i][2] = float(pos_np[i][2])
                 used_warp = True
-            except Exception:
+            except Exception as ex:
+                if carb:
+                    carb.log_warn(f"[hydragon.editor.core] Warp simulation step failed: {ex}")
                 used_warp = False
 
         if not used_warp:
@@ -310,21 +336,39 @@ class ExplosionPoolSlot:
                 pos[1] += (vel[1] * speed_factor + turb_y) * dt
                 pos[2] += (vel[2] * speed_factor + turb_z) * dt
 
-        # 3. Single-batch PointInstancer array write (one call updates all sparks on GPU)
+        # 3. Single-batch PointInstancer array write in true world space
         if HAS_KIT and stage and self._cached_instancer:
             try:
-                vt_pos = Vt.Vec3fArray([Gf.Vec3f(p[0], p[1], p[2]) for p in self.positions])
-                vt_scale = Vt.Vec3fArray([Gf.Vec3f(s * scale_factor, s * scale_factor, s * scale_factor) for s in self.base_scales])
+                ox, oy, oz = self.origin
+                vt_pos = Vt.Vec3fArray([
+                    Gf.Vec3f(ox + p[0], oy + p[1], oz + p[2])
+                    for p in self.positions
+                ])
+                vt_scale = Vt.Vec3fArray([
+                    Gf.Vec3f(s * scale_factor, s * scale_factor, s * scale_factor)
+                    for s in self.base_scales
+                ])
                 self._cached_instancer.GetPositionsAttr().Set(vt_pos)
                 self._cached_instancer.GetScalesAttr().Set(vt_scale)
-            except Exception:
-                pass
+
+                # Keep frustum culling extent accurate around world position
+                r = 300.0
+                extent = Vt.Vec3fArray([
+                    Gf.Vec3f(ox - r, oy - r, oz - r),
+                    Gf.Vec3f(ox + r, oy + r, oz + r),
+                ])
+                if self._cached_instancer.GetExtentAttr().IsValid():
+                    self._cached_instancer.GetExtentAttr().Set(extent)
+            except Exception as ex:
+                if carb:
+                    carb.log_error(f"[hydragon.editor.core] Failed to update PointInstancer in slot {self.slot_index}: {ex}")
 
         return True
 
     def deactivate(self, stage=None):
         """Deactivates light and sparks cleanly by setting intensity to zero and hiding PointInstancer."""
         self.is_active = False
+        self._light_extinguished = True
         if HAS_KIT and stage:
             try:
                 if self._cached_light_prim:
@@ -336,8 +380,9 @@ class ExplosionPoolSlot:
 
                 if self._cached_instancer_imageable:
                     self._cached_instancer_imageable.GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
-            except Exception:
-                pass
+            except Exception as ex:
+                if carb:
+                    carb.log_warn(f"[hydragon.editor.core] Slot deactivation error in slot {self.slot_index}: {ex}")
 
 
 class ActiveExplosionVFX:
@@ -673,10 +718,12 @@ class HydragonEffectsSystem:
 
             gold_mat_prim = stage.GetPrimAtPath("/World/Effects/Materials/SparkGoldMat")
 
-            # 1. Author shared prototype mesh under /World/Effects/Prototypes/DiamondSpark
+            # 1. Author shared prototype mesh under /World/Effects/Prototypes/DiamondSpark (strictly invisible)
             protos_root_path = Sdf.Path("/World/Effects/Prototypes")
-            if not stage.GetPrimAtPath(protos_root_path).IsValid():
-                stage.DefinePrim(protos_root_path, "Scope")
+            protos_prim = stage.GetPrimAtPath(protos_root_path)
+            if not protos_prim.IsValid():
+                protos_prim = stage.DefinePrim(protos_root_path, "Scope")
+            UsdGeom.Imageable(protos_prim).GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
 
             proto_path = Sdf.Path("/World/Effects/Prototypes/DiamondSpark")
             proto_prim = stage.GetPrimAtPath(proto_path)
@@ -713,9 +760,14 @@ class HydragonEffectsSystem:
                 extent = [Gf.Vec3f(-s, -s * 1.3, -s), Gf.Vec3f(s, s * 1.3, s)]
                 mesh.CreateExtentAttr(Vt.Vec3fArray(extent))
 
+                # Prototype mesh MUST be marked invisible so it never renders as an orphan at stage origin
+                UsdGeom.Imageable(mesh.GetPrim()).GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
+
                 # Pre-bind gold material directly to the prototype mesh!
                 if gold_mat_prim and gold_mat_prim.IsValid() and hasattr(UsdShade, "MaterialBindingAPI"):
                     UsdShade.MaterialBindingAPI(mesh.GetPrim()).Bind(UsdShade.Material(gold_mat_prim))
+            else:
+                UsdGeom.Imageable(proto_prim).GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
 
             # 2. Author PointInstancers for each pool slot
             for i in range(self.POOL_SIZE):
@@ -732,9 +784,18 @@ class HydragonEffectsSystem:
                     instancer.CreateProtoIndicesAttr().Set(Vt.IntArray([0] * self.NUM_SPARKS))
                     instancer.CreatePositionsAttr().Set(Vt.Vec3fArray([Gf.Vec3f(0.0, 0.0, 0.0)] * self.NUM_SPARKS))
                     instancer.CreateScalesAttr().Set(Vt.Vec3fArray([Gf.Vec3f(0.0, 0.0, 0.0)] * self.NUM_SPARKS))
+                    # Crucial for Omniverse RTX: orientations and extent attributes
+                    instancer.CreateOrientationsAttr().Set(Vt.QuathArray([Gf.Quath(1.0, 0.0, 0.0, 0.0)] * self.NUM_SPARKS))
+                    instancer.CreateExtentAttr().Set(Vt.Vec3fArray([Gf.Vec3f(-500.0, -500.0, -500.0), Gf.Vec3f(500.0, 500.0, 500.0)]))
+                    if gold_mat_prim and gold_mat_prim.IsValid() and hasattr(UsdShade, "MaterialBindingAPI"):
+                        UsdShade.MaterialBindingAPI(instancer.GetPrim()).Bind(UsdShade.Material(gold_mat_prim))
                 else:
                     instancer = UsdGeom.PointInstancer(inst_prim)
                     instancer.GetPrototypesRel().SetTargets([proto_path])
+                    if not instancer.GetOrientationsAttr().IsValid():
+                        instancer.CreateOrientationsAttr().Set(Vt.QuathArray([Gf.Quath(1.0, 0.0, 0.0, 0.0)] * self.NUM_SPARKS))
+                    if not instancer.GetExtentAttr().IsValid():
+                        instancer.CreateExtentAttr().Set(Vt.Vec3fArray([Gf.Vec3f(-500.0, -500.0, -500.0), Gf.Vec3f(500.0, 500.0, 500.0)]))
 
                 # Set initial instancer invisible to eliminate GPU overhead
                 UsdGeom.Imageable(instancer.GetPrim()).GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)

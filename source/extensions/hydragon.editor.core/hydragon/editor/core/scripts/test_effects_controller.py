@@ -196,7 +196,9 @@ def test_explosion_pool_slot_lifecycle():
     assert len(slot.positions) == DEFAULT_NUM_SPARKS
     assert len(slot.velocities) == DEFAULT_NUM_SPARKS
 
-    # All local spark positions start at (0, 0, 0)
+    # All local spark positions start at (0, 0, 0) and origin matches world_pos
+    assert slot.origin == world_pos, f"Expected origin {world_pos}, got {slot.origin}"
+    assert slot._light_extinguished is False
     for p in slot.positions:
         assert p == [0.0, 0.0, 0.0]
 
@@ -204,6 +206,7 @@ def test_explosion_pool_slot_lifecycle():
     alive = slot.update(0.10)
     assert alive is True
     assert slot.elapsed == 0.10
+    assert slot._light_extinguished is False
 
     # Step past light duration (0.22s) to t = 0.30s
     alive = slot.update(0.20)
@@ -214,6 +217,7 @@ def test_explosion_pool_slot_lifecycle():
     alive_end = slot.update(0.30)
     assert alive_end is False, "Slot must expire and deactivate at t >= 0.55s"
     assert slot.is_active is False, "Slot must mark is_active as False upon expiration"
+    assert slot._light_extinguished is True
     print("  [PASS] ExplosionPoolSlot lifecycle and quick light cutoff verified")
 
 
