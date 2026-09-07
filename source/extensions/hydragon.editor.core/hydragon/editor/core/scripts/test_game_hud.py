@@ -37,33 +37,34 @@ def test_countdown_state_machine():
     print("--- 2. Testing Countdown State Machine Timing ---")
     hud = HydragonGameHUD()
 
-    # Mock SimpleStringModel for headless testing
-    class MockStringModel:
-        def __init__(self, s=""):
-            self.as_string = s
+    # Mock Label for headless testing
+    class MockLabel:
+        def __init__(self, text=""):
+            self.text = text
+            self.style = {}
 
-    hud._countdown_model = MockStringModel("3...")
+    hud._countdown_label = MockLabel("3...")
     hud._countdown_active = True
     hud._countdown_elapsed = 0.0
 
     # 0.5s -> 3...
     hud._update_countdown(0.5)
-    assert hud._countdown_model.as_string == "3...", f"Expected '3...', got {hud._countdown_model.as_string}"
+    assert hud._countdown_label.text == "3...", f"Expected '3...', got {hud._countdown_label.text}"
     assert hud._countdown_active is True
 
     # 1.5s -> 2...
     hud._update_countdown(1.0)
-    assert hud._countdown_model.as_string == "2...", f"Expected '2...', got {hud._countdown_model.as_string}"
+    assert hud._countdown_label.text == "2...", f"Expected '2...', got {hud._countdown_label.text}"
     assert hud._countdown_active is True
 
     # 2.5s -> 1...
     hud._update_countdown(1.0)
-    assert hud._countdown_model.as_string == "1...", f"Expected '1...', got {hud._countdown_model.as_string}"
+    assert hud._countdown_label.text == "1...", f"Expected '1...', got {hud._countdown_label.text}"
     assert hud._countdown_active is True
 
     # 3.5s -> MARBLE GAME START!
     hud._update_countdown(1.0)
-    assert hud._countdown_model.as_string == "MARBLE GAME START!", f"Expected 'MARBLE GAME START!', got {hud._countdown_model.as_string}"
+    assert hud._countdown_label.text == "MARBLE GAME START!", f"Expected 'MARBLE GAME START!', got {hud._countdown_label.text}"
     assert hud._countdown_active is True
 
     # 4.5s -> Countdown complete and deactivated
