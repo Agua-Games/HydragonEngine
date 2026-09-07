@@ -111,11 +111,42 @@ def test_timeline_event_handling():
     print("  [PASS] HUD timeline event transitions verified")
 
 
+def test_canvas_config_binding():
+    print("--- 5. Testing Canvas Config Binding & Filtering ---")
+    hud = HydragonGameHUD()
+
+    class MockCanvas:
+        def __init__(self, controls=True, countdown=True, score_popups=True, path="/World/GameHUD"):
+            self.show_controls = controls
+            self.show_countdown = countdown
+            self.show_score_popups = score_popups
+            class MockPrim:
+                def GetPath(self):
+                    return path
+            self.prim = MockPrim()
+
+    # Apply canvas with controls and score popups disabled
+    canvas = MockCanvas(controls=False, countdown=True, score_popups=False)
+    hud._apply_canvas_schema(canvas)
+    assert hud._show_controls is False
+    assert hud._show_countdown is True
+    assert hud._show_score_popups is False
+    assert hud._active_canvas_path == "/World/GameHUD"
+
+    # Score popups should not spawn when disabled
+    hud.show_score_popup(world_pos=(0, 0, 0), points=100)
+    assert len(hud._active_popups) == 0
+
+    hud.shutdown()
+    print("  [PASS] Canvas config binding and popups filtering verified")
+
+
 if __name__ == "__main__":
     test_game_hud_lifecycle()
     test_countdown_state_machine()
     test_score_popup_and_victory_modal_fail_silent()
     test_timeline_event_handling()
+    test_canvas_config_binding()
     print("\n=======================================================")
-    print(" ALL GAME HUD TESTS PASSED! (4/4)")
+    print(" ALL GAME HUD TESTS PASSED! (5/5)")
     print("=======================================================")

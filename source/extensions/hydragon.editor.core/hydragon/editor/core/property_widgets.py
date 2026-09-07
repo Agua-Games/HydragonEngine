@@ -28,6 +28,7 @@ from .schemas import (
     HydragonChaserAI,
     HydragonTrigger,
     HydragonGameManager,
+    HydragonUICanvas,
 )
 
 
@@ -186,6 +187,16 @@ if HAS_PROPERTY_WINDOW:
                 schema_check_fn=HydragonGameManager.is_applied,
             )
 
+
+    class HydragonUICanvasPropertyWidget(HydragonBasePropertyWidget):
+        """Dedicated property panel for HydragonUICanvasAPI."""
+        def __init__(self):
+            super().__init__(
+                title="Hydragon UI Canvas",
+                prefix="hud:",
+                schema_check_fn=HydragonUICanvas.is_applied,
+            )
+
 else:
     class HydragonBasePropertyWidget:
         def __init__(self, *args, **kwargs):
@@ -207,6 +218,9 @@ else:
         pass
 
     class HydragonGamePropertyWidget(HydragonBasePropertyWidget):
+        pass
+
+    class HydragonUICanvasPropertyWidget(HydragonBasePropertyWidget):
         pass
 
 
@@ -264,6 +278,7 @@ class HydragonPropertyWidgetsManager:
                 ("hydragon_actor", HydragonActorPropertyWidget()),
                 ("hydragon_trigger", HydragonTriggerPropertyWidget()),
                 ("hydragon_game", HydragonGamePropertyWidget()),
+                ("hydragon_ui_canvas", HydragonUICanvasPropertyWidget()),
             ]
 
             for name, widget in self._widgets:
@@ -271,7 +286,7 @@ class HydragonPropertyWidgetsManager:
 
             self._registered = True
             if carb:
-                carb.log_info("[hydragon.editor.core] Successfully registered 6 dedicated Hydragon property widgets.")
+                carb.log_info("[hydragon.editor.core] Successfully registered 7 dedicated Hydragon property widgets.")
             return True
         except Exception as e:
             if carb:

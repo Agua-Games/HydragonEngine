@@ -648,3 +648,82 @@ class HydragonGameManager:
 
     def trigger_victory(self):
         self.state = "Victory"
+
+
+# ==============================================================================
+# HydragonUICanvas
+# ==============================================================================
+class HydragonUICanvas:
+    SCHEMA_NAME = "HydragonUICanvasAPI"
+
+    def __init__(self, prim):
+        self._prim = prim
+
+    @classmethod
+    def apply(
+        cls,
+        prim,
+        canvas_type: str = "InGame",
+        show_controls: bool = True,
+        show_countdown: bool = True,
+        show_score_popups: bool = True,
+        auto_activate_on_play: bool = True,
+    ):
+        _ensure_api_schema(prim, cls.SCHEMA_NAME)
+        canvas = cls(prim)
+        canvas.canvas_type = canvas_type
+        canvas.show_controls = show_controls
+        canvas.show_countdown = show_countdown
+        canvas.show_score_popups = show_score_popups
+        canvas.auto_activate_on_play = auto_activate_on_play
+        return canvas
+
+    @classmethod
+    def is_applied(cls, prim) -> bool:
+        return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
+            prim and hasattr(prim, "HasAttribute") and prim.HasAttribute("hud:canvasType")
+        )
+
+    @property
+    def prim(self):
+        return self._prim
+
+    @property
+    def canvas_type(self) -> str:
+        return str(_get_attr_value(self._prim, "hud:canvasType", "InGame"))
+
+    @canvas_type.setter
+    def canvas_type(self, val: str):
+        _set_attr_value(self._prim, "hud:canvasType", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def show_controls(self) -> bool:
+        return bool(_get_attr_value(self._prim, "hud:showControls", True))
+
+    @show_controls.setter
+    def show_controls(self, val: bool):
+        _set_attr_value(self._prim, "hud:showControls", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def show_countdown(self) -> bool:
+        return bool(_get_attr_value(self._prim, "hud:showCountdown", True))
+
+    @show_countdown.setter
+    def show_countdown(self, val: bool):
+        _set_attr_value(self._prim, "hud:showCountdown", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def show_score_popups(self) -> bool:
+        return bool(_get_attr_value(self._prim, "hud:showScorePopups", True))
+
+    @show_score_popups.setter
+    def show_score_popups(self, val: bool):
+        _set_attr_value(self._prim, "hud:showScorePopups", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def auto_activate_on_play(self) -> bool:
+        return bool(_get_attr_value(self._prim, "hud:autoActivateOnPlay", True))
+
+    @auto_activate_on_play.setter
+    def auto_activate_on_play(self, val: bool):
+        _set_attr_value(self._prim, "hud:autoActivateOnPlay", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)

@@ -6,6 +6,7 @@ from .schemas import (
     HydragonChaserAI,
     HydragonTrigger,
     HydragonGameManager,
+    HydragonUICanvas,
 )
 from .player_controller import HydragonPlayerControllerSystem
 from .camera_controller import HydragonCameraControllerSystem

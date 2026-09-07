@@ -24,6 +24,7 @@ def test_syntax_usda_files():
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_foe_ball", "foe_ball.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_goal_hole", "goal_hole.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_game_manager", "game_manager.usda"),
+        os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_ui_canvas", "ui_canvas.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "test_stage_rolling_ball.usda"),
     ]
 
@@ -104,8 +105,9 @@ def test_python_module():
             HydragonChaserAI,
             HydragonTrigger,
             HydragonGameManager,
+            HydragonUICanvas,
         )
-        print("  [PASS] Successfully imported all 6 Hydragon API schema classes from hydragon.editor.core")
+        print("  [PASS] Successfully imported all 7 Hydragon API schema classes from hydragon.editor.core")
     except Exception as e:
         print(f"  [FAIL] Failed to import from hydragon.editor.core: {e}")
         return False
@@ -117,6 +119,7 @@ def test_python_module():
     assert HydragonChaserAI.SCHEMA_NAME == "HydragonChaserAIAPI"
     assert HydragonTrigger.SCHEMA_NAME == "HydragonTriggerAPI"
     assert HydragonGameManager.SCHEMA_NAME == "HydragonGameAPI"
+    assert HydragonUICanvas.SCHEMA_NAME == "HydragonUICanvasAPI"
     print("  [PASS] All SCHEMA_NAME constants verified")
 
     # Test fallback behavior when prim is None (Fail-Silent)
@@ -153,6 +156,14 @@ def test_python_module():
     assert gm.score == 0
     print("  [PASS] HydragonGameManager fail-silent defaults verified")
 
+    canvas = HydragonUICanvas(None)
+    assert canvas.canvas_type == "InGame"
+    assert canvas.show_controls is True
+    assert canvas.show_countdown is True
+    assert canvas.show_score_popups is True
+    assert canvas.auto_activate_on_play is True
+    print("  [PASS] HydragonUICanvas fail-silent defaults verified")
+
     from hydragon.editor.core.menu import HydragonMenuManager
     menu_mgr = HydragonMenuManager("hydragon.editor.core")
     assert menu_mgr is not None
@@ -177,6 +188,7 @@ def test_pxr_stage():
         HydragonActor,
         HydragonPlayerController,
         HydragonGameManager,
+        HydragonUICanvas,
     )
 
     actor = HydragonActor.apply(player_prim, faction="Player", health=150.0)
@@ -208,6 +220,17 @@ def test_pxr_stage():
     gm.trigger_victory()
     assert gm.state == "Victory"
     print("  [PASS] HydragonGameManager state transition verified on Usd.Stage")
+
+    ui_prim = stage.DefinePrim("/World/GameHUD", "Xform")
+    canvas = HydragonUICanvas.apply(ui_prim, canvas_type="InGame", show_controls=False, show_countdown=True)
+    assert HydragonUICanvas.is_applied(ui_prim)
+    assert canvas.canvas_type == "InGame"
+    assert canvas.show_controls is False
+    assert canvas.show_countdown is True
+    assert canvas.show_score_popups is True
+    canvas.show_controls = True
+    assert canvas.show_controls is True
+    print("  [PASS] HydragonUICanvas schema applied, queried and mutated on Usd.Stage")
 
 
 if __name__ == "__main__":

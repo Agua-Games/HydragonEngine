@@ -54,6 +54,12 @@ class HydragonGameHUD:
         # Victory Modal
         self._victory_window = None
 
+        # Declarative Canvas Settings (defaults to True for fallback compatibility)
+        self._show_controls: bool = True
+        self._show_countdown: bool = True
+        self._show_score_popups: bool = True
+        self._active_canvas_path: Optional[str] = None
+
     @classmethod
     def get_instance(cls) -> Optional["HydragonGameHUD"]:
         return cls._instance
@@ -160,6 +166,65 @@ class HydragonGameHUD:
                 carb.log_warn(f"[hydragon.editor.core] Game HUD app update subscription failed: {e}")
 
     # -------------------------------------------------------------------------
+    # Declarative UI Canvas Discovery (One-time discovery on PLAY)
+    # -------------------------------------------------------------------------
+    def _discover_canvas_config(self):
+        """
+        Discovers active HydragonUICanvas prim on simulation start to configure HUD features.
+        Falls back to default (all enabled) if no canvas is present.
+        """
+        self._show_controls = True
+        self._show_countdown = True
+        self._show_score_popups = True
+        self._active_canvas_path = None
+
+        try:
+            import omni.usd
+            stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+            if not stage:
+                return
+
+            from .schemas import HydragonUICanvas
+
+            # Quick lookup: check common UI paths first before traversal
+            common_paths = [
+                "/World/GameHUD",
+                "/World/UI",
+                "/World/UI/GameHUD",
+                "/World/UICanvas",
+                "/World/hydragon_ui_canvas_root",
+            ]
+            for path_str in common_paths:
+                prim = stage.GetPrimAtPath(path_str)
+                if prim and prim.IsValid() and HydragonUICanvas.is_applied(prim):
+                    canvas = HydragonUICanvas(prim)
+                    if canvas.auto_activate_on_play:
+                        self._apply_canvas_schema(canvas)
+                        return
+
+            # One-time traversal on simulation start if not at common paths
+            for prim in stage.Traverse():
+                if HydragonUICanvas.is_applied(prim):
+                    canvas = HydragonUICanvas(prim)
+                    if canvas.auto_activate_on_play:
+                        self._apply_canvas_schema(canvas)
+                        return
+        except Exception as ex:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to discover UI canvas: {ex}")
+
+    def _apply_canvas_schema(self, canvas):
+        self._active_canvas_path = str(canvas.prim.GetPath())
+        self._show_controls = canvas.show_controls
+        self._show_countdown = canvas.show_countdown
+        self._show_score_popups = canvas.show_score_popups
+        if carb:
+            carb.log_info(
+                f"[hydragon.editor.core] Active UI Canvas bound at {self._active_canvas_path}: "
+                f"controls={self._show_controls}, countdown={self._show_countdown}, popups={self._show_score_popups}"
+            )
+
+    # -------------------------------------------------------------------------
     # Timeline & Frame Update Callbacks
     # -------------------------------------------------------------------------
     def _on_timeline_event(self, e):
@@ -171,8 +236,11 @@ class HydragonGameHUD:
                 self._is_simulating = True
                 self._destroy_victory_ui()
                 self._destroy_all_popups()
-                self._start_countdown()
-                self._show_controls_ui()
+                self._discover_canvas_config()
+                if self._show_countdown:
+                    self._start_countdown()
+                if self._show_controls:
+                    self._show_controls_ui()
             elif event_type in (int(omni.timeline.TimelineEventType.STOP), int(omni.timeline.TimelineEventType.PAUSE)):
                 self._is_simulating = False
                 self._destroy_countdown_ui()
@@ -255,8 +323,11 @@ class HydragonGameHUD:
                 | ui.WINDOW_FLAGS_NO_COLLAPSE
                 | ui.WINDOW_FLAGS_NO_BACKGROUND,
             )
-            if hasattr(ui, "DockPreference"):
-                window.dock_preference = ui.DockPreference.DISABLED
+            if getattr(window, "docked", False):
+                try:
+                    window.undock()
+                except Exception:
+                    pass
 
             window.position_x = int(vp_x + (vp_w - 650) * 0.5)
             window.position_y = int(vp_y + vp_h * 0.25)
@@ -338,8 +409,11 @@ class HydragonGameHUD:
                 | ui.WINDOW_FLAGS_NO_SCROLLBAR
                 | ui.WINDOW_FLAGS_NO_COLLAPSE,
             )
-            if hasattr(ui, "DockPreference"):
-                window.dock_preference = ui.DockPreference.DISABLED
+            if getattr(window, "docked", False):
+                try:
+                    window.undock()
+                except Exception:
+                    pass
 
             window.position_x = int(vp_x + 20)
             window.position_y = int(vp_y + 20)
@@ -395,7 +469,7 @@ class HydragonGameHUD:
         Triggers a transient floating score text (+100) that floats upward and fades out.
         Also triggers Kit notification feedback.
         """
-        if not HAS_KIT:
+        if not HAS_KIT or not self._show_score_popups:
             return
 
         try:
@@ -427,8 +501,11 @@ class HydragonGameHUD:
                 | ui.WINDOW_FLAGS_NO_COLLAPSE
                 | ui.WINDOW_FLAGS_NO_BACKGROUND,
             )
-            if hasattr(ui, "DockPreference"):
-                badge_window.dock_preference = ui.DockPreference.DISABLED
+            if getattr(badge_window, "docked", False):
+                try:
+                    badge_window.undock()
+                except Exception:
+                    pass
 
             badge_window.position_x = screen_x
             badge_window.position_y = screen_y
@@ -512,8 +589,11 @@ class HydragonGameHUD:
                 | ui.WINDOW_FLAGS_NO_SCROLLBAR
                 | ui.WINDOW_FLAGS_NO_COLLAPSE,
             )
-            if hasattr(ui, "DockPreference"):
-                window.dock_preference = ui.DockPreference.DISABLED
+            if getattr(window, "docked", False):
+                try:
+                    window.undock()
+                except Exception:
+                    pass
 
             window.position_x = int(vp_x + (vp_w - 460) * 0.5)
             window.position_y = int(vp_y + (vp_h - 220) * 0.5)
