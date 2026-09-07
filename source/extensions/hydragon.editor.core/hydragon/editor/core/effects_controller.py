@@ -35,6 +35,48 @@ except ImportError:
     Vt = None
 
 
+try:
+    import warp as wp
+    HAS_WARP = True
+    try:
+        wp.init()
+    except Exception:
+        pass
+except ImportError:
+    HAS_WARP = False
+    wp = None
+
+
+if HAS_WARP:
+    @wp.kernel
+    def simulate_sparks_kernel(
+        positions: wp.array(dtype=wp.vec3),
+        velocities: wp.array(dtype=wp.vec3),
+        phase_offsets: wp.array(dtype=float),
+        drag: float,
+        t: float,
+        dt: float,
+        turb_amp: float,
+        num_particles: int,
+    ):
+        tid = wp.tid()
+        if tid < num_particles:
+            pos = positions[tid]
+            vel = velocities[tid]
+            phi = phase_offsets[tid]
+            speed_factor = wp.exp(-drag * t)
+
+            turb_x = wp.sin(pos[1] * 0.05 + t * 3.5 + phi) * turb_amp
+            turb_y = wp.cos(pos[2] * 0.05 + t * 3.5 + phi) * turb_amp - 110.0 * t
+            turb_z = wp.sin(pos[0] * 0.05 + t * 3.5 + phi) * turb_amp
+
+            dx = (vel[0] * speed_factor + turb_x) * dt
+            dy = (vel[1] * speed_factor + turb_y) * dt
+            dz = (vel[2] * speed_factor + turb_z) * dt
+
+            positions[tid] = wp.vec3(pos[0] + dx, pos[1] + dy, pos[2] + dz)
+
+
 # =============================================================================
 # Gameplay VFX Tuning Parameters (Single Source of Truth)
 # Adjust these values to tune the explosion visuals and lighting intensity.
@@ -43,15 +85,16 @@ DEFAULT_FLASH_LIGHT_INTENSITY: float = 5000000.0  # Peak SphereLight intensity o
 DEFAULT_FLASH_LIGHT_RADIUS: float = 80.0          # SphereLight radius in centimeters
 DEFAULT_FLASH_LIGHT_DURATION: float = 0.22        # Light flash duration in seconds
 DEFAULT_BURST_LIFETIME: float = 0.55              # Total particle sparks lifetime in seconds
-DEFAULT_NUM_SPARKS: int = 12                      # Number of diamond spark meshes per explosion (optimized for 60 FPS)
+DEFAULT_NUM_SPARKS: int = 24                      # Number of diamond sparks per explosion (GPU PointInstancer batch)
 DEFAULT_SPARK_EMISSION: float = 60000.0           # Emissive intensity on diamond sparks
 DEFAULT_SPARK_RADIUS: float = 9.0                 # Diamond radius in centimeters (9 cm)
 
 
 class ExplosionPoolSlot:
     """
-    Pre-allocated pool slot containing pre-allocated diamond sparks and a SphereLight.
-    Eliminates all runtime DefinePrim and RemovePrim calls during gameplay.
+    Pre-allocated pool slot containing a PointInstancer and a SphereLight.
+    Uses GPU-accelerated Warp kernels (or vector CPU fallback) and single-batch
+    USD array writes to eliminate all frame drops.
     """
 
     def __init__(
@@ -80,19 +123,23 @@ class ExplosionPoolSlot:
         self.spark_radius: float = spark_radius if spark_radius is not None else DEFAULT_SPARK_RADIUS
         self.drag: float = 3.5
 
-        # Pre-allocate particle simulation buffers to eliminate GC churn on activation
+        # Pre-allocate particle simulation buffers (CPU state)
         self.positions: List[List[float]] = [[0.0, 0.0, 0.0] for _ in range(self.num_sparks)]
         self.velocities: List[List[float]] = [[0.0, 0.0, 0.0] for _ in range(self.num_sparks)]
         self.base_scales: List[float] = [1.0 for _ in range(self.num_sparks)]
         self.phase_offsets: List[float] = [0.0 for _ in range(self.num_sparks)]
 
-        # Cached USD handles to eliminate stage traversal in update loops
+        # Warp GPU buffers
+        self._wp_positions = None
+        self._wp_velocities = None
+        self._wp_phases = None
+        self._wp_device = "cuda" if (HAS_WARP and wp and hasattr(wp, "is_cuda_available") and wp.is_cuda_available()) else "cpu"
+
+        # Cached USD handles
         self._cached_slot_trans_op = None
         self._cached_light_prim = None
-        self._cached_spark_trans_ops: List = [None] * self.num_sparks
-        self._cached_spark_scale_ops: List = [None] * self.num_sparks
-        self._cached_spark_imageables: List = [None] * self.num_sparks
-        self._cached_sparks_group_imageable = None
+        self._cached_instancer = None
+        self._cached_instancer_imageable = None
         self._active_color_theme: Optional[str] = None
 
     def activate(
@@ -125,6 +172,15 @@ class ExplosionPoolSlot:
             self.base_scales[i] = random.uniform(0.85, 1.25)
             self.phase_offsets[i] = random.uniform(0.0, 2.0 * math.pi)
 
+        # Initialize or upload to Warp GPU arrays if available
+        if HAS_WARP and wp:
+            try:
+                self._wp_positions = wp.array([wp.vec3(0.0, 0.0, 0.0) for _ in range(self.num_sparks)], dtype=wp.vec3, device=self._wp_device)
+                self._wp_velocities = wp.array([wp.vec3(v[0], v[1], v[2]) for v in self.velocities], dtype=wp.vec3, device=self._wp_device)
+                self._wp_phases = wp.array(self.phase_offsets, dtype=float, device=self._wp_device)
+            except Exception:
+                self._wp_positions = None
+
         if HAS_KIT and stage:
             try:
                 # 1. Position pool slot Xform at world_pos using cached trans_op
@@ -155,57 +211,36 @@ class ExplosionPoolSlot:
                     light.GetIntensityAttr().Set(self.flash_intensity)
                     light.GetRadiusAttr().Set(self.flash_radius)
 
-                # 3. Make sparks group visible
-                if self._cached_sparks_group_imageable is None:
-                    group_prim = stage.GetPrimAtPath(self.sparks_group_path)
-                    if group_prim and group_prim.IsValid():
-                        self._cached_sparks_group_imageable = UsdGeom.Imageable(group_prim)
-                if self._cached_sparks_group_imageable:
-                    self._cached_sparks_group_imageable.GetVisibilityAttr().Set(UsdGeom.Tokens.inherited)
+                # 3. Make PointInstancer visible and initialize batch transforms
+                if self._cached_instancer is None:
+                    inst_prim = stage.GetPrimAtPath(self.sparks_group_path)
+                    if inst_prim and inst_prim.IsValid():
+                        self._cached_instancer = UsdGeom.PointInstancer(inst_prim)
+                        self._cached_instancer_imageable = UsdGeom.Imageable(inst_prim)
 
-                # 4. Activate sparks: set initial position (0,0,0), scale, and visibility
-                # Material binding is pre-bound during pool allocation to prevent runtime RTX pipeline stalls!
-                # Only re-bind if theme changes dynamically.
-                theme_changed = (self._active_color_theme != color_theme)
-                mat_prim = None
-                if theme_changed:
+                if self._cached_instancer_imageable:
+                    self._cached_instancer_imageable.GetVisibilityAttr().Set(UsdGeom.Tokens.inherited)
+
+                if self._cached_instancer:
+                    zeros = Vt.Vec3fArray([Gf.Vec3f(0.0, 0.0, 0.0)] * self.num_sparks)
+                    initial_scales = Vt.Vec3fArray([Gf.Vec3f(s, s, s) for s in self.base_scales])
+                    self._cached_instancer.GetPositionsAttr().Set(zeros)
+                    self._cached_instancer.GetScalesAttr().Set(initial_scales)
+
+                # 4. Material check: rebind prototype if theme dynamically changes
+                if self._active_color_theme != color_theme:
                     self._active_color_theme = color_theme
                     mat_path = "/World/Effects/Materials/SparkCyanMat" if color_theme == "cyan" else "/World/Effects/Materials/SparkGoldMat"
                     mat_prim = stage.GetPrimAtPath(mat_path)
-
-                for j in range(self.num_sparks):
-                    if self._cached_spark_trans_ops[j] is None:
-                        spark_path = f"{self.sparks_group_path}/Spark_{j:02d}"
-                        spark_prim = stage.GetPrimAtPath(spark_path)
-                        if spark_prim and spark_prim.IsValid():
-                            xform = UsdGeom.Xformable(spark_prim)
-                            self._cached_spark_trans_ops[j] = self._get_or_add_xform_op(xform, UsdGeom.XformOp.TypeTranslate)
-                            self._cached_spark_scale_ops[j] = self._get_or_add_xform_op(xform, UsdGeom.XformOp.TypeScale)
-                            self._cached_spark_imageables[j] = UsdGeom.Imageable(spark_prim)
-
-                    trans_op = self._cached_spark_trans_ops[j]
-                    scale_op = self._cached_spark_scale_ops[j]
-                    imageable = self._cached_spark_imageables[j]
-
-                    if trans_op:
-                        trans_op.Set(Gf.Vec3d(0.0, 0.0, 0.0))
-                    if scale_op:
-                        bs = self.base_scales[j]
-                        scale_op.Set(Gf.Vec3f(bs, bs, bs))
-                    if imageable:
-                        imageable.GetVisibilityAttr().Set(UsdGeom.Tokens.inherited)
-
-                    if theme_changed and mat_prim and mat_prim.IsValid() and hasattr(UsdShade, "MaterialBindingAPI"):
-                        spark_path = f"{self.sparks_group_path}/Spark_{j:02d}"
-                        spark_prim = stage.GetPrimAtPath(spark_path)
-                        if spark_prim and spark_prim.IsValid():
-                            UsdShade.MaterialBindingAPI(spark_prim).Bind(UsdShade.Material(mat_prim))
+                    proto_prim = stage.GetPrimAtPath("/World/Effects/Prototypes/DiamondSpark")
+                    if proto_prim and proto_prim.IsValid() and mat_prim and mat_prim.IsValid() and hasattr(UsdShade, "MaterialBindingAPI"):
+                        UsdShade.MaterialBindingAPI(proto_prim).Bind(UsdShade.Material(mat_prim))
             except Exception as ex:
                 if carb:
                     carb.log_warn(f"[hydragon.editor.core] Failed to activate pool slot {self.slot_index}: {ex}")
 
     def update(self, dt: float, stage=None) -> bool:
-        """Steps particle positions, decays light flash, and returns False when expired."""
+        """Steps particle positions via Warp GPU kernel or CPU fallback, decays light, and returns False when expired."""
         if not self.is_active:
             return False
 
@@ -229,72 +264,80 @@ class ExplosionPoolSlot:
             except Exception:
                 pass
 
-        # 2. Update Spark Kinematics (damping, 3D curl turbulence, and upward float)
+        # 2. Kinematics computation: GPU Warp if available, otherwise vector CPU
         speed_factor = math.exp(-self.drag * t)
         scale_factor = max(0.0, 1.0 - (t / self.lifetime))
         turb_amp = 35.0 * speed_factor
 
-        for i in range(self.num_sparks):
-            vel = self.velocities[i]
-            pos = self.positions[i]
-            phi = self.phase_offsets[i]
+        used_warp = False
+        if HAS_WARP and wp and self._wp_positions is not None:
+            try:
+                wp.launch(
+                    kernel=simulate_sparks_kernel,
+                    dim=self.num_sparks,
+                    inputs=[
+                        self._wp_positions,
+                        self._wp_velocities,
+                        self._wp_phases,
+                        self.drag,
+                        t,
+                        dt,
+                        turb_amp,
+                        self.num_sparks,
+                    ],
+                    device=self._wp_device,
+                )
+                pos_np = self._wp_positions.numpy()
+                for i in range(self.num_sparks):
+                    self.positions[i][0] = float(pos_np[i][0])
+                    self.positions[i][1] = float(pos_np[i][1])
+                    self.positions[i][2] = float(pos_np[i][2])
+                used_warp = True
+            except Exception:
+                used_warp = False
 
-            turb_x = math.sin(pos[1] * 0.05 + t * 3.5 + phi) * turb_amp
-            turb_y = math.cos(pos[2] * 0.05 + t * 3.5 + phi) * turb_amp - 110.0 * t
-            turb_z = math.sin(pos[0] * 0.05 + t * 3.5 + phi) * turb_amp
+        if not used_warp:
+            for i in range(self.num_sparks):
+                vel = self.velocities[i]
+                pos = self.positions[i]
+                phi = self.phase_offsets[i]
 
-            pos[0] += (vel[0] * speed_factor + turb_x) * dt
-            pos[1] += (vel[1] * speed_factor + turb_y) * dt
-            pos[2] += (vel[2] * speed_factor + turb_z) * dt
+                turb_x = math.sin(pos[1] * 0.05 + t * 3.5 + phi) * turb_amp
+                turb_y = math.cos(pos[2] * 0.05 + t * 3.5 + phi) * turb_amp - 110.0 * t
+                turb_z = math.sin(pos[0] * 0.05 + t * 3.5 + phi) * turb_amp
 
-            if HAS_KIT and stage:
-                try:
-                    trans_op = self._cached_spark_trans_ops[i]
-                    if trans_op:
-                        trans_op.Set(Gf.Vec3d(pos[0], pos[1], pos[2]))
-                    scale_op = self._cached_spark_scale_ops[i]
-                    if scale_op:
-                        s = self.base_scales[i] * scale_factor
-                        scale_op.Set(Gf.Vec3f(s, s, s))
-                except Exception:
-                    pass
+                pos[0] += (vel[0] * speed_factor + turb_x) * dt
+                pos[1] += (vel[1] * speed_factor + turb_y) * dt
+                pos[2] += (vel[2] * speed_factor + turb_z) * dt
+
+        # 3. Single-batch PointInstancer array write (one call updates all sparks on GPU)
+        if HAS_KIT and stage and self._cached_instancer:
+            try:
+                vt_pos = Vt.Vec3fArray([Gf.Vec3f(p[0], p[1], p[2]) for p in self.positions])
+                vt_scale = Vt.Vec3fArray([Gf.Vec3f(s * scale_factor, s * scale_factor, s * scale_factor) for s in self.base_scales])
+                self._cached_instancer.GetPositionsAttr().Set(vt_pos)
+                self._cached_instancer.GetScalesAttr().Set(vt_scale)
+            except Exception:
+                pass
 
         return True
 
     def deactivate(self, stage=None):
-        """Deactivates light and sparks cleanly by setting intensity to zero and visibility to invisible."""
+        """Deactivates light and sparks cleanly by setting intensity to zero and hiding PointInstancer."""
         self.is_active = False
         if HAS_KIT and stage:
             try:
                 if self._cached_light_prim:
                     UsdLux.SphereLight(self._cached_light_prim).GetIntensityAttr().Set(0.0)
 
-                # Set group invisible to completely skip GPU rendering overhead
-                if self._cached_sparks_group_imageable:
-                    self._cached_sparks_group_imageable.GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
+                if self._cached_instancer:
+                    zeros = Vt.Vec3fArray([Gf.Vec3f(0.0, 0.0, 0.0)] * self.num_sparks)
+                    self._cached_instancer.GetScalesAttr().Set(zeros)
 
-                for j in range(self.num_sparks):
-                    scale_op = self._cached_spark_scale_ops[j]
-                    if scale_op:
-                        scale_op.Set(Gf.Vec3f(0.0, 0.0, 0.0))
-                    imageable = self._cached_spark_imageables[j]
-                    if imageable:
-                        imageable.GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
+                if self._cached_instancer_imageable:
+                    self._cached_instancer_imageable.GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
             except Exception:
                 pass
-
-    def _get_or_add_xform_op(self, xformable, op_type):
-        """Finds existing XformOp of given type or creates a new one safely."""
-        for op in xformable.GetOrderedXformOps():
-            if op.GetOpType() == op_type:
-                return op
-        if op_type == UsdGeom.XformOp.TypeTranslate:
-            return xformable.AddTranslateOp()
-        elif op_type == UsdGeom.XformOp.TypeScale:
-            return xformable.AddScaleOp()
-        elif op_type == UsdGeom.XformOp.TypeRotateXYZ:
-            return xformable.AddRotateXYZOp()
-        return None
 
 
 class ActiveExplosionVFX:
@@ -630,7 +673,14 @@ class HydragonEffectsSystem:
 
             gold_mat_prim = stage.GetPrimAtPath("/World/Effects/Materials/SparkGoldMat")
 
-            # Diamond mesh definition: derived strictly from self.SPARK_RADIUS (9.0 cm)
+            # 1. Author shared prototype mesh under /World/Effects/Prototypes/DiamondSpark
+            protos_root_path = Sdf.Path("/World/Effects/Prototypes")
+            if not stage.GetPrimAtPath(protos_root_path).IsValid():
+                stage.DefinePrim(protos_root_path, "Scope")
+
+            proto_path = Sdf.Path("/World/Effects/Prototypes/DiamondSpark")
+            proto_prim = stage.GetPrimAtPath(proto_path)
+
             s = self.SPARK_RADIUS
             pts = [
                 Gf.Vec3f(0.0, s * 1.3, 0.0),   # Top
@@ -652,6 +702,22 @@ class HydragonEffectsSystem:
                 1, 2, 5,
             ]
 
+            if not proto_prim.IsValid():
+                mesh = UsdGeom.Mesh.Define(stage, proto_path)
+                mesh.CreatePointsAttr(Vt.Vec3fArray(pts))
+                mesh.CreateFaceVertexCountsAttr(Vt.IntArray(face_counts))
+                mesh.CreateFaceVertexIndicesAttr(Vt.IntArray(face_indices))
+                mesh.CreateDisplayColorAttr(Vt.Vec3fArray([Gf.Vec3f(1.0, 0.85, 0.2)] * 6))
+
+                # Proper bounding extent for RTX frustum culling
+                extent = [Gf.Vec3f(-s, -s * 1.3, -s), Gf.Vec3f(s, s * 1.3, s)]
+                mesh.CreateExtentAttr(Vt.Vec3fArray(extent))
+
+                # Pre-bind gold material directly to the prototype mesh!
+                if gold_mat_prim and gold_mat_prim.IsValid() and hasattr(UsdShade, "MaterialBindingAPI"):
+                    UsdShade.MaterialBindingAPI(mesh.GetPrim()).Bind(UsdShade.Material(gold_mat_prim))
+
+            # 2. Author PointInstancers for each pool slot
             for i in range(self.POOL_SIZE):
                 slot_path = Sdf.Path(f"/World/Effects/Pool_{i}")
                 slot_prim = stage.GetPrimAtPath(slot_path)
@@ -659,34 +725,19 @@ class HydragonEffectsSystem:
                     stage.DefinePrim(slot_path, "Xform")
 
                 sparks_path = slot_path.AppendChild("Sparks")
-                sparks_prim = stage.GetPrimAtPath(sparks_path)
-                if not sparks_prim.IsValid():
-                    sparks_prim = stage.DefinePrim(sparks_path, "Xform")
+                inst_prim = stage.GetPrimAtPath(sparks_path)
+                if not inst_prim.IsValid():
+                    instancer = UsdGeom.PointInstancer.Define(stage, sparks_path)
+                    instancer.GetPrototypesRel().SetTargets([proto_path])
+                    instancer.CreateProtoIndicesAttr().Set(Vt.IntArray([0] * self.NUM_SPARKS))
+                    instancer.CreatePositionsAttr().Set(Vt.Vec3fArray([Gf.Vec3f(0.0, 0.0, 0.0)] * self.NUM_SPARKS))
+                    instancer.CreateScalesAttr().Set(Vt.Vec3fArray([Gf.Vec3f(0.0, 0.0, 0.0)] * self.NUM_SPARKS))
+                else:
+                    instancer = UsdGeom.PointInstancer(inst_prim)
+                    instancer.GetPrototypesRel().SetTargets([proto_path])
 
-                # Set initial sparks group invisible to eliminate rasterization overhead
-                UsdGeom.Imageable(sparks_prim).GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
-
-                # Pre-allocate diamond meshes directly in pool slot
-                for j in range(self.NUM_SPARKS):
-                    spark_path = sparks_path.AppendChild(f"Spark_{j:02d}")
-                    spark_prim = stage.GetPrimAtPath(spark_path)
-                    if not spark_prim.IsValid():
-                        mesh = UsdGeom.Mesh.Define(stage, spark_path)
-                        mesh.CreatePointsAttr(Vt.Vec3fArray(pts))
-                        mesh.CreateFaceVertexCountsAttr(Vt.IntArray(face_counts))
-                        mesh.CreateFaceVertexIndicesAttr(Vt.IntArray(face_indices))
-                        mesh.CreateDisplayColorAttr(Vt.Vec3fArray([Gf.Vec3f(1.0, 0.85, 0.2)] * 6))
-
-                        xform = UsdGeom.Xformable(mesh.GetPrim())
-                        xform.AddTranslateOp().Set(Gf.Vec3d(0.0, 0.0, 0.0))
-                        xform.AddScaleOp().Set(Gf.Vec3f(0.0, 0.0, 0.0))  # Dormant at scale 0
-
-                        # Initial invisible state to free GPU raster overhead
-                        UsdGeom.Imageable(mesh.GetPrim()).GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
-
-                        # Pre-bind material ONCE during pool setup!
-                        if gold_mat_prim and gold_mat_prim.IsValid() and hasattr(UsdShade, "MaterialBindingAPI"):
-                            UsdShade.MaterialBindingAPI(mesh.GetPrim()).Bind(UsdShade.Material(gold_mat_prim))
+                # Set initial instancer invisible to eliminate GPU overhead
+                UsdGeom.Imageable(instancer.GetPrim()).GetVisibilityAttr().Set(UsdGeom.Tokens.invisible)
 
                 # Pre-allocate SphereLight (dormant at 0 intensity)
                 light_path = slot_path.AppendChild("FlashLight")
@@ -703,7 +754,9 @@ class HydragonEffectsSystem:
 
             self._pool_initialized = True
             if carb:
-                carb.log_info(f"[hydragon.editor.core] Pre-allocated {self.POOL_SIZE} VFX pool slots with {self.NUM_SPARKS} diamond meshes each.")
+                carb.log_info(
+                    f"[hydragon.editor.core] Pre-allocated {self.POOL_SIZE} VFX pool slots with PointInstancers ({self.NUM_SPARKS} sparks each, Warp={'GPU' if HAS_WARP else 'CPU Fallback'})."
+                )
         except Exception as e:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Failed to pre-allocate VFX pool: {e}")
