@@ -12,15 +12,25 @@ from typing import Dict, List, Optional, Tuple
 try:
     import carb
     import omni.kit.app
+    import omni.kit.notification_manager as nm
     import omni.timeline
+    import omni.ui as ui
     import omni.usd
     import omni.physx
+    try:
+        import omni.physx.bindings._physx as physx_bindings
+    except ImportError:
+        physx_bindings = None
     from omni.physx import get_physx_interface
-    from pxr import Usd, UsdGeom, Sdf, Gf
+    from pxr import Usd, UsdGeom, Sdf, Gf, PhysicsSchemaTools
     HAS_KIT = True
 except ImportError:
     HAS_KIT = False
     carb = None
+    nm = None
+    ui = None
+    PhysicsSchemaTools = None
+    physx_bindings = None
 
 from .schemas import HydragonTrigger, HydragonGameManager, HydragonPlayerController
 
@@ -125,9 +135,11 @@ class HydragonTriggerZone:
 
     @property
     def is_enabled(self) -> bool:
+        if self._triggered:
+            return False
         if self._schema:
             return self._schema.is_enabled
-        return not self._triggered
+        return True
 
     @property
     def is_one_shot(self) -> bool:
@@ -150,7 +162,8 @@ class HydragonTriggerZone:
     def check_overlap(self, pos: Tuple[float, float, float]) -> bool:
         """
         Evaluates whether a point is within the trigger volume cylindrical envelope.
-        horiz_dist <= radius and abs(dy) <= half_height.
+        Includes a 50cm margin for the player sphere's physical radius so touching
+        the boundary of the trigger cylinder cleanly activates it.
         """
         if not self.is_enabled:
             return False
@@ -160,15 +173,14 @@ class HydragonTriggerZone:
         dz = pos[2] - self._world_pos[2]
 
         horiz_dist = math.sqrt(dx * dx + dz * dz)
-        if horiz_dist <= self._radius and abs(dy) <= self._half_height:
+        margin = 50.0
+        if horiz_dist <= (self._radius + margin) and abs(dy) <= (self._half_height + margin):
             return True
         return False
 
     def on_trigger_entered(self):
-        """Marks the trigger as activated and deactivates if one-shot."""
+        """Marks the trigger as activated in memory for this simulation session."""
         self._triggered = True
-        if self._schema and self._schema.is_one_shot:
-            self._schema.is_enabled = False
 
 
 class HydragonTriggerSystem:
@@ -190,6 +202,8 @@ class HydragonTriggerSystem:
         self._active_triggers: Dict[str, HydragonTriggerZone] = {}
         self._cached_game_manager_path: Optional[str] = None
         self._level_completed: bool = False
+        self._trigger_report_sub_id = None
+        self._victory_window = None
 
     @classmethod
     def get_instance(cls) -> Optional["HydragonTriggerSystem"]:
@@ -222,6 +236,23 @@ class HydragonTriggerSystem:
         self._active_triggers.clear()
         self._cached_game_manager_path = None
         self._level_completed = False
+
+        if hasattr(self, "_victory_window") and self._victory_window:
+            try:
+                self._victory_window.visible = False
+            except Exception:
+                pass
+            self._victory_window = None
+
+        if hasattr(self, "_trigger_report_sub_id") and self._trigger_report_sub_id is not None:
+            try:
+                from omni.physx import get_physx_simulation_interface
+                sim_iface = get_physx_simulation_interface()
+                if sim_iface and hasattr(sim_iface, "unsubscribe_physics_trigger_report_events"):
+                    sim_iface.unsubscribe_physics_trigger_report_events(self._trigger_report_sub_id)
+            except Exception:
+                pass
+            self._trigger_report_sub_id = None
 
         if not HAS_KIT:
             HydragonTriggerSystem._instance = None
@@ -270,10 +301,114 @@ class HydragonTriggerSystem:
                 self._physics_step_sub = physx_iface.subscribe_physics_step_events(self._on_physics_step)
                 if carb:
                     carb.log_info("[hydragon.editor.core] Trigger system subscribed to PhysX steps.")
-                return True
         except Exception:
             pass
-        return False
+
+        try:
+            from omni.physx import get_physx_simulation_interface
+            sim_iface = get_physx_simulation_interface()
+            if sim_iface and hasattr(sim_iface, "subscribe_physics_trigger_report_events"):
+                self._trigger_report_sub_id = sim_iface.subscribe_physics_trigger_report_events(
+                    self._on_physx_trigger_report
+                )
+                if carb:
+                    carb.log_info("[hydragon.editor.core] Trigger system subscribed to PhysX trigger reports.")
+        except Exception:
+            pass
+
+        return self._physics_step_sub is not None
+
+    def _decode_prim_path(self, val) -> str:
+        """Agnostically resolves a collider/actor identifier (int, SdfPath, or string) to a USD path string."""
+        if not val:
+            return ""
+        if isinstance(val, str):
+            return val
+        if isinstance(val, int):
+            try:
+                if PhysicsSchemaTools and hasattr(PhysicsSchemaTools, "intToSdfPath"):
+                    return str(PhysicsSchemaTools.intToSdfPath(val))
+            except Exception:
+                return ""
+        if hasattr(val, "pathString"):
+            return val.pathString
+        return str(val)
+
+    def _on_physx_trigger_report(self, data):
+        """Direct PhysX callback when a collider enters a PhysxTriggerAPI volume."""
+        if not self._is_simulating or self._level_completed or not self._active_triggers:
+            return
+        try:
+            # 1. Inspect event_type: only trigger on enter, strictly ignore leave
+            event_type = getattr(data, "event_type", None)
+            if event_type is not None:
+                event_str = str(event_type).upper()
+                if "LEAVE" in event_str:
+                    return
+                if physx_bindings and hasattr(physx_bindings, "TriggerEventType"):
+                    if event_type == physx_bindings.TriggerEventType.TRIGGER_ON_LEAVE:
+                        return
+
+            stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+            if not stage:
+                return
+
+            # 2. Decode trigger collider and other collider paths
+            trigger_val = (
+                getattr(data, "trigger_collider", None)
+                or getattr(data, "trigger_collider_prim_id", None)
+                or getattr(data, "trigger_prim_path", None)
+            )
+            other_val = (
+                getattr(data, "other_collider", None)
+                or getattr(data, "other_collider_prim_id", None)
+                or getattr(data, "other_prim_path", None)
+            )
+
+            trigger_path = self._decode_prim_path(trigger_val)
+            other_path = self._decode_prim_path(other_val)
+
+            # 3. If other_path is known, strictly verify it matches the player
+            player_rb = self._resolve_player_rb_path(stage)
+            player_root = None
+            try:
+                from .player_controller import HydragonPlayerControllerSystem
+                p_sys = HydragonPlayerControllerSystem.get_instance()
+                if p_sys:
+                    player_root = p_sys.get_player_root_path()
+            except Exception:
+                pass
+
+            if other_path:
+                is_player = False
+                if player_rb and (other_path == player_rb or other_path.startswith(player_rb + "/")):
+                    is_player = True
+                elif player_root and (other_path == player_root or other_path.startswith(player_root + "/")):
+                    is_player = True
+                if not is_player:
+                    # Non-player entity (e.g. foe or debris) touched the trigger; ignore
+                    return
+
+            # 4. If trigger_path is known, verify it matches one of our registered active triggers
+            if trigger_path:
+                matched_zone = None
+                for t_path, zone in self._active_triggers.items():
+                    if trigger_path == t_path or trigger_path.startswith(t_path + "/") or t_path.startswith(trigger_path + "/"):
+                        matched_zone = zone
+                        break
+                if not matched_zone:
+                    return
+                if not matched_zone.is_enabled:
+                    return
+                if matched_zone.event_type == "OnLevelComplete":
+                    matched_zone.on_trigger_entered()
+                    self._handle_level_complete(stage)
+                return
+
+            # If paths could not be decoded from data, do not guess; rely on deterministic spatial overlap in _on_physics_step
+        except Exception as ex:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] PhysX trigger report error: {ex}")
 
     # -------------------------------------------------------------------------
     # Event Callbacks
@@ -286,19 +421,72 @@ class HydragonTriggerSystem:
             if event_type == int(omni.timeline.TimelineEventType.PLAY):
                 self._is_simulating = True
                 self._level_completed = False
+                if hasattr(self, "_victory_window") and self._victory_window:
+                    try:
+                        self._victory_window.visible = False
+                    except Exception:
+                        pass
+                    self._victory_window = None
                 self._subscribe_physics()
                 stage = omni.usd.get_context().get_stage()
                 if stage:
                     self._discover_entities_once(stage)
+                    try:
+                        from .player_controller import HydragonPlayerControllerSystem
+                        p_sys = HydragonPlayerControllerSystem.get_instance()
+                        if p_sys:
+                            p_prim = p_sys.find_player_prim(stage)
+                            if p_prim:
+                                HydragonPlayerController(p_prim).input_enabled = True
+                    except Exception:
+                        pass
                 if carb:
                     carb.log_info(
                         f"[hydragon.editor.core] Play mode started. Registered {len(self._active_triggers)} triggers."
                     )
             elif event_type in (int(omni.timeline.TimelineEventType.STOP), int(omni.timeline.TimelineEventType.PAUSE)):
                 self._is_simulating = False
+                stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+                if stage:
+                    # Restore any trigger prims that had is_enabled = False authored
+                    for prim_path in list(self._active_triggers.keys()):
+                        try:
+                            prim = stage.GetPrimAtPath(prim_path)
+                            if prim and prim.IsValid() and HydragonTrigger.is_applied(prim):
+                                HydragonTrigger(prim).is_enabled = True
+                        except Exception:
+                            pass
+                    # Reset Game Manager on STOP
+                    if self._cached_game_manager_path:
+                        try:
+                            gm_prim = stage.GetPrimAtPath(self._cached_game_manager_path)
+                            if gm_prim and gm_prim.IsValid() and HydragonGameManager.is_applied(gm_prim):
+                                gm = HydragonGameManager(gm_prim)
+                                gm.state = "Playing"
+                                gm.score = 0
+                                gm.foes_destroyed = 0
+                                gm.elapsed_time = 0.0
+                        except Exception:
+                            pass
+                    # Restore player input
+                    try:
+                        from .player_controller import HydragonPlayerControllerSystem
+                        p_sys = HydragonPlayerControllerSystem.get_instance()
+                        if p_sys:
+                            p_prim = p_sys.find_player_prim(stage)
+                            if p_prim:
+                                HydragonPlayerController(p_prim).input_enabled = True
+                    except Exception:
+                        pass
                 self._active_triggers.clear()
                 self._cached_game_manager_path = None
                 self._level_completed = False
+                if hasattr(self, "_victory_window") and self._victory_window:
+                    try:
+                        self._victory_window.visible = False
+                    except Exception:
+                        pass
+                    self._victory_window = None
                 if carb:
                     carb.log_info("[hydragon.editor.core] Play mode stopped. Trigger registry cleared.")
         except Exception as ex:
@@ -327,6 +515,27 @@ class HydragonTriggerSystem:
     # -------------------------------------------------------------------------
     # One-Time Discovery on Simulation Start
     # -------------------------------------------------------------------------
+    def _resolve_trigger_geometry_prim(self, trigger_prim) -> Optional[object]:
+        """Finds the actual geometry detector prim (e.g. cylinder or mesh) under the trigger root."""
+        if not HAS_KIT or not trigger_prim or not trigger_prim.IsValid():
+            return None
+        # Check standard subpaths (e.g. hydragon_goal_hole asset)
+        for subpath in ("trigger_volume/detector", "geometry/detector", "detector"):
+            try:
+                det = trigger_prim.GetPrimAtPath(subpath)
+                if det and det.IsValid():
+                    return det
+            except Exception:
+                pass
+        # Search all children for PhysxTriggerAPI, Cylinder, or CollisionAPI
+        for child in trigger_prim.GetAllChildren():
+            if child.IsValid():
+                if child.HasAPI("PhysxTriggerAPI") or child.HasAPI("PhysicsCollisionAPI"):
+                    return child
+                if UsdGeom and hasattr(UsdGeom, "Cylinder") and UsdGeom.Cylinder(child):
+                    return child
+        return None
+
     def _discover_entities_once(self, stage):
         """
         Discovers all trigger prims and game managers once on simulation start.
@@ -343,10 +552,29 @@ class HydragonTriggerSystem:
             if not prim.IsValid() or not prim.IsActive():
                 continue
 
-            # Check for Trigger schema
-            if HydragonTrigger.is_applied(prim):
+            # Check for Trigger schema or native trigger / goal prims
+            is_trigger = HydragonTrigger.is_applied(prim)
+            if not is_trigger:
+                prim_name_lower = prim.GetName().lower()
+                if (prim.HasAPI("PhysxTriggerAPI") or "goal" in prim_name_lower) and not (
+                    HydragonPlayerController.is_applied(prim) or prim.HasAPI("HydragonChaserAIAPI")
+                ):
+                    is_trigger = True
+
+            if is_trigger:
                 prim_path = prim.GetPath().pathString
-                world_pos = self._compute_prim_world_pos(prim)
+                if any(prim_path.startswith(p + "/") for p in self._active_triggers):
+                    continue
+                # Ensure trigger is enabled on USD prim if previously disabled
+                if HydragonTrigger.is_applied(prim):
+                    try:
+                        trig_schema = HydragonTrigger(prim)
+                        trig_schema.is_enabled = True
+                    except Exception:
+                        pass
+                geo_prim = self._resolve_trigger_geometry_prim(prim)
+                eval_prim = geo_prim if geo_prim else prim
+                world_pos = self._compute_prim_world_pos(eval_prim)
                 radius, half_height = self._extract_trigger_geometry_bounds(prim)
 
                 zone = HydragonTriggerZone(
@@ -361,6 +589,14 @@ class HydragonTriggerSystem:
             if self._cached_game_manager_path is None:
                 if HydragonGameManager.is_applied(prim):
                     self._cached_game_manager_path = prim.GetPath().pathString
+                    try:
+                        gm = HydragonGameManager(prim)
+                        gm.state = "Playing"
+                        gm.score = 0
+                        gm.foes_destroyed = 0
+                        gm.elapsed_time = 0.0
+                    except Exception:
+                        pass
 
     def _compute_prim_world_pos(self, prim) -> Tuple[float, float, float]:
         """Calculates world translation of a USD prim."""
@@ -478,7 +714,7 @@ class HydragonTriggerSystem:
                 self._active_triggers.pop(path, None)
 
     def _handle_level_complete(self, stage):
-        """Triggers victory state on Game Manager, awards score, and disables player input."""
+        """Triggers victory state on Game Manager, awards score, disables player input, and presents victory UI."""
         if self._level_completed:
             return
 
@@ -486,8 +722,9 @@ class HydragonTriggerSystem:
 
         score = 0
         elapsed = 0.0
+        foes = 0
 
-        # Update Game Manager
+        # 1. Update Game Manager
         if self._cached_game_manager_path and stage:
             try:
                 gm_prim = stage.GetPrimAtPath(self._cached_game_manager_path)
@@ -497,11 +734,12 @@ class HydragonTriggerSystem:
                     gm.score += 500  # Bonus for completing level
                     score = gm.score
                     elapsed = gm.elapsed_time
+                    foes = gm.foes_destroyed
             except Exception as e:
                 if carb:
                     carb.log_warn(f"[hydragon.editor.core] Error updating game manager victory: {e}")
 
-        # Disable player controller input on victory
+        # 2. Disable player controller input and halt marble velocities
         try:
             from .player_controller import HydragonPlayerControllerSystem
             p_sys = HydragonPlayerControllerSystem.get_instance()
@@ -510,13 +748,84 @@ class HydragonTriggerSystem:
                 if player_prim:
                     ctl = HydragonPlayerController(player_prim)
                     ctl.input_enabled = False
+                    rb_prim = p_sys.get_rigid_body_prim(player_prim)
+                    if rb_prim and rb_prim.IsValid() and hasattr(rb_prim, "GetAttribute"):
+                        v_attr = rb_prim.GetAttribute("physics:velocity")
+                        if v_attr and v_attr.IsValid():
+                            v_attr.Set(Gf.Vec3f(0.0, 0.0, 0.0))
+                        w_attr = rb_prim.GetAttribute("physics:angularVelocity")
+                        if w_attr and w_attr.IsValid():
+                            w_attr.Set(Gf.Vec3f(0.0, 0.0, 0.0))
         except Exception:
             pass
 
+        # 3. Post notification in Omniverse Kit Notification Manager
+        try:
+            if HAS_KIT and nm and hasattr(nm, "post_notification"):
+                msg = f"🏆 MISSION ACCOMPLISHED!\nFinal Score: {score} | Foes Defeated: {foes} | Time: {elapsed:.1f}s"
+                nm.post_notification(msg, duration=15, status=nm.NotificationStatus.INFO)
+        except Exception:
+            pass
+
+        # 4. Display on-screen victory HUD overlay
+        try:
+            from .game_hud import HydragonGameHUD
+            hud = HydragonGameHUD.get_instance()
+            if hud:
+                hud.show_victory(score=score, elapsed=elapsed, foes=foes)
+            else:
+                self._show_victory_ui_overlay(score, elapsed, foes)
+        except Exception:
+            self._show_victory_ui_overlay(score, elapsed, foes)
+
         if carb:
             carb.log_info("================================================================")
-            carb.log_info(f"*** HYDRAGON VICTORY! Level completed in {elapsed:.2f}s! Final Score: {score} ***")
+            carb.log_info(f"*** HYDRAGON VICTORY! Level completed in {elapsed:.2f}s! Final Score: {score} (Foes: {foes}) ***")
             carb.log_info("================================================================")
+
+    def _show_victory_ui_overlay(self, score: int, elapsed: float, foes: int):
+        """Displays a clean, centered victory HUD overlay in Kit."""
+        if not HAS_KIT or ui is None:
+            return
+        try:
+            if hasattr(self, "_victory_window") and self._victory_window:
+                try:
+                    self._victory_window.visible = False
+                except Exception:
+                    pass
+                self._victory_window = None
+
+            window = ui.Window(
+                "HydragonVictoryOverlay",
+                width=420,
+                height=160,
+                flags=ui.WINDOW_FLAGS_NO_TITLE_BAR
+                | ui.WINDOW_FLAGS_NO_RESIZE
+                | ui.WINDOW_FLAGS_NO_MOVE
+                | ui.WINDOW_FLAGS_NO_SCROLLBAR
+                | ui.WINDOW_FLAGS_NO_COLLAPSE,
+            )
+            with window.frame:
+                with ui.VStack(alignment=ui.Alignment.CENTER, spacing=6):
+                    ui.Spacer(height=6)
+                    ui.Label(
+                        "MISSION ACCOMPLISHED!",
+                        style={"color": 0xFF20D040, "font_size": 26, "alignment": ui.Alignment.CENTER},
+                    )
+                    ui.Label(
+                        f"FINAL SCORE: {score}",
+                        style={"color": 0xFFFFFFFF, "font_size": 20, "alignment": ui.Alignment.CENTER},
+                    )
+                    ui.Label(
+                        f"Time: {elapsed:.1f}s   |   Foes Defeated: {foes}",
+                        style={"color": 0xFFDDDDDD, "font_size": 15, "alignment": ui.Alignment.CENTER},
+                    )
+                    ui.Spacer(height=6)
+
+            self._victory_window = window
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to build victory UI overlay: {e}")
 
     def _resolve_player_rb_path(self, stage) -> Optional[str]:
         """Finds player rigid body path agnostically without hardcoded paths."""

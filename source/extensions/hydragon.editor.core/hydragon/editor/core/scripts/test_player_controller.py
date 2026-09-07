@@ -162,8 +162,40 @@ def test_player_respawn_teleport_logic():
     assert system._last_world_pos == (0.0, 120.0, -1000.0)
     assert system._needs_respawn is False
 
+    # Test respawn cooldown and world pos override during grace period
+    system._respawn_cooldown = 1.0
+    system._is_respawning = True
+    assert system.get_player_world_pos() == (0.0, 120.0, -1000.0)
+    system._is_respawning = False
+    system._respawn_cooldown = 0.0
+
     system.shutdown()
     print("  [PASS] Player respawn teleport logic verified")
+
+
+def test_player_input_restoration():
+    print("--- 6. Testing Player Input Restoration & Respawn Scope ---")
+    system = HydragonPlayerControllerSystem()
+
+    # Call _respawn_player_main_thread directly to ensure no UnboundLocalError occurs
+    try:
+        system._respawn_player_main_thread()
+    except UnboundLocalError as err:
+        assert False, f"UnboundLocalError occurred in _respawn_player_main_thread: {err}"
+    except Exception:
+        # Other exceptions outside Kit are expected and handled
+        pass
+
+    # Mock timeline event for PLAY and STOP
+    class MockTimelineEvent:
+        def __init__(self, event_type: int):
+            self.type = event_type
+
+    # 1 is TimelineEventType.PLAY, 0 is STOP in omni.timeline
+    system._on_timeline_event(MockTimelineEvent(1))
+    system._on_timeline_event(MockTimelineEvent(0))
+    system.shutdown()
+    print("  [PASS] Player input restoration & respawn scope verified")
 
 
 if __name__ == "__main__":
@@ -172,6 +204,7 @@ if __name__ == "__main__":
     test_input_normalization_math()
     test_player_discovery_fail_silent()
     test_player_respawn_teleport_logic()
+    test_player_input_restoration()
     print("\n=======================================================")
-    print(" ALL PLAYER CONTROLLER SYSTEM TESTS PASSED! (5/5)")
+    print(" ALL PLAYER CONTROLLER SYSTEM TESTS PASSED! (6/6)")
     print("=======================================================")

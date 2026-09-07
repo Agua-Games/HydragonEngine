@@ -13,6 +13,7 @@ try:
     import carb.input
     import omni.appwindow
     import omni.kit.app
+    import omni.kit.commands
     import omni.timeline
     import omni.usd
     import omni.physx
@@ -92,6 +93,8 @@ class HydragonPlayerControllerSystem:
         self._last_world_pos: Tuple[float, float, float] = (0.0, 0.0, 0.0)
         self._spawn_pos: Tuple[float, float, float] = (0.0, 50.0, -1000.0)
         self._needs_respawn: bool = False
+        self._is_respawning: bool = False
+        self._respawn_cooldown: float = 0.0
         self._last_log_time = 0.0
 
     @classmethod
@@ -108,6 +111,8 @@ class HydragonPlayerControllerSystem:
         return self._cached_player_path
 
     def get_player_world_pos(self) -> Tuple[float, float, float]:
+        if self._is_respawning or self._respawn_cooldown > 0.8:
+            return (self._spawn_pos[0], max(120.0, self._spawn_pos[1]), self._spawn_pos[2])
         return self._last_world_pos
 
     def startup(self):
@@ -134,6 +139,9 @@ class HydragonPlayerControllerSystem:
         self._cached_player_path = None
         self._cached_rb_path = None
         self._configured_rb_paths.clear()
+        self._needs_respawn = False
+        self._is_respawning = False
+        self._respawn_cooldown = 0.0
 
         if not HAS_KIT:
             return
@@ -226,11 +234,17 @@ class HydragonPlayerControllerSystem:
             event_type = int(e.type)
             if event_type == int(omni.timeline.TimelineEventType.PLAY):
                 self._is_simulating = True
+                self._needs_respawn = False
+                self._is_respawning = False
+                self._respawn_cooldown = 0.0
                 self._subscribe_physics()
                 stage = omni.usd.get_context().get_stage()
                 if stage:
                     player_prim = self.find_player_prim(stage)
                     if player_prim:
+                        # Restore player input if previously disabled by victory/game over
+                        ctl = HydragonPlayerController(player_prim)
+                        ctl.input_enabled = True
                         rb_p = self.get_rigid_body_prim(player_prim)
                         if rb_p:
                             self._spawn_pos = self._compute_prim_usd_world_pos(rb_p)
@@ -242,6 +256,15 @@ class HydragonPlayerControllerSystem:
                 self._jump_requested = False
                 self._jump_consumed = False
                 self._configured_rb_paths.clear()
+                self._needs_respawn = False
+                self._is_respawning = False
+                self._respawn_cooldown = 0.0
+                stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+                if stage:
+                    player_prim = self.find_player_prim(stage)
+                    if player_prim:
+                        ctl = HydragonPlayerController(player_prim)
+                        ctl.input_enabled = True
                 if carb:
                     carb.log_info("[hydragon.editor.core] Play mode stopped/paused. Player Controller INACTIVE.")
         except Exception:
@@ -266,6 +289,19 @@ class HydragonPlayerControllerSystem:
         if self._needs_respawn:
             self._needs_respawn = False
             self._respawn_player_main_thread()
+
+        # Safely unfreeze rigid body from kinematic back to dynamic after pose has been ingested by PhysX
+        if self._is_respawning:
+            self._is_respawning = False
+            stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+            if stage:
+                player_prim = self.find_player_prim(stage)
+                if player_prim:
+                    rb_prim = self.get_rigid_body_prim(player_prim)
+                    if rb_prim and rb_prim.IsValid():
+                        kin_attr = rb_prim.GetAttribute("physics:kinematicEnabled")
+                        if kin_attr and kin_attr.IsValid():
+                            kin_attr.Set(False)
 
         # Attempt to lazily acquire PhysX if not already subscribed
         if self._physics_step_sub is None:
@@ -661,12 +697,17 @@ class HydragonPlayerControllerSystem:
 
         sim_iface = get_physx_simulation_interface()
 
+        # Decrement respawn cooldown
+        if self._respawn_cooldown > 0.0:
+            self._respawn_cooldown = max(0.0, self._respawn_cooldown - dt)
+
         # Query real-time simulated world position for applying force directly at center of mass
         world_pos = self._get_rigid_body_world_pos(rb_prim, rb_path_str)
         self._last_world_pos = world_pos
 
         # Floor drop / tunneling safeguard: if player falls below arena boundary (-200cm), queue respawn
-        if world_pos[1] < -200.0:
+        # Suppressed during respawn cooldown grace period to avoid endless re-triggering loops
+        if self._respawn_cooldown <= 0.0 and world_pos[1] < -200.0:
             self._needs_respawn = True
             return
 
@@ -776,7 +817,8 @@ class HydragonPlayerControllerSystem:
     def _respawn_player_main_thread(self):
         """
         Safely teleports player back to spawn on the main thread outside the PhysX simulation lock.
-        Does NOT toggle rigidBodyEnabled or call flush_changes, eliminating mutex recursion assertions.
+        Temporarily sets kinematicEnabled = True to snap the PhysX actor and eliminate momentum,
+        releasing it on the next frame with zero accumulated velocities.
         """
         if not HAS_KIT:
             return
@@ -798,27 +840,60 @@ class HydragonPlayerControllerSystem:
         self._last_world_pos = (spawn_x, safe_y, spawn_z)
 
         try:
-            # 1. Teleport parent Player prim in USD
+            # 1. Temporarily freeze rigid body as kinematic in PhysX to wipe all velocities and lock pose
+            if rb_prim and rb_prim.IsValid():
+                kin_attr = rb_prim.GetAttribute("physics:kinematicEnabled")
+                if not kin_attr or not kin_attr.IsValid():
+                    kin_attr = rb_prim.CreateAttribute("physics:kinematicEnabled", Sdf.ValueTypeNames.Bool)
+                kin_attr.Set(True)
+
+            # 2. Teleport parent Player prim in USD using Kit command (with direct USD XformOp fallback)
             target_prim = player_prim
             if target_prim and target_prim.IsValid():
-                xformable = UsdGeom.Xformable(target_prim)
-                for op in xformable.GetOrderedXformOps():
-                    if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
-                        op.Set(Gf.Vec3d(spawn_x, safe_y, spawn_z))
-                        break
+                cmd_ok = False
+                try:
+                    if HAS_KIT and hasattr(omni, "kit") and hasattr(omni.kit, "commands"):
+                        cmd_ok = omni.kit.commands.execute(
+                            "TransformPrimSRTCommand",
+                            path=target_prim.GetPath().pathString,
+                            new_translation=Gf.Vec3d(spawn_x, safe_y, spawn_z),
+                        )
+                except Exception:
+                    cmd_ok = False
 
-            # 2. Reset child rigid body local translation and rotation to origin
+                if not cmd_ok:
+                    xformable = UsdGeom.Xformable(target_prim)
+                    for op in xformable.GetOrderedXformOps():
+                        if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
+                            op.Set(Gf.Vec3d(spawn_x, safe_y, spawn_z))
+                            break
+
+            # 3. Reset child rigid body local translation and rotation to origin
             if rb_prim and rb_prim != target_prim and rb_prim.IsValid():
-                rb_xformable = UsdGeom.Xformable(rb_prim)
-                for op in rb_xformable.GetOrderedXformOps():
-                    if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
-                        op.Set(Gf.Vec3d(0.0, 0.0, 0.0))
-                    elif op.GetOpType() == UsdGeom.XformOp.TypeRotateXYZ:
-                        op.Set(Gf.Vec3f(0.0, 0.0, 0.0))
-                    elif op.GetOpType() == UsdGeom.XformOp.TypeOrient:
-                        op.Set(Gf.Quatf(1.0, 0.0, 0.0, 0.0))
+                rb_cmd_ok = False
+                try:
+                    if HAS_KIT and hasattr(omni, "kit") and hasattr(omni.kit, "commands"):
+                        rb_cmd_ok = omni.kit.commands.execute(
+                            "TransformPrimSRTCommand",
+                            path=rb_prim.GetPath().pathString,
+                            new_translation=Gf.Vec3d(0.0, 0.0, 0.0),
+                            new_rotation_euler=Gf.Vec3d(0.0, 0.0, 0.0),
+                        )
+                except Exception:
+                    rb_cmd_ok = False
 
-            # 3. Reset velocities in USD RigidBodyAPI
+                if not rb_cmd_ok:
+                    rb_xformable = UsdGeom.Xformable(rb_prim)
+                    for op in rb_xformable.GetOrderedXformOps():
+                        if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
+                            typeName = type(op.Get()) if op.Get() is not None else Gf.Vec3d
+                            op.Set(typeName(0.0, 0.0, 0.0))
+                        elif op.GetOpType() == UsdGeom.XformOp.TypeRotateXYZ:
+                            op.Set(Gf.Vec3f(0.0, 0.0, 0.0))
+                        elif op.GetOpType() == UsdGeom.XformOp.TypeOrient:
+                            op.Set(Gf.Quatf(1.0, 0.0, 0.0, 0.0))
+
+            # 4. Reset velocities in USD RigidBodyAPI
             if rb_prim and rb_prim.IsValid() and hasattr(rb_prim, "GetAttribute"):
                 vel_attr = rb_prim.GetAttribute("physics:velocity")
                 if vel_attr and vel_attr.IsValid():
@@ -827,9 +902,9 @@ class HydragonPlayerControllerSystem:
                 if ang_attr and ang_attr.IsValid():
                     ang_attr.Set(Gf.Vec3f(0.0, 0.0, 0.0))
 
-            # 4. OpenUSD physics:velocity and physics:angularVelocity attributes reset in step 3
-            # are synchronized to the PhysX simulation on the next tick, cleanly stopping all momentum.
-            # Avoid calling sim_iface.apply_force_at_pos with 'Velocity' mode as PxRigidBodyExt does not support it.
+            # 5. Mark respawn in progress and apply grace period cooldown
+            self._is_respawning = True
+            self._respawn_cooldown = 1.0
 
             if carb:
                 carb.log_info(

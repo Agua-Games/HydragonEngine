@@ -508,6 +508,15 @@ class HydragonFoesControllerSystem:
                         if carb:
                             carb.log_warn(f"[hydragon.editor.core] Failed to deactivate prim at {p_path}: {ex}")
                     self._notify_game_manager_foe_destroyed(stage)
+                    try:
+                        from .game_hud import HydragonGameHUD
+                        hud = HydragonGameHUD.get_instance()
+                        if hud:
+                            foe_pos = brain.current_pos() if brain else (0.0, 0.0, 0.0)
+                            points = 150 if is_stomp else 100
+                            hud.show_score_popup(world_pos=foe_pos, points=points)
+                    except Exception:
+                        pass
 
                 if is_stomp:
                     self._pending_bounce = True

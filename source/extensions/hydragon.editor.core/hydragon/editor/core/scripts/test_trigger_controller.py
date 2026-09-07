@@ -38,6 +38,7 @@ def test_trigger_system_lifecycle():
 def test_trigger_zone_overlap_math():
     print("--- 2. Testing Trigger Zone Spatial Overlap Math ---")
     # Cylinder volume centered at (100, 50, 200) with radius=75.0, half_height=40.0
+    # Includes 50.0 margin for player marble radius (effective horiz=125.0, effective vert=90.0)
     zone = HydragonTriggerZone(
         prim=None,
         world_pos=(100.0, 50.0, 200.0),
@@ -49,20 +50,23 @@ def test_trigger_zone_overlap_math():
     assert zone.check_overlap((100.0, 50.0, 200.0)), "Center point must overlap"
 
     # 2. Point inside cylinder horizontally and vertically
-    # dx=30, dz=40 -> horiz_dist = 50 <= 75, dy = 20 <= 40
+    # dx=30, dz=40 -> horiz_dist = 50 <= 125, dy = 20 <= 90
     assert zone.check_overlap((130.0, 70.0, 240.0)), "Interior point must overlap"
 
-    # 3. Point on edge of horizontal radius: dx=75, dz=0 -> horiz_dist=75 <= 75
-    assert zone.check_overlap((175.0, 50.0, 200.0)), "Point on horizontal boundary must overlap"
+    # 3. Point touching cylinder boundary: dx=75, dz=0 -> horiz_dist=75 <= 125
+    assert zone.check_overlap((175.0, 50.0, 200.0)), "Point on cylinder boundary must overlap"
 
-    # 4. Point outside horizontal radius: dx=80, dz=0 -> horiz_dist=80 > 75
-    assert not zone.check_overlap((180.0, 50.0, 200.0)), "Point outside horizontal radius must NOT overlap"
+    # 4. Point within marble radius margin: dx=120, dz=0 -> horiz_dist=120 <= 125
+    assert zone.check_overlap((220.0, 50.0, 200.0)), "Point within marble margin must overlap"
 
-    # 5. Point outside vertical envelope: dy=50 > half_height 40
-    assert not zone.check_overlap((100.0, 100.0, 200.0)), "Point above trigger height must NOT overlap"
+    # 5. Point outside horizontal envelope: dx=135, dz=0 -> horiz_dist=135 > 125
+    assert not zone.check_overlap((235.0, 50.0, 200.0)), "Point outside horizontal envelope must NOT overlap"
 
-    # 6. Point below trigger floor: dy=-45 > half_height 40
-    assert not zone.check_overlap((100.0, 5.0, 200.0)), "Point below trigger floor must NOT overlap"
+    # 6. Point outside vertical envelope: dy=100 > effective half_height 90
+    assert not zone.check_overlap((100.0, 150.0, 200.0)), "Point above trigger height must NOT overlap"
+
+    # 7. Point below trigger floor: dy=-100 > effective half_height 90
+    assert not zone.check_overlap((100.0, -50.0, 200.0)), "Point below trigger floor must NOT overlap"
 
     print("  [PASS] Trigger zone spatial overlap math verified")
 
@@ -112,11 +116,89 @@ def test_level_complete_handling():
     print("  [PASS] Level complete victory transition verified")
 
 
+def test_trigger_report_event_filtering():
+    print("--- 5. Testing Trigger Report Event Filtering ---")
+    system = HydragonTriggerSystem()
+
+    # Test _decode_prim_path helper
+    assert system._decode_prim_path(None) == ""
+    assert system._decode_prim_path("/World/Player") == "/World/Player"
+
+    class MockPathObj:
+        def __init__(self, path: str):
+            self.pathString = path
+    assert system._decode_prim_path(MockPathObj("/World/Goal")) == "/World/Goal"
+
+    # Test event filtering:
+    # 1. When not simulating, reports must be ignored
+    system._is_simulating = False
+    class MockTriggerEvent:
+        def __init__(self, event_type, trigger_collider, other_collider):
+            self.event_type = event_type
+            self.trigger_collider = trigger_collider
+            self.other_collider = other_collider
+
+    system._on_physx_trigger_report(MockTriggerEvent("TRIGGER_ON_ENTER", "/World/Goal", "/World/Player"))
+    assert not system.is_level_completed, "Should ignore trigger report when not simulating"
+
+    # 2. When simulating, LEAVE events must be ignored
+    system._is_simulating = True
+    system._on_physx_trigger_report(MockTriggerEvent("TRIGGER_ON_LEAVE", "/World/Goal", "/World/Player"))
+    assert not system.is_level_completed, "Should strictly ignore TRIGGER_ON_LEAVE events"
+
+    # 3. Non-player collider (e.g. foe or debris) must be ignored
+    system._active_triggers["/World/Goal"] = HydragonTriggerZone(None, world_pos=(0, 0, 0))
+    system._on_physx_trigger_report(MockTriggerEvent("TRIGGER_ON_ENTER", "/World/Goal", "/World/Foes/Foe_01"))
+    assert not system.is_level_completed, "Should ignore non-player collider triggering"
+
+    system.shutdown()
+    print("  [PASS] Trigger report event filtering verified")
+
+
+def test_repeated_play_session_reset():
+    print("--- 6. Testing Repeated Play Session Reset ---")
+    system = HydragonTriggerSystem()
+
+    # Create trigger zone
+    zone = HydragonTriggerZone(None, world_pos=(100.0, 50.0, 200.0), radius=75.0, half_height=40.0)
+    system._active_triggers["/World/Goal"] = zone
+
+    # Play session 1:
+    assert not system.is_level_completed
+    assert zone.is_enabled
+    assert zone.check_overlap((100.0, 50.0, 200.0))
+
+    # Player reaches goal
+    zone.on_trigger_entered()
+    assert zone.is_triggered
+    assert not zone.is_enabled, "Trigger should be one-shot disabled during active session"
+    system._handle_level_complete(stage=None)
+    assert system.is_level_completed
+
+    # User presses STOP
+    system._level_completed = False
+    assert not system.is_level_completed
+
+    # User presses PLAY again: trigger zone is re-enabled for new session
+    zone._triggered = False
+    assert zone.is_enabled, "Trigger must be ready again on new play session"
+    assert zone.check_overlap((100.0, 50.0, 200.0)), "Trigger must detect overlap on new play session"
+
+    # Player reaches goal in second playthrough
+    system._handle_level_complete(stage=None)
+    assert system.is_level_completed, "Victory must cleanly trigger on repeated play sessions"
+
+    system.shutdown()
+    print("  [PASS] Repeated play session reset verified")
+
+
 if __name__ == "__main__":
     test_trigger_system_lifecycle()
     test_trigger_zone_overlap_math()
     test_trigger_zone_one_shot_behavior()
     test_level_complete_handling()
+    test_trigger_report_event_filtering()
+    test_repeated_play_session_reset()
     print("\n=======================================================")
-    print(" ALL TRIGGER CONTROLLER SYSTEM TESTS PASSED! (4/4)")
+    print(" ALL TRIGGER CONTROLLER SYSTEM TESTS PASSED! (6/6)")
     print("=======================================================")

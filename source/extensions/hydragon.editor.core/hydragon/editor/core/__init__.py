@@ -12,4 +12,5 @@ from .camera_controller import HydragonCameraControllerSystem
 from .foes_controller import HydragonFoesControllerSystem, HydragonAIBrain
 from .trigger_controller import HydragonTriggerSystem, HydragonTriggerZone
 from .property_widgets import HydragonPropertyWidgetsManager
+from .game_hud import HydragonGameHUD
 

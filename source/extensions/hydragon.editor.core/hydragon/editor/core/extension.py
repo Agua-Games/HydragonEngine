@@ -38,7 +38,14 @@ class HydragonEditorCoreExtension(_IExt):
         self._property_widgets_manager = HydragonPropertyWidgetsManager()
         self._property_widgets_manager.startup()
 
+        from .game_hud import HydragonGameHUD
+        self._game_hud = HydragonGameHUD()
+        self._game_hud.startup()
+
     def on_shutdown(self):
+        if hasattr(self, "_game_hud") and self._game_hud:
+            self._game_hud.shutdown()
+            self._game_hud = None
         if hasattr(self, "_property_widgets_manager") and self._property_widgets_manager:
             self._property_widgets_manager.shutdown()
             self._property_widgets_manager = None
