@@ -7,7 +7,8 @@ agnostic entity tracking for victory and gameplay events.
 """
 
 import math
-from typing import Dict, List, Optional, Tuple
+import os
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import carb
@@ -104,6 +105,7 @@ class HydragonTriggerZone:
         self._radius: float = radius
         self._half_height: float = half_height
         self._triggered: bool = False
+        self._sound_played: bool = False
 
     @property
     def prim_path(self) -> str:
@@ -159,6 +161,32 @@ class HydragonTriggerZone:
             return self._schema.filter_faction
         return "Player"
 
+    @property
+    def sound_asset_path(self) -> str:
+        if self._schema:
+            return self._schema.sound_asset_path
+        return "data/assets/audio/sound_fx_samples/achievement_02.wav"
+
+    @property
+    def sound_enabled(self) -> bool:
+        if self._schema:
+            return self._schema.sound_enabled
+        return True
+
+    @property
+    def sound_play_once(self) -> bool:
+        if self._schema:
+            return self._schema.sound_play_once
+        return True
+
+    @property
+    def sound_played(self) -> bool:
+        return self._sound_played
+
+    @sound_played.setter
+    def sound_played(self, val: bool):
+        self._sound_played = val
+
     def check_overlap(self, pos: Tuple[float, float, float]) -> bool:
         """
         Evaluates whether a point is within the trigger volume cylindrical envelope.
@@ -204,6 +232,8 @@ class HydragonTriggerSystem:
         self._level_completed: bool = False
         self._trigger_report_sub_id = None
         self._victory_window = None
+        self._cached_sounds: Dict[str, Any] = {}
+        self._mock_sound_play_count: int = 0
 
     @classmethod
     def get_instance(cls) -> Optional["HydragonTriggerSystem"]:
@@ -236,6 +266,7 @@ class HydragonTriggerSystem:
         self._active_triggers.clear()
         self._cached_game_manager_path = None
         self._level_completed = False
+        self._cached_sounds.clear()
 
         if hasattr(self, "_victory_window") and self._victory_window:
             try:
@@ -268,6 +299,72 @@ class HydragonTriggerSystem:
         HydragonTriggerSystem._instance = None
         if carb:
             carb.log_info("[hydragon.editor.core] HydragonTriggerSystem shutdown.")
+
+    def _resolve_sound_path(self, asset_path: str) -> str:
+        """Resolves relative audio asset path dynamically without absolute paths."""
+        if not asset_path:
+            return ""
+        clean_path = str(asset_path).strip("@").replace("\\", "/")
+        if os.path.isabs(clean_path) and os.path.exists(clean_path):
+            return clean_path
+
+        candidates = []
+        ext_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        candidates.append(os.path.join(ext_root, clean_path))
+        candidates.append(os.path.join(ext_root, "data", "assets", "audio", "sound_fx_samples", os.path.basename(clean_path)))
+
+        if HAS_KIT:
+            try:
+                em = omni.kit.app.get_app().get_extension_manager()
+                ext_id_path = em.get_extension_path_by_pkg_id("hydragon.editor.core")
+                if ext_id_path:
+                    candidates.append(os.path.join(ext_id_path, clean_path))
+                    candidates.append(os.path.join(ext_id_path, "data", "assets", "audio", "sound_fx_samples", os.path.basename(clean_path)))
+            except Exception:
+                pass
+
+        candidates.append(os.path.abspath(os.path.join(os.getcwd(), "source", "extensions", "hydragon.editor.core", clean_path)))
+        candidates.append(os.path.abspath(os.path.join(os.getcwd(), "source", "extensions", "hydragon.editor.core", "data", "assets", "audio", "sound_fx_samples", os.path.basename(clean_path))))
+
+        for c in candidates:
+            if os.path.exists(c):
+                return os.path.abspath(c).replace("\\", "/")
+        return ""
+
+    def _play_trigger_sound(self, zone: HydragonTriggerZone):
+        """Plays trigger sound effect according to sound_enabled and sound_play_once."""
+        if not zone.sound_enabled:
+            return
+        if zone.sound_play_once and zone.sound_played:
+            return
+
+        zone.sound_played = True
+
+        if not HAS_KIT:
+            self._mock_sound_play_count += 1
+            return
+
+        try:
+            resolved = self._resolve_sound_path(zone.sound_asset_path)
+            if not resolved or not os.path.exists(resolved):
+                return
+
+            import omni.kit.uiaudio
+            audio = omni.kit.uiaudio.get_ui_audio_interface()
+            if not audio:
+                return
+
+            if resolved not in self._cached_sounds:
+                snd = audio.create_sound(resolved)
+                if snd:
+                    self._cached_sounds[resolved] = snd
+
+            sound = self._cached_sounds.get(resolved)
+            if sound:
+                audio.play_sound(sound)
+        except Exception as ex:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to play trigger sound: {ex}")
 
     # -------------------------------------------------------------------------
     # Subscriptions
@@ -400,8 +497,9 @@ class HydragonTriggerSystem:
                     return
                 if not matched_zone.is_enabled:
                     return
+                matched_zone.on_trigger_entered()
+                self._play_trigger_sound(matched_zone)
                 if matched_zone.event_type == "OnLevelComplete":
-                    matched_zone.on_trigger_entered()
                     self._handle_level_complete(stage)
                 return
 
@@ -446,6 +544,10 @@ class HydragonTriggerSystem:
                     )
             elif event_type in (int(omni.timeline.TimelineEventType.STOP), int(omni.timeline.TimelineEventType.PAUSE)):
                 self._is_simulating = False
+                # Reset sound_played state on all triggers
+                for zone in self._active_triggers.values():
+                    zone.sound_played = False
+
                 stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
                 if stage:
                     # Restore any trigger prims that had is_enabled = False authored
@@ -703,6 +805,8 @@ class HydragonTriggerSystem:
             if zone.check_overlap(player_pos):
                 zone.on_trigger_entered()
                 triggered_paths.append(prim_path)
+
+                self._play_trigger_sound(zone)
 
                 if zone.event_type == "OnLevelComplete":
                     self._handle_level_complete(stage)

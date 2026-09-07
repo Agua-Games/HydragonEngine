@@ -25,6 +25,9 @@ from hydragon.editor.core.effects_controller import (
     DEFAULT_BURST_LIFETIME,
     DEFAULT_NUM_SPARKS,
     DEFAULT_SPARK_RADIUS,
+    DEFAULT_AUDIO_VOLUME,
+    DEFAULT_TAUNT_DELAY,
+    TAUNT_SOUND_NAMES,
 )
 
 
@@ -150,7 +153,7 @@ def test_audio_asset_integrity():
     import os
     assert os.path.exists(audio_path), f"Audio file not found at: {audio_path}"
 
-    # Verify it is a valid, readable WAV file
+    # Verify defeat audio is a valid, readable WAV file
     with wave.open(audio_path, "rb") as wf:
         n_channels = wf.getnchannels()
         sampwidth = wf.getsampwidth()
@@ -161,21 +164,51 @@ def test_audio_asset_integrity():
         assert framerate == 44100, f"Expected 44.1kHz samplerate, got {framerate}"
         assert n_frames > 0, "Audio file has 0 frames"
 
+    # Verify all 4 taunt sound assets on disk
+    assert len(TAUNT_SOUND_NAMES) == 4
+    for taunt_name in TAUNT_SOUND_NAMES:
+        taunt_path = system._resolve_sound_file(taunt_name)
+        assert taunt_path != "", f"Failed to resolve {taunt_name}"
+        assert os.path.exists(taunt_path), f"Taunt audio not found: {taunt_path}"
+        with wave.open(taunt_path, "rb") as twf:
+            assert twf.getnframes() > 0, f"Taunt {taunt_name} has 0 frames"
+
     system.shutdown()
-    print(f"  [PASS] Audio asset verified: {audio_path} ({n_channels}ch, {framerate}Hz, {n_frames} frames)")
+    print(f"  [PASS] Defeat audio and all 4 taunt audio assets verified successfully")
 
 
 def test_effects_fail_silent_headless():
-    print("--- 5. Testing Spawn VFX Headless Fail-Silent ---")
+    print("--- 5. Testing Spawn VFX & Delayed Taunt Queuing Headless ---")
     system = HydragonEffectsSystem()
+    assert len(system._delayed_sounds) == 0
+    assert system._mock_taunt_play_count == 0
+
     try:
         system.spawn_foe_destruction_vfx(stage=None, world_pos=(50.0, 100.0, -10.0), color_theme="gold")
         system.spawn_foe_destruction_vfx(stage=None, world_pos=(0.0, 0.0, 0.0), color_theme="cyan")
     except Exception as e:
         assert False, f"spawn_foe_destruction_vfx raised unexpected exception: {e}"
 
+    # Verify 2 delayed taunt cues were queued with default 1.5s delay
+    assert len(system._delayed_sounds) == 2
+    for item in system._delayed_sounds:
+        assert abs(item["timer"] - DEFAULT_TAUNT_DELAY) < 1e-4
+        assert item["sound"] in TAUNT_SOUND_NAMES or item["sound"] is not None
+
+    # Step forward by 0.5s (timer remaining ~1.0s, no taunt sound fired yet)
+    system.step_delayed_sounds(0.5)
+    assert len(system._delayed_sounds) == 2
+    assert system._mock_taunt_play_count == 0
+    for item in system._delayed_sounds:
+        assert abs(item["timer"] - 1.0) < 1e-4
+
+    # Step forward by 1.1s (timer reaches 0.0, both taunts fire)
+    system.step_delayed_sounds(1.1)
+    assert len(system._delayed_sounds) == 0
+    assert system._mock_taunt_play_count == 2, f"Expected 2 mock taunts played, got {system._mock_taunt_play_count}"
+
     system.shutdown()
-    print("  [PASS] Spawn VFX fail-silent headless verified")
+    print("  [PASS] Spawn VFX and delayed random taunt queuing headless verified")
 
 
 def test_explosion_pool_slot_lifecycle():
@@ -240,7 +273,30 @@ def test_pool_capacity_and_flash_constants():
     assert HydragonEffectsSystem.FLASH_LIGHT_RADIUS == DEFAULT_FLASH_LIGHT_RADIUS
     assert HydragonEffectsSystem.NUM_SPARKS == DEFAULT_NUM_SPARKS
     assert HydragonEffectsSystem.SPARK_RADIUS == DEFAULT_SPARK_RADIUS
+    assert HydragonEffectsSystem.AUDIO_VOLUME == DEFAULT_AUDIO_VOLUME
+    assert HydragonEffectsSystem.TAUNT_DELAY == DEFAULT_TAUNT_DELAY
     print("  [PASS] Effects System pool constants verified")
+
+
+def test_audio_volume_configuration():
+    print("--- 8. Testing Audio Volume Configuration & Clamping ---")
+    system = HydragonEffectsSystem()
+    assert HydragonEffectsSystem.AUDIO_VOLUME == DEFAULT_AUDIO_VOLUME
+    assert system.audio_volume == DEFAULT_AUDIO_VOLUME
+
+    # Test setting volume within 0.0 to 1.0
+    system.audio_volume = 0.65
+    assert abs(system.audio_volume - 0.65) < 1e-4
+
+    # Test volume clamping
+    system.audio_volume = 1.5
+    assert system.audio_volume == 1.0
+
+    system.audio_volume = -0.2
+    assert system.audio_volume == 0.0
+
+    system.shutdown()
+    print("  [PASS] Audio volume configuration and clamping verified")
 
 
 if __name__ == "__main__":
@@ -251,4 +307,5 @@ if __name__ == "__main__":
     test_effects_fail_silent_headless()
     test_explosion_pool_slot_lifecycle()
     test_pool_capacity_and_flash_constants()
-    print("\nALL 7 EFFECTS SYSTEM TESTS PASSED SUCCESSFULLY!")
+    test_audio_volume_configuration()
+    print("\nALL 8 EFFECTS SYSTEM TESTS PASSED SUCCESSFULLY!")

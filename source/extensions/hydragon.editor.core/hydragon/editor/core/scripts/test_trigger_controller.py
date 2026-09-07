@@ -192,6 +192,47 @@ def test_repeated_play_session_reset():
     print("  [PASS] Repeated play session reset verified")
 
 
+def test_trigger_audio_playback_and_filtering():
+    print("--- 7. Testing Trigger Audio Playback & One-Shot Filtering ---")
+    system = HydragonTriggerSystem()
+    zone = HydragonTriggerZone(None, world_pos=(0.0, 0.0, 0.0))
+
+    # 1. Verify schema property defaults
+    assert "achievement_02.wav" in zone.sound_asset_path
+    assert zone.sound_enabled is True
+    assert zone.sound_play_once is True
+    assert zone.sound_played is False
+
+    # 2. Verify sound asset resolution on disk
+    resolved = system._resolve_sound_path(zone.sound_asset_path)
+    assert resolved != "", "Failed to resolve achievement_02.wav path"
+    assert os.path.exists(resolved), f"Sound file not found: {resolved}"
+
+    # 3. Verify first trigger overlap triggers sound playback
+    system._play_trigger_sound(zone)
+    assert system._mock_sound_play_count == 1, "Expected mock audio play count to be 1"
+    assert zone.sound_played is True, "sound_played should be True after firing"
+
+    # 4. Verify sound_play_once prevents repeated playback
+    system._play_trigger_sound(zone)
+    assert system._mock_sound_play_count == 1, "sound_play_once must prevent duplicate audio triggers"
+
+    # 5. Verify sound_enabled flag suppresses playback
+    zone_disabled = HydragonTriggerZone(None, world_pos=(50.0, 0.0, 0.0))
+    # Mock schema disabled
+    class MockSchema:
+        sound_asset_path = "achievement_02.wav"
+        sound_enabled = False
+        sound_play_once = True
+    zone_disabled._schema = MockSchema()
+    assert zone_disabled.sound_enabled is False
+    system._play_trigger_sound(zone_disabled)
+    assert system._mock_sound_play_count == 1, "Disabled sound must not trigger playback"
+
+    system.shutdown()
+    print("  [PASS] Trigger audio playback and one-shot filtering verified")
+
+
 if __name__ == "__main__":
     test_trigger_system_lifecycle()
     test_trigger_zone_overlap_math()
@@ -199,6 +240,7 @@ if __name__ == "__main__":
     test_level_complete_handling()
     test_trigger_report_event_filtering()
     test_repeated_play_session_reset()
+    test_trigger_audio_playback_and_filtering()
     print("\n=======================================================")
-    print(" ALL TRIGGER CONTROLLER SYSTEM TESTS PASSED! (6/6)")
+    print(" ALL TRIGGER CONTROLLER SYSTEM TESTS PASSED! (7/7)")
     print("=======================================================")

@@ -513,6 +513,9 @@ class HydragonChaserAI:
 # ==============================================================================
 # HydragonTrigger
 # ==============================================================================
+DEFAULT_TRIGGER_SOUND: str = "data/assets/audio/sound_fx_samples/achievement_02.wav"
+
+
 class HydragonTrigger:
     SCHEMA_NAME = "HydragonTriggerAPI"
 
@@ -520,19 +523,33 @@ class HydragonTrigger:
         self._prim = prim
 
     @classmethod
-    def apply(cls, prim, event_type: str = "OnLevelComplete", filter_faction: str = "Player", is_one_shot: bool = True):
+    def apply(
+        cls,
+        prim,
+        event_type: str = "OnLevelComplete",
+        filter_faction: str = "Player",
+        is_one_shot: bool = True,
+        sound_asset_path: str = DEFAULT_TRIGGER_SOUND,
+        sound_enabled: bool = True,
+        sound_play_once: bool = True,
+    ):
         _ensure_api_schema(prim, cls.SCHEMA_NAME)
         trig = cls(prim)
         trig.event_type = event_type
         trig.filter_faction = filter_faction
         trig.is_one_shot = is_one_shot
         trig.is_enabled = True
+        trig.sound_asset_path = sound_asset_path
+        trig.sound_enabled = sound_enabled
+        trig.sound_play_once = sound_play_once
         return trig
 
     @classmethod
     def is_applied(cls, prim) -> bool:
         return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
-            prim and hasattr(prim, "HasAttribute") and prim.HasAttribute("trigger:eventType")
+            prim and hasattr(prim, "HasAttribute") and (
+                prim.HasAttribute("trigger:eventType") or prim.HasAttribute("trigger:soundAssetPath")
+            )
         )
 
     @property
@@ -570,6 +587,34 @@ class HydragonTrigger:
     @is_enabled.setter
     def is_enabled(self, val: bool):
         _set_attr_value(self._prim, "trigger:isEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def sound_asset_path(self) -> str:
+        val = _get_attr_value(self._prim, "trigger:soundAssetPath", DEFAULT_TRIGGER_SOUND)
+        if hasattr(val, "path"):
+            return str(val.path)
+        return str(val) if val is not None else DEFAULT_TRIGGER_SOUND
+
+    @sound_asset_path.setter
+    def sound_asset_path(self, val: str):
+        asset_val = Sdf.AssetPath(str(val)) if HAS_PXR else str(val)
+        _set_attr_value(self._prim, "trigger:soundAssetPath", asset_val, Sdf.ValueTypeNames.Asset if HAS_PXR else None)
+
+    @property
+    def sound_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "trigger:soundEnabled", True))
+
+    @sound_enabled.setter
+    def sound_enabled(self, val: bool):
+        _set_attr_value(self._prim, "trigger:soundEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def sound_play_once(self) -> bool:
+        return bool(_get_attr_value(self._prim, "trigger:soundPlayOnce", True))
+
+    @sound_play_once.setter
+    def sound_play_once(self, val: bool):
+        _set_attr_value(self._prim, "trigger:soundPlayOnce", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
 
 
 # ==============================================================================

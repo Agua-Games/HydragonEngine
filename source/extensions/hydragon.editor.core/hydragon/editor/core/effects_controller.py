@@ -13,7 +13,7 @@ Manages real-time audiovisual feedback when gameplay entities are destroyed:
 import math
 import os
 import random
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import carb
@@ -87,7 +87,10 @@ DEFAULT_FLASH_LIGHT_DURATION: float = 0.22        # Light flash duration in seco
 DEFAULT_BURST_LIFETIME: float = 0.55              # Total particle sparks lifetime in seconds
 DEFAULT_NUM_SPARKS: int = 6                      # Number of diamond sparks per explosion (pre-allocated mesh pool)
 DEFAULT_SPARK_EMISSION: float = 60000.0           # Emissive intensity on diamond sparks
-DEFAULT_SPARK_RADIUS: float = 6.0                 # Diamond radius in centimeters (9 cm)
+DEFAULT_SPARK_RADIUS: float = 20.0                 # Diamond radius in centimeters (9 cm)
+DEFAULT_AUDIO_VOLUME: float = 1.0                 # Audio playback volume level (0.0 silent to 1.0 full)
+DEFAULT_TAUNT_DELAY: float = 1.5                  # Delay in seconds before playing random taunt after foe defeat
+TAUNT_SOUND_NAMES: Tuple[str, ...] = ("taunt_01.wav", "taunt_02.wav", "taunt_03.wav", "taunt_04.wav")
 
 
 class ExplosionPoolSlot:
@@ -548,6 +551,8 @@ class HydragonEffectsSystem:
     BURST_LIFETIME: float = DEFAULT_BURST_LIFETIME
     SPARK_RADIUS: float = DEFAULT_SPARK_RADIUS
     SPARK_EMISSION: float = DEFAULT_SPARK_EMISSION
+    AUDIO_VOLUME: float = DEFAULT_AUDIO_VOLUME
+    TAUNT_DELAY: float = DEFAULT_TAUNT_DELAY
 
     _instance: Optional["HydragonEffectsSystem"] = None
 
@@ -560,17 +565,45 @@ class HydragonEffectsSystem:
         self._slots: List[ExplosionPoolSlot] = []
         self._cached_sound = None
         self._audio_file_path: Optional[str] = None
+        self._cached_taunt_sounds: List[Any] = []
+        self._delayed_sounds: List[Dict[str, Any]] = []
         self._mock_spawn_count: int = 0
+        self._mock_taunt_play_count: int = 0
+        self._audio_volume: float = self.AUDIO_VOLUME
+        self._set_audio_volume(self._audio_volume)
 
     @classmethod
     def get_instance(cls) -> Optional["HydragonEffectsSystem"]:
         return cls._instance
+
+    @property
+    def audio_volume(self) -> float:
+        return self._audio_volume
+
+    @audio_volume.setter
+    def audio_volume(self, val: float):
+        self._set_audio_volume(val)
+
+    def _set_audio_volume(self, volume: float):
+        """Sets the audio playback volume level (0.0 to 1.0) via carb.settings."""
+        self._audio_volume = max(0.0, min(1.0, float(volume)))
+        if carb and hasattr(carb, "settings"):
+            try:
+                settings = carb.settings.get_settings()
+                if settings:
+                    try:
+                        settings.set_float("/persistent/audio/context/uiVolume", self._audio_volume)
+                    except AttributeError:
+                        settings.set("/persistent/audio/context/uiVolume", self._audio_volume)
+            except Exception:
+                pass
 
     def startup(self):
         """Initializes subscriptions for timeline events and per-frame VFX stepping."""
         if not HAS_KIT:
             return
         self._is_active = True
+        self._set_audio_volume(self._audio_volume)
         self._resolve_audio_path()
         self._ensure_audio_loaded()
         self._subscribe_timeline()
@@ -585,19 +618,24 @@ class HydragonEffectsSystem:
         self._deactivate_all_slots()
         self._slots.clear()
         self._cached_sound = None
+        self._cached_taunt_sounds.clear()
+        self._delayed_sounds.clear()
         self._timeline_sub = None
         self._app_update_sub = None
         HydragonEffectsSystem._instance = None
         if carb:
             carb.log_info("[hydragon.editor.core] HydragonEffectsSystem shutdown.")
 
-    def _resolve_audio_path(self) -> str:
-        """Finds or confirms the relative/dynamic path to foe_defeat.wav without hardcoded absolute paths."""
+    def _resolve_sound_file(self, filename: str) -> str:
+        """Finds or confirms relative/dynamic path to sound file without hardcoded absolute paths."""
+        if not filename:
+            return ""
+        clean_name = os.path.basename(str(filename).strip("@").replace("\\", "/"))
         candidates = []
 
         # 1. Preferred: relative to extension root via __file__
         ext_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        candidates.append(os.path.join(ext_root, "data", "assets", "audio", "sound_fx_samples", "foe_defeat.wav"))
+        candidates.append(os.path.join(ext_root, "data", "assets", "audio", "sound_fx_samples", clean_name))
 
         # 2. Via Kit Extension Manager if available
         if HAS_KIT:
@@ -605,39 +643,61 @@ class HydragonEffectsSystem:
                 em = omni.kit.app.get_app().get_extension_manager()
                 ext_id_path = em.get_extension_path_by_pkg_id("hydragon.editor.core")
                 if ext_id_path:
-                    candidates.append(os.path.join(ext_id_path, "data", "assets", "audio", "sound_fx_samples", "foe_defeat.wav"))
+                    candidates.append(os.path.join(ext_id_path, "data", "assets", "audio", "sound_fx_samples", clean_name))
             except Exception:
                 pass
 
         # 3. Via Current Working Directory fallback
-        candidates.append(os.path.abspath(os.path.join(os.getcwd(), "source", "extensions", "hydragon.editor.core", "data", "assets", "audio", "sound_fx_samples", "foe_defeat.wav")))
+        candidates.append(os.path.abspath(os.path.join(os.getcwd(), "source", "extensions", "hydragon.editor.core", "data", "assets", "audio", "sound_fx_samples", clean_name)))
 
         for c in candidates:
             if os.path.exists(c):
-                self._audio_file_path = os.path.abspath(c).replace("\\", "/")
-                return self._audio_file_path
+                return os.path.abspath(c).replace("\\", "/")
+        return ""
+
+    def _resolve_audio_path(self) -> str:
+        """Finds or confirms the relative/dynamic path to foe_defeat_01.wav without hardcoded absolute paths."""
+        path = self._resolve_sound_file("foe_defeat_01.wav")
+        if not path:
+            path = self._resolve_sound_file("foe_defeat.wav")
+        if path:
+            self._audio_file_path = path
+            return self._audio_file_path
         return ""
 
     def _ensure_audio_loaded(self):
-        """Pre-caches the defeat sound effect into RAM memory via omni.kit.uiaudio."""
-        if self._cached_sound is not None or not HAS_KIT:
+        """Pre-caches defeat sound and taunt sounds into RAM memory via omni.kit.uiaudio."""
+        if not HAS_KIT:
             return
         try:
             import omni.kit.uiaudio
-            if not self._audio_file_path:
-                self._resolve_audio_path()
-            if self._audio_file_path and os.path.exists(self._audio_file_path):
-                audio = omni.kit.uiaudio.get_ui_audio_interface()
-                if audio:
+            audio = omni.kit.uiaudio.get_ui_audio_interface()
+            if not audio:
+                return
+
+            if self._cached_sound is None:
+                if not self._audio_file_path:
+                    self._resolve_audio_path()
+                if self._audio_file_path and os.path.exists(self._audio_file_path):
                     self._cached_sound = audio.create_sound(self._audio_file_path)
                     if carb:
-                        carb.log_info(f"[hydragon.editor.core] Audio sound pre-cached: {self._audio_file_path}")
+                        carb.log_info(f"[hydragon.editor.core] Defeat audio pre-cached: {self._audio_file_path}")
+
+            if not self._cached_taunt_sounds:
+                for t_name in TAUNT_SOUND_NAMES:
+                    t_path = self._resolve_sound_file(t_name)
+                    if t_path and os.path.exists(t_path):
+                        snd = audio.create_sound(t_path)
+                        if snd:
+                            self._cached_taunt_sounds.append(snd)
+                if carb and self._cached_taunt_sounds:
+                    carb.log_info(f"[hydragon.editor.core] Pre-cached {len(self._cached_taunt_sounds)} taunt sounds.")
         except Exception as ex:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Failed to pre-cache audio: {ex}")
 
     def _play_cached_sound(self):
-        """Plays the pre-cached sound effect with 0ms disk latency."""
+        """Plays the pre-cached defeat sound effect with 0ms disk latency."""
         if not HAS_KIT:
             return
         try:
@@ -650,6 +710,39 @@ class HydragonEffectsSystem:
                     audio.play_sound(self._cached_sound)
         except Exception:
             pass
+
+    def _play_taunt_sound(self, sound):
+        """Plays a taunt sound effect."""
+        if not HAS_KIT:
+            self._mock_taunt_play_count += 1
+            return
+        try:
+            import omni.kit.uiaudio
+            audio = omni.kit.uiaudio.get_ui_audio_interface()
+            if audio and sound:
+                if isinstance(sound, str):
+                    resolved = self._resolve_sound_file(sound)
+                    if resolved and os.path.exists(resolved):
+                        snd = audio.create_sound(resolved)
+                        if snd:
+                            audio.play_sound(snd)
+                else:
+                    audio.play_sound(sound)
+        except Exception:
+            pass
+
+    def step_delayed_sounds(self, dt: float):
+        """Ticks down delayed sound timers and triggers audio cues on completion."""
+        if not self._delayed_sounds:
+            return
+        remaining = []
+        for item in self._delayed_sounds:
+            item["timer"] -= dt
+            if item["timer"] <= 0.0:
+                self._play_taunt_sound(item.get("sound"))
+            else:
+                remaining.append(item)
+        self._delayed_sounds = remaining
 
     def _subscribe_timeline(self):
         try:
@@ -680,6 +773,7 @@ class HydragonEffectsSystem:
                 self._ensure_audio_loaded()
             elif event_type == int(omni.timeline.TimelineEventType.STOP):
                 self._pool_initialized = False
+                self._delayed_sounds.clear()
                 stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
                 self._deactivate_all_slots(stage)
                 for slot in self._slots:
@@ -688,11 +782,17 @@ class HydragonEffectsSystem:
             pass
 
     def _on_app_update(self, e):
-        if not HAS_KIT or not self._slots:
+        if not HAS_KIT:
             return
 
         dt = e.payload.get("dt", 1.0 / 60.0) if hasattr(e, "payload") else 1.0 / 60.0
         dt = min(dt, 0.05)
+
+        # Update delayed sound queues
+        self.step_delayed_sounds(dt)
+
+        if not self._slots:
+            return
 
         stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
         if not stage:
@@ -924,8 +1024,22 @@ class HydragonEffectsSystem:
         Activates a pre-allocated pool slot at world_pos and triggers low-latency
         pre-cached sound immediately.
         """
-        # Always trigger sound cue
+        # Always trigger defeat sound cue immediately
         self._play_cached_sound()
+
+        # Queue delayed random taunt (~1.5s delay)
+        chosen_taunt = None
+        if self._cached_taunt_sounds:
+            chosen_taunt = random.choice(self._cached_taunt_sounds)
+        else:
+            chosen_taunt = random.choice(TAUNT_SOUND_NAMES)
+
+        self._delayed_sounds.append({
+            "timer": self.TAUNT_DELAY,
+            "sound": chosen_taunt,
+        })
+        if carb:
+            carb.log_info(f"[hydragon.editor.core] Queued random taunt sound with {self.TAUNT_DELAY:.1f}s delay.")
 
         if not HAS_KIT:
             self._mock_spawn_count += 1

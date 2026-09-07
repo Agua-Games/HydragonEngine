@@ -149,6 +149,9 @@ def test_python_module():
     trig = HydragonTrigger(None)
     assert trig.event_type == "OnLevelComplete"
     assert trig.is_one_shot == True
+    assert "achievement_02.wav" in trig.sound_asset_path
+    assert trig.sound_enabled is True
+    assert trig.sound_play_once is True
     print("  [PASS] HydragonTrigger fail-silent defaults verified")
 
     gm = HydragonGameManager(None)
