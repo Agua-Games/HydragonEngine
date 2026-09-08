@@ -290,6 +290,13 @@ class HydragonTriggerSystem:
             return
 
         if self._physics_step_sub:
+            try:
+                from omni.physx import get_physx_interface
+                physx_iface = get_physx_interface()
+                if physx_iface and hasattr(physx_iface, "unsubscribe_physics_step_events"):
+                    physx_iface.unsubscribe_physics_step_events(self._physics_step_sub)
+            except Exception:
+                pass
             self._physics_step_sub = None
         if self._app_update_sub:
             self._app_update_sub = None
@@ -309,10 +316,8 @@ class HydragonTriggerSystem:
             return clean_path
 
         candidates = []
-        ext_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        candidates.append(os.path.join(ext_root, clean_path))
-        candidates.append(os.path.join(ext_root, "data", "assets", "audio", "sound_fx_samples", os.path.basename(clean_path)))
 
+        # 1. Preferred: Via Kit Extension Manager if available
         if HAS_KIT:
             try:
                 em = omni.kit.app.get_app().get_extension_manager()
@@ -322,6 +327,11 @@ class HydragonTriggerSystem:
                     candidates.append(os.path.join(ext_id_path, "data", "assets", "audio", "sound_fx_samples", os.path.basename(clean_path)))
             except Exception:
                 pass
+
+        # 2. Relative to extension root via __file__ (development fallback)
+        ext_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        candidates.append(os.path.join(ext_root, clean_path))
+        candidates.append(os.path.join(ext_root, "data", "assets", "audio", "sound_fx_samples", os.path.basename(clean_path)))
 
         candidates.append(os.path.abspath(os.path.join(os.getcwd(), "source", "extensions", "hydragon.editor.core", clean_path)))
         candidates.append(os.path.abspath(os.path.join(os.getcwd(), "source", "extensions", "hydragon.editor.core", "data", "assets", "audio", "sound_fx_samples", os.path.basename(clean_path))))

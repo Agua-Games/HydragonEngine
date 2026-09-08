@@ -353,6 +353,27 @@ def test_player_arcade_bounce_math():
     print("  [PASS] Player arcade bounce rebound math verified for stomp and lateral hits")
 
 
+def test_physics_step_safety():
+    print("--- 9. Testing _on_physics_step Safety and Stage Compatibility ---")
+    system = HydragonFoesControllerSystem()
+    system._is_simulating = True
+    brain = HydragonAIBrain(prim=None, origin_pos=(0.0, 50.0, 0.0))
+    system._active_brains["/World/Foe"] = brain
+
+    # Real pxr.Usd.Stage instances do NOT have an IsValid() method
+    class MockUsdStage:
+        def GetPrimAtPath(self, path):
+            return None
+
+    try:
+        system._on_physics_step(0.016)
+    except Exception as e:
+        assert False, f"_on_physics_step raised unexpected exception: {e}"
+
+    system.shutdown()
+    print("  [PASS] _on_physics_step stage validation safety verified")
+
+
 if __name__ == "__main__":
     test_foes_controller_lifecycle()
     test_ai_brain_state_transitions()
@@ -362,6 +383,7 @@ if __name__ == "__main__":
     test_stop_event_stage_restoration()
     test_foe_destruction_score_popup_integration()
     test_player_arcade_bounce_math()
+    test_physics_step_safety()
     print("\n=======================================================")
-    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (8/8)")
+    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (9/9)")
     print("=======================================================")

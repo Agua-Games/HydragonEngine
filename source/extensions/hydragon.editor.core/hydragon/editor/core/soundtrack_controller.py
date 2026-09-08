@@ -363,13 +363,7 @@ class HydragonSoundtrackSystem:
         if os.path.isabs(clean_raw) and os.path.exists(clean_raw):
             return os.path.abspath(clean_raw).replace("\\", "/")
 
-        ext_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-
-        # Relative to extension root
-        candidates.append(os.path.join(ext_root, clean_raw))
-        candidates.append(os.path.join(ext_root, "data", "assets", "audio", "sound_fx_samples", clean_name))
-
-        # Via Kit Extension Manager if available
+        # 1. Preferred: Via Kit Extension Manager if available
         if HAS_KIT:
             try:
                 em = omni.kit.app.get_app().get_extension_manager()
@@ -379,6 +373,11 @@ class HydragonSoundtrackSystem:
                     candidates.append(os.path.join(ext_id_path, "data", "assets", "audio", "sound_fx_samples", clean_name))
             except Exception:
                 pass
+
+        # 2. Relative to extension root via __file__ (development fallback)
+        ext_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        candidates.append(os.path.join(ext_root, clean_raw))
+        candidates.append(os.path.join(ext_root, "data", "assets", "audio", "sound_fx_samples", clean_name))
 
         # Via Current Working Directory fallback
         candidates.append(os.path.abspath(os.path.join(os.getcwd(), clean_raw)))

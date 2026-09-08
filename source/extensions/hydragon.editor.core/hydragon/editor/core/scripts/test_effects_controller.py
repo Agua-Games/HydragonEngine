@@ -28,6 +28,9 @@ from hydragon.editor.core.effects_controller import (
     DEFAULT_AUDIO_VOLUME,
     DEFAULT_TAUNT_DELAY,
     TAUNT_SOUND_NAMES,
+    RENDER_MODE_POINT_INSTANCER,
+    RENDER_MODE_POINTS,
+    DEFAULT_RENDER_MODE,
 )
 
 
@@ -299,6 +302,198 @@ def test_audio_volume_configuration():
     print("  [PASS] Audio volume configuration and clamping verified")
 
 
+def test_warp_acceleration_lifecycle():
+    print("--- 9. Testing NVIDIA Warp Acceleration Lifecycle ---")
+    import glob
+    import importlib
+
+    repo_root = os.path.abspath(os.path.join(ext_dir, "..", "..", ".."))
+    warp_pattern = os.path.join(repo_root, "_build", "windows-x86_64", "release", "extscache", "omni.warp.core*")
+    warp_candidates = glob.glob(warp_pattern)
+
+    if warp_candidates and warp_candidates[0] not in sys.path:
+        sys.path.insert(0, warp_candidates[0])
+
+    try:
+        import warp as wp
+        has_warp = True
+    except ImportError:
+        has_warp = False
+
+    if not has_warp:
+        print("  [SKIP] NVIDIA Warp not available in test environment")
+        return
+
+    # Reload effects_controller to bind Warp module and kernels
+    import hydragon.editor.core.effects_controller as ec
+    importlib.reload(ec)
+
+    assert ec.HAS_WARP is True, "HAS_WARP must be True when warp is loaded"
+    assert ec.wp is not None, "wp handle must be bound"
+    assert not hasattr(ec.wp, "is_initialized"), "Warp does not expose is_initialized"
+
+    system = ec.HydragonEffectsSystem()
+    system._init_warp()
+    status = system.get_warp_status()
+    assert status["use_warp"] is True, f"Expected use_warp True, got {status}"
+    assert status["initialized"] is True, f"Expected initialized True, got {status}"
+    assert status["device"] in ("cuda", "cpu")
+
+    # Verify ExplosionPoolSlot allocation and execution with Warp
+    slot = ec.ExplosionPoolSlot(slot_index=99, num_sparks=16, spark_radius=20.0)
+    slot._ensure_warp_arrays(device=system._warp_device)
+    assert slot._use_warp is True, "Slot must have Warp enabled"
+    assert slot._warp_initialized is True, "Slot Warp arrays must be initialized"
+
+    # Activate slot (dispatches init_sparks_kernel on device)
+    slot.activate(world_pos=(0.0, 0.0, 0.0), color_theme="gold")
+    assert slot._use_warp is True, "Slot must retain Warp enabled after activate"
+
+    # Step simulation (dispatches simulate_sparks_kernel on device)
+    alive = slot.update(0.016)
+    assert alive is True, "Slot must remain active during lifetime"
+    assert slot.elapsed == 0.016
+
+    # Verify particles were updated and moved on device
+    moved = any(
+        abs(p[0]) > 0.001 or abs(p[1]) > 0.001 or abs(p[2]) > 0.001
+        for p in slot.positions
+    )
+    assert moved, "Particles must disperse on GPU device"
+
+    system.shutdown()
+    print("  [PASS] NVIDIA Warp acceleration lifecycle verified")
+
+
+def test_render_mode_configuration_and_switching():
+    print("--- 10. Testing Particle Render Modes Configuration & Switching ---")
+    assert DEFAULT_RENDER_MODE == RENDER_MODE_POINT_INSTANCER
+    assert RENDER_MODE_POINT_INSTANCER == "point_instancer"
+    assert RENDER_MODE_POINTS == "points"
+
+    system = HydragonEffectsSystem()
+    assert system.RENDER_MODE == DEFAULT_RENDER_MODE
+    assert system.render_mode == RENDER_MODE_POINT_INSTANCER
+
+    # Create dummy slots
+    slot0 = ExplosionPoolSlot(slot_index=0, num_sparks=15, render_mode=system.render_mode)
+    slot1 = ExplosionPoolSlot(slot_index=1, num_sparks=15, render_mode=system.render_mode)
+    system._slots = [slot0, slot1]
+
+    # Switch to Points mode
+    system.render_mode = RENDER_MODE_POINTS
+    assert system.render_mode == RENDER_MODE_POINTS
+    assert slot0.render_mode == RENDER_MODE_POINTS
+    assert slot1.render_mode == RENDER_MODE_POINTS
+
+    # Switch back to PointInstancer mode
+    system.render_mode = RENDER_MODE_POINT_INSTANCER
+    assert system.render_mode == RENDER_MODE_POINT_INSTANCER
+    assert slot0.render_mode == RENDER_MODE_POINT_INSTANCER
+    assert slot1.render_mode == RENDER_MODE_POINT_INSTANCER
+
+    # Attempt setting invalid mode (must be safely ignored)
+    system.render_mode = "invalid_mode"
+    assert system.render_mode == RENDER_MODE_POINT_INSTANCER
+    assert slot0.render_mode == RENDER_MODE_POINT_INSTANCER
+
+    status = system.get_warp_status()
+    assert "render_mode" in status
+    assert status["render_mode"] == RENDER_MODE_POINT_INSTANCER
+
+    system.shutdown()
+    print("  [PASS] Render mode configuration and switching verified")
+
+
+def test_slot_render_modes_execution():
+    print("--- 11. Testing Slot Lifecycle in PointInstancer & Points Modes ---")
+    # Test PointInstancer slot
+    slot_instancer = ExplosionPoolSlot(
+        slot_index=0,
+        num_sparks=16,
+        render_mode=RENDER_MODE_POINT_INSTANCER,
+    )
+    assert slot_instancer.render_mode == RENDER_MODE_POINT_INSTANCER
+    assert slot_instancer.instancer_path == "/World/Effects/Pool_0/PointInstancer"
+    assert slot_instancer.points_path == "/World/Effects/Pool_0/Points"
+
+    slot_instancer.activate(world_pos=(10.0, 20.0, 30.0), color_theme="gold")
+    assert slot_instancer.is_active is True
+    assert slot_instancer.origin == (10.0, 20.0, 30.0)
+
+    # Step simulation
+    alive = slot_instancer.update(0.016)
+    assert alive is True
+    assert slot_instancer.elapsed == 0.016
+
+    # Clear handles test (ensures no missing attr error)
+    slot_instancer.clear_cached_handles()
+    assert slot_instancer._cached_instancer is None
+    assert slot_instancer._cached_points is None
+
+    slot_instancer.deactivate()
+    assert slot_instancer.is_active is False
+
+    # Test Points slot
+    slot_points = ExplosionPoolSlot(
+        slot_index=1,
+        num_sparks=16,
+        render_mode=RENDER_MODE_POINTS,
+    )
+    assert slot_points.render_mode == RENDER_MODE_POINTS
+    slot_points.activate(world_pos=(50.0, 0.0, -10.0), color_theme="cyan")
+    assert slot_points.is_active is True
+
+    alive = slot_points.update(0.016)
+    assert alive is True
+    assert slot_points.elapsed == 0.016
+
+    slot_points.clear_cached_handles()
+    slot_points.deactivate()
+    assert slot_points.is_active is False
+
+    print("  [PASS] Slot lifecycle in PointInstancer and Points modes verified")
+
+
+def test_points_render_mode_attributes_and_decay():
+    print("--- 12. Testing UsdGeom.Points Mode Scale Decay and Buffers ---")
+    slot = ExplosionPoolSlot(
+        slot_index=0,
+        num_sparks=20,
+        spark_radius=20.0,
+        lifetime=0.5,
+        render_mode=RENDER_MODE_POINTS,
+    )
+    assert slot.render_mode == RENDER_MODE_POINTS
+    assert len(slot.current_scales) == 20
+    assert len(slot.base_scales) == 20
+
+    slot.activate(world_pos=(0.0, 100.0, 0.0), color_theme="gold")
+    # Base scales should be around spark_radius (20.0 * [0.85, 1.25])
+    for s in slot.base_scales:
+        assert 16.0 <= s <= 26.0
+
+    # Initial current_scales should match base_scales
+    for i in range(20):
+        assert abs(slot.current_scales[i] - slot.base_scales[i]) < 1e-4
+
+    # Update halfway through lifetime (t = 0.25, lifetime = 0.5)
+    slot.update(0.25)
+    # Expected scale_factor = 1.0 - 0.25/0.5 = 0.5
+    for i in range(20):
+        expected = slot.base_scales[i] * 0.5
+        assert abs(slot.current_scales[i] - expected) < 1e-2, (
+            f"Scale mismatch at halfway: expected {expected}, got {slot.current_scales[i]}"
+        )
+
+    # Base scales must remain constant (no compounding shrinkage bug)
+    for s in slot.base_scales:
+        assert 16.0 <= s <= 26.0
+
+    slot.deactivate()
+    print("  [PASS] Points render mode attributes and linear scale decay verified")
+
+
 if __name__ == "__main__":
     test_effects_system_lifecycle()
     test_particle_kinematics_and_turbulence()
@@ -308,4 +503,8 @@ if __name__ == "__main__":
     test_explosion_pool_slot_lifecycle()
     test_pool_capacity_and_flash_constants()
     test_audio_volume_configuration()
-    print("\nALL 8 EFFECTS SYSTEM TESTS PASSED SUCCESSFULLY!")
+    test_warp_acceleration_lifecycle()
+    test_render_mode_configuration_and_switching()
+    test_slot_render_modes_execution()
+    test_points_render_mode_attributes_and_decay()
+    print("\nALL 12 EFFECTS SYSTEM TESTS PASSED SUCCESSFULLY!")

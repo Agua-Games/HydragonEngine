@@ -74,6 +74,8 @@ def _is_rigid_body(prim) -> bool:
 class HydragonPlayerControllerSystem:
     """Manages player input and physics actuation for rolling ball actors."""
 
+    KILL_FLOOR_Y: float = -200.0  # Fall boundary in stage units (cm)
+
     _instance: Optional["HydragonPlayerControllerSystem"] = None
 
     def __init__(self):
@@ -147,6 +149,12 @@ class HydragonPlayerControllerSystem:
             return
 
         if self._physics_step_sub:
+            try:
+                physx_iface = get_physx_interface()
+                if physx_iface and hasattr(physx_iface, "unsubscribe_physics_step_events"):
+                    physx_iface.unsubscribe_physics_step_events(self._physics_step_sub)
+            except Exception:
+                pass
             self._physics_step_sub = None
 
         if self._app_update_sub:
@@ -705,9 +713,9 @@ class HydragonPlayerControllerSystem:
         world_pos = self._get_rigid_body_world_pos(rb_prim, rb_path_str)
         self._last_world_pos = world_pos
 
-        # Floor drop / tunneling safeguard: if player falls below arena boundary (-200cm), queue respawn
+        # Floor drop / tunneling safeguard: if player falls below arena boundary, queue respawn
         # Suppressed during respawn cooldown grace period to avoid endless re-triggering loops
-        if self._respawn_cooldown <= 0.0 and world_pos[1] < -200.0:
+        if self._respawn_cooldown <= 0.0 and world_pos[1] < self.KILL_FLOOR_Y:
             self._needs_respawn = True
             return
 

@@ -173,7 +173,17 @@ class HydragonCameraControllerSystem:
         self._set_camera_lock(False)
         self._app_update_sub = None
         self._timeline_sub = None
-        self._mouse_sub = None
+        if self._mouse_sub:
+            try:
+                input_iface = carb.input.acquire_input_interface()
+                appwindow = omni.appwindow.get_default_app_window()
+                if appwindow:
+                    mouse = appwindow.get_mouse()
+                    if mouse:
+                        input_iface.unsubscribe_to_mouse_events(mouse, self._mouse_sub)
+            except Exception:
+                pass
+            self._mouse_sub = None
         self._is_simulating = False
         self._is_active = False
         self._current_focus_pos = None

@@ -8,6 +8,7 @@ an ECS state machine (Patrol <-> Chase).
 
 import math
 import random
+import threading
 import time
 from typing import Dict, List, Optional, Tuple
 
@@ -294,6 +295,8 @@ class HydragonFoesControllerSystem:
     entities are discovered once on simulation start and indexed in memory.
     """
 
+    KILL_FLOOR_Y: float = -300.0  # Fall boundary in stage units (cm)
+
     _instance: Optional["HydragonFoesControllerSystem"] = None
 
     def __init__(self):
@@ -312,6 +315,7 @@ class HydragonFoesControllerSystem:
         self._configured_rb_paths: set = set()
         self._destroyed_prim_paths: set = set()
         self._contact_report_sub = None
+        self._hits_lock = threading.Lock()
         self._pending_hits: List[Tuple[str, bool]] = []
         self._pending_bounce: bool = False
         self._pending_bounce_foe_pos: Optional[Tuple[float, float, float]] = None
@@ -345,7 +349,8 @@ class HydragonFoesControllerSystem:
         self._registered_brains.clear()
         self._configured_rb_paths.clear()
         self._destroyed_prim_paths.clear()
-        self._pending_hits.clear()
+        with self._hits_lock:
+            self._pending_hits.clear()
         self._pending_bounce = False
         self._pending_bounce_foe_pos = None
         self._cached_player_path = None
@@ -356,10 +361,24 @@ class HydragonFoesControllerSystem:
             HydragonFoesControllerSystem._instance = None
             return
 
-        if self._contact_report_sub:
-            self._contact_report_sub = None
         if self._physics_step_sub:
+            try:
+                physx_iface = get_physx_interface()
+                if physx_iface and hasattr(physx_iface, "unsubscribe_physics_step_events"):
+                    physx_iface.unsubscribe_physics_step_events(self._physics_step_sub)
+            except Exception:
+                pass
             self._physics_step_sub = None
+
+        if self._contact_report_sub:
+            try:
+                sim_iface = get_physx_simulation_interface()
+                if sim_iface and hasattr(sim_iface, "unsubscribe_contact_report_events"):
+                    sim_iface.unsubscribe_contact_report_events(self._contact_report_sub)
+            except Exception:
+                pass
+            self._contact_report_sub = None
+
         if self._app_update_sub:
             self._app_update_sub = None
         if self._timeline_sub:
@@ -487,11 +506,16 @@ class HydragonFoesControllerSystem:
             return
 
         # Process pending foe hits collected from PhysX contact reports safely on the main thread.
-        # This completely prevents carb::tasking::Mutex recursion assertions.
-        if self._pending_hits:
+        # Drain the queue atomically under _hits_lock, then process outside the lock to prevent mutex recursion.
+        hits_to_process: List[Tuple[str, bool]] = []
+        with self._hits_lock:
+            if self._pending_hits:
+                hits_to_process = list(self._pending_hits)
+                self._pending_hits.clear()
+
+        if hits_to_process:
             stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
-            while self._pending_hits:
-                p_path, is_stomp = self._pending_hits.pop(0)
+            for p_path, is_stomp in hits_to_process:
                 if p_path in self._destroyed_prim_paths:
                     continue
                 self._destroyed_prim_paths.add(p_path)
@@ -884,19 +908,25 @@ class HydragonFoesControllerSystem:
                 collided_brains.append(brain)
 
         # Safely queue hits for destruction on the main thread (outside the PhysX simulation lock).
-        # Avoid duplicates and upgrade to stomp if previously recorded as lateral
+        # Accumulate into a local list first to avoid mutating shared state during PhysX callback iterations.
+        local_hits: List[Tuple[str, bool]] = []
         for b in stomped_brains:
-            if not any(h[0] == b.prim_path for h in self._pending_hits):
-                self._pending_hits.append((b.prim_path, True))
-            else:
-                for idx, (hp, hs) in enumerate(self._pending_hits):
-                    if hp == b.prim_path and not hs:
-                        self._pending_hits[idx] = (hp, True)
-                        break
-
+            local_hits.append((b.prim_path, True))
         for b in collided_brains:
-            if not any(h[0] == b.prim_path for h in self._pending_hits):
-                self._pending_hits.append((b.prim_path, False))
+            local_hits.append((b.prim_path, False))
+
+        if local_hits:
+            with self._hits_lock:
+                for b_path, is_stomp in local_hits:
+                    idx_found = -1
+                    for idx, (hp, hs) in enumerate(self._pending_hits):
+                        if hp == b_path:
+                            idx_found = idx
+                            break
+                    if idx_found == -1:
+                        self._pending_hits.append((b_path, is_stomp))
+                    elif is_stomp and not self._pending_hits[idx_found][1]:
+                        self._pending_hits[idx_found] = (b_path, True)
 
     # -------------------------------------------------------------------------
     # Physics Simulation Step (O(N) iteration - ZERO per-frame traversals)
@@ -905,7 +935,7 @@ class HydragonFoesControllerSystem:
         if not self._is_simulating or not HAS_KIT or not self._active_brains:
             return
 
-        stage = omni.usd.get_context().get_stage()
+        stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
         if not stage:
             return
 
@@ -968,9 +998,10 @@ class HydragonFoesControllerSystem:
             brain.set_current_pos(world_pos)
 
             # Check if fallen below stage boundary (kill floor)
-            if world_pos[1] < -300.0:
-                if not any(h[0] == prim_path for h in self._pending_hits):
-                    self._pending_hits.append((prim_path, False))
+            if world_pos[1] < self.KILL_FLOOR_Y:
+                with self._hits_lock:
+                    if not any(h[0] == prim_path for h in self._pending_hits):
+                        self._pending_hits.append((prim_path, False))
                 dead_paths.append(prim_path)
                 continue
 
@@ -986,13 +1017,16 @@ class HydragonFoesControllerSystem:
                 # Expand threshold to 135cm to reliably catch dynamic high-velocity collisions and post-solver bounces
                 if dist_3d <= 135.0 or (horiz_dist < 120.0 and abs(dy) < 110.0):
                     is_stomp = (horiz_dist < 90.0 and 20.0 < dy < 150.0)
-                    if not any(h[0] == prim_path for h in self._pending_hits):
-                        self._pending_hits.append((prim_path, is_stomp))
-                    elif is_stomp:
+                    with self._hits_lock:
+                        idx_found = -1
                         for idx, (hp, hs) in enumerate(self._pending_hits):
-                            if hp == prim_path and not hs:
-                                self._pending_hits[idx] = (hp, True)
+                            if hp == prim_path:
+                                idx_found = idx
                                 break
+                        if idx_found == -1:
+                            self._pending_hits.append((prim_path, is_stomp))
+                        elif is_stomp and not self._pending_hits[idx_found][1]:
+                            self._pending_hits[idx_found] = (prim_path, True)
                     self._apply_player_bounce(
                         stage,
                         stage_id=stage_id,
