@@ -89,8 +89,49 @@ def _has_api_schema(prim, schema_name: str) -> bool:
     return False
 
 
-def _get_attr_value(prim, attr_name: str, default):
-    """Fail-silent getter for an attribute."""
+class _InMemoryMockPrim:
+    """Lightweight fallback mock prim for headless testing and attribute caching when prim is None."""
+    def __init__(self):
+        self._attrs = {}
+
+    def HasAttribute(self, name: str) -> bool:
+        return name in self._attrs
+
+    def GetAttribute(self, name: str):
+        if name in self._attrs:
+            return self._attrs[name]
+        return None
+
+    def CreateAttribute(self, name: str, type_name=None, custom=False):
+        class _MockAttr:
+            def __init__(self, owner, attr_name):
+                self._owner = owner
+                self._name = attr_name
+                self._val = None
+            def IsValid(self) -> bool:
+                return True
+            def Get(self):
+                return self._val
+            def Set(self, val):
+                self._val = val
+                return True
+        attr = _MockAttr(self, name)
+        self._attrs[name] = attr
+        return attr
+
+    def IsValid(self) -> bool:
+        return True
+
+    def GetPath(self):
+        class _MockPath:
+            pathString = ""
+        return _MockPath()
+
+
+def _get_attr_value(prim, attr_name: str, default, fallback_dict: Optional[dict] = None):
+    """Fail-silent getter for an attribute with in-memory fallback support."""
+    if fallback_dict is not None and attr_name in fallback_dict:
+        return fallback_dict[attr_name]
     if not prim or not hasattr(prim, "GetAttribute"):
         return default
     try:
@@ -103,8 +144,10 @@ def _get_attr_value(prim, attr_name: str, default):
         return default
 
 
-def _set_attr_value(prim, attr_name: str, value, type_name):
+def _set_attr_value(prim, attr_name: str, value, type_name, fallback_dict: Optional[dict] = None):
     """Safe setter for an attribute, only writing if the value has changed."""
+    if fallback_dict is not None:
+        fallback_dict[attr_name] = value
     if not prim or not hasattr(prim, "IsValid") or not prim.IsValid():
         return
     try:
@@ -1099,7 +1142,12 @@ class HydragonForceVolume:
     SCHEMA_NAME = "HydragonForceVolumeAPI"
 
     def __init__(self, prim):
-        self._prim = prim
+        self._orig_prim = prim
+        self._prim = prim if prim is not None else _InMemoryMockPrim()
+
+    @property
+    def prim(self):
+        return self._orig_prim
 
     @classmethod
     def apply(
@@ -1357,7 +1405,12 @@ class HydragonKillVolume:
     SCHEMA_NAME = "HydragonKillVolumeAPI"
 
     def __init__(self, prim):
-        self._prim = prim
+        self._orig_prim = prim
+        self._prim = prim if prim is not None else _InMemoryMockPrim()
+
+    @property
+    def prim(self):
+        return self._orig_prim
 
     @classmethod
     def apply(

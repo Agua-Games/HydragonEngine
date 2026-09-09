@@ -328,6 +328,11 @@ class HydragonFoesControllerSystem:
     def is_active_and_simulating(self) -> bool:
         return self._is_active and self._is_simulating
 
+    def queue_foe_destruction(self, prim_path: str, is_stomp: bool = False):
+        """Queues a foe for clean destruction on the main thread (invoked by kill volumes or hazard systems)."""
+        with self._hits_lock:
+            self._pending_hits.append((prim_path, is_stomp))
+
     def startup(self):
         """Initializes subscriptions to timeline, physics step, and app updates."""
         if not HAS_KIT:

@@ -94,6 +94,7 @@ class HydragonPlayerControllerSystem:
         self._configured_rb_paths: Set[str] = set()
         self._last_world_pos: Tuple[float, float, float] = (0.0, 0.0, 0.0)
         self._spawn_pos: Tuple[float, float, float] = (0.0, 50.0, -1000.0)
+        self._custom_respawn_target: Optional[Tuple[float, float, float]] = None
         self._needs_respawn: bool = False
         self._is_respawning: bool = False
         self._respawn_cooldown: float = 0.0
@@ -105,6 +106,17 @@ class HydragonPlayerControllerSystem:
 
     def is_active_and_simulating(self) -> bool:
         return self._is_active and self._is_simulating
+
+    def request_respawn(self, custom_spawn_pos: Optional[Tuple[float, float, float]] = None):
+        """
+        Public method to safely trigger a player respawn.
+        Can be invoked by KillVolumeSystem, hazard triggers, or gameplay scripts.
+        """
+        if custom_spawn_pos is not None:
+            self._custom_respawn_target = custom_spawn_pos
+        else:
+            self._custom_respawn_target = None
+        self._needs_respawn = True
 
     def get_player_rb_path(self) -> Optional[str]:
         return self._cached_rb_path
@@ -857,7 +869,9 @@ class HydragonPlayerControllerSystem:
         rb_prim = self.get_rigid_body_prim(player_prim)
         rb_path_str = rb_prim.GetPath().pathString if rb_prim else None
 
-        spawn_x, spawn_y, spawn_z = self._spawn_pos
+        target_pos = self._custom_respawn_target if self._custom_respawn_target is not None else self._spawn_pos
+        self._custom_respawn_target = None
+        spawn_x, spawn_y, spawn_z = target_pos
         # Safe spawn height (at least 120cm above floor) to prevent ground box interpenetration and tunneling
         safe_y = max(120.0, spawn_y)
         self._last_world_pos = (spawn_x, safe_y, spawn_z)

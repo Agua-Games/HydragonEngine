@@ -50,7 +50,21 @@ class HydragonEditorCoreExtension(_IExt):
         self._soundtrack_system = HydragonSoundtrackSystem()
         self._soundtrack_system.startup()
 
+        from .force_volume_controller import HydragonForceVolumeSystem
+        self._force_volume_system = HydragonForceVolumeSystem()
+        self._force_volume_system.startup()
+
+        from .kill_volume_controller import HydragonKillVolumeSystem
+        self._kill_volume_system = HydragonKillVolumeSystem()
+        self._kill_volume_system.startup()
+
     def on_shutdown(self):
+        if hasattr(self, "_kill_volume_system") and self._kill_volume_system:
+            self._kill_volume_system.shutdown()
+            self._kill_volume_system = None
+        if hasattr(self, "_force_volume_system") and self._force_volume_system:
+            self._force_volume_system.shutdown()
+            self._force_volume_system = None
         if hasattr(self, "_soundtrack_system") and self._soundtrack_system:
             self._soundtrack_system.shutdown()
             self._soundtrack_system = None
