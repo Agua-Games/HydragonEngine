@@ -255,6 +255,22 @@ class HydragonMenuManager:
                 onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_game_manager/game_manager.usda", "GameManager", as_payload=False)
             ),
             MenuItemDescription(
+                name="UI System (Complete)",
+                onclick_fn=lambda: self._instantiate_asset("assets/ui/hydragon_ui_system/ui_system.usda", "UI", as_payload=False)
+            ),
+            MenuItemDescription(
+                name="Main Menu",
+                onclick_fn=lambda: self._instantiate_asset("assets/ui/hydragon_main_menu/main_menu.usda", "MainMenu", as_payload=False)
+            ),
+            MenuItemDescription(
+                name="Pause Menu",
+                onclick_fn=lambda: self._instantiate_asset("assets/ui/hydragon_pause_menu/pause_menu.usda", "PauseMenu", as_payload=False)
+            ),
+            MenuItemDescription(
+                name="Settings Menu",
+                onclick_fn=lambda: self._instantiate_asset("assets/ui/hydragon_settings_menu/settings_menu.usda", "SettingsMenu", as_payload=False)
+            ),
+            MenuItemDescription(
                 name="UI Canvas (Game HUD)",
                 onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_ui_canvas/ui_canvas.usda", "UICanvas", as_payload=False)
             ),
@@ -361,6 +377,22 @@ class HydragonMenuManager:
                 {
                     "name": "Game Manager",
                     "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_game_manager/game_manager.usda", "GameManager", as_payload=False)
+                },
+                {
+                    "name": "UI System (Complete)",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/ui/hydragon_ui_system/ui_system.usda", "UI", as_payload=False)
+                },
+                {
+                    "name": "Main Menu",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/ui/hydragon_main_menu/main_menu.usda", "MainMenu", as_payload=False)
+                },
+                {
+                    "name": "Pause Menu",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/ui/hydragon_pause_menu/pause_menu.usda", "PauseMenu", as_payload=False)
+                },
+                {
+                    "name": "Settings Menu",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/ui/hydragon_settings_menu/settings_menu.usda", "SettingsMenu", as_payload=False)
                 },
                 {
                     "name": "UI Canvas (Game HUD)",

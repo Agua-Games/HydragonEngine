@@ -31,9 +31,15 @@ game_stage.usda (Macro / Master Stage - Root)
 ├── /World/Singletons (Persistent Systems across game lifetime)
 │   ├── SoundtrackManager      [HydragonSoundtrackAPI]  (BGM, dynamic cross-fading)
 │   ├── GameManager            [HydragonGameAPI]        (Rules, global score, state)
-│   ├── UICanvas               [HydragonUICanvasAPI]    (HUD, countdowns, popups)
 │   ├── EffectsManager         [HydragonEffectsAPI]     (VFX pools, particle mode)
 │   └── SaveGameStats          [HydragonSaveStatsAPI]   (Persistent inventory, quests)
+│
+├── /World/UI (User Interface Component Hierarchy)
+│   ├── Menus
+│   │   ├── MainMenu           [HydragonUICanvasAPI]    (hud:canvasType="MainMenu", Start, Settings, Quit)
+│   │   └── SettingsMenu       [HydragonUICanvasAPI]    (hud:canvasType="SettingsMenu", Audio & Display sliders)
+│   ├── GameHUD                [HydragonUICanvasAPI]    (hud:canvasType="InGame", Health, Score, Combo, Boost)
+│   └── PauseMenu              [HydragonUICanvasAPI]    (hud:canvasType="PauseMenu", Resume, Restart, Settings, Quit)
 │
 ├── /World/Sublevels (Referenced or Payloaded Sub-Stages)
 │   │
@@ -101,14 +107,55 @@ def Xform "World"
         int game:totalFoes = 10
     }
 
-    def Xform "GameHUD" (
-        prepend apiSchemas = ["HydragonUICanvasAPI"]
-    )
+    # -------------------------------------------------------------------------
+    # UI Hierarchy (HUD & Menus)
+    # -------------------------------------------------------------------------
+    def Xform "UI"
     {
-        bool hud:showControls = true
-        bool hud:showCountdown = true
-        bool hud:showScorePopups = true
-        bool hud:autoActivateOnPlay = true
+        def Xform "Menus"
+        {
+            def Xform "MainMenu" (
+                prepend apiSchemas = ["HydragonUICanvasAPI"]
+            )
+            {
+                token hud:canvasType = "MainMenu"
+                string hud:title = "HYDRAGON"
+                bool hud:showStartGame = true
+                bool hud:showSettings = true
+                bool hud:showQuit = true
+                bool hud:autoActivateOnPlay = true
+            }
+
+            def Xform "SettingsMenu" (
+                prepend apiSchemas = ["HydragonUICanvasAPI"]
+            )
+            {
+                token hud:canvasType = "SettingsMenu"
+                string hud:title = "SETTINGS"
+            }
+        }
+
+        def Xform "GameHUD" (
+            prepend apiSchemas = ["HydragonUICanvasAPI"]
+        )
+        {
+            token hud:canvasType = "InGame"
+            bool hud:showHealth = true
+            bool hud:showScore = true
+            bool hud:autoActivateOnPlay = true
+        }
+
+        def Xform "PauseMenu" (
+            prepend apiSchemas = ["HydragonUICanvasAPI"]
+        )
+        {
+            token hud:canvasType = "PauseMenu"
+            string hud:title = "PAUSED"
+            bool hud:showResume = true
+            bool hud:showRestart = true
+            bool hud:showSettings = true
+            bool hud:showQuit = true
+        }
     }
 
     def Xform "EffectsManager" (
@@ -141,7 +188,11 @@ def Xform "World"
 | Subsystem | API Schema Name | Python Schema Wrapper | Menu Location |
 | :--- | :--- | :--- | :--- |
 | **Soundtrack** | `HydragonSoundtrackAPI` | `HydragonSoundtrack` | `Create > Hydragon > Soundtrack Manager` |
-| **UI HUD** | `HydragonUICanvasAPI` | `HydragonUICanvas` | `Create > Hydragon > UI Canvas (Game HUD)` |
+| **UI System (Complete)** | `HydragonUICanvasAPI` | `HydragonUICanvas` / `HydragonUISystem` | `Create > Hydragon > UI System (Complete)` |
+| **Main Menu** | `HydragonUICanvasAPI` | `HydragonUICanvas` (`canvasType="MainMenu"`) | `Create > Hydragon > Main Menu` |
+| **Pause Menu** | `HydragonUICanvasAPI` | `HydragonUICanvas` (`canvasType="PauseMenu"`) | `Create > Hydragon > Pause Menu` |
+| **Settings Menu** | `HydragonUICanvasAPI` | `HydragonUICanvas` (`canvasType="SettingsMenu"`) | `Create > Hydragon > Settings Menu` |
+| **UI Canvas (Game HUD)** | `HydragonUICanvasAPI` | `HydragonUICanvas` (`canvasType="InGame"`) | `Create > Hydragon > UI Canvas (Game HUD)` |
 | **Effects VFX** | `HydragonEffectsAPI` | `HydragonEffectsManager` | `Create > Hydragon > Effects Manager` |
 | **Game Rules** | `HydragonGameAPI` | `HydragonGameManager` | `Create > Hydragon > Game Manager` |
 | **Player** | `HydragonPlayerControllerAPI` | `HydragonPlayerController` | `Create > Hydragon > Player Ball` |

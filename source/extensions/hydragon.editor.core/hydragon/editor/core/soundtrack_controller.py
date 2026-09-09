@@ -342,6 +342,13 @@ class HydragonSoundtrackSystem:
 
     def _handle_timeline_pause(self):
         """Pauses soundtrack playback on simulation pause."""
+        try:
+            from .game_hud import HydragonGameHUD
+            hud = HydragonGameHUD.get_instance()
+            if hud and hud.is_menu_active:
+                return
+        except Exception:
+            pass
         self.pause_track()
 
     # -------------------------------------------------------------------------

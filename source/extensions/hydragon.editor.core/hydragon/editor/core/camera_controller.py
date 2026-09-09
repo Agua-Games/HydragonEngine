@@ -249,7 +249,14 @@ class HydragonCameraControllerSystem:
                 self._last_mouse_pos = None
                 if carb:
                     carb.log_info("[hydragon.editor.core] Simulation started. Follow Camera ACTIVE (cameraLock=True).")
-            elif event_type in (int(omni.timeline.TimelineEventType.STOP), int(omni.timeline.TimelineEventType.PAUSE)):
+            elif event_type == int(omni.timeline.TimelineEventType.PAUSE):
+                self._is_simulating = False
+                self._is_rmb_down = False
+                self._is_mmb_down = False
+                self._last_mouse_pos = None
+                if carb:
+                    carb.log_info("[hydragon.editor.core] Simulation paused. Follow Camera suspended (cameraLock preserved).")
+            elif event_type == int(omni.timeline.TimelineEventType.STOP):
                 self._is_simulating = False
                 self._is_rmb_down = False
                 self._is_mmb_down = False
@@ -260,8 +267,9 @@ class HydragonCameraControllerSystem:
                 self._last_probe_desired = None
                 self._last_probe_result = None
                 self._set_camera_lock(False)
+                self._restore_viewport_camera()
                 if carb:
-                    carb.log_info("[hydragon.editor.core] Simulation stopped/paused. Follow Camera INACTIVE (cameraLock=False).")
+                    carb.log_info("[hydragon.editor.core] Simulation stopped. Follow Camera INACTIVE (cameraLock=False).")
         except Exception:
             pass
 

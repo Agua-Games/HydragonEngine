@@ -265,6 +265,239 @@ def test_game_hud_dormant_without_canvas():
     hud.shutdown()
 
 
+def test_main_menu_lifecycle_and_start_game():
+    print("--- 8. Testing Main Menu Lifecycle and Start Game ---")
+    from hydragon.editor.core.game_hud import HydragonUISystem
+    assert HydragonUISystem is HydragonGameHUD, "HydragonUISystem must alias HydragonGameHUD"
+
+    ui = HydragonUISystem()
+    ui.startup()
+
+    class MockCanvasPrim:
+        def __init__(self, path="/World/UI/Menus/MainMenu", canvas_type="MainMenu"):
+            self._path = path
+            self._type = canvas_type
+        def IsValid(self):
+            return True
+        def GetPath(self):
+            return self._path
+        def HasAttribute(self, name):
+            return True
+        def GetAttribute(self, name):
+            vals = {
+                "hud:canvasType": self._type,
+                "hud:title": "HYDRAGON",
+                "hud:subtitle": "A High-Performance OpenUSD Experience",
+                "hud:showStartGame": True,
+                "hud:showSettings": True,
+                "hud:showQuit": True,
+                "hud:autoActivateOnPlay": True,
+            }
+            class MockAttr:
+                def __init__(self, val):
+                    self._val = val
+                def IsValid(self):
+                    return True
+                def Get(self):
+                    return self._val
+            return MockAttr(vals.get(name))
+
+    from hydragon.editor.core.schemas import HydragonUICanvas
+    canvas = HydragonUICanvas(MockCanvasPrim())
+    ui._apply_canvas_schema(canvas)
+
+    assert ui.is_main_menu_active is True
+    assert ui.active_menu_type == "MainMenu"
+    assert ui.is_menu_active is True
+    print("  [PASS] Main Menu activated properly from schema binding")
+
+    # Start Game transition
+    ui.start_game()
+    assert ui.is_main_menu_active is False
+    assert ui.active_menu_type is None
+    assert ui.is_menu_active is False
+    print("  [PASS] start_game() transitioned from MainMenu to in-game state")
+
+    ui.shutdown()
+
+
+def test_pause_menu_lifecycle_and_resume():
+    print("--- 9. Testing Pause Menu Lifecycle and Resume ---")
+    ui = HydragonGameHUD()
+    ui.startup()
+
+    # Simulate in-game state
+    ui._is_simulating = True
+    assert ui.is_menu_active is False
+
+    # Open Pause Menu
+    ui.open_pause_menu()
+    assert ui.is_pause_menu_active is True
+    assert ui.active_menu_type == "PauseMenu"
+    assert ui.is_menu_active is True
+    print("  [PASS] Pause Menu opened")
+
+    # Resume Game
+    ui.resume_game()
+    assert ui.is_pause_menu_active is False
+    assert ui.active_menu_type is None
+    assert ui.is_menu_active is False
+    print("  [PASS] Pause Menu resumed to gameplay")
+
+    ui.shutdown()
+
+
+def test_settings_menu_navigation():
+    print("--- 10. Testing Settings Menu Navigation (From MainMenu & PauseMenu) ---")
+    ui = HydragonGameHUD()
+    ui.startup()
+
+    # 1. Navigation from MainMenu -> Settings -> Back to MainMenu
+    ui._open_main_menu()
+    assert ui.is_main_menu_active is True
+
+    ui.open_settings_menu()
+    assert ui.is_settings_menu_active is True
+    assert ui.active_menu_type == "SettingsMenu"
+    assert ui._previous_menu == "MainMenu"
+    assert ui.is_main_menu_active is False
+
+    ui.back_from_settings()
+    assert ui.is_settings_menu_active is False
+    assert ui.active_menu_type == "MainMenu"
+    assert ui.is_main_menu_active is True
+    print("  [PASS] MainMenu <-> SettingsMenu navigation verified")
+
+    # 2. Navigation from PauseMenu -> Settings -> Back to PauseMenu
+    ui.open_pause_menu()
+    assert ui.is_pause_menu_active is True
+    assert ui.active_menu_type == "PauseMenu"
+
+    ui.open_settings_menu()
+    assert ui.is_settings_menu_active is True
+    assert ui.active_menu_type == "SettingsMenu"
+    assert ui._previous_menu == "PauseMenu"
+    assert ui.is_pause_menu_active is False
+
+    ui.back_from_settings()
+    assert ui.is_settings_menu_active is False
+    assert ui.active_menu_type == "PauseMenu"
+    assert ui.is_pause_menu_active is True
+    print("  [PASS] PauseMenu <-> SettingsMenu navigation verified")
+
+    ui.shutdown()
+
+
+def test_ui_hierarchy_multi_canvas_discovery():
+    print("--- 11. Testing Multi-Canvas Stage Hierarchy Discovery ---")
+    ui = HydragonGameHUD()
+    ui.startup()
+
+    class MockPrim:
+        def __init__(self, path, canvas_type):
+            self._path = path
+            self._type = canvas_type
+        def IsValid(self):
+            return True
+        def GetPath(self):
+            return self._path
+        def HasAttribute(self, name):
+            return name in ("hud:canvasType", "hud:autoActivateOnPlay")
+        def GetAttribute(self, name):
+            class MockAttr:
+                def __init__(self, val):
+                    self._val = val
+                def IsValid(self):
+                    return True
+                def Get(self):
+                    return self._val
+            if name == "hud:canvasType":
+                return MockAttr(self._type)
+            elif name == "hud:autoActivateOnPlay":
+                return MockAttr(True)
+            return MockAttr(None)
+
+    class MockStage:
+        def __init__(self):
+            self.prims = {
+                "/World/UI/Menus/MainMenu": MockPrim("/World/UI/Menus/MainMenu", "MainMenu"),
+                "/World/UI/Menus/SettingsMenu": MockPrim("/World/UI/Menus/SettingsMenu", "SettingsMenu"),
+                "/World/UI/GameHUD": MockPrim("/World/UI/GameHUD", "InGame"),
+                "/World/UI/PauseMenu": MockPrim("/World/UI/PauseMenu", "PauseMenu"),
+            }
+        def GetPrimAtPath(self, path):
+            return self.prims.get(path, None)
+
+    # Call _discover_canvas_config directly with our mock stage
+    ui._discover_canvas_config(MockStage())
+
+    assert "MainMenu" in ui._canvases
+    assert "SettingsMenu" in ui._canvases
+    assert "InGame" in ui._canvases
+    assert "PauseMenu" in ui._canvases
+    assert ui.is_main_menu_active is True
+    assert ui.active_menu_type == "MainMenu"
+    print("  [PASS] Discovered all 4 canvases from /World/UI hierarchy and activated MainMenu")
+
+    ui.shutdown()
+
+
+def test_game_hud_simulation_pause_lifecycle():
+    print("--- 12. Testing Simulation Pause / Resume Lifecycle ---")
+    ui = HydragonGameHUD()
+    ui.startup()
+
+    assert ui.is_paused is False
+    assert ui.is_game_started is False
+
+    # Simulate discovering MainMenu: _pending_menu_pause should be set
+    class MockMainMenuCanvas:
+        def __init__(self):
+            self.canvas_type = "MainMenu"
+            self.title = "TITLE"
+            self.subtitle = "SUBTITLE"
+            self.show_start_game = True
+            self.show_settings = False
+            self.show_quit = False
+            self.auto_activate_on_play = True
+            class MockPrim:
+                def GetPath(self):
+                    return "/World/UI/Menus/MainMenu"
+            self.prim = MockPrim()
+
+    ui._apply_canvas_schema(MockMainMenuCanvas())
+    assert ui.is_main_menu_active is True
+    assert ui._pending_menu_pause is True
+
+    # Start Game: activates gameplay, unpauses, clears pending
+    ui.start_game(play_timeline=True)
+    assert ui.is_game_started is True
+    assert ui.is_paused is False
+    assert ui._pending_menu_pause is False
+    assert ui.is_main_menu_active is False
+
+    # Open Pause Menu: pauses game
+    ui.open_pause_menu(pause_timeline=True)
+    assert ui.is_paused is True
+    assert ui.is_pause_menu_active is True
+
+    # Resume Game: unpauses
+    ui.resume_game(resume_timeline=True)
+    assert ui.is_paused is False
+    assert ui.is_pause_menu_active is False
+
+    # Quit to Main Menu: returns to main menu, pauses, and resets game_started
+    ui.quit_to_main_menu()
+    assert ui.is_main_menu_active is True
+    assert ui.is_game_started is False
+    assert ui.is_paused is True
+
+    ui.shutdown()
+    assert ui.is_paused is False
+    assert ui.is_game_started is False
+    print("  [PASS] Simulation pause/resume lifecycle verified")
+
+
 if __name__ == "__main__":
     test_game_hud_lifecycle()
     test_countdown_state_machine()
@@ -273,6 +506,12 @@ if __name__ == "__main__":
     test_canvas_config_binding()
     test_controls_frame_and_window_lifecycle()
     test_game_hud_dormant_without_canvas()
+    test_main_menu_lifecycle_and_start_game()
+    test_pause_menu_lifecycle_and_resume()
+    test_settings_menu_navigation()
+    test_ui_hierarchy_multi_canvas_discovery()
+    test_game_hud_simulation_pause_lifecycle()
     print("\n=======================================================")
-    print(" ALL GAME HUD TESTS PASSED! (7/7)")
+    print(" ALL GAME HUD & MENU TESTS PASSED! (12/12)")
     print("=======================================================")
+

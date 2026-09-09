@@ -27,6 +27,10 @@ def test_syntax_usda_files():
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_ui_canvas", "ui_canvas.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_effects_manager", "effects_manager.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "test_stage_rolling_ball.usda"),
+        os.path.join(gameplay_dir, "assets", "ui", "hydragon_ui_system", "ui_system.usda"),
+        os.path.join(gameplay_dir, "assets", "ui", "hydragon_main_menu", "main_menu.usda"),
+        os.path.join(gameplay_dir, "assets", "ui", "hydragon_pause_menu", "pause_menu.usda"),
+        os.path.join(gameplay_dir, "assets", "ui", "hydragon_settings_menu", "settings_menu.usda"),
     ]
 
     all_passed = True
@@ -166,6 +170,13 @@ def test_python_module():
 
     canvas = HydragonUICanvas(None)
     assert canvas.canvas_type == "InGame"
+    assert canvas.title == ""
+    assert canvas.subtitle == ""
+    assert canvas.show_start_game is True
+    assert canvas.show_resume is True
+    assert canvas.show_restart is True
+    assert canvas.show_settings is True
+    assert canvas.show_quit is True
     assert canvas.show_controls is True
     assert canvas.show_countdown is True
     assert canvas.show_score_popups is True
@@ -258,6 +269,21 @@ def test_pxr_stage():
     assert canvas.show_score_popups is True
     canvas.show_controls = True
     assert canvas.show_controls is True
+
+    menu_prim = stage.DefinePrim("/World/UI/Menus/MainMenu", "Xform")
+    main_menu = HydragonUICanvas.apply(
+        menu_prim,
+        canvas_type="MainMenu",
+        title="HYDRAGON ENGINE",
+        subtitle="Test Subtitle",
+        show_start_game=True,
+        show_settings=True,
+    )
+    assert HydragonUICanvas.is_applied(menu_prim)
+    assert main_menu.canvas_type == "MainMenu"
+    assert main_menu.title == "HYDRAGON ENGINE"
+    assert main_menu.subtitle == "Test Subtitle"
+    assert main_menu.show_start_game is True
     print("  [PASS] HydragonUICanvas schema applied, queried and mutated on Usd.Stage")
 
 

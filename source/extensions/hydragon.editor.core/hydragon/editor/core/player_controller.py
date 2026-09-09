@@ -250,15 +250,30 @@ class HydragonPlayerControllerSystem:
                 if stage:
                     player_prim = self.find_player_prim(stage)
                     if player_prim:
-                        # Restore player input if previously disabled by victory/game over
+                        # Restore player input if previously disabled by victory/game over, unless menu is active
                         ctl = HydragonPlayerController(player_prim)
-                        ctl.input_enabled = True
+                        menu_active = False
+                        try:
+                            from .game_hud import HydragonGameHUD
+                            hud = HydragonGameHUD.get_instance()
+                            if hud and hud.is_menu_active:
+                                menu_active = True
+                        except Exception:
+                            pass
+                        ctl.input_enabled = not menu_active
                         rb_p = self.get_rigid_body_prim(player_prim)
                         if rb_p:
                             self._spawn_pos = self._compute_prim_usd_world_pos(rb_p)
                 if carb:
                     carb.log_info("[hydragon.editor.core] Play mode started. Player Controller ACTIVE.")
-            elif event_type in (int(omni.timeline.TimelineEventType.STOP), int(omni.timeline.TimelineEventType.PAUSE)):
+            elif event_type == int(omni.timeline.TimelineEventType.PAUSE):
+                self._is_simulating = False
+                self._keys_down.clear()
+                self._jump_requested = False
+                self._jump_consumed = False
+                if carb:
+                    carb.log_info("[hydragon.editor.core] Simulation paused. Player Controller suspended.")
+            elif event_type == int(omni.timeline.TimelineEventType.STOP):
                 self._is_simulating = False
                 self._keys_down.clear()
                 self._jump_requested = False
@@ -274,7 +289,7 @@ class HydragonPlayerControllerSystem:
                         ctl = HydragonPlayerController(player_prim)
                         ctl.input_enabled = True
                 if carb:
-                    carb.log_info("[hydragon.editor.core] Play mode stopped/paused. Player Controller INACTIVE.")
+                    carb.log_info("[hydragon.editor.core] Play mode stopped. Player Controller INACTIVE.")
         except Exception:
             pass
 

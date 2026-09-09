@@ -540,19 +540,32 @@ class HydragonTriggerSystem:
                 if stage:
                     self._discover_entities_once(stage)
                     try:
-                        from .player_controller import HydragonPlayerControllerSystem
-                        p_sys = HydragonPlayerControllerSystem.get_instance()
-                        if p_sys:
-                            p_prim = p_sys.find_player_prim(stage)
-                            if p_prim:
-                                HydragonPlayerController(p_prim).input_enabled = True
+                        menu_active = False
+                        try:
+                            from .game_hud import HydragonGameHUD
+                            hud = HydragonGameHUD.get_instance()
+                            if hud and hud.is_menu_active:
+                                menu_active = True
+                        except Exception:
+                            pass
+                        if not menu_active:
+                            from .player_controller import HydragonPlayerControllerSystem
+                            p_sys = HydragonPlayerControllerSystem.get_instance()
+                            if p_sys:
+                                p_prim = p_sys.find_player_prim(stage)
+                                if p_prim:
+                                    HydragonPlayerController(p_prim).input_enabled = True
                     except Exception:
                         pass
                 if carb:
                     carb.log_info(
                         f"[hydragon.editor.core] Play mode started. Registered {len(self._active_triggers)} triggers."
                     )
-            elif event_type in (int(omni.timeline.TimelineEventType.STOP), int(omni.timeline.TimelineEventType.PAUSE)):
+            elif event_type == int(omni.timeline.TimelineEventType.PAUSE):
+                self._is_simulating = False
+                if carb:
+                    carb.log_info("[hydragon.editor.core] Simulation paused. Triggers suspended.")
+            elif event_type == int(omni.timeline.TimelineEventType.STOP):
                 self._is_simulating = False
                 # Reset sound_played state on all triggers
                 for zone in self._active_triggers.values():

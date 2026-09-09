@@ -721,6 +721,13 @@ class HydragonUICanvas:
         show_countdown: bool = True,
         show_score_popups: bool = True,
         auto_activate_on_play: bool = True,
+        title: str = "",
+        subtitle: str = "",
+        show_start_game: bool = True,
+        show_resume: bool = True,
+        show_restart: bool = True,
+        show_settings: bool = True,
+        show_quit: bool = True,
     ):
         _ensure_api_schema(prim, cls.SCHEMA_NAME)
         canvas = cls(prim)
@@ -729,12 +736,23 @@ class HydragonUICanvas:
         canvas.show_countdown = show_countdown
         canvas.show_score_popups = show_score_popups
         canvas.auto_activate_on_play = auto_activate_on_play
+        if title:
+            canvas.title = title
+        if subtitle:
+            canvas.subtitle = subtitle
+        canvas.show_start_game = show_start_game
+        canvas.show_resume = show_resume
+        canvas.show_restart = show_restart
+        canvas.show_settings = show_settings
+        canvas.show_quit = show_quit
         return canvas
 
     @classmethod
     def is_applied(cls, prim) -> bool:
         return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
-            prim and hasattr(prim, "HasAttribute") and prim.HasAttribute("hud:canvasType")
+            prim and hasattr(prim, "HasAttribute") and (
+                prim.HasAttribute("hud:canvasType") or prim.HasAttribute("hud:title")
+            )
         )
 
     @property
@@ -747,7 +765,23 @@ class HydragonUICanvas:
 
     @canvas_type.setter
     def canvas_type(self, val: str):
-        _set_attr_value(self._prim, "hud:canvasType", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(self._prim, "hud:canvasType", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def title(self) -> str:
+        return str(_get_attr_value(self._prim, "hud:title", ""))
+
+    @title.setter
+    def title(self, val: str):
+        _set_attr_value(self._prim, "hud:title", str(val), Sdf.ValueTypeNames.String if HAS_PXR else None)
+
+    @property
+    def subtitle(self) -> str:
+        return str(_get_attr_value(self._prim, "hud:subtitle", ""))
+
+    @subtitle.setter
+    def subtitle(self, val: str):
+        _set_attr_value(self._prim, "hud:subtitle", str(val), Sdf.ValueTypeNames.String if HAS_PXR else None)
 
     @property
     def show_controls(self) -> bool:
@@ -772,6 +806,46 @@ class HydragonUICanvas:
     @show_score_popups.setter
     def show_score_popups(self, val: bool):
         _set_attr_value(self._prim, "hud:showScorePopups", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def show_start_game(self) -> bool:
+        return bool(_get_attr_value(self._prim, "hud:showStartGame", True))
+
+    @show_start_game.setter
+    def show_start_game(self, val: bool):
+        _set_attr_value(self._prim, "hud:showStartGame", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def show_resume(self) -> bool:
+        return bool(_get_attr_value(self._prim, "hud:showResume", True))
+
+    @show_resume.setter
+    def show_resume(self, val: bool):
+        _set_attr_value(self._prim, "hud:showResume", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def show_restart(self) -> bool:
+        return bool(_get_attr_value(self._prim, "hud:showRestart", True))
+
+    @show_restart.setter
+    def show_restart(self, val: bool):
+        _set_attr_value(self._prim, "hud:showRestart", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def show_settings(self) -> bool:
+        return bool(_get_attr_value(self._prim, "hud:showSettings", True))
+
+    @show_settings.setter
+    def show_settings(self, val: bool):
+        _set_attr_value(self._prim, "hud:showSettings", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def show_quit(self) -> bool:
+        return bool(_get_attr_value(self._prim, "hud:showQuit", True))
+
+    @show_quit.setter
+    def show_quit(self, val: bool):
+        _set_attr_value(self._prim, "hud:showQuit", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
 
     @property
     def auto_activate_on_play(self) -> bool:
