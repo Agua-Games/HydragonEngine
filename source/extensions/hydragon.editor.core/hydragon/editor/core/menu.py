@@ -31,6 +31,8 @@ from .schemas import (
     HydragonUICanvas,
     HydragonSoundtrack,
     HydragonEffectsManager,
+    HydragonForceVolume,
+    HydragonKillVolume,
 )
 
 
@@ -122,8 +124,8 @@ class HydragonMenuManager:
 
         return candidate
 
-    def _instantiate_asset(self, rel_asset_path: str, default_name: str, as_payload: bool = True):
-        """Instances an asset USDA into the current stage using Payload (for actors/props) or Reference (for managers)."""
+    def _instantiate_asset(self, rel_asset_path: str, default_name: str, as_payload: bool = False):
+        """Instances an asset USDA into the current stage using Reference (recommended) or Payload."""
         if not HAS_KIT:
             return
 
@@ -153,19 +155,30 @@ class HydragonMenuManager:
             return
 
         usd_context = omni.usd.get_context()
-        cmd_name = "CreatePayloadCommand" if as_payload else "CreateReferenceCommand"
         success = False
-        try:
-            success, _ = omni.kit.commands.execute(
-                cmd_name,
-                usd_context=usd_context,
-                path_to=Sdf.Path(prim_path),
-                asset_path=full_asset_path,
-                instanceable=False,
-            )
-        except Exception as e:
-            if carb:
-                carb.log_warn(f"[hydragon.editor.core] {cmd_name} error: {e}, falling back to direct USD API")
+
+        if as_payload:
+            # Note: omni.usd.commands.CreatePayloadCommand has an internal bug in omni.usd 1.16+
+            # ('PrimSpec' object has no attribute 'SetInstanceable'). We author payloads directly via OpenUSD API.
+            try:
+                prim = stage.DefinePrim(Sdf.Path(prim_path), "Xform")
+                prim.GetPayloads().AddPayload(assetPath=full_asset_path)
+                success = True
+            except Exception as e:
+                if carb:
+                    carb.log_error(f"[hydragon.editor.core] Direct USD payload authoring failed: {e}")
+        else:
+            try:
+                success, _ = omni.kit.commands.execute(
+                    "CreateReferenceCommand",
+                    usd_context=usd_context,
+                    path_to=Sdf.Path(prim_path),
+                    asset_path=full_asset_path,
+                    instanceable=False,
+                )
+            except Exception as e:
+                if carb:
+                    carb.log_warn(f"[hydragon.editor.core] CreateReferenceCommand error: {e}, falling back to direct USD API")
 
         prim = stage.GetPrimAtPath(prim_path)
         needs_fallback = (
@@ -240,15 +253,15 @@ class HydragonMenuManager:
             # Gameplay Entities / Smart Assets
             MenuItemDescription(
                 name="Player Ball",
-                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_player_ball/player_ball.usda", "PlayerBall", as_payload=True)
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_player_ball/player_ball.usda", "PlayerBall", as_payload=False)
             ),
             MenuItemDescription(
                 name="Foe Ball",
-                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_foe_ball/foe_ball.usda", "FoeBall", as_payload=True)
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_foe_ball/foe_ball.usda", "FoeBall", as_payload=False)
             ),
             MenuItemDescription(
                 name="Goal Hole",
-                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_goal_hole/goal_hole.usda", "GoalHole", as_payload=True)
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_goal_hole/goal_hole.usda", "GoalHole", as_payload=False)
             ),
             MenuItemDescription(
                 name="Game Manager",
@@ -276,7 +289,7 @@ class HydragonMenuManager:
             ),
             MenuItemDescription(
                 name="Character (Kowra)",
-                onclick_fn=lambda: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=True)
+                onclick_fn=lambda: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=False)
             ),
             MenuItemDescription(
                 name="Soundtrack Manager",
@@ -285,6 +298,14 @@ class HydragonMenuManager:
             MenuItemDescription(
                 name="Effects Manager",
                 onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_effects_manager/effects_manager.usda", "EffectsManager", as_payload=False)
+            ),
+            MenuItemDescription(
+                name="Force Volume",
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_force_volume/force_volume.usda", "ForceVolume", as_payload=False)
+            ),
+            MenuItemDescription(
+                name="Kill Volume",
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_kill_volume/kill_volume.usda", "KillVolume", as_payload=False)
             ),
             # Separator
             MenuItemDescription(name=""),
@@ -328,6 +349,14 @@ class HydragonMenuManager:
                         name="Apply HydragonEffectsAPI",
                         onclick_fn=lambda: self._apply_schema(HydragonEffectsManager)
                     ),
+                    MenuItemDescription(
+                        name="Apply HydragonForceVolumeAPI",
+                        onclick_fn=lambda: self._apply_schema(HydragonForceVolume)
+                    ),
+                    MenuItemDescription(
+                        name="Apply HydragonKillVolumeAPI",
+                        onclick_fn=lambda: self._apply_schema(HydragonKillVolume)
+                    ),
                 ]
             )
         ]
@@ -359,20 +388,22 @@ class HydragonMenuManager:
                 {"name": "Apply HydragonUICanvasAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonUICanvas)},
                 {"name": "Apply HydragonSoundtrackAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonSoundtrack)},
                 {"name": "Apply HydragonEffectsAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonEffectsManager)},
+                {"name": "Apply HydragonForceVolumeAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonForceVolume)},
+                {"name": "Apply HydragonKillVolumeAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonKillVolume)},
             ]
 
             hydragon_items = [
                 {
                     "name": "Player Ball",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_player_ball/player_ball.usda", "PlayerBall", as_payload=True)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_player_ball/player_ball.usda", "PlayerBall", as_payload=False)
                 },
                 {
                     "name": "Foe Ball",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_foe_ball/foe_ball.usda", "FoeBall", as_payload=True)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_foe_ball/foe_ball.usda", "FoeBall", as_payload=False)
                 },
                 {
                     "name": "Goal Hole",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_goal_hole/goal_hole.usda", "GoalHole", as_payload=True)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_goal_hole/goal_hole.usda", "GoalHole", as_payload=False)
                 },
                 {
                     "name": "Game Manager",
@@ -400,7 +431,7 @@ class HydragonMenuManager:
                 },
                 {
                     "name": "Character (Kowra)",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=True)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=False)
                 },
                 {
                     "name": "Soundtrack Manager",
@@ -409,6 +440,14 @@ class HydragonMenuManager:
                 {
                     "name": "Effects Manager",
                     "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_effects_manager/effects_manager.usda", "EffectsManager", as_payload=False)
+                },
+                {
+                    "name": "Force Volume",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_force_volume/force_volume.usda", "ForceVolume", as_payload=False)
+                },
+                {
+                    "name": "Kill Volume",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_kill_volume/kill_volume.usda", "KillVolume", as_payload=False)
                 },
                 {"name": ""},
                 {

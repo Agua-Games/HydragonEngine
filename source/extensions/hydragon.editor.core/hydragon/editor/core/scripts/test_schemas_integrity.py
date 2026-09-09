@@ -27,6 +27,8 @@ def test_syntax_usda_files():
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_ui_canvas", "ui_canvas.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_effects_manager", "effects_manager.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "test_stage_rolling_ball.usda"),
+        os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_force_volume", "force_volume.usda"),
+        os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_kill_volume", "kill_volume.usda"),
         os.path.join(gameplay_dir, "assets", "ui", "hydragon_ui_system", "ui_system.usda"),
         os.path.join(gameplay_dir, "assets", "ui", "hydragon_main_menu", "main_menu.usda"),
         os.path.join(gameplay_dir, "assets", "ui", "hydragon_pause_menu", "pause_menu.usda"),
@@ -113,8 +115,10 @@ def test_python_module():
             HydragonUICanvas,
             HydragonSoundtrack,
             HydragonEffectsManager,
+            HydragonForceVolume,
+            HydragonKillVolume,
         )
-        print("  [PASS] Successfully imported all 9 Hydragon API schema classes from hydragon.editor.core")
+        print("  [PASS] Successfully imported all 11 Hydragon API schema classes from hydragon.editor.core")
     except Exception as e:
         print(f"  [FAIL] Failed to import from hydragon.editor.core: {e}")
         return False
@@ -129,6 +133,8 @@ def test_python_module():
     assert HydragonUICanvas.SCHEMA_NAME == "HydragonUICanvasAPI"
     assert HydragonSoundtrack.SCHEMA_NAME == "HydragonSoundtrackAPI"
     assert HydragonEffectsManager.SCHEMA_NAME == "HydragonEffectsAPI"
+    assert HydragonForceVolume.SCHEMA_NAME == "HydragonForceVolumeAPI"
+    assert HydragonKillVolume.SCHEMA_NAME == "HydragonKillVolumeAPI"
     print("  [PASS] All SCHEMA_NAME constants verified")
 
     # Test fallback behavior when prim is None (Fail-Silent)
@@ -202,6 +208,45 @@ def test_python_module():
     assert eff.burst_lifetime == 0.55
     assert eff.auto_initialize_on_play is True
     print("  [PASS] HydragonEffectsManager fail-silent defaults verified")
+
+    fv = HydragonForceVolume(None)
+    assert fv.is_enabled is True
+    assert fv.mode == "Continuous"
+    assert fv.volume_shape == "Box"
+    assert fv.filter_faction == "All"
+    assert fv.impulse_cooldown == 1.0
+    assert fv.linear_enabled is False
+    assert fv.linear_direction == (0.0, 1.0, 0.0)
+    assert fv.linear_magnitude == 500.0
+    assert fv.radial_enabled is False
+    assert fv.radial_magnitude == 1000.0
+    assert fv.radial_falloff == "Linear"
+    assert fv.radial_radius == 500.0
+    assert fv.turbulence_enabled is False
+    assert fv.turbulence_magnitude == 200.0
+    assert fv.turbulence_frequency == 2.0
+    assert fv.dampening_enabled is False
+    assert fv.linear_damping == 0.5
+    assert fv.angular_damping == 0.5
+    assert fv.vortex_enabled is False
+    assert fv.vortex_axis == (0.0, 1.0, 0.0)
+    assert fv.vortex_magnitude == 800.0
+    assert fv.vortex_inward_pull == 200.0
+    print("  [PASS] HydragonForceVolume fail-silent defaults verified")
+
+    kv = HydragonKillVolume(None)
+    assert kv.is_enabled is True
+    assert kv.filter_faction == "All"
+    assert kv.volume_shape == "Box"
+    assert kv.respawn_player is True
+    assert kv.penalty_score == 50
+    assert kv.respawn_delay == 0.5
+    assert kv.destroy_foes_instantly is True
+    assert "achievement_02.wav" in kv.sound_asset_path
+    assert kv.sound_enabled is True
+    assert kv.spawn_effects is True
+    assert kv.respawn_target is None
+    print("  [PASS] HydragonKillVolume fail-silent defaults verified")
 
     from hydragon.editor.core.menu import HydragonMenuManager
     menu_mgr = HydragonMenuManager("hydragon.editor.core")

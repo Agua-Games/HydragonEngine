@@ -198,6 +198,8 @@ def Xform "World"
 | **Player** | `HydragonPlayerControllerAPI` | `HydragonPlayerController` | `Create > Hydragon > Player Ball` |
 | **Chaser AI** | `HydragonChaserAIAPI` | `HydragonChaserAI` | `Create > Hydragon > Foe Ball` |
 | **Triggers** | `HydragonTriggerAPI` | `HydragonTrigger` | `Create > Hydragon > Goal Hole` |
+| **Force Volume** | `HydragonForceVolumeAPI` | `HydragonForceVolume` | `Create > Hydragon > Force Volume` |
+| **Kill Volume** | `HydragonKillVolumeAPI` | `HydragonKillVolume` | `Create > Hydragon > Kill Volume` |
 
 ---
 

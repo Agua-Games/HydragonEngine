@@ -1090,3 +1090,412 @@ class HydragonEffectsManager:
     @auto_initialize_on_play.setter
     def auto_initialize_on_play(self, val: bool):
         _set_attr_value(self._prim, "effects:autoInitializeOnPlay", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+
+# ==============================================================================
+# HydragonForceVolume
+# ==============================================================================
+class HydragonForceVolume:
+    SCHEMA_NAME = "HydragonForceVolumeAPI"
+
+    def __init__(self, prim):
+        self._prim = prim
+
+    @classmethod
+    def apply(
+        cls,
+        prim,
+        mode: str = "Continuous",
+        volume_shape: str = "Box",
+        filter_faction: str = "All",
+        linear_enabled: bool = False,
+        linear_direction: tuple = (0.0, 1.0, 0.0),
+        linear_magnitude: float = 500.0,
+        radial_enabled: bool = False,
+        radial_magnitude: float = 1000.0,
+        radial_falloff: str = "Linear",
+        radial_radius: float = 500.0,
+        turbulence_enabled: bool = False,
+        turbulence_magnitude: float = 200.0,
+        turbulence_frequency: float = 2.0,
+        dampening_enabled: bool = False,
+        linear_damping: float = 0.5,
+        angular_damping: float = 0.5,
+        vortex_enabled: bool = False,
+        vortex_axis: tuple = (0.0, 1.0, 0.0),
+        vortex_magnitude: float = 800.0,
+        vortex_inward_pull: float = 200.0,
+    ):
+        _ensure_api_schema(prim, cls.SCHEMA_NAME)
+        vol = cls(prim)
+        vol.is_enabled = True
+        vol.mode = mode
+        vol.volume_shape = volume_shape
+        vol.filter_faction = filter_faction
+        vol.linear_enabled = linear_enabled
+        vol.linear_direction = linear_direction
+        vol.linear_magnitude = linear_magnitude
+        vol.radial_enabled = radial_enabled
+        vol.radial_magnitude = radial_magnitude
+        vol.radial_falloff = radial_falloff
+        vol.radial_radius = radial_radius
+        vol.turbulence_enabled = turbulence_enabled
+        vol.turbulence_magnitude = turbulence_magnitude
+        vol.turbulence_frequency = turbulence_frequency
+        vol.dampening_enabled = dampening_enabled
+        vol.linear_damping = linear_damping
+        vol.angular_damping = angular_damping
+        vol.vortex_enabled = vortex_enabled
+        vol.vortex_axis = vortex_axis
+        vol.vortex_magnitude = vortex_magnitude
+        vol.vortex_inward_pull = vortex_inward_pull
+        return vol
+
+    @classmethod
+    def is_applied(cls, prim) -> bool:
+        return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
+            prim and hasattr(prim, "HasAttribute") and (
+                prim.HasAttribute("force:mode") or prim.HasAttribute("force:linearEnabled") or prim.HasAttribute("force:radialEnabled")
+            )
+        )
+
+    @property
+    def prim(self):
+        return self._prim
+
+    @property
+    def is_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "force:isEnabled", True))
+
+    @is_enabled.setter
+    def is_enabled(self, val: bool):
+        _set_attr_value(self._prim, "force:isEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def mode(self) -> str:
+        return str(_get_attr_value(self._prim, "force:mode", "Continuous"))
+
+    @mode.setter
+    def mode(self, val: str):
+        _set_attr_value(self._prim, "force:mode", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def volume_shape(self) -> str:
+        return str(_get_attr_value(self._prim, "force:volumeShape", "Box"))
+
+    @volume_shape.setter
+    def volume_shape(self, val: str):
+        _set_attr_value(self._prim, "force:volumeShape", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def filter_faction(self) -> str:
+        return str(_get_attr_value(self._prim, "force:filterFaction", "All"))
+
+    @filter_faction.setter
+    def filter_faction(self, val: str):
+        _set_attr_value(self._prim, "force:filterFaction", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def impulse_cooldown(self) -> float:
+        return float(_get_attr_value(self._prim, "force:impulseCooldown", 1.0))
+
+    @impulse_cooldown.setter
+    def impulse_cooldown(self, val: float):
+        _set_attr_value(self._prim, "force:impulseCooldown", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    # Linear
+    @property
+    def linear_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "force:linearEnabled", False))
+
+    @linear_enabled.setter
+    def linear_enabled(self, val: bool):
+        _set_attr_value(self._prim, "force:linearEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def linear_direction(self) -> tuple:
+        val = _get_attr_value(self._prim, "force:linearDirection", (0.0, 1.0, 0.0))
+        return tuple(val) if val is not None else (0.0, 1.0, 0.0)
+
+    @linear_direction.setter
+    def linear_direction(self, val: tuple):
+        _set_attr_value(self._prim, "force:linearDirection", tuple(val), Sdf.ValueTypeNames.Float3 if HAS_PXR else None)
+
+    @property
+    def linear_magnitude(self) -> float:
+        return float(_get_attr_value(self._prim, "force:linearMagnitude", 500.0))
+
+    @linear_magnitude.setter
+    def linear_magnitude(self, val: float):
+        _set_attr_value(self._prim, "force:linearMagnitude", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    # Radial
+    @property
+    def radial_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "force:radialEnabled", False))
+
+    @radial_enabled.setter
+    def radial_enabled(self, val: bool):
+        _set_attr_value(self._prim, "force:radialEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def radial_magnitude(self) -> float:
+        return float(_get_attr_value(self._prim, "force:radialMagnitude", 1000.0))
+
+    @radial_magnitude.setter
+    def radial_magnitude(self, val: float):
+        _set_attr_value(self._prim, "force:radialMagnitude", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def radial_falloff(self) -> str:
+        return str(_get_attr_value(self._prim, "force:radialFalloff", "Linear"))
+
+    @radial_falloff.setter
+    def radial_falloff(self, val: str):
+        _set_attr_value(self._prim, "force:radialFalloff", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def radial_radius(self) -> float:
+        return float(_get_attr_value(self._prim, "force:radialRadius", 500.0))
+
+    @radial_radius.setter
+    def radial_radius(self, val: float):
+        _set_attr_value(self._prim, "force:radialRadius", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    # Turbulence
+    @property
+    def turbulence_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "force:turbulenceEnabled", False))
+
+    @turbulence_enabled.setter
+    def turbulence_enabled(self, val: bool):
+        _set_attr_value(self._prim, "force:turbulenceEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def turbulence_magnitude(self) -> float:
+        return float(_get_attr_value(self._prim, "force:turbulenceMagnitude", 200.0))
+
+    @turbulence_magnitude.setter
+    def turbulence_magnitude(self, val: float):
+        _set_attr_value(self._prim, "force:turbulenceMagnitude", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def turbulence_frequency(self) -> float:
+        return float(_get_attr_value(self._prim, "force:turbulenceFrequency", 2.0))
+
+    @turbulence_frequency.setter
+    def turbulence_frequency(self, val: float):
+        _set_attr_value(self._prim, "force:turbulenceFrequency", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    # Dampening
+    @property
+    def dampening_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "force:dampeningEnabled", False))
+
+    @dampening_enabled.setter
+    def dampening_enabled(self, val: bool):
+        _set_attr_value(self._prim, "force:dampeningEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def linear_damping(self) -> float:
+        return float(_get_attr_value(self._prim, "force:linearDamping", 0.5))
+
+    @linear_damping.setter
+    def linear_damping(self, val: float):
+        _set_attr_value(self._prim, "force:linearDamping", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def angular_damping(self) -> float:
+        return float(_get_attr_value(self._prim, "force:angularDamping", 0.5))
+
+    @angular_damping.setter
+    def angular_damping(self, val: float):
+        _set_attr_value(self._prim, "force:angularDamping", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    # Vortex
+    @property
+    def vortex_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "force:vortexEnabled", False))
+
+    @vortex_enabled.setter
+    def vortex_enabled(self, val: bool):
+        _set_attr_value(self._prim, "force:vortexEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def vortex_axis(self) -> tuple:
+        val = _get_attr_value(self._prim, "force:vortexAxis", (0.0, 1.0, 0.0))
+        return tuple(val) if val is not None else (0.0, 1.0, 0.0)
+
+    @vortex_axis.setter
+    def vortex_axis(self, val: tuple):
+        _set_attr_value(self._prim, "force:vortexAxis", tuple(val), Sdf.ValueTypeNames.Float3 if HAS_PXR else None)
+
+    @property
+    def vortex_magnitude(self) -> float:
+        return float(_get_attr_value(self._prim, "force:vortexMagnitude", 800.0))
+
+    @vortex_magnitude.setter
+    def vortex_magnitude(self, val: float):
+        _set_attr_value(self._prim, "force:vortexMagnitude", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def vortex_inward_pull(self) -> float:
+        return float(_get_attr_value(self._prim, "force:vortexInwardPull", 200.0))
+
+    @vortex_inward_pull.setter
+    def vortex_inward_pull(self, val: float):
+        _set_attr_value(self._prim, "force:vortexInwardPull", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+
+# ==============================================================================
+# HydragonKillVolume
+# ==============================================================================
+DEFAULT_KILL_SOUND: str = "data/assets/audio/sound_fx_samples/achievement_02.wav"
+
+
+class HydragonKillVolume:
+    SCHEMA_NAME = "HydragonKillVolumeAPI"
+
+    def __init__(self, prim):
+        self._prim = prim
+
+    @classmethod
+    def apply(
+        cls,
+        prim,
+        filter_faction: str = "All",
+        volume_shape: str = "Box",
+        respawn_player: bool = True,
+        penalty_score: int = 50,
+        respawn_delay: float = 0.5,
+        destroy_foes_instantly: bool = True,
+        sound_asset_path: str = DEFAULT_KILL_SOUND,
+        sound_enabled: bool = True,
+        spawn_effects: bool = True,
+    ):
+        _ensure_api_schema(prim, cls.SCHEMA_NAME)
+        kv = cls(prim)
+        kv.is_enabled = True
+        kv.filter_faction = filter_faction
+        kv.volume_shape = volume_shape
+        kv.respawn_player = respawn_player
+        kv.penalty_score = penalty_score
+        kv.respawn_delay = respawn_delay
+        kv.destroy_foes_instantly = destroy_foes_instantly
+        kv.sound_asset_path = sound_asset_path
+        kv.sound_enabled = sound_enabled
+        kv.spawn_effects = spawn_effects
+        return kv
+
+    @classmethod
+    def is_applied(cls, prim) -> bool:
+        return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
+            prim and hasattr(prim, "HasAttribute") and (
+                prim.HasAttribute("kill:respawnPlayer") or prim.HasAttribute("kill:penaltyScore") or prim.HasAttribute("kill:destroyFoesInstantly")
+            )
+        )
+
+    @property
+    def prim(self):
+        return self._prim
+
+    @property
+    def is_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "kill:isEnabled", True))
+
+    @is_enabled.setter
+    def is_enabled(self, val: bool):
+        _set_attr_value(self._prim, "kill:isEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def filter_faction(self) -> str:
+        return str(_get_attr_value(self._prim, "kill:filterFaction", "All"))
+
+    @filter_faction.setter
+    def filter_faction(self, val: str):
+        _set_attr_value(self._prim, "kill:filterFaction", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def volume_shape(self) -> str:
+        return str(_get_attr_value(self._prim, "kill:volumeShape", "Box"))
+
+    @volume_shape.setter
+    def volume_shape(self, val: str):
+        _set_attr_value(self._prim, "kill:volumeShape", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def respawn_player(self) -> bool:
+        return bool(_get_attr_value(self._prim, "kill:respawnPlayer", True))
+
+    @respawn_player.setter
+    def respawn_player(self, val: bool):
+        _set_attr_value(self._prim, "kill:respawnPlayer", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def penalty_score(self) -> int:
+        return int(_get_attr_value(self._prim, "kill:penaltyScore", 50))
+
+    @penalty_score.setter
+    def penalty_score(self, val: int):
+        _set_attr_value(self._prim, "kill:penaltyScore", int(val), Sdf.ValueTypeNames.Int if HAS_PXR else None)
+
+    @property
+    def respawn_delay(self) -> float:
+        return float(_get_attr_value(self._prim, "kill:respawnDelay", 0.5))
+
+    @respawn_delay.setter
+    def respawn_delay(self, val: float):
+        _set_attr_value(self._prim, "kill:respawnDelay", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def destroy_foes_instantly(self) -> bool:
+        return bool(_get_attr_value(self._prim, "kill:destroyFoesInstantly", True))
+
+    @destroy_foes_instantly.setter
+    def destroy_foes_instantly(self, val: bool):
+        _set_attr_value(self._prim, "kill:destroyFoesInstantly", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def sound_asset_path(self) -> str:
+        return str(_get_attr_value(self._prim, "kill:soundAssetPath", DEFAULT_KILL_SOUND))
+
+    @sound_asset_path.setter
+    def sound_asset_path(self, val: str):
+        _set_attr_value(self._prim, "kill:soundAssetPath", str(val), Sdf.ValueTypeNames.String if HAS_PXR else None)
+
+    @property
+    def sound_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "kill:soundEnabled", True))
+
+    @sound_enabled.setter
+    def sound_enabled(self, val: bool):
+        _set_attr_value(self._prim, "kill:soundEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def spawn_effects(self) -> bool:
+        return bool(_get_attr_value(self._prim, "kill:spawnEffects", True))
+
+    @spawn_effects.setter
+    def spawn_effects(self, val: bool):
+        _set_attr_value(self._prim, "kill:spawnEffects", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def respawn_target(self):
+        if not HAS_PXR or not self._prim:
+            return None
+        rel = self._prim.GetRelationship("kill:respawnTarget")
+        if not rel or not rel.IsValid():
+            return None
+        targets = rel.GetTargets()
+        return targets[0] if targets else None
+
+    @respawn_target.setter
+    def respawn_target(self, path):
+        if not HAS_PXR or not self._prim:
+            return
+        rel = self._prim.GetRelationship("kill:respawnTarget")
+        if not rel or not rel.IsValid():
+            rel = self._prim.CreateRelationship("kill:respawnTarget")
+        target_sdf = Sdf.Path(str(path)) if not isinstance(path, Sdf.Path) else path
+        rel.SetTargets([target_sdf])
+
