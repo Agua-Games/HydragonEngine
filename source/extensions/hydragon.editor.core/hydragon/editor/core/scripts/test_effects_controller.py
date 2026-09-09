@@ -494,6 +494,79 @@ def test_points_render_mode_attributes_and_decay():
     print("  [PASS] Points render mode attributes and linear scale decay verified")
 
 
+def test_effects_dormant_without_manager_prim():
+    print("--- 13. Testing Effects System Strict Opt-In Dormancy on Bare Stages ---")
+    system = HydragonEffectsSystem()
+    system.startup()
+
+    # Create mock stage with no effects prims
+    class MockBareStage:
+        def GetPrimAtPath(self, path):
+            return None
+        def Traverse(self):
+            return []
+
+    bare_stage = MockBareStage()
+    system._discover_effects_config(bare_stage)
+
+    # Must NOT initialize pool
+    assert system._pool_initialized is False
+    assert len(system._slots) == 0
+    print("  [PASS] Effects pool remains dormant on bare stage without effects manager prim")
+
+    # Now simulate a stage with HydragonEffectsManager
+    class MockEffectsPrim:
+        def __init__(self):
+            self._path = "/World/EffectsManager"
+        def IsValid(self):
+            return True
+        def GetPath(self):
+            return self._path
+        def HasAttribute(self, name):
+            return True
+        def GetAttribute(self, name):
+            vals = {
+                "effects:poolSize": 5,
+                "effects:numSparks": 200,
+                "effects:renderMode": "points",
+                "effects:sparkRadius": 25.0,
+                "effects:flashIntensity": 3000000.0,
+                "effects:burstLifetime": 0.7,
+                "effects:autoInitializeOnPlay": True,
+            }
+            class Attr:
+                def __init__(self, v):
+                    self._v = v
+                def IsValid(self):
+                    return True
+                def Get(self):
+                    return self._v
+            return Attr(vals.get(name))
+
+    class MockOptInStage:
+        def __init__(self):
+            self.prim = MockEffectsPrim()
+        def GetPrimAtPath(self, path):
+            if path == "/World/EffectsManager":
+                return self.prim
+            return None
+        def Traverse(self):
+            return [self.prim]
+
+    opt_stage = MockOptInStage()
+    system._discover_effects_config(opt_stage)
+
+    assert system.POOL_SIZE == 5
+    assert system.NUM_SPARKS == 200
+    assert system.render_mode == "points"
+    assert system.SPARK_RADIUS == 25.0
+    assert system.FLASH_LIGHT_INTENSITY == 3000000.0
+    assert system.BURST_LIFETIME == 0.7
+    print("  [PASS] Effects system properly configures and activates when HydragonEffectsManager is present")
+
+    system.shutdown()
+
+
 if __name__ == "__main__":
     test_effects_system_lifecycle()
     test_particle_kinematics_and_turbulence()
@@ -507,4 +580,5 @@ if __name__ == "__main__":
     test_render_mode_configuration_and_switching()
     test_slot_render_modes_execution()
     test_points_render_mode_attributes_and_decay()
-    print("\nALL 12 EFFECTS SYSTEM TESTS PASSED SUCCESSFULLY!")
+    test_effects_dormant_without_manager_prim()
+    print("\nALL 13 EFFECTS SYSTEM TESTS PASSED SUCCESSFULLY!")

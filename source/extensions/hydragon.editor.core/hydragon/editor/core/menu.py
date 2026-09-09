@@ -30,6 +30,7 @@ from .schemas import (
     HydragonGameManager,
     HydragonUICanvas,
     HydragonSoundtrack,
+    HydragonEffectsManager,
 )
 
 
@@ -265,6 +266,10 @@ class HydragonMenuManager:
                 name="Soundtrack Manager",
                 onclick_fn=lambda: self._instantiate_asset("assets/audio/hydragon_sountrack/hydragon_soundtrack.usda", "SoundtrackManager", as_payload=False)
             ),
+            MenuItemDescription(
+                name="Effects Manager",
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_effects_manager/effects_manager.usda", "EffectsManager", as_payload=False)
+            ),
             # Separator
             MenuItemDescription(name=""),
             # API Schemas Submenu
@@ -303,6 +308,10 @@ class HydragonMenuManager:
                         name="Apply HydragonSoundtrackAPI",
                         onclick_fn=lambda: self._apply_schema(HydragonSoundtrack)
                     ),
+                    MenuItemDescription(
+                        name="Apply HydragonEffectsAPI",
+                        onclick_fn=lambda: self._apply_schema(HydragonEffectsManager)
+                    ),
                 ]
             )
         ]
@@ -333,6 +342,7 @@ class HydragonMenuManager:
                 {"name": "Apply HydragonGameAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonGameManager)},
                 {"name": "Apply HydragonUICanvasAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonUICanvas)},
                 {"name": "Apply HydragonSoundtrackAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonSoundtrack)},
+                {"name": "Apply HydragonEffectsAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonEffectsManager)},
             ]
 
             hydragon_items = [
@@ -363,6 +373,10 @@ class HydragonMenuManager:
                 {
                     "name": "Soundtrack Manager",
                     "onclick_fn": lambda *_: self._instantiate_asset("assets/audio/hydragon_sountrack/hydragon_soundtrack.usda", "SoundtrackManager", as_payload=False)
+                },
+                {
+                    "name": "Effects Manager",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_effects_manager/effects_manager.usda", "EffectsManager", as_payload=False)
                 },
                 {"name": ""},
                 {

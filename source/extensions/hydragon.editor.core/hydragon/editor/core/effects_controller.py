@@ -1157,6 +1157,79 @@ class HydragonEffectsSystem:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] EffectsSystem app update subscription failed: {e}")
 
+    def _discover_effects_config(self, stage):
+        """
+        Discovers active HydragonEffectsAPI manager prim on simulation start.
+        Enforces Strict Opt-In Architecture: only initializes VFX pool if an
+        effects manager prim or an existing /World/Effects hierarchy is authored on stage.
+        """
+        if not stage:
+            return
+
+        from .schemas import HydragonEffectsManager
+
+        candidate_paths = (
+            "/World/EffectsManager",
+            "/World/Effects",
+            "/World/VFX",
+            "/World/Gameplay/EffectsManager",
+            "/EffectsManager",
+        )
+
+        effects_mgr_prim = None
+        has_existing_effects_prim = False
+
+        # 1. Fast O(1) candidate path checks
+        for path_str in candidate_paths:
+            prim = stage.GetPrimAtPath(path_str)
+            if prim and prim.IsValid():
+                if HydragonEffectsManager.is_applied(prim):
+                    effects_mgr_prim = prim
+                    break
+                elif path_str == "/World/Effects":
+                    has_existing_effects_prim = True
+
+        # 2. Stage traversal fallback (one-time on PLAY)
+        if not effects_mgr_prim and not has_existing_effects_prim:
+            for prim in stage.Traverse():
+                if HydragonEffectsManager.is_applied(prim):
+                    effects_mgr_prim = prim
+                    break
+
+        # 3. Configure and activate if opted-in
+        if effects_mgr_prim:
+            mgr = HydragonEffectsManager(effects_mgr_prim)
+            if not mgr.auto_initialize_on_play:
+                if carb:
+                    carb.log_info(
+                        f"[hydragon.editor.core] EffectsManager at {effects_mgr_prim.GetPath()} "
+                        "has autoInitializeOnPlay=False; remaining dormant."
+                    )
+                return
+
+            self.POOL_SIZE = mgr.pool_size
+            self.NUM_SPARKS = mgr.num_sparks
+            self.render_mode = mgr.render_mode
+            self.SPARK_RADIUS = mgr.spark_radius
+            self.FLASH_LIGHT_INTENSITY = mgr.flash_intensity
+            self.BURST_LIFETIME = mgr.burst_lifetime
+
+            if carb:
+                carb.log_info(
+                    f"[hydragon.editor.core] Discovered EffectsManager at {effects_mgr_prim.GetPath()}: "
+                    f"pool={self.POOL_SIZE}, sparks={self.NUM_SPARKS}, mode={self.render_mode}"
+                )
+            self._ensure_pool(stage)
+            self._ensure_audio_loaded()
+        elif has_existing_effects_prim:
+            # Stage has pre-authored /World/Effects hierarchy
+            self._ensure_pool(stage)
+            self._ensure_audio_loaded()
+        else:
+            # Strict Opt-In: Stage does not contain any effects manager or effects hierarchy.
+            # Remain completely dormant without modifying the stage.
+            pass
+
     def _on_timeline_event(self, e):
         if not HAS_KIT:
             return
@@ -1166,8 +1239,7 @@ class HydragonEffectsSystem:
                 self._set_audio_volume(DEFAULT_AUDIO_VOLUME)
                 stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
                 if stage:
-                    self._ensure_pool(stage)
-                self._ensure_audio_loaded()
+                    self._discover_effects_config(stage)
             elif event_type == int(omni.timeline.TimelineEventType.STOP):
                 self._pool_initialized = False
                 self._delayed_sounds.clear()

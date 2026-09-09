@@ -250,3 +250,27 @@ def test_soundtrack_asset_file_resolution():
         assert framerate >= 22050, f"Expected standard sample rate, got {framerate}"
         assert duration > 1.0, f"Soundtrack duration should be > 1s, got {duration}s"
         print(f"  [PASS] Ambient soundtrack validated: {channels} channels, {framerate} Hz, {duration:.2f}s")
+
+
+def test_soundtrack_dormant_without_prim():
+    print("--- 7. Testing Strict Opt-In Dormancy on Bare Stages ---")
+    system = HydragonSoundtrackSystem()
+    system.startup()
+    assert system._active_entity is None
+
+    # Simulate timeline PLAY event without any soundtrack prim authored
+    system._handle_timeline_play()
+    assert system.is_playing is False
+    assert system._mock_play_count == 0
+    print("  [PASS] Soundtrack remains completely dormant when no soundtrack prim exists on stage")
+
+    # Now bind a mock entity with auto_play=True
+    mock_prim = MockPrim()
+    entity = HydragonSoundtrackEntity(mock_prim)
+    system._active_entity = entity
+    system._handle_timeline_play()
+    assert system.is_playing is True
+    assert system.current_track_name == "ambient"
+    print("  [PASS] Soundtrack plays when HydragonSoundtrack entity is authored and auto_play is True")
+
+    system.shutdown()

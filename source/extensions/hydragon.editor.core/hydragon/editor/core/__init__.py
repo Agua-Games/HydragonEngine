@@ -8,6 +8,7 @@ from .schemas import (
     HydragonGameManager,
     HydragonUICanvas,
     HydragonSoundtrack,
+    HydragonEffectsManager,
 )
 from .player_controller import HydragonPlayerControllerSystem
 from .camera_controller import HydragonCameraControllerSystem

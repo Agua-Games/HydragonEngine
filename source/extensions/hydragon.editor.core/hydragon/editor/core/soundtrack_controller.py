@@ -326,18 +326,14 @@ class HydragonSoundtrackSystem:
             self.resume_track()
             return
 
-        target_track = "ambient"
-        auto_play = True
-        fade_duration = self.DEFAULT_FADE_DURATION
-        vol = self.DEFAULT_VOLUME
+        if not self._active_entity or not self._active_entity.is_valid():
+            # Strict Opt-In Architecture: Do not play audio unless a HydragonSoundtrackAPI prim is authored.
+            return
 
-        if self._active_entity and self._active_entity.is_valid():
-            auto_play = self._active_entity.auto_play
+        if self._active_entity.auto_play:
             target_track = self._active_entity.current_track or "ambient"
             fade_duration = self._active_entity.fade_duration
             vol = self._active_entity.volume
-
-        if auto_play:
             self.play_track(target_track, fade=True, fade_duration=fade_duration, target_volume=vol)
 
     def _handle_timeline_stop(self):

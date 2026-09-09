@@ -917,3 +917,102 @@ class HydragonSoundtrack:
     def victory_asset_path(self, val: str):
         asset_val = Sdf.AssetPath(str(val)) if HAS_PXR else str(val)
         _set_attr_value(self._prim, "soundtrack:victoryAssetPath", asset_val, Sdf.ValueTypeNames.Asset if HAS_PXR else None)
+
+
+# ==============================================================================
+# HydragonEffectsManager
+# ==============================================================================
+class HydragonEffectsManager:
+    SCHEMA_NAME = "HydragonEffectsAPI"
+
+    def __init__(self, prim):
+        self._prim = prim
+
+    @classmethod
+    def apply(
+        cls,
+        prim,
+        pool_size: int = 3,
+        num_sparks: int = 150,
+        render_mode: str = "point_instancer",
+        spark_radius: float = 20.0,
+        flash_intensity: float = 5000000.0,
+        burst_lifetime: float = 0.55,
+        auto_initialize_on_play: bool = True,
+    ):
+        _ensure_api_schema(prim, cls.SCHEMA_NAME)
+        mgr = cls(prim)
+        mgr.pool_size = pool_size
+        mgr.num_sparks = num_sparks
+        mgr.render_mode = render_mode
+        mgr.spark_radius = spark_radius
+        mgr.flash_intensity = flash_intensity
+        mgr.burst_lifetime = burst_lifetime
+        mgr.auto_initialize_on_play = auto_initialize_on_play
+        return mgr
+
+    @classmethod
+    def is_applied(cls, prim) -> bool:
+        return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
+            prim and hasattr(prim, "HasAttribute") and prim.HasAttribute("effects:poolSize")
+        )
+
+    @property
+    def prim(self):
+        return self._prim
+
+    @property
+    def pool_size(self) -> int:
+        return int(_get_attr_value(self._prim, "effects:poolSize", 3))
+
+    @pool_size.setter
+    def pool_size(self, val: int):
+        _set_attr_value(self._prim, "effects:poolSize", int(val), Sdf.ValueTypeNames.Int if HAS_PXR else None)
+
+    @property
+    def num_sparks(self) -> int:
+        return int(_get_attr_value(self._prim, "effects:numSparks", 150))
+
+    @num_sparks.setter
+    def num_sparks(self, val: int):
+        _set_attr_value(self._prim, "effects:numSparks", int(val), Sdf.ValueTypeNames.Int if HAS_PXR else None)
+
+    @property
+    def render_mode(self) -> str:
+        return str(_get_attr_value(self._prim, "effects:renderMode", "point_instancer"))
+
+    @render_mode.setter
+    def render_mode(self, val: str):
+        _set_attr_value(self._prim, "effects:renderMode", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+
+    @property
+    def spark_radius(self) -> float:
+        return float(_get_attr_value(self._prim, "effects:sparkRadius", 20.0))
+
+    @spark_radius.setter
+    def spark_radius(self, val: float):
+        _set_attr_value(self._prim, "effects:sparkRadius", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def flash_intensity(self) -> float:
+        return float(_get_attr_value(self._prim, "effects:flashIntensity", 5000000.0))
+
+    @flash_intensity.setter
+    def flash_intensity(self, val: float):
+        _set_attr_value(self._prim, "effects:flashIntensity", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def burst_lifetime(self) -> float:
+        return float(_get_attr_value(self._prim, "effects:burstLifetime", 0.55))
+
+    @burst_lifetime.setter
+    def burst_lifetime(self, val: float):
+        _set_attr_value(self._prim, "effects:burstLifetime", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def auto_initialize_on_play(self) -> bool:
+        return bool(_get_attr_value(self._prim, "effects:autoInitializeOnPlay", True))
+
+    @auto_initialize_on_play.setter
+    def auto_initialize_on_play(self, val: bool):
+        _set_attr_value(self._prim, "effects:autoInitializeOnPlay", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)

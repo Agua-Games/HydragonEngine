@@ -209,6 +209,62 @@ def test_controls_frame_and_window_lifecycle():
     print("  [PASS] All overlays frame & window cleanup verified")
 
 
+def test_game_hud_dormant_without_canvas():
+    print("--- 7. Testing Game HUD Strict Opt-In Dormancy on Bare Stages ---")
+    hud = HydragonGameHUD()
+    hud.startup()
+
+    # Defaults before/after discovery on a bare stage must be False
+    assert hud._show_controls is False
+    assert hud._show_countdown is False
+    assert hud._show_score_popups is False
+
+    hud._discover_canvas_config()
+    assert hud._show_controls is False
+    assert hud._show_countdown is False
+    assert hud._show_score_popups is False
+    assert hud._active_canvas_path is None
+    print("  [PASS] Game HUD features remain completely disabled when no UICanvas exists on stage")
+
+    # When a canvas is explicitly bound with settings enabled:
+    class MockCanvasPrim:
+        def __init__(self):
+            self._path = "/World/GameHUD"
+        def IsValid(self):
+            return True
+        def GetPath(self):
+            return self._path
+        def HasAttribute(self, name):
+            return True
+        def GetAttribute(self, name):
+            vals = {
+                "hud:showControls": True,
+                "hud:showCountdown": True,
+                "hud:showScorePopups": True,
+                "hud:autoActivateOnPlay": True,
+                "hud:canvasType": "InGame",
+            }
+            class MockAttr:
+                def __init__(self, val):
+                    self._val = val
+                def IsValid(self):
+                    return True
+                def Get(self):
+                    return self._val
+            return MockAttr(vals.get(name))
+
+    from hydragon.editor.core.schemas import HydragonUICanvas
+    canvas = HydragonUICanvas(MockCanvasPrim())
+    hud._apply_canvas_schema(canvas)
+    assert hud._show_controls is True
+    assert hud._show_countdown is True
+    assert hud._show_score_popups is True
+    assert hud._active_canvas_path == "/World/GameHUD"
+    print("  [PASS] Game HUD features properly activate when UICanvas is present")
+
+    hud.shutdown()
+
+
 if __name__ == "__main__":
     test_game_hud_lifecycle()
     test_countdown_state_machine()
@@ -216,6 +272,7 @@ if __name__ == "__main__":
     test_timeline_event_handling()
     test_canvas_config_binding()
     test_controls_frame_and_window_lifecycle()
+    test_game_hud_dormant_without_canvas()
     print("\n=======================================================")
-    print(" ALL GAME HUD TESTS PASSED! (6/6)")
+    print(" ALL GAME HUD TESTS PASSED! (7/7)")
     print("=======================================================")

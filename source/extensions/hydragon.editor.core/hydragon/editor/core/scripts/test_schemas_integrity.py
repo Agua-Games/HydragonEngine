@@ -25,6 +25,7 @@ def test_syntax_usda_files():
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_goal_hole", "goal_hole.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_game_manager", "game_manager.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_ui_canvas", "ui_canvas.usda"),
+        os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_effects_manager", "effects_manager.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "test_stage_rolling_ball.usda"),
     ]
 
@@ -107,8 +108,9 @@ def test_python_module():
             HydragonGameManager,
             HydragonUICanvas,
             HydragonSoundtrack,
+            HydragonEffectsManager,
         )
-        print("  [PASS] Successfully imported all 8 Hydragon API schema classes from hydragon.editor.core")
+        print("  [PASS] Successfully imported all 9 Hydragon API schema classes from hydragon.editor.core")
     except Exception as e:
         print(f"  [FAIL] Failed to import from hydragon.editor.core: {e}")
         return False
@@ -122,6 +124,7 @@ def test_python_module():
     assert HydragonGameManager.SCHEMA_NAME == "HydragonGameAPI"
     assert HydragonUICanvas.SCHEMA_NAME == "HydragonUICanvasAPI"
     assert HydragonSoundtrack.SCHEMA_NAME == "HydragonSoundtrackAPI"
+    assert HydragonEffectsManager.SCHEMA_NAME == "HydragonEffectsAPI"
     print("  [PASS] All SCHEMA_NAME constants verified")
 
     # Test fallback behavior when prim is None (Fail-Silent)
@@ -178,6 +181,16 @@ def test_python_module():
     assert st.fade_duration == 1.5
     assert "lounge_soundtrack_01.wav" in st.ambient_asset_path
     print("  [PASS] HydragonSoundtrack fail-silent defaults verified")
+
+    eff = HydragonEffectsManager(None)
+    assert eff.pool_size == 3
+    assert eff.num_sparks == 150
+    assert eff.render_mode == "point_instancer"
+    assert eff.spark_radius == 20.0
+    assert eff.flash_intensity == 5000000.0
+    assert eff.burst_lifetime == 0.55
+    assert eff.auto_initialize_on_play is True
+    print("  [PASS] HydragonEffectsManager fail-silent defaults verified")
 
     from hydragon.editor.core.menu import HydragonMenuManager
     menu_mgr = HydragonMenuManager("hydragon.editor.core")

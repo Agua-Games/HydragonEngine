@@ -58,10 +58,10 @@ class HydragonGameHUD:
         self._victory_window = None
         self._victory_frame = None
 
-        # Declarative Canvas Settings (defaults to True for fallback compatibility)
-        self._show_controls: bool = True
-        self._show_countdown: bool = True
-        self._show_score_popups: bool = True
+        # Declarative Canvas Settings (defaults to False for strict opt-in architecture)
+        self._show_controls: bool = False
+        self._show_countdown: bool = False
+        self._show_score_popups: bool = False
         self._active_canvas_path: Optional[str] = None
 
     @classmethod
@@ -225,11 +225,11 @@ class HydragonGameHUD:
     def _discover_canvas_config(self):
         """
         Discovers active HydragonUICanvas prim on simulation start to configure HUD features.
-        Falls back to default (all enabled) if no canvas is present.
+        Defaults to all disabled (dormant) if no canvas is present on stage (Strict Opt-In Architecture).
         """
-        self._show_controls = True
-        self._show_countdown = True
-        self._show_score_popups = True
+        self._show_controls = False
+        self._show_countdown = False
+        self._show_score_popups = False
         self._active_canvas_path = None
 
         try:
