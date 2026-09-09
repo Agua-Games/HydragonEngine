@@ -124,8 +124,8 @@ class HydragonMenuManager:
 
         return candidate
 
-    def _instantiate_asset(self, rel_asset_path: str, default_name: str, as_payload: bool = False):
-        """Instances an asset USDA into the current stage using Reference (recommended) or Payload."""
+    def _instantiate_asset(self, rel_asset_path: str, default_name: str, as_payload: bool = True):
+        """Instantiates an asset USDA into the current stage as Payload (default for entities/actors/volumes to support streaming) or Reference (for persistent stage singletons)."""
         if not HAS_KIT:
             return
 
@@ -250,18 +250,18 @@ class HydragonMenuManager:
         """Builds top-bar Create -> Hydragon menu."""
         glyph = self._get_menu_glyph()
         sub_items = [
-            # Gameplay Entities / Smart Assets
+            # Gameplay Entities / Smart Assets (Default: Payloads for streaming & open-world scalability)
             MenuItemDescription(
                 name="Player Ball",
-                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_player_ball/player_ball.usda", "PlayerBall", as_payload=False)
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_player_ball/player_ball.usda", "PlayerBall", as_payload=True)
             ),
             MenuItemDescription(
                 name="Foe Ball",
-                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_foe_ball/foe_ball.usda", "FoeBall", as_payload=False)
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_foe_ball/foe_ball.usda", "FoeBall", as_payload=True)
             ),
             MenuItemDescription(
                 name="Goal Hole",
-                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_goal_hole/goal_hole.usda", "GoalHole", as_payload=False)
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_goal_hole/goal_hole.usda", "GoalHole", as_payload=True)
             ),
             MenuItemDescription(
                 name="Game Manager",
@@ -289,7 +289,7 @@ class HydragonMenuManager:
             ),
             MenuItemDescription(
                 name="Character (Kowra)",
-                onclick_fn=lambda: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=False)
+                onclick_fn=lambda: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=True)
             ),
             MenuItemDescription(
                 name="Soundtrack Manager",
@@ -301,11 +301,11 @@ class HydragonMenuManager:
             ),
             MenuItemDescription(
                 name="Force Volume",
-                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_force_volume/force_volume.usda", "ForceVolume", as_payload=False)
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_force_volume/force_volume.usda", "ForceVolume", as_payload=True)
             ),
             MenuItemDescription(
                 name="Kill Volume",
-                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_kill_volume/kill_volume.usda", "KillVolume", as_payload=False)
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_kill_volume/kill_volume.usda", "KillVolume", as_payload=True)
             ),
             # Separator
             MenuItemDescription(name=""),
@@ -395,15 +395,15 @@ class HydragonMenuManager:
             hydragon_items = [
                 {
                     "name": "Player Ball",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_player_ball/player_ball.usda", "PlayerBall", as_payload=False)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_player_ball/player_ball.usda", "PlayerBall", as_payload=True)
                 },
                 {
                     "name": "Foe Ball",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_foe_ball/foe_ball.usda", "FoeBall", as_payload=False)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_foe_ball/foe_ball.usda", "FoeBall", as_payload=True)
                 },
                 {
                     "name": "Goal Hole",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_goal_hole/goal_hole.usda", "GoalHole", as_payload=False)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_goal_hole/goal_hole.usda", "GoalHole", as_payload=True)
                 },
                 {
                     "name": "Game Manager",
@@ -431,7 +431,7 @@ class HydragonMenuManager:
                 },
                 {
                     "name": "Character (Kowra)",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=False)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/characters/hydragon_character/hydragon_character.usda", "Character", as_payload=True)
                 },
                 {
                     "name": "Soundtrack Manager",
@@ -443,11 +443,11 @@ class HydragonMenuManager:
                 },
                 {
                     "name": "Force Volume",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_force_volume/force_volume.usda", "ForceVolume", as_payload=False)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_force_volume/force_volume.usda", "ForceVolume", as_payload=True)
                 },
                 {
                     "name": "Kill Volume",
-                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_kill_volume/kill_volume.usda", "KillVolume", as_payload=False)
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_kill_volume/kill_volume.usda", "KillVolume", as_payload=True)
                 },
                 {"name": ""},
                 {

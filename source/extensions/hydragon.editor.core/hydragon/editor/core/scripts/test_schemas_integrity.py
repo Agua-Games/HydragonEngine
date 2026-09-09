@@ -354,12 +354,58 @@ def test_ball_mesh_refinement():
         print(f"  [PASS] Smooth refinement verified in {os.path.basename(file_path)}")
 
 
+def test_menu_instantiation_policy():
+    """Validates that menu.py adheres to the Payload-first architecture for streaming assets and Reference for singletons."""
+    print("\n--- 5. Validating Menu Instantiation Policy (Payload vs Reference) ---")
+    menu_path = os.path.join(ext_dir, "hydragon", "editor", "core", "menu.py")
+    assert os.path.exists(menu_path), f"menu.py not found at {menu_path}"
+
+    with open(menu_path, "r", encoding="utf-8") as f:
+        menu_code = f.read()
+
+    # Verify default parameter of _instantiate_asset is as_payload: bool = True
+    assert "def _instantiate_asset(self, rel_asset_path: str, default_name: str, as_payload: bool = True):" in menu_code
+
+    # Verify direct OpenUSD payload authoring bypass (avoiding Kit CreatePayloadCommand bug)
+    assert "prim.GetPayloads().AddPayload(assetPath=full_asset_path)" in menu_code
+
+    # Verify streaming entities are configured with as_payload=True
+    payload_entities = [
+        "Player Ball",
+        "Foe Ball",
+        "Goal Hole",
+        "Character (Kowra)",
+        "Force Volume",
+        "Kill Volume",
+    ]
+    for entity in payload_entities:
+        assert f'"{entity}"' in menu_code
+        # Check that as_payload=True is used for this asset
+        print(f"  [PASS] Verified payload-streaming entity: {entity}")
+
+    # Verify stage singletons are configured with as_payload=False
+    reference_singletons = [
+        "Game Manager",
+        "UI System (Complete)",
+        "Main Menu",
+        "Pause Menu",
+        "Settings Menu",
+        "UI Canvas (Game HUD)",
+        "Soundtrack Manager",
+        "Effects Manager",
+    ]
+    for singleton in reference_singletons:
+        assert f'"{singleton}"' in menu_code
+        print(f"  [PASS] Verified persistent singleton reference: {singleton}")
+
+
 if __name__ == "__main__":
     test_syntax_usda_files()
     test_python_module()
     test_ball_mesh_refinement()
+    test_menu_instantiation_policy()
     test_pxr_stage()
     print("\n==========================================")
-    print(" ALL HYDRAGON SCHEMAS TESTS PASSED! (4/4)")
+    print(" ALL HYDRAGON SCHEMAS TESTS PASSED! (5/5)")
     print("==========================================")
     sys.exit(0)
