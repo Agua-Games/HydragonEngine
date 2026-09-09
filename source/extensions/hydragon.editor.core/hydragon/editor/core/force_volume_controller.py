@@ -34,6 +34,121 @@ except ImportError:
 from .schemas import HydragonForceVolume, HydragonActor
 
 
+def update_wireframe_guide(
+    bounds_prim,
+    shape: str,
+    half_extents: Tuple[float, float, float] = (100.0, 100.0, 100.0),
+    radius: float = 100.0,
+    half_height: float = 100.0,
+    color: Tuple[float, float, float] = (0.2, 0.7, 1.0),
+):
+    """
+    Updates or converts bounds_prim to a hollow wireframe BasisCurves cage.
+    Supports 'Box', 'Sphere', 'Cylinder', and 'Plane'. Zero solid faces/fill.
+    """
+    if not HAS_KIT or not bounds_prim or not hasattr(bounds_prim, "IsValid") or not bounds_prim.IsValid():
+        return
+
+    try:
+        if bounds_prim.GetTypeName() != "BasisCurves":
+            bounds_prim.SetTypeName("BasisCurves")
+
+        curves = UsdGeom.BasisCurves(bounds_prim)
+        curves.GetTypeAttr().Set("linear")
+        curves.GetWrapAttr().Set("nonperiodic")
+
+        counts = []
+        points = []
+
+        if shape == "Sphere":
+            segs = 32
+            r = radius
+            for plane in ("XY", "XZ", "YZ"):
+                counts.append(segs + 1)
+                for i in range(segs + 1):
+                    theta = 2.0 * math.pi * (i / segs)
+                    cos_t = math.cos(theta) * r
+                    sin_t = math.sin(theta) * r
+                    if plane == "XY":
+                        points.append(Gf.Vec3f(cos_t, sin_t, 0.0))
+                    elif plane == "XZ":
+                        points.append(Gf.Vec3f(cos_t, 0.0, sin_t))
+                    else:
+                        points.append(Gf.Vec3f(0.0, cos_t, sin_t))
+
+            extent = [Gf.Vec3f(-r, -r, -r), Gf.Vec3f(r, r, r)]
+
+        elif shape == "Cylinder":
+            segs = 32
+            r = radius
+            h = half_height
+            counts.append(segs + 1)
+            for i in range(segs + 1):
+                theta = 2.0 * math.pi * (i / segs)
+                points.append(Gf.Vec3f(math.cos(theta) * r, h, math.sin(theta) * r))
+            counts.append(segs + 1)
+            for i in range(segs + 1):
+                theta = 2.0 * math.pi * (i / segs)
+                points.append(Gf.Vec3f(math.cos(theta) * r, -h, math.sin(theta) * r))
+            for angle in (0.0, math.pi * 0.5, math.pi, math.pi * 1.5):
+                counts.append(2)
+                cx = math.cos(angle) * r
+                cz = math.sin(angle) * r
+                points.append(Gf.Vec3f(cx, -h, cz))
+                points.append(Gf.Vec3f(cx, h, cz))
+
+            extent = [Gf.Vec3f(-r, -h, -r), Gf.Vec3f(r, h, r)]
+
+        elif shape == "Plane":
+            hx, hz = half_extents[0], half_extents[2]
+            counts.append(5)
+            points.extend([
+                Gf.Vec3f(-hx, 0.0, -hz),
+                Gf.Vec3f(hx, 0.0, -hz),
+                Gf.Vec3f(hx, 0.0, hz),
+                Gf.Vec3f(-hx, 0.0, hz),
+                Gf.Vec3f(-hx, 0.0, -hz),
+            ])
+            counts.append(2)
+            points.extend([Gf.Vec3f(-hx, 0.0, -hz), Gf.Vec3f(hx, 0.0, hz)])
+            counts.append(2)
+            points.extend([Gf.Vec3f(hx, 0.0, -hz), Gf.Vec3f(-hx, 0.0, hz)])
+            extent = [Gf.Vec3f(-hx, 0.0, -hz), Gf.Vec3f(hx, 0.0, hz)]
+
+        else:
+            hx, hy, hz = half_extents
+            counts = [2] * 12
+            points = [
+                Gf.Vec3f(-hx, -hy, -hz), Gf.Vec3f(hx, -hy, -hz),
+                Gf.Vec3f(hx, -hy, -hz), Gf.Vec3f(hx, -hy, hz),
+                Gf.Vec3f(hx, -hy, hz), Gf.Vec3f(-hx, -hy, hz),
+                Gf.Vec3f(-hx, -hy, hz), Gf.Vec3f(-hx, -hy, -hz),
+                Gf.Vec3f(-hx, hy, -hz), Gf.Vec3f(hx, hy, -hz),
+                Gf.Vec3f(hx, hy, -hz), Gf.Vec3f(hx, hy, hz),
+                Gf.Vec3f(hx, hy, hz), Gf.Vec3f(-hx, hy, hz),
+                Gf.Vec3f(-hx, hy, hz), Gf.Vec3f(-hx, hy, -hz),
+                Gf.Vec3f(-hx, -hy, -hz), Gf.Vec3f(-hx, hy, -hz),
+                Gf.Vec3f(hx, -hy, -hz), Gf.Vec3f(hx, hy, -hz),
+                Gf.Vec3f(hx, -hy, hz), Gf.Vec3f(hx, hy, hz),
+                Gf.Vec3f(-hx, -hy, hz), Gf.Vec3f(-hx, hy, hz),
+            ]
+            extent = [Gf.Vec3f(-hx, -hy, -hz), Gf.Vec3f(hx, hy, hz)]
+
+        curves.GetCurveVertexCountsAttr().Set(counts)
+        curves.GetPointsAttr().Set(points)
+        curves.GetExtentAttr().Set(extent)
+        curves.GetWidthsAttr().Set([1.0] * len(points))
+        curves.GetDisplayColorAttr().Set([Gf.Vec3f(*color)])
+        if bounds_prim.HasAttribute("purpose"):
+            bounds_prim.GetAttribute("purpose").Set("guide")
+        else:
+            bounds_prim.CreateAttribute("purpose", Sdf.ValueTypeNames.Token).Set("guide")
+
+    except Exception as e:
+        if carb:
+            carb.log_warn(f"[hydragon.editor.core] Failed to update wireframe guide: {e}")
+
+
 class HydragonForceVolumeZone:
     """
     Component class representing an individual physical force volume entity.
@@ -124,36 +239,70 @@ class HydragonForceVolumeZone:
             return
 
         try:
-            xformable = UsdGeom.Xformable(self._prim)
-            world_xf = xformable.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
-            self._world_transform = world_xf
-            try:
-                self._inv_world_matrix = world_xf.GetInverse()
-            except Exception:
-                self._inv_world_matrix = None
+            bounds_prim = self._prim.GetPrimAtPath("volumes/force_bounds")
+            if bounds_prim and bounds_prim.IsValid():
+                bxform = UsdGeom.Xformable(bounds_prim)
+                b_xf = bxform.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
+                self._world_transform = b_xf
+                try:
+                    self._inv_world_matrix = b_xf.GetInverse()
+                except Exception:
+                    self._inv_world_matrix = None
 
-            t = world_xf.ExtractTranslation()
-            self._world_pos = (float(t[0]), float(t[1]), float(t[2]))
+                t = b_xf.ExtractTranslation()
+                self._world_pos = (float(t[0]), float(t[1]), float(t[2]))
 
-            # Inspect scale
-            scale_vec = (
-                float(world_xf.GetRow(0).GetLength()),
-                float(world_xf.GetRow(1).GetLength()),
-                float(world_xf.GetRow(2).GetLength()),
-            )
+                b_scale = (
+                    float(b_xf.GetRow(0).GetLength()),
+                    float(b_xf.GetRow(1).GetLength()),
+                    float(b_xf.GetRow(2).GetLength()),
+                )
 
-            # Inspect child guide mesh (Cube / Sphere / Cylinder)
-            cube_prim = self._prim.GetPrimAtPath("volumes/force_bounds")
-            if cube_prim and cube_prim.IsValid():
-                cube_geom = UsdGeom.Cube(cube_prim)
-                size = float(cube_geom.GetSizeAttr().Get() or 200.0) if cube_geom.GetSizeAttr() else 200.0
-                hx = (size * 0.5) * scale_vec[0]
-                hy = (size * 0.5) * scale_vec[1]
-                hz = (size * 0.5) * scale_vec[2]
+                base_hx, base_hy, base_hz = 100.0, 100.0, 100.0
+                extent_attr = bounds_prim.GetAttribute("extent")
+                if extent_attr and extent_attr.IsValid():
+                    ext_val = extent_attr.Get()
+                    if ext_val and len(ext_val) >= 2:
+                        base_hx = max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0])))
+                        base_hy = max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1])))
+                        base_hz = max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2])))
+                elif bounds_prim.GetTypeName() == "Cube":
+                    cube_geom = UsdGeom.Cube(bounds_prim)
+                    size = float(cube_geom.GetSizeAttr().Get() or 200.0) if cube_geom.GetSizeAttr() else 200.0
+                    base_hx = base_hy = base_hz = size * 0.5
+
+                hx = base_hx * b_scale[0]
+                hy = base_hy * b_scale[1]
+                hz = base_hz * b_scale[2]
                 self._half_extents = (hx, hy, hz)
                 self._radius = max(hx, hz)
                 self._half_height = hy
+
+                # Synchronize guide wireframe shape dynamically
+                shape = self.volume_shape
+                update_wireframe_guide(
+                    bounds_prim,
+                    shape=shape,
+                    half_extents=(base_hx, base_hy, base_hz),
+                    radius=max(base_hx, base_hz),
+                    half_height=base_hy,
+                    color=(0.2, 0.7, 1.0),
+                )
             else:
+                xformable = UsdGeom.Xformable(self._prim)
+                world_xf = xformable.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
+                self._world_transform = world_xf
+                try:
+                    self._inv_world_matrix = world_xf.GetInverse()
+                except Exception:
+                    self._inv_world_matrix = None
+                t = world_xf.ExtractTranslation()
+                self._world_pos = (float(t[0]), float(t[1]), float(t[2]))
+                scale_vec = (
+                    float(world_xf.GetRow(0).GetLength()),
+                    float(world_xf.GetRow(1).GetLength()),
+                    float(world_xf.GetRow(2).GetLength()),
+                )
                 self._half_extents = (100.0 * scale_vec[0], 100.0 * scale_vec[1], 100.0 * scale_vec[2])
                 self._radius = max(self._half_extents[0], self._half_extents[2])
                 self._half_height = self._half_extents[1]
@@ -162,14 +311,11 @@ class HydragonForceVolumeZone:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Failed to cache bounds for force volume {self._prim_path}: {e}")
 
-    def check_overlap(self, point: Tuple[float, float, float]) -> bool:
+    def check_shape_overlap(self, point: Tuple[float, float, float]) -> bool:
         """
-        Evaluates whether point (world coordinates) is inside this volume's oriented bounds.
+        Evaluates whether point (world coordinates) is inside this volume's oriented geometric bounds.
         Supports Box (OBB), Sphere, and Cylinder.
         """
-        if not self.is_enabled:
-            return False
-
         shape = self.volume_shape
 
         # Sphere check (in world space directly)
@@ -206,6 +352,29 @@ class HydragonForceVolumeZone:
         hx, hy, hz = self._half_extents
         return (abs(local_x) <= hx) and (abs(local_y) <= hy) and (abs(local_z) <= hz)
 
+    def check_overlap(self, point: Tuple[float, float, float]) -> bool:
+        """
+        Evaluates whether point (world coordinates) is affected by this volume.
+        Encompasses primary shape bounds, and uncoupled radial force radius.
+        """
+        if not self.is_enabled:
+            return False
+
+        if self.check_shape_overlap(point):
+            return True
+
+        # Uncoupled radial force influence zone
+        if self._schema and self._schema.radial_enabled:
+            dx = point[0] - self._world_pos[0]
+            dy = point[1] - self._world_pos[1]
+            dz = point[2] - self._world_pos[2]
+            dist_sq = dx * dx + dy * dy + dz * dz
+            rad = max(0.0, self._schema.radial_radius)
+            if dist_sq <= rad * rad:
+                return True
+
+        return False
+
     def can_apply_impulse(self, rb_path: str, current_time: float) -> bool:
         """Evaluates impulse cooldown for a specific rigid body."""
         if rb_path not in self._impulse_timers:
@@ -236,9 +405,10 @@ class HydragonForceVolumeZone:
 
         schema = self._schema
         fx, fy, fz = 0.0, 0.0, 0.0
+        in_shape = self.check_shape_overlap(body_pos)
 
         # 1. Linear Force
-        if schema.linear_enabled:
+        if schema.linear_enabled and in_shape:
             ldir = schema.linear_direction
             mag = schema.linear_magnitude
             # Normalize direction
@@ -248,8 +418,8 @@ class HydragonForceVolumeZone:
                 ny = ldir[1] / d_len
                 nz = ldir[2] / d_len
 
-                # Rotate by volume orientation if world transform is available
-                if self._world_transform is not None and HAS_KIT:
+                coord_space = getattr(schema, "linear_coord_space", "Volume")
+                if coord_space == "Volume" and self._world_transform is not None and HAS_KIT:
                     try:
                         rot_dir = self._world_transform.TransformDir(Gf.Vec3d(nx, ny, nz)).GetNormalized()
                         fx += float(rot_dir[0]) * mag
@@ -260,11 +430,12 @@ class HydragonForceVolumeZone:
                         fy += ny * mag
                         fz += nz * mag
                 else:
+                    # World space direction
                     fx += nx * mag
                     fy += ny * mag
                     fz += nz * mag
 
-        # 2. Radial Force (Attractor or Repulsor)
+        # 2. Radial Force (Attractor or Repulsor) - Uncoupled from box extents
         if schema.radial_enabled:
             dx = body_pos[0] - self._world_pos[0]
             dy = body_pos[1] - self._world_pos[1]
@@ -282,8 +453,6 @@ class HydragonForceVolumeZone:
                     ratio = 1.0
 
                 rad_mag = schema.radial_magnitude * ratio
-                # Positive magnitude = pull toward center (attractor)
-                # Negative magnitude = push away from center (repulsor)
                 sign = -1.0 if rad_mag >= 0.0 else 1.0
                 abs_mag = abs(rad_mag)
 
@@ -292,7 +461,7 @@ class HydragonForceVolumeZone:
                 fz += (dz / dist) * abs_mag * sign
 
         # 3. Turbulence (Chaotic 3D perturbation)
-        if schema.turbulence_enabled:
+        if schema.turbulence_enabled and in_shape:
             freq = schema.turbulence_frequency
             t_mag = schema.turbulence_magnitude
             t = sim_time * freq
@@ -306,7 +475,7 @@ class HydragonForceVolumeZone:
                 fz += (tz / t_len) * t_mag
 
         # 4. Vortex (Tangential swirl + centripetal inward pull)
-        if schema.vortex_enabled:
+        if schema.vortex_enabled and in_shape:
             v_axis = schema.vortex_axis
             a_len = math.sqrt(v_axis[0] * v_axis[0] + v_axis[1] * v_axis[1] + v_axis[2] * v_axis[2])
             ax = v_axis[0] / a_len if a_len > 1e-4 else 0.0
@@ -325,12 +494,10 @@ class HydragonForceVolumeZone:
             p_dist = math.sqrt(px * px + py * py + pz * pz)
 
             if p_dist > 1e-2:
-                # Inward normal
                 in_x = -px / p_dist
                 in_y = -py / p_dist
                 in_z = -pz / p_dist
 
-                # Tangent = axis x r_planar_normalized
                 tx = ay * (-in_z) - az * (-in_y)
                 ty = az * (-in_x) - ax * (-in_z)
                 tz = ax * (-in_y) - ay * (-in_x)
@@ -345,7 +512,7 @@ class HydragonForceVolumeZone:
         # 5. Dampening (Linear & Angular Drag)
         damped_v = body_vel
         damped_w = body_ang_vel
-        if schema.dampening_enabled:
+        if schema.dampening_enabled and in_shape:
             lin_damp = max(0.0, schema.linear_damping)
             ang_damp = max(0.0, schema.angular_damping)
             lin_factor = max(0.0, 1.0 - lin_damp * dt)

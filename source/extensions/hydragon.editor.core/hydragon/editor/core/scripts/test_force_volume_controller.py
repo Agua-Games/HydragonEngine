@@ -207,7 +207,78 @@ def test_impulse_cooldown():
 
     # Different body at t=1.2 should succeed
     assert zone.can_apply_impulse("/World/Foe", 1.2), "Different body must have independent cooldown"
-    print("  [PASS] Impulse cooldown logic verified")
+def test_linear_coord_space():
+    print("--- 7. Testing Linear Coord Space (Volume vs World) ---")
+    zone = HydragonForceVolumeZone(prim=None, world_pos=(0.0, 0.0, 0.0))
+    schema = zone._schema
+    schema.linear_enabled = True
+    schema.linear_direction = (0.0, 1.0, 0.0)
+    schema.linear_magnitude = 800.0
+
+    # Test World space
+    schema.linear_coord_space = "World"
+    assert schema.linear_coord_space == "World"
+    force_vec, _, _ = zone.compute_forces(
+        body_pos=(0.0, 0.0, 0.0),
+        body_vel=(0.0, 0.0, 0.0),
+        body_ang_vel=(0.0, 0.0, 0.0),
+        sim_time=0.0,
+        dt=0.016,
+    )
+    assert abs(force_vec[1] - 800.0) < 1e-3
+
+    # Test Volume space default
+    schema.linear_coord_space = "Volume"
+    assert schema.linear_coord_space == "Volume"
+    force_vec, _, _ = zone.compute_forces(
+        body_pos=(0.0, 0.0, 0.0),
+        body_vel=(0.0, 0.0, 0.0),
+        body_ang_vel=(0.0, 0.0, 0.0),
+        sim_time=0.0,
+        dt=0.016,
+    )
+    assert abs(force_vec[1] - 800.0) < 1e-3
+    print("  [PASS] Linear Coord Space verified")
+
+
+def test_uncoupled_radial_force_reach():
+    print("--- 8. Testing Uncoupled Radial Force Reach ---")
+    # Box is small: half extents = 50 (extends from -50 to +50)
+    zone = HydragonForceVolumeZone(prim=None, world_pos=(0.0, 0.0, 0.0))
+    zone.half_extents = (50.0, 50.0, 50.0)
+    schema = zone._schema
+
+    # Both linear and radial enabled
+    schema.linear_enabled = True
+    schema.linear_direction = (0.0, 1.0, 0.0)
+    schema.linear_magnitude = 500.0
+
+    schema.radial_enabled = True
+    schema.radial_radius = 500.0
+    schema.radial_magnitude = 1000.0
+    schema.radial_falloff = "None"
+
+    # Point at (200, 0, 0) is OUTSIDE the box, but INSIDE the radial radius (500)
+    outside_box_point = (200.0, 0.0, 0.0)
+    assert not zone.check_shape_overlap(outside_box_point), "Point should be outside the box shape"
+    assert zone.check_overlap(outside_box_point), "Point must be inside the uncoupled radial zone"
+
+    force_vec, _, _ = zone.compute_forces(
+        body_pos=outside_box_point,
+        body_vel=(0.0, 0.0, 0.0),
+        body_ang_vel=(0.0, 0.0, 0.0),
+        sim_time=0.0,
+        dt=0.016,
+    )
+    # Radial force pulls toward origin (-X): fx = -1000
+    assert abs(force_vec[0] - (-1000.0)) < 1e-3, f"Expected radial fx=-1000, got {force_vec[0]}"
+    # Linear force is shape-confined to the box, so fy should be 0 outside the box!
+    assert abs(force_vec[1]) < 1e-3, f"Linear force should not leak outside the box, got fy={force_vec[1]}"
+
+    # Point at (600, 0, 0) is outside BOTH the box and radial reach
+    way_outside = (600.0, 0.0, 0.0)
+    assert not zone.check_overlap(way_outside)
+    print("  [PASS] Uncoupled radial reach and shape-confined forces verified")
 
 
 if __name__ == "__main__":
@@ -217,4 +288,7 @@ if __name__ == "__main__":
     test_force_calculations_linear_and_radial()
     test_force_calculations_dampening_and_vortex()
     test_impulse_cooldown()
-    print("\nALL FORCE VOLUME CONTROLLER TESTS PASSED! (6/6)")
+    test_linear_coord_space()
+    test_uncoupled_radial_force_reach()
+    print("\nALL FORCE VOLUME CONTROLLER TESTS PASSED! (8/8)")
+

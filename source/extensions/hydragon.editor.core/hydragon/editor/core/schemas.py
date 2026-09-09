@@ -144,7 +144,14 @@ def _get_attr_value(prim, attr_name: str, default, fallback_dict: Optional[dict]
         return default
 
 
-def _set_attr_value(prim, attr_name: str, value, type_name, fallback_dict: Optional[dict] = None):
+def _set_attr_value(
+    prim,
+    attr_name: str,
+    value,
+    type_name,
+    fallback_dict: Optional[dict] = None,
+    allowed_tokens: Optional[list] = None,
+):
     """Safe setter for an attribute, only writing if the value has changed."""
     if fallback_dict is not None:
         fallback_dict[attr_name] = value
@@ -157,10 +164,15 @@ def _set_attr_value(prim, attr_name: str, value, type_name, fallback_dict: Optio
                 attr = prim.CreateAttribute(attr_name, type_name)
         else:
             current_val = attr.Get()
-            if current_val == value:
+            if current_val == value and not allowed_tokens:
                 return
         if attr and hasattr(attr, "Set"):
             attr.Set(value)
+        if attr and allowed_tokens and hasattr(attr, "SetMetadata"):
+            if hasattr(Vt, "TokenArray"):
+                attr.SetMetadata("allowedTokens", Vt.TokenArray(allowed_tokens))
+            else:
+                attr.SetMetadata("allowedTokens", allowed_tokens)
     except Exception:
         pass
 
@@ -201,7 +213,13 @@ class HydragonActor:
 
     @faction.setter
     def faction(self, val: str):
-        _set_attr_value(self._prim, "actor:faction", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "actor:faction",
+            val,
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Player", "Enemy", "Neutral"],
+        )
 
     @property
     def health(self) -> float:
@@ -530,7 +548,13 @@ class HydragonChaserAI:
 
     @state.setter
     def state(self, val: str):
-        _set_attr_value(self._prim, "ai:state", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "ai:state",
+            val,
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Patrol", "Chase", "Dead"],
+        )
 
     @property
     def target_faction(self) -> str:
@@ -538,7 +562,13 @@ class HydragonChaserAI:
 
     @target_faction.setter
     def target_faction(self, val: str):
-        _set_attr_value(self._prim, "ai:targetFaction", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "ai:targetFaction",
+            val,
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Player", "Enemy", "All"],
+        )
 
     @property
     def target_prim(self):
@@ -613,7 +643,13 @@ class HydragonTrigger:
 
     @event_type.setter
     def event_type(self, val: str):
-        _set_attr_value(self._prim, "trigger:eventType", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "trigger:eventType",
+            val,
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["OnLevelComplete", "OnDamage", "OnCheckpoint", "OnCustomEvent"],
+        )
 
     @property
     def filter_faction(self) -> str:
@@ -621,7 +657,13 @@ class HydragonTrigger:
 
     @filter_faction.setter
     def filter_faction(self, val: str):
-        _set_attr_value(self._prim, "trigger:filterFaction", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "trigger:filterFaction",
+            val,
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Player", "Enemy", "All"],
+        )
 
     @property
     def is_one_shot(self) -> bool:
@@ -704,7 +746,13 @@ class HydragonGameManager:
 
     @state.setter
     def state(self, val: str):
-        _set_attr_value(self._prim, "game:state", val, Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "game:state",
+            val,
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Playing", "Victory", "GameOver", "Paused"],
+        )
 
     @property
     def score(self) -> int:
@@ -808,7 +856,13 @@ class HydragonUICanvas:
 
     @canvas_type.setter
     def canvas_type(self, val: str):
-        _set_attr_value(self._prim, "hud:canvasType", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "hud:canvasType",
+            str(val),
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["InGame", "PauseMenu", "VictoryModal", "Custom"],
+        )
 
     @property
     def title(self) -> str:
@@ -1157,6 +1211,7 @@ class HydragonForceVolume:
         volume_shape: str = "Box",
         filter_faction: str = "All",
         linear_enabled: bool = False,
+        linear_coord_space: str = "Volume",
         linear_direction: tuple = (0.0, 1.0, 0.0),
         linear_magnitude: float = 500.0,
         radial_enabled: bool = False,
@@ -1181,6 +1236,7 @@ class HydragonForceVolume:
         vol.volume_shape = volume_shape
         vol.filter_faction = filter_faction
         vol.linear_enabled = linear_enabled
+        vol.linear_coord_space = linear_coord_space
         vol.linear_direction = linear_direction
         vol.linear_magnitude = linear_magnitude
         vol.radial_enabled = radial_enabled
@@ -1225,7 +1281,13 @@ class HydragonForceVolume:
 
     @mode.setter
     def mode(self, val: str):
-        _set_attr_value(self._prim, "force:mode", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "force:mode",
+            str(val),
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Continuous", "Impulse"],
+        )
 
     @property
     def volume_shape(self) -> str:
@@ -1233,7 +1295,13 @@ class HydragonForceVolume:
 
     @volume_shape.setter
     def volume_shape(self, val: str):
-        _set_attr_value(self._prim, "force:volumeShape", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "force:volumeShape",
+            str(val),
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Box", "Sphere", "Cylinder"],
+        )
 
     @property
     def filter_faction(self) -> str:
@@ -1241,7 +1309,13 @@ class HydragonForceVolume:
 
     @filter_faction.setter
     def filter_faction(self, val: str):
-        _set_attr_value(self._prim, "force:filterFaction", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "force:filterFaction",
+            str(val),
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["All", "Player", "Enemy", "RigidBodies"],
+        )
 
     @property
     def impulse_cooldown(self) -> float:
@@ -1259,6 +1333,20 @@ class HydragonForceVolume:
     @linear_enabled.setter
     def linear_enabled(self, val: bool):
         _set_attr_value(self._prim, "force:linearEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def linear_coord_space(self) -> str:
+        return str(_get_attr_value(self._prim, "force:linearCoordSpace", "Volume"))
+
+    @linear_coord_space.setter
+    def linear_coord_space(self, val: str):
+        _set_attr_value(
+            self._prim,
+            "force:linearCoordSpace",
+            str(val),
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Volume", "World"],
+        )
 
     @property
     def linear_direction(self) -> tuple:
@@ -1300,7 +1388,13 @@ class HydragonForceVolume:
 
     @radial_falloff.setter
     def radial_falloff(self, val: str):
-        _set_attr_value(self._prim, "force:radialFalloff", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "force:radialFalloff",
+            str(val),
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["None", "Linear", "Squared"],
+        )
 
     @property
     def radial_radius(self) -> float:
@@ -1466,7 +1560,13 @@ class HydragonKillVolume:
 
     @filter_faction.setter
     def filter_faction(self, val: str):
-        _set_attr_value(self._prim, "kill:filterFaction", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "kill:filterFaction",
+            str(val),
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["All", "Player", "Enemy"],
+        )
 
     @property
     def volume_shape(self) -> str:
@@ -1474,7 +1574,13 @@ class HydragonKillVolume:
 
     @volume_shape.setter
     def volume_shape(self, val: str):
-        _set_attr_value(self._prim, "kill:volumeShape", str(val), Sdf.ValueTypeNames.Token if HAS_PXR else None)
+        _set_attr_value(
+            self._prim,
+            "kill:volumeShape",
+            str(val),
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Box", "Sphere", "Plane"],
+        )
 
     @property
     def respawn_player(self) -> bool:

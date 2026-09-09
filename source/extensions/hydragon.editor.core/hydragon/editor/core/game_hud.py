@@ -469,10 +469,8 @@ class HydragonGameHUD:
 
             elif event_type == int(omni.timeline.TimelineEventType.PAUSE):
                 self._is_paused = True
-                # Simulation paused in place: do NOT destroy active menus!
-                # If in-game and no menu is active, open PauseMenu
-                if self._game_started and not self.is_menu_active and "PauseMenu" in self._canvases:
-                    self.open_pause_menu(pause_timeline=False)
+                # Timeline paused in place (e.g. editor play-edit workflow).
+                # Do NOT auto-open PauseMenu: PauseMenu is exclusively triggered by P or ESC key.
 
             elif event_type == int(omni.timeline.TimelineEventType.STOP):
                 self._is_simulating = False

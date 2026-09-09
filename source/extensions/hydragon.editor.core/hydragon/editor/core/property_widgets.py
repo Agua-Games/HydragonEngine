@@ -30,6 +30,9 @@ from .schemas import (
     HydragonGameManager,
     HydragonUICanvas,
     HydragonSoundtrack,
+    HydragonEffectsManager,
+    HydragonForceVolume,
+    HydragonKillVolume,
 )
 
 
@@ -208,6 +211,36 @@ if HAS_PROPERTY_WINDOW:
                 schema_check_fn=HydragonSoundtrack.is_applied,
             )
 
+
+    class HydragonForcePropertyWidget(HydragonBasePropertyWidget):
+        """Dedicated property panel for HydragonForceVolumeAPI."""
+        def __init__(self):
+            super().__init__(
+                title="Hydragon Force Volume",
+                prefix="force:",
+                schema_check_fn=HydragonForceVolume.is_applied,
+            )
+
+
+    class HydragonKillPropertyWidget(HydragonBasePropertyWidget):
+        """Dedicated property panel for HydragonKillVolumeAPI."""
+        def __init__(self):
+            super().__init__(
+                title="Hydragon Kill Volume",
+                prefix="kill:",
+                schema_check_fn=HydragonKillVolume.is_applied,
+            )
+
+
+    class HydragonEffectsPropertyWidget(HydragonBasePropertyWidget):
+        """Dedicated property panel for HydragonEffectsAPI."""
+        def __init__(self):
+            super().__init__(
+                title="Hydragon Effects Manager",
+                prefix="effects:",
+                schema_check_fn=HydragonEffectsManager.is_applied,
+            )
+
 else:
     class HydragonBasePropertyWidget:
         def __init__(self, *args, **kwargs):
@@ -235,6 +268,15 @@ else:
         pass
 
     class HydragonSoundtrackPropertyWidget(HydragonBasePropertyWidget):
+        pass
+
+    class HydragonForcePropertyWidget(HydragonBasePropertyWidget):
+        pass
+
+    class HydragonKillPropertyWidget(HydragonBasePropertyWidget):
+        pass
+
+    class HydragonEffectsPropertyWidget(HydragonBasePropertyWidget):
         pass
 
 
@@ -294,6 +336,9 @@ class HydragonPropertyWidgetsManager:
                 ("hydragon_game", HydragonGamePropertyWidget()),
                 ("hydragon_ui_canvas", HydragonUICanvasPropertyWidget()),
                 ("hydragon_soundtrack", HydragonSoundtrackPropertyWidget()),
+                ("hydragon_force_volume", HydragonForcePropertyWidget()),
+                ("hydragon_kill_volume", HydragonKillPropertyWidget()),
+                ("hydragon_effects", HydragonEffectsPropertyWidget()),
             ]
 
             for name, widget in self._widgets:
@@ -301,7 +346,7 @@ class HydragonPropertyWidgetsManager:
 
             self._registered = True
             if carb:
-                carb.log_info("[hydragon.editor.core] Successfully registered 8 dedicated Hydragon property widgets.")
+                carb.log_info("[hydragon.editor.core] Successfully registered 11 dedicated Hydragon property widgets.")
             return True
         except Exception as e:
             if carb:

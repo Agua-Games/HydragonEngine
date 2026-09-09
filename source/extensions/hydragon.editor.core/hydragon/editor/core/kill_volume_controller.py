@@ -168,21 +168,32 @@ class HydragonKillZone:
                 float(world_xf.GetRow(2).GetLength()),
             )
 
-            # Inspect child guide mesh (Cube / Sphere / Cylinder)
+            # Inspect child guide mesh (BasisCurves / Cube / Sphere / Cylinder)
             bounds_prim = self._prim.GetPrimAtPath("volumes/kill_bounds")
             if bounds_prim and bounds_prim.IsValid():
                 bxform = UsdGeom.Xformable(bounds_prim)
                 b_xf = bxform.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
-                cube_geom = UsdGeom.Cube(bounds_prim)
-                size = float(cube_geom.GetSizeAttr().Get() or 100.0) if cube_geom.GetSizeAttr() else 100.0
                 b_scale = (
                     float(b_xf.GetRow(0).GetLength()),
                     float(b_xf.GetRow(1).GetLength()),
                     float(b_xf.GetRow(2).GetLength()),
                 )
-                hx = (size * 0.5) * b_scale[0]
-                hy = (size * 0.5) * b_scale[1]
-                hz = (size * 0.5) * b_scale[2]
+                base_hx, base_hy, base_hz = 50.0, 50.0, 50.0
+                extent_attr = bounds_prim.GetAttribute("extent")
+                if extent_attr and extent_attr.IsValid():
+                    ext_val = extent_attr.Get()
+                    if ext_val and len(ext_val) >= 2:
+                        base_hx = max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0])))
+                        base_hy = max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1])))
+                        base_hz = max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2])))
+                elif bounds_prim.GetTypeName() == "Cube":
+                    cube_geom = UsdGeom.Cube(bounds_prim)
+                    size = float(cube_geom.GetSizeAttr().Get() or 100.0) if cube_geom.GetSizeAttr() else 100.0
+                    base_hx = base_hy = base_hz = size * 0.5
+
+                hx = base_hx * b_scale[0]
+                hy = base_hy * b_scale[1]
+                hz = base_hz * b_scale[2]
                 self._half_extents = (hx, hy, hz)
                 self._radius = max(hx, hz)
                 self._half_height = hy
@@ -201,7 +212,7 @@ class HydragonKillZone:
     def check_overlap(self, point: Tuple[float, float, float]) -> bool:
         """
         Evaluates whether point (world coordinates) is inside this hazard volume.
-        Supports Box (OBB), Sphere, and Cylinder.
+        Supports Box (OBB), Sphere, Cylinder, and Plane.
         """
         if not self.is_enabled:
             return False
@@ -235,6 +246,9 @@ class HydragonKillZone:
         if shape == "Cylinder":
             r_sq = local_x * local_x + local_z * local_z
             return (r_sq <= self._radius * self._radius) and (abs(local_y) <= self._half_height)
+
+        if shape == "Plane":
+            return (abs(local_x) <= self._half_extents[0]) and (abs(local_z) <= self._half_extents[2]) and (abs(local_y) <= max(100.0, self._half_height))
 
         # Default: Box (Oriented Bounding Box)
         hx, hy, hz = self._half_extents

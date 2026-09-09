@@ -216,6 +216,7 @@ def test_python_module():
     assert fv.filter_faction == "All"
     assert fv.impulse_cooldown == 1.0
     assert fv.linear_enabled is False
+    assert fv.linear_coord_space == "Volume"
     assert fv.linear_direction == (0.0, 1.0, 0.0)
     assert fv.linear_magnitude == 500.0
     assert fv.radial_enabled is False
