@@ -151,6 +151,48 @@ def test_overlay_registry_and_colors():
     print("  [PASS] Volume registry and color encoding verified")
 
 
+def test_gesture_manager_prevention():
+    print("--- 8. Testing Gesture Manager Prevention ---")
+    from hydragon.editor.core.volume_viewport_manipulator import PreventViewportOthers
+
+    mgr = PreventViewportOthers()
+    # Cannot be prevented by any other gesture
+    assert mgr.can_be_prevented(None) is False
+
+    # Should prevent other gestures when in active state
+    class MockPreventer:
+        state = 1  # BEGAN / active
+
+    assert mgr.should_prevent(None, MockPreventer()) is True
+    print("  [PASS] Gesture manager prevention verified")
+
+
+def test_visibility_toggle_and_settings():
+    print("--- 9. Testing Volume Overlay Visibility Toggling ---")
+    from hydragon.editor.core.volume_viewport_manipulator import (
+        HydragonVolumeViewportOverlay,
+        SETTING_SHOW_VOLUMES,
+    )
+
+    assert SETTING_SHOW_VOLUMES == "/persistent/app/viewport/displayOptions/showHydragonVolumes"
+
+    overlay = HydragonVolumeViewportOverlay("test_vis")
+    assert overlay._is_visible is True
+
+    # Test toggling without kit settings (pure fallback mode)
+    overlay.toggle_volumes_visibility()
+    assert overlay._is_visible is False
+
+    overlay.toggle_volumes_visibility()
+    assert overlay._is_visible is True
+
+    overlay.set_visible(False)
+    assert overlay._is_visible is False
+
+    overlay.shutdown()
+    print("  [PASS] Visibility toggle and settings verified")
+
+
 if __name__ == "__main__":
     test_overlay_lifecycle()
     test_wireframe_segment_math_box()
@@ -159,4 +201,6 @@ if __name__ == "__main__":
     test_wireframe_segment_math_plane()
     test_caching_and_rebuild_logic()
     test_overlay_registry_and_colors()
-    print("\nALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (7/7)")
+    test_gesture_manager_prevention()
+    test_visibility_toggle_and_settings()
+    print("\nALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (9/9)")

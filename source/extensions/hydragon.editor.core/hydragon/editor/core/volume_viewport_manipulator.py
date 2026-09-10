@@ -11,6 +11,8 @@ from typing import Dict, List, Optional, Set, Tuple
 
 try:
     import carb
+    import carb.settings
+    import carb.input
     import omni.kit.app
     import omni.usd
     import omni.ui as ui
@@ -32,6 +34,31 @@ except ImportError:
     Sdf = None
 
 from .schemas import HydragonForceVolume, HydragonKillVolume
+
+SETTING_SHOW_VOLUMES = "/persistent/app/viewport/displayOptions/showHydragonVolumes"
+
+
+class PreventViewportOthers(sc.GestureManager if (HAS_KIT and sc and hasattr(sc, "GestureManager")) else object):
+    """
+    GestureManager that grants highest precedence to volume picking gestures,
+    explicitly preventing Omniverse's low-priority Viewport SelectTool (priority -100)
+    from executing an asynchronous Hydra raycast that falls through non-mesh USD prims.
+    """
+    def can_be_prevented(self, gesture):
+        return False
+
+    def should_prevent(self, gesture, preventer):
+        if preventer and getattr(preventer, "state", None) in (
+            getattr(sc, "GestureState", None).BEGAN if hasattr(sc, "GestureState") else 1,
+            getattr(sc, "GestureState", None).CHANGED if hasattr(sc, "GestureState") else 2,
+        ):
+            return True
+        if hasattr(super(), "should_prevent"):
+            try:
+                return super().should_prevent(gesture, preventer)
+            except Exception:
+                pass
+        return False
 
 
 def make_color(r: float, g: float, b: float, a: float = 1.0):
@@ -262,14 +289,16 @@ class VolumeOverlayEntry:
         thickness = self.get_line_thickness()
 
         # Selection callback for direct Viewport picking (locks selection against native tool fall-through)
-        def _on_click(_shape):
+        def _on_click(*_args):
             HydragonVolumeViewportOverlay.lock_selection(self.prim_path)
 
+        mgr = PreventViewportOthers() if (HAS_KIT and sc and hasattr(sc, "GestureManager")) else None
+        click_gesture = sc.ClickGesture(on_ended_fn=_on_click, manager=mgr) if (HAS_KIT and sc and hasattr(sc, "ClickGesture")) else None
+
         def _create_line(p0, p1, line_color, line_thickness):
-            gesture = sc.ClickGesture(on_ended_fn=_on_click) if (HAS_KIT and hasattr(sc, "ClickGesture")) else None
-            if gesture:
+            if click_gesture:
                 try:
-                    return sc.Line(p0, p1, color=line_color, thickness=line_thickness, gesture=gesture)
+                    return sc.Line(p0, p1, color=line_color, thickness=line_thickness, gestures=[click_gesture])
                 except TypeError:
                     pass
             return sc.Line(p0, p1, color=line_color, thickness=line_thickness)
@@ -304,6 +333,44 @@ class VolumeOverlayEntry:
                 cross_thickness = thickness + 1.5
                 for (x0, y0, z0), (x1, y1, z1) in center_segments:
                     _create_line([x0, y0, z0], [x1, y1, z1], color, cross_thickness)
+
+                # 3. Dedicated interactable picking targets at center pivot:
+                # Uses both an interactable sc.Points with generous intersection radius
+                # AND a camera-facing billboard rectangle.
+                if click_gesture:
+                    try:
+                        if hasattr(sc, "Points"):
+                            sc.Points(
+                                [[0.0, 0.0, 0.0]],
+                                colors=[make_color(0.0, 0.0, 0.0, 0.0)],
+                                sizes=[0],
+                                intersection_sizes=[arm * 1.6],
+                                gestures=[click_gesture],
+                                visible=True,
+                            )
+                    except Exception:
+                        pass
+
+                    try:
+                        if hasattr(sc, "Rectangle"):
+                            look_at_camera = getattr(sc.Transform.LookAt, "CAMERA", None) if hasattr(sc, "Transform") and hasattr(sc.Transform, "LookAt") else None
+                            if look_at_camera is not None:
+                                with sc.Transform(look_at=look_at_camera):
+                                    sc.Rectangle(
+                                        width=arm * 2.2,
+                                        height=arm * 2.2,
+                                        color=make_color(0.0, 0.0, 0.0, 0.0),
+                                        gestures=[click_gesture],
+                                    )
+                            else:
+                                sc.Rectangle(
+                                    width=arm * 2.2,
+                                    height=arm * 2.2,
+                                    color=make_color(0.0, 0.0, 0.0, 0.0),
+                                    gestures=[click_gesture],
+                                )
+                    except Exception:
+                        pass
         except Exception as e:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Failed to build lines for {self.prim_path}: {e}")
@@ -326,7 +393,7 @@ class VolumeOverlayEntry:
         except Exception:
             pass
 
-    def update_per_frame(self, prim):
+    def update_per_frame(self, prim, is_visible: bool = True):
         if not HAS_KIT or not prim:
             return
 
@@ -335,8 +402,10 @@ class VolumeOverlayEntry:
             self.rebuild_lines(prim)
 
         self.update_transform(prim)
-        if self.transform_node and not self.transform_node.visible:
+        if self.transform_node and is_visible and not self.transform_node.visible:
             self.transform_node.visible = True
+        elif self.transform_node and not is_visible and self.transform_node.visible:
+            self.transform_node.visible = False
 
 
 class HydragonVolumeViewportOverlay:
@@ -360,6 +429,7 @@ class HydragonVolumeViewportOverlay:
         HydragonVolumeViewportOverlay._instance = self
         self._ext_id = ext_id or self.FRAME_ID
         self._is_active: bool = False
+        self._is_visible: bool = True
 
         self._viewport_window = None
         self._scene_view = None
@@ -375,6 +445,11 @@ class HydragonVolumeViewportOverlay:
 
         self._stage_event_sub = None
         self._app_update_sub = None
+        self._setting_sub = None
+        self._menu_item = None
+        self._action = None
+        self._hotkey_registered: bool = False
+        self._keyboard_sub = None
 
     @classmethod
     def get_instance(cls) -> Optional["HydragonVolumeViewportOverlay"]:
@@ -388,10 +463,10 @@ class HydragonVolumeViewportOverlay:
             overlay._lock_selection_impl(prim_path)
 
     def _lock_selection_impl(self, prim_path: str):
-        """Locks selection to prim_path for 0.35s, overriding any immediate fall-through from native tools."""
+        """Locks selection to prim_path for 0.4s, overriding any immediate fall-through from native tools."""
         import time
         self._locked_selection_path = prim_path
-        self._locked_selection_expiry = time.time() + 0.35
+        self._locked_selection_expiry = time.time() + 0.40
 
         # 1. Select immediately
         usd_context = omni.usd.get_context() if omni.usd else None
@@ -401,22 +476,23 @@ class HydragonVolumeViewportOverlay:
             except Exception:
                 pass
 
-        # 2. Defer re-assertion on the next app update frame to guarantee overriding the native tool
+        # 2. Defer re-assertion on the next app update frames to guarantee overriding the native tool
         import asyncio
-        async def _reassert_next_frame():
+        async def _reassert_frames():
             try:
                 app = omni.kit.app.get_app() if omni.kit and omni.kit.app else None
-                if app:
-                    await app.next_update_async()
-                if self._locked_selection_path == prim_path:
-                    ctx = omni.usd.get_context() if omni.usd else None
-                    if ctx and hasattr(ctx, "get_selection"):
-                        ctx.get_selection().set_selected_prim_paths([prim_path], True)
+                for _ in range(2):
+                    if app:
+                        await app.next_update_async()
+                    if self._locked_selection_path == prim_path:
+                        ctx = omni.usd.get_context() if omni.usd else None
+                        if ctx and hasattr(ctx, "get_selection"):
+                            ctx.get_selection().set_selected_prim_paths([prim_path], True)
             except Exception:
                 pass
 
         try:
-            asyncio.ensure_future(_reassert_next_frame())
+            asyncio.ensure_future(_reassert_frames())
         except Exception:
             pass
 
@@ -427,23 +503,40 @@ class HydragonVolumeViewportOverlay:
             return
 
         try:
+            # 1. Read or initialize persistent visibility setting
+            settings = carb.settings.get_settings() if carb else None
+            if settings:
+                if settings.get(SETTING_SHOW_VOLUMES) is None:
+                    settings.set_bool(SETTING_SHOW_VOLUMES, True)
+                self._is_visible = settings.get_as_bool(SETTING_SHOW_VOLUMES)
+                try:
+                    self._setting_sub = settings.subscribe_to_node_change_events(
+                        SETTING_SHOW_VOLUMES, self._on_visibility_setting_changed
+                    )
+                except Exception:
+                    pass
+
             self._ensure_attached()
 
-            # 1. Listen to USD selection and stage events
+            # 2. Register Viewport Eye Menu item ("Show By Type") and hotkey Shift+V
+            self._register_viewport_menu_item()
+            self._register_action_and_hotkey()
+
+            # 3. Listen to USD selection and stage events
             usd_context = omni.usd.get_context() if omni.usd else None
             if usd_context and hasattr(usd_context, "get_stage_event_stream"):
                 self._stage_event_sub = usd_context.get_stage_event_stream().create_subscription_to_pop(
                     self._on_stage_event, name="HydragonVolumeOverlayStageSub"
                 )
 
-            # 2. Listen to app update stream for smooth transform updates & viewport sync
+            # 4. Listen to app update stream for smooth transform updates & viewport sync
             app = omni.kit.app.get_app() if omni.kit and omni.kit.app else None
             if app:
                 self._app_update_sub = app.get_update_event_stream().create_subscription_to_pop(
                     self._on_app_update, name="HydragonVolumeOverlayUpdateSub"
                 )
 
-            # 3. Initial discovery of existing volumes in the open stage
+            # 5. Initial discovery of existing volumes in the open stage
             self._scan_stage_volumes()
             self._update_selection()
 
@@ -459,6 +552,16 @@ class HydragonVolumeViewportOverlay:
         self._stage_event_sub = None
         self._app_update_sub = None
 
+        if self._setting_sub and carb:
+            try:
+                carb.settings.get_settings().unsubscribe_to_change_events(self._setting_sub)
+            except Exception:
+                pass
+            self._setting_sub = None
+
+        self._deregister_viewport_menu_item()
+        self._deregister_action_and_hotkey()
+
         self._locked_selection_path = None
         self._locked_selection_expiry = 0.0
 
@@ -467,6 +570,169 @@ class HydragonVolumeViewportOverlay:
 
         if carb:
             carb.log_info("[hydragon.editor.core] HydragonVolumeViewportOverlay shut down.")
+
+    def toggle_volumes_visibility(self):
+        """Toggles the visibility of all Hydragon volume viewport wireframes."""
+        settings = carb.settings.get_settings() if carb else None
+        if settings:
+            curr = settings.get_as_bool(SETTING_SHOW_VOLUMES)
+            settings.set_bool(SETTING_SHOW_VOLUMES, not curr)
+        else:
+            self.set_visible(not self._is_visible)
+
+    def _on_visibility_setting_changed(self, item, event_type):
+        if not carb:
+            return
+        settings = carb.settings.get_settings()
+        new_val = settings.get_as_bool(SETTING_SHOW_VOLUMES)
+        self.set_visible(new_val)
+
+    def set_visible(self, visible: bool):
+        """Sets visibility state on the root transform node for all registered volumes."""
+        self._is_visible = visible
+        if self._root_transform:
+            try:
+                self._root_transform.visible = visible
+            except Exception:
+                pass
+
+    def _register_viewport_menu_item(self):
+        """Registers 'Hydragon Volumes' toggle in the Viewport Eye menu under 'Show By Type'."""
+        if not HAS_KIT:
+            return
+        try:
+            import omni.kit.viewport.menubar.display as vp_display
+            from omni.kit.viewport.menubar.core import CategoryStateItem
+            display_ext = vp_display.get_instance()
+            if display_ext and hasattr(display_ext, "register_custom_category_item"):
+                self._menu_item = CategoryStateItem(
+                    "Hydragon Volumes",
+                    setting_path=SETTING_SHOW_VOLUMES,
+                    hotkey_text="Shift+V",
+                )
+                display_ext.register_custom_category_item("Show By Type", self._menu_item)
+                if carb:
+                    carb.log_info("[hydragon.editor.core] Registered 'Hydragon Volumes' in Viewport 'Show By Type' menu.")
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Could not register 'Hydragon Volumes' in display menu: {e}")
+
+    def _deregister_viewport_menu_item(self):
+        if not HAS_KIT or not self._menu_item:
+            return
+        try:
+            import omni.kit.viewport.menubar.display as vp_display
+            display_ext = vp_display.get_instance()
+            if display_ext and hasattr(display_ext, "deregister_custom_category_item"):
+                display_ext.deregister_custom_category_item("Show By Type", self._menu_item)
+        except Exception:
+            pass
+        self._menu_item = None
+
+    def _register_action_and_hotkey(self):
+        """Registers action in omni.kit.actions.core and hotkey Shift+V in omni.kit.hotkeys.core."""
+        if not HAS_KIT:
+            return
+        # 1. Register Action
+        try:
+            import omni.kit.actions.core as kit_actions
+            action_reg = kit_actions.get_action_registry()
+            if action_reg and hasattr(action_reg, "register_action"):
+                self._action = action_reg.register_action(
+                    "hydragon.editor.core",
+                    "toggle_volume_visibility",
+                    self.toggle_volumes_visibility,
+                    display_name="Show/Hide Hydragon Volumes",
+                    description="Toggles visibility of Hydragon Force and Kill volume overlays in Viewport.",
+                )
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Could not register action 'toggle_volume_visibility': {e}")
+
+        # 2. Register Hotkey via omni.kit.hotkeys.core
+        try:
+            import omni.kit.hotkeys.core as kit_hotkeys
+            hotkey_reg = kit_hotkeys.get_hotkey_registry()
+            if hotkey_reg and hasattr(hotkey_reg, "register_hotkey"):
+                hotkey_reg.register_hotkey(
+                    "hydragon.editor.core",
+                    "Shift+V",
+                    "hydragon.editor.core",
+                    "toggle_volume_visibility",
+                )
+                self._hotkey_registered = True
+                if carb:
+                    carb.log_info("[hydragon.editor.core] Registered hotkey 'Shift+V' for Hydragon Volumes.")
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Could not register hotkey 'Shift+V': {e}")
+
+        # 3. Fallback keyboard event subscription via carb.input
+        try:
+            if carb and hasattr(carb, "input"):
+                import omni.appwindow
+                appwindow = omni.appwindow.get_default_app_window()
+                input_iface = carb.input.acquire_input_interface()
+                if appwindow and input_iface:
+                    keyboard = appwindow.get_keyboard()
+                    if keyboard:
+                        self._keyboard_sub = input_iface.subscribe_to_keyboard_events(
+                            keyboard, self._on_keyboard_event
+                        )
+        except Exception:
+            pass
+
+    def _deregister_action_and_hotkey(self):
+        # 1. Fallback keyboard sub
+        if self._keyboard_sub and carb and hasattr(carb, "input"):
+            try:
+                import omni.appwindow
+                appwindow = omni.appwindow.get_default_app_window()
+                input_iface = carb.input.acquire_input_interface()
+                if appwindow and input_iface:
+                    keyboard = appwindow.get_keyboard()
+                    if keyboard:
+                        input_iface.unsubscribe_to_keyboard_events(keyboard, self._keyboard_sub)
+            except Exception:
+                pass
+            self._keyboard_sub = None
+
+        # 2. Hotkey
+        if self._hotkey_registered:
+            try:
+                import omni.kit.hotkeys.core as kit_hotkeys
+                hotkey_reg = kit_hotkeys.get_hotkey_registry()
+                if hotkey_reg and hasattr(hotkey_reg, "deregister_hotkey"):
+                    hotkey_reg.deregister_hotkey("hydragon.editor.core", "Shift+V")
+            except Exception:
+                pass
+            self._hotkey_registered = False
+
+        # 3. Action
+        if self._action:
+            try:
+                import omni.kit.actions.core as kit_actions
+                action_reg = kit_actions.get_action_registry()
+                if action_reg and hasattr(action_reg, "deregister_action"):
+                    action_reg.deregister_action("hydragon.editor.core", "toggle_volume_visibility")
+            except Exception:
+                pass
+            self._action = None
+
+    def _on_keyboard_event(self, event):
+        if not self._is_active or not carb or not hasattr(carb, "input"):
+            return True
+        try:
+            if event.type == carb.input.KeyboardEventType.KEY_PRESS:
+                if event.key == carb.input.KeyboardInput.V:
+                    input_iface = carb.input.acquire_input_interface()
+                    mods = input_iface.get_global_modifier_flags(carb.input.KEYBOARD_MODIFIER_FLAG_SHIFT)
+                    if bool(mods & carb.input.KEYBOARD_MODIFIER_FLAG_SHIFT):
+                        if not self._hotkey_registered:
+                            self.toggle_volumes_visibility()
+        except Exception:
+            pass
+        return True
 
     def _ensure_attached(self) -> bool:
         """Ensures SceneView is created within the viewport frame and registered with viewport_api."""
@@ -494,11 +760,11 @@ class HydragonVolumeViewportOverlay:
                 with frame:
                     self._scene_view = sc.SceneView()
                     with self._scene_view.scene:
-                        self._root_transform = sc.Transform(visible=True)
+                        self._root_transform = sc.Transform(visible=self._is_visible)
             else:
                 self._scene_view = sc.SceneView()
                 with self._scene_view.scene:
-                    self._root_transform = sc.Transform(visible=True)
+                    self._root_transform = sc.Transform(visible=self._is_visible)
 
             # 2. Register SceneView with the Viewport API
             if hasattr(current_vp, "viewport_api") and current_vp.viewport_api and hasattr(current_vp.viewport_api, "add_scene_view"):
@@ -558,7 +824,7 @@ class HydragonVolumeViewportOverlay:
             entry.destroy()
             try:
                 with self._root_transform:
-                    entry.transform_node = sc.Transform(visible=True)
+                    entry.transform_node = sc.Transform(visible=self._is_visible)
                 entry.cached_transform = None
                 entry.rebuild_lines(prim)
                 entry.update_transform(prim)
@@ -744,7 +1010,7 @@ class HydragonVolumeViewportOverlay:
                 dead_paths.append(path)
                 continue
 
-            entry.update_per_frame(prim)
+            entry.update_per_frame(prim, is_visible=self._is_visible)
 
         for p in dead_paths:
             self._unregister_volume(p)
