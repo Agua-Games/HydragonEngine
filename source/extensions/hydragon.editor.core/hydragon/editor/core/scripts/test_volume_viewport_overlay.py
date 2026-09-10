@@ -193,6 +193,48 @@ def test_visibility_toggle_and_settings():
     print("  [PASS] Visibility toggle and settings verified")
 
 
+def test_volume_click_gesture_priority():
+    print("--- 10. Testing VolumeClickGesture Priority & Prevention ---")
+    from hydragon.editor.core.volume_viewport_manipulator import (
+        VolumeClickGesture,
+        VolumeGestureManager,
+        PreventViewportOthers,
+        _is_alt_pressed,
+        _attach_gesture,
+    )
+
+    # Backward compatibility
+    assert PreventViewportOthers is VolumeGestureManager
+
+    # Alt modifier check works safely outside Kit
+    assert _is_alt_pressed() is False
+
+    gesture = VolumeClickGesture("/World/ForceVolume")
+    assert gesture.prim_path == "/World/ForceVolume"
+    assert gesture.priority == 100
+    assert gesture.name == "HydragonVolumeClickGesture"
+
+    mgr = VolumeGestureManager()
+    assert mgr.can_be_prevented(gesture) is False
+
+    # Low-priority gesture (such as NVIDIA SelectionClickGesture at -100) must be prevented
+    class MockNativeSelectionGesture:
+        priority = -100
+        state = 1
+
+    assert mgr.should_prevent(MockNativeSelectionGesture(), gesture) is True
+
+    # Attachment helper works on object with .gesture or .gestures
+    class MockShape:
+        gesture = None
+
+    s = MockShape()
+    _attach_gesture(s, gesture)
+    assert s.gesture is gesture
+
+    print("  [PASS] VolumeClickGesture priority & prevention verified")
+
+
 if __name__ == "__main__":
     test_overlay_lifecycle()
     test_wireframe_segment_math_box()
@@ -203,4 +245,5 @@ if __name__ == "__main__":
     test_overlay_registry_and_colors()
     test_gesture_manager_prevention()
     test_visibility_toggle_and_settings()
-    print("\nALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (9/9)")
+    test_volume_click_gesture_priority()
+    print("\nALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (10/10)")
