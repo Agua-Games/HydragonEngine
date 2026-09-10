@@ -95,20 +95,60 @@ def test_wireframe_segment_math_plane():
 
 def test_caching_and_rebuild_logic():
     print("--- 6. Testing Caching Logic (Rebuild vs Reuse) ---")
-    overlay = HydragonVolumeViewportOverlay()
-    overlay._cached_shape = "Box"
-    overlay._cached_half_extents = (100.0, 100.0, 100.0)
+    from hydragon.editor.core.volume_viewport_manipulator import VolumeOverlayEntry
 
-    # Calling refresh with same shape & extents should not force rebuild unless requested
+    entry = VolumeOverlayEntry("/World/ForceVolume", "Force", None)
+    entry.cached_shape = "Box"
+    entry.cached_half_extents = (100.0, 100.0, 100.0)
+
+    # Same shape and extents
     same_shape = "Box"
     same_extents = (100.0, 100.0, 100.0)
-    needs_rebuild = (same_shape != overlay._cached_shape or same_extents != overlay._cached_half_extents)
+    needs_rebuild = (same_shape != entry.cached_shape or same_extents != entry.cached_half_extents)
     assert not needs_rebuild, "Same shape and extents should reuse existing lines"
 
+    # Changed shape
     diff_shape = "Sphere"
-    needs_rebuild = (diff_shape != overlay._cached_shape or same_extents != overlay._cached_half_extents)
+    needs_rebuild = (diff_shape != entry.cached_shape or same_extents != entry.cached_half_extents)
     assert needs_rebuild, "Changing shape to Sphere must trigger geometry rebuild"
     print("  [PASS] Caching logic verified")
+
+
+def test_overlay_registry_and_colors():
+    print("--- 7. Testing Volume Registry and Color Encoding ---")
+    from hydragon.editor.core.volume_viewport_manipulator import (
+        VolumeOverlayEntry,
+        COLOR_FORCE_DEFAULT,
+        COLOR_FORCE_SELECTED,
+        COLOR_KILL_DEFAULT,
+        COLOR_KILL_SELECTED,
+    )
+
+    # Colors must not be empty or None
+    assert COLOR_FORCE_DEFAULT is not None
+    assert COLOR_FORCE_SELECTED is not None
+    assert COLOR_KILL_DEFAULT is not None
+    assert COLOR_KILL_SELECTED is not None
+
+    entry_force = VolumeOverlayEntry("/World/Force", "Force", None)
+    assert entry_force.get_render_color() == COLOR_FORCE_DEFAULT
+    entry_force.is_selected = True
+    assert entry_force.get_render_color() == COLOR_FORCE_SELECTED
+
+    entry_kill = VolumeOverlayEntry("/World/Kill", "Kill", None)
+    assert entry_kill.get_render_color() == COLOR_KILL_DEFAULT
+    entry_kill.is_selected = True
+    assert entry_kill.get_render_color() == COLOR_KILL_SELECTED
+
+    overlay = HydragonVolumeViewportOverlay("test_ext")
+    assert overlay._ext_id == "test_ext"
+    assert len(overlay._volumes) == 0
+
+    # Clean destroy
+    entry_force.destroy()
+    entry_kill.destroy()
+    overlay.shutdown()
+    print("  [PASS] Volume registry and color encoding verified")
 
 
 if __name__ == "__main__":
@@ -118,4 +158,5 @@ if __name__ == "__main__":
     test_wireframe_segment_math_cylinder()
     test_wireframe_segment_math_plane()
     test_caching_and_rebuild_logic()
-    print("\nALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (6/6)")
+    test_overlay_registry_and_colors()
+    print("\nALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (7/7)")
