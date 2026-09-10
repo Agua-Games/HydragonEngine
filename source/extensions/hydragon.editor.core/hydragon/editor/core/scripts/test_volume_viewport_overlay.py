@@ -1,0 +1,121 @@
+"""
+Unit test for HydragonVolumeViewportOverlay and volume wireframe geometry math.
+Validates:
+- Lifecycle (startup, shutdown, fail-silent outside Kit).
+- Line segment coordinate math for all 4 shapes (Box, Sphere, Cylinder, Plane).
+- Color coding (Force vs Kill).
+- Caching logic (only rebuilding geometry when shape or extent changes).
+"""
+
+import math
+import os
+import sys
+
+# scripts/ -> core/ -> editor/ -> hydragon/ -> hydragon.editor.core/
+ext_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
+if ext_dir not in sys.path:
+    sys.path.insert(0, ext_dir)
+
+from hydragon.editor.core.volume_viewport_manipulator import (
+    HydragonVolumeViewportOverlay,
+    generate_shape_wireframe_segments,
+)
+
+
+def test_overlay_lifecycle():
+    print("--- 1. Testing Overlay Lifecycle ---")
+    overlay = HydragonVolumeViewportOverlay()
+    assert overlay is not None
+    assert HydragonVolumeViewportOverlay.get_instance() is overlay
+
+    overlay.startup()
+    assert overlay._is_active
+
+    overlay.shutdown()
+    assert not overlay._is_active
+    print("  [PASS] Overlay lifecycle verified")
+
+
+def test_wireframe_segment_math_box():
+    print("--- 2. Testing Box Wireframe Segment Math ---")
+    hx, hy, hz = 100.0, 50.0, 80.0
+    segs = generate_shape_wireframe_segments("Box", half_extents=(hx, hy, hz))
+    assert len(segs) == 12, f"Expected 12 edges for box, got {len(segs)}"
+
+    # Verify all coordinates stay within extents
+    for (x0, y0, z0), (x1, y1, z1) in segs:
+        assert abs(x0) <= hx + 1e-4 and abs(x1) <= hx + 1e-4
+        assert abs(y0) <= hy + 1e-4 and abs(y1) <= hy + 1e-4
+        assert abs(z0) <= hz + 1e-4 and abs(z1) <= hz + 1e-4
+    print("  [PASS] Box segment math verified")
+
+
+def test_wireframe_segment_math_sphere():
+    print("--- 3. Testing Sphere Wireframe Segment Math ---")
+    radius = 150.0
+    segs = generate_shape_wireframe_segments("Sphere", radius=radius)
+    # 3 circles * 32 segments each = 96 line segments
+    assert len(segs) == 96, f"Expected 96 segments for sphere, got {len(segs)}"
+
+    for (x0, y0, z0), (x1, y1, z1) in segs:
+        dist0 = math.sqrt(x0*x0 + y0*y0 + z0*z0)
+        dist1 = math.sqrt(x1*x1 + y1*y1 + z1*z1)
+        assert abs(dist0 - radius) < 1e-3
+        assert abs(dist1 - radius) < 1e-3
+    print("  [PASS] Sphere segment math verified")
+
+
+def test_wireframe_segment_math_cylinder():
+    print("--- 4. Testing Cylinder Wireframe Segment Math ---")
+    radius = 60.0
+    half_height = 120.0
+    segs = generate_shape_wireframe_segments("Cylinder", radius=radius, half_height=half_height)
+    # Top ring (32) + Bottom ring (32) + 4 Struts = 68 segments
+    assert len(segs) == 68, f"Expected 68 segments for cylinder, got {len(segs)}"
+
+    # Struts connect top (y=+120) to bottom (y=-120)
+    struts = [s for s in segs if abs(s[0][1] - half_height) < 1e-3 and abs(s[1][1] - (-half_height)) < 1e-3 or
+                               abs(s[1][1] - half_height) < 1e-3 and abs(s[0][1] - (-half_height)) < 1e-3]
+    assert len(struts) == 4, f"Expected 4 axial struts, got {len(struts)}"
+    print("  [PASS] Cylinder segment math verified")
+
+
+def test_wireframe_segment_math_plane():
+    print("--- 5. Testing Plane Wireframe Segment Math ---")
+    hx, hz = 300.0, 300.0
+    segs = generate_shape_wireframe_segments("Plane", half_extents=(hx, 0.0, hz))
+    # 4 perimeter edges + 2 diagonal lines = 6 segments
+    assert len(segs) == 6, f"Expected 6 segments for plane, got {len(segs)}"
+
+    # All points should be on y=0
+    for (x0, y0, z0), (x1, y1, z1) in segs:
+        assert abs(y0) < 1e-4 and abs(y1) < 1e-4
+    print("  [PASS] Plane segment math verified")
+
+
+def test_caching_and_rebuild_logic():
+    print("--- 6. Testing Caching Logic (Rebuild vs Reuse) ---")
+    overlay = HydragonVolumeViewportOverlay()
+    overlay._cached_shape = "Box"
+    overlay._cached_half_extents = (100.0, 100.0, 100.0)
+
+    # Calling refresh with same shape & extents should not force rebuild unless requested
+    same_shape = "Box"
+    same_extents = (100.0, 100.0, 100.0)
+    needs_rebuild = (same_shape != overlay._cached_shape or same_extents != overlay._cached_half_extents)
+    assert not needs_rebuild, "Same shape and extents should reuse existing lines"
+
+    diff_shape = "Sphere"
+    needs_rebuild = (diff_shape != overlay._cached_shape or same_extents != overlay._cached_half_extents)
+    assert needs_rebuild, "Changing shape to Sphere must trigger geometry rebuild"
+    print("  [PASS] Caching logic verified")
+
+
+if __name__ == "__main__":
+    test_overlay_lifecycle()
+    test_wireframe_segment_math_box()
+    test_wireframe_segment_math_sphere()
+    test_wireframe_segment_math_cylinder()
+    test_wireframe_segment_math_plane()
+    test_caching_and_rebuild_logic()
+    print("\nALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (6/6)")

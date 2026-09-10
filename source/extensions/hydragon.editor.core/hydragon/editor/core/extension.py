@@ -58,7 +58,14 @@ class HydragonEditorCoreExtension(_IExt):
         self._kill_volume_system = HydragonKillVolumeSystem()
         self._kill_volume_system.startup()
 
+        from .volume_viewport_manipulator import HydragonVolumeViewportOverlay
+        self._volume_viewport_overlay = HydragonVolumeViewportOverlay()
+        self._volume_viewport_overlay.startup()
+
     def on_shutdown(self):
+        if hasattr(self, "_volume_viewport_overlay") and self._volume_viewport_overlay:
+            self._volume_viewport_overlay.shutdown()
+            self._volume_viewport_overlay = None
         if hasattr(self, "_kill_volume_system") and self._kill_volume_system:
             self._kill_volume_system.shutdown()
             self._kill_volume_system = None
