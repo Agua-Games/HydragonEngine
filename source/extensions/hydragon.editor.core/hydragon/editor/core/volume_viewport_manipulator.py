@@ -260,11 +260,44 @@ class VolumeOverlayEntry:
         color = self.get_render_color()
         thickness = self.get_line_thickness()
 
+        # Selection callback for direct Viewport picking
+        def _on_click(_shape):
+            try:
+                usd_context = omni.usd.get_context() if omni.usd else None
+                if usd_context and hasattr(usd_context, "get_selection"):
+                    usd_context.get_selection().set_selected_prim_paths([self.prim_path], True)
+            except Exception as e:
+                if carb:
+                    carb.log_warn(f"[hydragon.editor.core] Failed to select prim on click: {e}")
+
+        def _create_line(p0, p1, line_color, line_thickness):
+            gesture = sc.ClickGesture(on_ended_fn=_on_click) if (HAS_KIT and hasattr(sc, "ClickGesture")) else None
+            if gesture:
+                try:
+                    return sc.Line(p0, p1, color=line_color, thickness=line_thickness, gesture=gesture)
+                except TypeError:
+                    pass
+            return sc.Line(p0, p1, color=line_color, thickness=line_thickness)
+
+        # Central 3D cross glyph for intuitive clicking at the volume's center pivot
+        arm = min(radius * 0.25, 30.0)
+        center_segments = [
+            ((-arm, 0.0, 0.0), (arm, 0.0, 0.0)),
+            ((0.0, -arm, 0.0), (0.0, arm, 0.0)),
+            ((0.0, 0.0, -arm), (0.0, 0.0, arm)),
+        ]
+
         try:
             self.transform_node.clear()
             with self.transform_node:
+                # 1. Outer wireframe cage
                 for (x0, y0, z0), (x1, y1, z1) in segments:
-                    sc.Line([x0, y0, z0], [x1, y1, z1], color=color, thickness=thickness)
+                    _create_line([x0, y0, z0], [x1, y1, z1], color, thickness)
+
+                # 2. Central cross glyph (makes selecting the volume in the viewport easy and intuitive)
+                cross_thickness = thickness + 1.0
+                for (x0, y0, z0), (x1, y1, z1) in center_segments:
+                    _create_line([x0, y0, z0], [x1, y1, z1], color, cross_thickness)
         except Exception as e:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Failed to build lines for {self.prim_path}: {e}")
