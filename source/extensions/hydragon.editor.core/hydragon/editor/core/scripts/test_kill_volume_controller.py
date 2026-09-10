@@ -203,6 +203,135 @@ def test_foe_hazard_instant_destruction_dispatch():
     print("  [PASS] Foe hazard instant destruction dispatch verified")
 
 
+def test_kill_volume_wireframe_synchronization():
+    print("--- 7. Testing Kill Volume Dynamic Wireframe Synchronization ---")
+    from hydragon.editor.core.kill_volume_controller import (
+        sync_kill_volume_wireframe,
+        HydragonKillVolumeSystem,
+    )
+    from hydragon.editor.core.schemas import HydragonKillVolume
+
+    class MockAttr:
+        def __init__(self, val=None):
+            self._val = val
+        def IsValid(self):
+            return True
+        def Get(self):
+            return self._val
+        def Set(self, val):
+            self._val = val
+        def SetMetadata(self, k, v):
+            pass
+
+    class MockCurves:
+        def __init__(self):
+            self.type_attr = MockAttr()
+            self.wrap_attr = MockAttr()
+            self.counts_attr = MockAttr()
+            self.points_attr = MockAttr()
+            self.extent_attr = MockAttr()
+            self.widths_attr = MockAttr()
+            self.color_attr = MockAttr()
+
+        def GetTypeAttr(self): return self.type_attr
+        def CreateTypeAttr(self): return self.type_attr
+        def GetWrapAttr(self): return self.wrap_attr
+        def CreateWrapAttr(self): return self.wrap_attr
+        def GetCurveVertexCountsAttr(self): return self.counts_attr
+        def CreateCurveVertexCountsAttr(self): return self.counts_attr
+        def GetPointsAttr(self): return self.points_attr
+        def CreatePointsAttr(self): return self.points_attr
+        def GetExtentAttr(self): return self.extent_attr
+        def CreateExtentAttr(self): return self.extent_attr
+        def GetWidthsAttr(self): return self.widths_attr
+        def CreateWidthsAttr(self): return self.widths_attr
+        def GetDisplayColorAttr(self): return self.color_attr
+        def CreateDisplayColorAttr(self): return self.color_attr
+
+    class MockPrimPath:
+        def __init__(self, path: str):
+            self.pathString = path
+            self.name = path.split("/")[-1]
+        def GetPrimPath(self):
+            return self
+        def IsPrimPath(self):
+            return True
+        def __str__(self):
+            return self.pathString
+
+    class MockPrim:
+        def __init__(self, path="/World/KillVolume", type_name="BasisCurves"):
+            self._path = path
+            self._type_name = type_name
+            self._attrs = {}
+            self.curves = MockCurves()
+            self._children = {}
+
+        def IsValid(self):
+            return True
+        def GetTypeName(self):
+            return self._type_name
+        def SetTypeName(self, t):
+            self._type_name = t
+        def HasAttribute(self, name):
+            return name in self._attrs
+        def GetAttribute(self, name):
+            return self._attrs.get(name)
+        def CreateAttribute(self, name, *args):
+            attr = MockAttr()
+            self._attrs[name] = attr
+            return attr
+        def GetPrimAtPath(self, rel_path):
+            return self._children.get(rel_path)
+        def GetPath(self):
+            return MockPrimPath(self._path)
+
+    kill_prim = MockPrim(path="/World/KillVolume", type_name="Xform")
+    kill_bounds = MockPrim(path="/World/KillVolume/volumes/kill_bounds", type_name="BasisCurves")
+    kill_prim._children["volumes/kill_bounds"] = kill_bounds
+    shape_attr = kill_prim.CreateAttribute("kill:volumeShape")
+
+    # 1. Sphere sync
+    shape_attr.Set("Sphere")
+    sync_kill_volume_wireframe(kill_prim)
+    assert len(kill_bounds.curves.counts_attr.Get()) == 3, "Kill volume sync must update to Sphere (3 circles)"
+
+    # 2. Box sync
+    shape_attr.Set("Box")
+    sync_kill_volume_wireframe(kill_prim)
+    assert len(kill_bounds.curves.counts_attr.Get()) == 12, "Kill volume sync must update to Box (12 edges)"
+
+    # 3. Schema property setter
+    kill_vol = HydragonKillVolume(kill_prim)
+    kill_vol.volume_shape = "Plane"
+    assert len(kill_bounds.curves.counts_attr.Get()) == 3
+    assert kill_bounds.curves.counts_attr.Get() == [5, 2, 2]
+
+    # 4. Stage mutation notice
+    system = HydragonKillVolumeSystem()
+    class MockNotice:
+        def GetChangedInfoOnlyPaths(self):
+            class MockPropPath:
+                name = "kill:volumeShape"
+                def GetPrimPath(self):
+                    return MockPrimPath("/World/KillVolume")
+            return [MockPropPath()]
+        def GetResyncedPaths(self):
+            return []
+
+    class MockStage:
+        def GetPrimAtPath(self, path):
+            if str(path) == "/World/KillVolume":
+                return kill_prim
+            return None
+
+    shape_attr.Set("Sphere")
+    system._on_objects_changed(MockNotice(), MockStage())
+    assert len(kill_bounds.curves.counts_attr.Get()) == 3, "Kill volume stage notice must update wireframe to Sphere"
+
+    print("  [PASS] Kill volume dynamic wireframe synchronization verified")
+
+
 if __name__ == "__main__":
     test_kill_volume_system_lifecycle()
     test_kill_zone_overlap_box()
@@ -210,4 +339,5 @@ if __name__ == "__main__":
     test_kill_zone_properties_and_factions()
     test_player_hazard_trigger_and_respawn_dispatch()
     test_foe_hazard_instant_destruction_dispatch()
-    print("\nALL KILL VOLUME CONTROLLER TESTS PASSED! (6/6)")
+    test_kill_volume_wireframe_synchronization()
+    print("\nALL KILL VOLUME CONTROLLER TESTS PASSED! (7/7)")

@@ -18,13 +18,68 @@ try:
     import omni.usd
     import omni.physx
     from omni.physx import get_physx_interface
-    from pxr import Usd, UsdGeom, Sdf, Gf
+    from pxr import Usd, UsdGeom, Sdf, Gf, Tf
     HAS_KIT = True
 except ImportError:
     HAS_KIT = False
     carb = None
+    Tf = None
 
 from .schemas import HydragonKillVolume, HydragonGameManager
+
+
+def sync_kill_volume_wireframe(volume_prim):
+    """
+    Synchronizes the 'volumes/kill_bounds' BasisCurves wireframe
+    to match the current kill:volumeShape ('Box', 'Sphere', 'Plane').
+    """
+    if not volume_prim or not hasattr(volume_prim, "IsValid") or not volume_prim.IsValid():
+        return
+
+    bounds_prim = None
+    if hasattr(volume_prim, "GetPrimAtPath"):
+        bounds_prim = volume_prim.GetPrimAtPath("volumes/kill_bounds")
+        if not bounds_prim or not bounds_prim.IsValid():
+            bounds_prim = volume_prim.GetPrimAtPath("kill_bounds")
+    elif hasattr(volume_prim, "GetChildren"):
+        for c in volume_prim.GetChildren():
+            if hasattr(c, "GetName") and c.GetName() in ("kill_bounds", "volumes"):
+                bounds_prim = c
+                break
+
+    if not bounds_prim or not hasattr(bounds_prim, "IsValid") or not bounds_prim.IsValid():
+        return
+
+    shape = "Box"
+    if volume_prim.HasAttribute("kill:volumeShape"):
+        attr = volume_prim.GetAttribute("kill:volumeShape")
+        if attr and attr.IsValid():
+            shape = str(attr.Get() or "Box")
+
+    base_hx, base_hy, base_hz = 50.0, 50.0, 50.0
+    extent_attr = bounds_prim.GetAttribute("extent")
+    if extent_attr and extent_attr.IsValid():
+        ext_val = extent_attr.Get()
+        if ext_val and len(ext_val) >= 2:
+            base_hx = max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0])))
+            base_hy = max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1])))
+            base_hz = max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2])))
+            base_hx = max(10.0, base_hx)
+            base_hy = max(10.0, base_hy)
+            base_hz = max(10.0, base_hz)
+
+    try:
+        from .force_volume_controller import update_wireframe_guide
+        update_wireframe_guide(
+            bounds_prim,
+            shape=shape,
+            half_extents=(base_hx, base_hy, base_hz),
+            radius=max(base_hx, base_hz),
+            half_height=base_hy,
+            color=(1.0, 0.2, 0.2),
+        )
+    except Exception:
+        pass
 
 
 class HydragonKillZone:
@@ -200,6 +255,9 @@ class HydragonKillZone:
                 b_trans = b_xf.ExtractTranslation()
                 self._world_pos = (float(b_trans[0]), float(b_trans[1]), float(b_trans[2]))
                 self._inv_world_matrix = b_xf.GetInverse()
+
+                # Synchronize guide wireframe shape dynamically
+                sync_kill_volume_wireframe(self._prim)
             else:
                 self._half_extents = (500.0 * scale_vec[0], 50.0 * scale_vec[1], 500.0 * scale_vec[2])
                 self._radius = max(self._half_extents[0], self._half_extents[2])
@@ -287,6 +345,8 @@ class HydragonKillVolumeSystem:
         self._is_simulating: bool = False
         self._physics_step_sub = None
         self._timeline_sub = None
+        self._stage_event_sub = None
+        self._stage_notice_listener = None
 
         self._active_zones: Dict[str, HydragonKillZone] = {}
         self._player_cooldown: float = 0.0
@@ -303,7 +363,7 @@ class HydragonKillVolumeSystem:
         return len(self._active_zones)
 
     def startup(self):
-        """Initializes subscriptions to timeline and physics step."""
+        """Initializes subscriptions to timeline, physics step, and stage mutation notices."""
         self._is_active = True
         if not HAS_KIT:
             return
@@ -314,6 +374,16 @@ class HydragonKillVolumeSystem:
                 self._on_timeline_event
             )
             self._subscribe_physics()
+
+            usd_context = omni.usd.get_context() if omni.usd else None
+            if usd_context and hasattr(usd_context, "get_stage_event_stream"):
+                self._stage_event_sub = usd_context.get_stage_event_stream().create_subscription_to_pop(
+                    self._on_stage_event, name="HydragonKillVolumeStageSub"
+                )
+
+            self._register_stage_notice_listener()
+            self._sync_all_kill_volumes_on_stage()
+
             if carb:
                 carb.log_info("[hydragon.editor.core] HydragonKillVolumeSystem started.")
         except Exception as e:
@@ -321,14 +391,109 @@ class HydragonKillVolumeSystem:
                 carb.log_error(f"[hydragon.editor.core] HydragonKillVolumeSystem startup failed: {e}")
 
     def shutdown(self):
-        """Cleans up subscriptions and cached hazard registry."""
+        """Cleans up subscriptions, stage notice listeners, and cached hazard registry."""
         self._is_active = False
         self._is_simulating = False
         self._active_zones.clear()
         self._timeline_sub = None
         self._physics_step_sub = None
+        self._stage_event_sub = None
+        self._unregister_stage_notice_listener()
         if carb:
             carb.log_info("[hydragon.editor.core] HydragonKillVolumeSystem shut down.")
+
+    def _register_stage_notice_listener(self):
+        if not HAS_KIT:
+            return
+        self._unregister_stage_notice_listener()
+        try:
+            usd_context = omni.usd.get_context() if omni.usd else None
+            stage = usd_context.get_stage() if usd_context else None
+            if stage and Tf and hasattr(Tf, "Notice") and hasattr(Usd, "Notice"):
+                self._stage_notice_listener = Tf.Notice.Register(
+                    Usd.Notice.ObjectsChanged,
+                    self._on_objects_changed,
+                    stage,
+                )
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to register kill volume stage notice listener: {e}")
+
+    def _unregister_stage_notice_listener(self):
+        if self._stage_notice_listener:
+            try:
+                self._stage_notice_listener.Revoke()
+            except Exception:
+                pass
+            self._stage_notice_listener = None
+
+    def _on_stage_event(self, event):
+        if not HAS_KIT:
+            return
+        try:
+            event_type = event.type
+            if hasattr(omni.usd, "StageEventType"):
+                if event_type in (
+                    int(omni.usd.StageEventType.OPENED),
+                    int(omni.usd.StageEventType.ATTACHED),
+                ):
+                    self._register_stage_notice_listener()
+                    self._sync_all_kill_volumes_on_stage()
+                elif event_type in (
+                    int(omni.usd.StageEventType.CLOSED),
+                    int(omni.usd.StageEventType.DETACHED),
+                ):
+                    self._unregister_stage_notice_listener()
+                    self._active_zones.clear()
+        except Exception:
+            pass
+
+    def _sync_all_kill_volumes_on_stage(self):
+        """One-time scan on stage open/startup to ensure all KillVolume wireframes match authored shapes."""
+        if not HAS_KIT:
+            return
+        try:
+            usd_context = omni.usd.get_context() if omni.usd else None
+            stage = usd_context.get_stage() if usd_context else None
+            if not stage:
+                return
+            for prim in stage.Traverse():
+                if prim and prim.IsValid() and HydragonKillVolume.is_applied(prim):
+                    sync_kill_volume_wireframe(prim)
+        except Exception:
+            pass
+
+    def _on_objects_changed(self, notice, stage):
+        """
+        Listens to USD stage object mutation notices (Usd.Notice.ObjectsChanged).
+        When kill:volumeShape changes on any prim in UI or code, immediately updates
+        the wireframe guide BasisCurves to the selected shape (Box, Sphere, Plane).
+        """
+        if not stage:
+            return
+
+        try:
+            if hasattr(notice, "GetChangedInfoOnlyPaths"):
+                for p in notice.GetChangedInfoOnlyPaths():
+                    prop_name = p.name if hasattr(p, "name") else ""
+                    if prop_name == "kill:volumeShape":
+                        prim_path = p.GetPrimPath()
+                        prim = stage.GetPrimAtPath(prim_path)
+                        if prim and prim.IsValid():
+                            sync_kill_volume_wireframe(prim)
+                            path_str = prim_path.pathString if hasattr(prim_path, "pathString") else str(prim_path)
+                            if path_str in self._active_zones:
+                                self._active_zones[path_str]._cache_bounds_and_transforms()
+
+            if hasattr(notice, "GetResyncedPaths"):
+                for p in notice.GetResyncedPaths():
+                    if hasattr(p, "IsPrimPath") and p.IsPrimPath():
+                        prim = stage.GetPrimAtPath(p)
+                        if prim and prim.IsValid() and prim.HasAttribute("kill:volumeShape"):
+                            sync_kill_volume_wireframe(prim)
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Error processing kill volume stage mutation notice: {e}")
 
     def _subscribe_physics(self) -> bool:
         if not HAS_KIT:

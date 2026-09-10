@@ -1302,6 +1302,12 @@ class HydragonForceVolume:
             Sdf.ValueTypeNames.Token if HAS_PXR else None,
             allowed_tokens=["Box", "Sphere", "Cylinder"],
         )
+        if self._prim:
+            try:
+                from .force_volume_controller import sync_force_volume_wireframe
+                sync_force_volume_wireframe(self._prim)
+            except Exception:
+                pass
 
     @property
     def filter_faction(self) -> str:
@@ -1581,6 +1587,12 @@ class HydragonKillVolume:
             Sdf.ValueTypeNames.Token if HAS_PXR else None,
             allowed_tokens=["Box", "Sphere", "Plane"],
         )
+        if self._prim:
+            try:
+                from .kill_volume_controller import sync_kill_volume_wireframe
+                sync_kill_volume_wireframe(self._prim)
+            except Exception:
+                pass
 
     @property
     def respawn_player(self) -> bool:

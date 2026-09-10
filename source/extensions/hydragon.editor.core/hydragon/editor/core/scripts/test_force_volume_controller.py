@@ -281,6 +281,189 @@ def test_uncoupled_radial_force_reach():
     print("  [PASS] Uncoupled radial reach and shape-confined forces verified")
 
 
+def test_wireframe_synchronization():
+    print("--- 9. Testing Dynamic Wireframe Guide Synchronization ---")
+    from hydragon.editor.core.force_volume_controller import (
+        update_wireframe_guide,
+        sync_force_volume_wireframe,
+    )
+    from hydragon.editor.core.kill_volume_controller import (
+        sync_kill_volume_wireframe,
+    )
+    from hydragon.editor.core.schemas import (
+        HydragonForceVolume,
+        HydragonKillVolume,
+    )
+
+    class MockAttr:
+        def __init__(self, val=None):
+            self._val = val
+        def IsValid(self):
+            return True
+        def Get(self):
+            return self._val
+        def Set(self, val):
+            self._val = val
+        def SetMetadata(self, k, v):
+            pass
+
+    class MockCurves:
+        def __init__(self):
+            self.type_attr = MockAttr()
+            self.wrap_attr = MockAttr()
+            self.counts_attr = MockAttr()
+            self.points_attr = MockAttr()
+            self.extent_attr = MockAttr()
+            self.widths_attr = MockAttr()
+            self.color_attr = MockAttr()
+
+        def GetTypeAttr(self): return self.type_attr
+        def CreateTypeAttr(self): return self.type_attr
+        def GetWrapAttr(self): return self.wrap_attr
+        def CreateWrapAttr(self): return self.wrap_attr
+        def GetCurveVertexCountsAttr(self): return self.counts_attr
+        def CreateCurveVertexCountsAttr(self): return self.counts_attr
+        def GetPointsAttr(self): return self.points_attr
+        def CreatePointsAttr(self): return self.points_attr
+        def GetExtentAttr(self): return self.extent_attr
+        def CreateExtentAttr(self): return self.extent_attr
+        def GetWidthsAttr(self): return self.widths_attr
+        def CreateWidthsAttr(self): return self.widths_attr
+        def GetDisplayColorAttr(self): return self.color_attr
+        def CreateDisplayColorAttr(self): return self.color_attr
+
+    class MockPrimPath:
+        def __init__(self, path: str):
+            self.pathString = path
+            self.name = path.split("/")[-1]
+        def GetPrimPath(self):
+            return self
+        def IsPrimPath(self):
+            return True
+        def __str__(self):
+            return self.pathString
+
+    class MockPrim:
+        def __init__(self, path="/World/ForceVolume", type_name="BasisCurves"):
+            self._path = path
+            self._type_name = type_name
+            self._attrs = {}
+            self.curves = MockCurves()
+            self._children = {}
+
+        def IsValid(self):
+            return True
+        def GetTypeName(self):
+            return self._type_name
+        def SetTypeName(self, t):
+            self._type_name = t
+        def HasAttribute(self, name):
+            return name in self._attrs
+        def GetAttribute(self, name):
+            return self._attrs.get(name)
+        def CreateAttribute(self, name, *args):
+            attr = MockAttr()
+            self._attrs[name] = attr
+            return attr
+        def GetPrimAtPath(self, rel_path):
+            return self._children.get(rel_path)
+        def GetPath(self):
+            return MockPrimPath(self._path)
+
+    # 1. Test update_wireframe_guide with all 4 supported shapes
+    bounds = MockPrim(path="/World/ForceVolume/volumes/force_bounds")
+    
+    # Sphere wireframe: 3 circles (XY, XZ, YZ), 33 points each
+    update_wireframe_guide(bounds, shape="Sphere", radius=100.0)
+    counts = bounds.curves.counts_attr.Get()
+    points = bounds.curves.points_attr.Get()
+    assert len(counts) == 3, f"Expected 3 curve counts for Sphere, got {len(counts)}"
+    assert all(c == 33 for c in counts), "Each circle should have 33 vertices"
+    assert len(points) == 99, f"Expected 99 points for Sphere, got {len(points)}"
+
+    # Cylinder wireframe: 2 rings (33 points each) + 4 struts (2 points each) = 6 curves, 74 points
+    update_wireframe_guide(bounds, shape="Cylinder", radius=80.0, half_height=50.0)
+    counts = bounds.curves.counts_attr.Get()
+    points = bounds.curves.points_attr.Get()
+    assert len(counts) == 6, f"Expected 6 curve counts for Cylinder, got {len(counts)}"
+    assert counts == [33, 33, 2, 2, 2, 2]
+    assert len(points) == 74, f"Expected 74 points for Cylinder, got {len(points)}"
+
+    # Box wireframe: 12 edges, 2 points each = 24 points
+    update_wireframe_guide(bounds, shape="Box", half_extents=(100.0, 50.0, 100.0))
+    counts = bounds.curves.counts_attr.Get()
+    points = bounds.curves.points_attr.Get()
+    assert len(counts) == 12, f"Expected 12 curve counts for Box, got {len(counts)}"
+    assert all(c == 2 for c in counts)
+    assert len(points) == 24, f"Expected 24 points for Box, got {len(points)}"
+
+    # Plane wireframe: 1 perimeter (5 points) + 2 diagonals (2 points each) = 3 curves, 9 points
+    update_wireframe_guide(bounds, shape="Plane", half_extents=(200.0, 0.0, 200.0))
+    counts = bounds.curves.counts_attr.Get()
+    points = bounds.curves.points_attr.Get()
+    assert len(counts) == 3, f"Expected 3 curve counts for Plane, got {len(counts)}"
+    assert counts == [5, 2, 2]
+    assert len(points) == 9, f"Expected 9 points for Plane, got {len(points)}"
+
+    # 2. Test sync_force_volume_wireframe hierarchy traversal
+    vol_prim = MockPrim(path="/World/ForceVolume", type_name="Xform")
+    vol_bounds = MockPrim(path="/World/ForceVolume/volumes/force_bounds", type_name="BasisCurves")
+    vol_prim._children["volumes/force_bounds"] = vol_bounds
+    shape_attr = vol_prim.CreateAttribute("force:volumeShape")
+    
+    shape_attr.Set("Sphere")
+    sync_force_volume_wireframe(vol_prim)
+    assert len(vol_bounds.curves.counts_attr.Get()) == 3, "sync_force_volume_wireframe must update to Sphere"
+
+    shape_attr.Set("Box")
+    sync_force_volume_wireframe(vol_prim)
+    assert len(vol_bounds.curves.counts_attr.Get()) == 12, "sync_force_volume_wireframe must update to Box"
+
+    # 3. Test HydragonForceVolume schema property setter triggering sync
+    force_vol = HydragonForceVolume(vol_prim)
+    force_vol.volume_shape = "Cylinder"
+    assert len(vol_bounds.curves.counts_attr.Get()) == 6, "Setting schema.volume_shape must trigger wireframe sync"
+
+    # 4. Test stage mutation notice handler _on_objects_changed
+    system = HydragonForceVolumeSystem()
+    class MockNotice:
+        def GetChangedInfoOnlyPaths(self):
+            class MockPropPath:
+                name = "force:volumeShape"
+                def GetPrimPath(self):
+                    return MockPrimPath("/World/ForceVolume")
+            return [MockPropPath()]
+        def GetResyncedPaths(self):
+            return []
+
+    class MockStage:
+        def GetPrimAtPath(self, path):
+            if str(path) == "/World/ForceVolume":
+                return vol_prim
+            return None
+
+    shape_attr.Set("Sphere")
+    system._on_objects_changed(MockNotice(), MockStage())
+    assert len(vol_bounds.curves.counts_attr.Get()) == 3, "Stage notice must trigger wireframe sync to Sphere"
+
+    # 5. Test sync_kill_volume_wireframe and schema setter
+    kill_prim = MockPrim(path="/World/KillVolume", type_name="Xform")
+    kill_bounds = MockPrim(path="/World/KillVolume/volumes/kill_bounds", type_name="BasisCurves")
+    kill_prim._children["volumes/kill_bounds"] = kill_bounds
+    kill_shape_attr = kill_prim.CreateAttribute("kill:volumeShape")
+    
+    kill_shape_attr.Set("Sphere")
+    sync_kill_volume_wireframe(kill_prim)
+    assert len(kill_bounds.curves.counts_attr.Get()) == 3, "Kill volume sync must update to Sphere"
+
+    kill_vol = HydragonKillVolume(kill_prim)
+    kill_vol.volume_shape = "Plane"
+    assert len(kill_bounds.curves.counts_attr.Get()) == 3, "Setting HydragonKillVolume.volume_shape must trigger wireframe sync"
+    assert kill_bounds.curves.counts_attr.Get() == [5, 2, 2]
+
+    print("  [PASS] Dynamic wireframe guide synchronization verified")
+
+
 if __name__ == "__main__":
     test_force_volume_system_lifecycle()
     test_force_volume_overlap_box()
@@ -290,5 +473,6 @@ if __name__ == "__main__":
     test_impulse_cooldown()
     test_linear_coord_space()
     test_uncoupled_radial_force_reach()
-    print("\nALL FORCE VOLUME CONTROLLER TESTS PASSED! (8/8)")
+    test_wireframe_synchronization()
+    print("\nALL FORCE VOLUME CONTROLLER TESTS PASSED! (9/9)")
 

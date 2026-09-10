@@ -23,13 +23,31 @@ try:
         get_physx_interface,
         get_physx_simulation_interface,
     )
-    from pxr import Usd, UsdGeom, Sdf, Gf, UsdPhysics, UsdUtils, PhysicsSchemaTools
+    from pxr import Usd, UsdGeom, Sdf, Gf, Tf, UsdPhysics, UsdUtils, PhysicsSchemaTools
+    try:
+        from pxr import Vt
+    except ImportError:
+        Vt = None
     HAS_KIT = True
 except ImportError:
     HAS_KIT = False
     carb = None
     PhysicsSchemaTools = None
     UsdUtils = None
+    UsdGeom = None
+    Tf = None
+    Vt = None
+    Gf = None
+    Sdf = None
+
+if not HAS_KIT or Gf is None:
+    class MockVec3f(tuple):
+        def __new__(cls, x, y, z):
+            return super().__new__(cls, (float(x), float(y), float(z)))
+    class MockGf:
+        Vec3f = MockVec3f
+    if Gf is None:
+        Gf = MockGf
 
 from .schemas import HydragonForceVolume, HydragonActor
 
@@ -46,16 +64,35 @@ def update_wireframe_guide(
     Updates or converts bounds_prim to a hollow wireframe BasisCurves cage.
     Supports 'Box', 'Sphere', 'Cylinder', and 'Plane'. Zero solid faces/fill.
     """
-    if not HAS_KIT or not bounds_prim or not hasattr(bounds_prim, "IsValid") or not bounds_prim.IsValid():
+    if not bounds_prim or not hasattr(bounds_prim, "IsValid") or not bounds_prim.IsValid():
         return
 
     try:
-        if bounds_prim.GetTypeName() != "BasisCurves":
-            bounds_prim.SetTypeName("BasisCurves")
+        if hasattr(bounds_prim, "GetTypeName") and hasattr(bounds_prim, "SetTypeName"):
+            if bounds_prim.GetTypeName() != "BasisCurves":
+                bounds_prim.SetTypeName("BasisCurves")
 
-        curves = UsdGeom.BasisCurves(bounds_prim)
-        curves.GetTypeAttr().Set("linear")
-        curves.GetWrapAttr().Set("nonperiodic")
+        if UsdGeom and hasattr(UsdGeom, "BasisCurves"):
+            curves = UsdGeom.BasisCurves(bounds_prim)
+        elif hasattr(bounds_prim, "curves"):
+            curves = bounds_prim.curves
+        else:
+            curves = None
+
+        if not curves:
+            return
+
+        type_attr = curves.GetTypeAttr()
+        if not type_attr or not type_attr.IsValid():
+            type_attr = curves.CreateTypeAttr()
+        if type_attr:
+            type_attr.Set("linear")
+
+        wrap_attr = curves.GetWrapAttr()
+        if not wrap_attr or not wrap_attr.IsValid():
+            wrap_attr = curves.CreateWrapAttr()
+        if wrap_attr:
+            wrap_attr.Set("nonperiodic")
 
         counts = []
         points = []
@@ -115,7 +152,7 @@ def update_wireframe_guide(
             points.extend([Gf.Vec3f(hx, 0.0, -hz), Gf.Vec3f(-hx, 0.0, hz)])
             extent = [Gf.Vec3f(-hx, 0.0, -hz), Gf.Vec3f(hx, 0.0, hz)]
 
-        else:
+        else:  # Box
             hx, hy, hz = half_extents
             counts = [2] * 12
             points = [
@@ -134,29 +171,105 @@ def update_wireframe_guide(
             ]
             extent = [Gf.Vec3f(-hx, -hy, -hz), Gf.Vec3f(hx, hy, hz)]
 
-        curves.GetCurveVertexCountsAttr().Set(counts)
-        curves.GetPointsAttr().Set(points)
-        curves.GetExtentAttr().Set(extent)
-        curves.GetWidthsAttr().Set([2.5] * len(points))
-        if hasattr(curves.GetWidthsAttr(), "SetMetadata"):
-            try:
-                curves.GetWidthsAttr().SetMetadata("interpolation", "constant")
-            except Exception:
-                pass
-        curves.GetDisplayColorAttr().Set([Gf.Vec3f(*color)])
-        if hasattr(curves.GetDisplayColorAttr(), "SetMetadata"):
-            try:
-                curves.GetDisplayColorAttr().SetMetadata("interpolation", "constant")
-            except Exception:
-                pass
-        if bounds_prim.HasAttribute("purpose"):
-            bounds_prim.GetAttribute("purpose").Set("default")
-        else:
-            bounds_prim.CreateAttribute("purpose", Sdf.ValueTypeNames.Token).Set("default")
+        counts_attr = curves.GetCurveVertexCountsAttr()
+        if not counts_attr or not counts_attr.IsValid():
+            counts_attr = curves.CreateCurveVertexCountsAttr()
+        if counts_attr:
+            counts_attr.Set(Vt.IntArray(counts) if Vt else counts)
+
+        points_attr = curves.GetPointsAttr()
+        if not points_attr or not points_attr.IsValid():
+            points_attr = curves.CreatePointsAttr()
+        if points_attr:
+            points_attr.Set(Vt.Vec3fArray(points) if Vt else points)
+
+        extent_attr = curves.GetExtentAttr()
+        if not extent_attr or not extent_attr.IsValid():
+            extent_attr = curves.CreateExtentAttr()
+        if extent_attr:
+            extent_attr.Set(Vt.Vec3fArray(extent) if Vt else extent)
+
+        widths_attr = curves.GetWidthsAttr()
+        if not widths_attr or not widths_attr.IsValid():
+            widths_attr = curves.CreateWidthsAttr()
+        if widths_attr:
+            widths_attr.Set(Vt.FloatArray([2.5]) if Vt else [2.5])
+            if hasattr(widths_attr, "SetMetadata"):
+                try:
+                    widths_attr.SetMetadata("interpolation", "constant")
+                except Exception:
+                    pass
+
+        color_attr = curves.GetDisplayColorAttr()
+        if not color_attr or not color_attr.IsValid():
+            color_attr = curves.CreateDisplayColorAttr()
+        if color_attr:
+            color_attr.Set(Vt.Vec3fArray([Gf.Vec3f(*color)]) if Vt else [Gf.Vec3f(*color)])
+            if hasattr(color_attr, "SetMetadata"):
+                try:
+                    color_attr.SetMetadata("interpolation", "constant")
+                except Exception:
+                    pass
+
+        if hasattr(bounds_prim, "HasAttribute") and hasattr(bounds_prim, "GetAttribute"):
+            if bounds_prim.HasAttribute("purpose"):
+                bounds_prim.GetAttribute("purpose").Set("default")
+            elif hasattr(bounds_prim, "CreateAttribute") and Sdf:
+                bounds_prim.CreateAttribute("purpose", Sdf.ValueTypeNames.Token).Set("default")
 
     except Exception as e:
         if carb:
             carb.log_warn(f"[hydragon.editor.core] Failed to update wireframe guide: {e}")
+
+
+def sync_force_volume_wireframe(volume_prim):
+    """
+    Synchronizes the 'volumes/force_bounds' BasisCurves wireframe
+    to match the current force:volumeShape ('Box', 'Sphere', 'Cylinder', 'Plane').
+    """
+    if not volume_prim or not hasattr(volume_prim, "IsValid") or not volume_prim.IsValid():
+        return
+
+    bounds_prim = None
+    if hasattr(volume_prim, "GetPrimAtPath"):
+        bounds_prim = volume_prim.GetPrimAtPath("volumes/force_bounds")
+        if not bounds_prim or not bounds_prim.IsValid():
+            bounds_prim = volume_prim.GetPrimAtPath("force_bounds")
+    elif hasattr(volume_prim, "GetChildren"):
+        for c in volume_prim.GetChildren():
+            if hasattr(c, "GetName") and c.GetName() in ("force_bounds", "volumes"):
+                bounds_prim = c
+                break
+
+    if not bounds_prim or not hasattr(bounds_prim, "IsValid") or not bounds_prim.IsValid():
+        return
+
+    shape = "Box"
+    if volume_prim.HasAttribute("force:volumeShape"):
+        attr = volume_prim.GetAttribute("force:volumeShape")
+        if attr and attr.IsValid():
+            shape = str(attr.Get() or "Box")
+
+    base_hx, base_hy, base_hz = 100.0, 100.0, 100.0
+    extent_attr = bounds_prim.GetAttribute("extent")
+    if extent_attr and extent_attr.IsValid():
+        ext_val = extent_attr.Get()
+        if ext_val and len(ext_val) >= 2:
+            base_hx = max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0])))
+            base_hy = max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1])))
+            base_hz = max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2])))
+            base_hx = max(10.0, base_hx)
+            base_hy = max(10.0, base_hy)
+            base_hz = max(10.0, base_hz)
+
+    update_wireframe_guide(
+        bounds_prim,
+        shape=shape,
+        half_extents=(base_hx, base_hy, base_hz),
+        radius=max(base_hx, base_hz),
+        half_height=base_hy,
+        color=(0.2, 0.7, 1.0),
+    )
 
 
 class HydragonForceVolumeZone:
@@ -289,15 +402,7 @@ class HydragonForceVolumeZone:
                 self._half_height = hy
 
                 # Synchronize guide wireframe shape dynamically
-                shape = self.volume_shape
-                update_wireframe_guide(
-                    bounds_prim,
-                    shape=shape,
-                    half_extents=(base_hx, base_hy, base_hz),
-                    radius=max(base_hx, base_hz),
-                    half_height=base_hy,
-                    color=(0.2, 0.7, 1.0),
-                )
+                sync_force_volume_wireframe(self._prim)
             else:
                 xformable = UsdGeom.Xformable(self._prim)
                 world_xf = xformable.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
@@ -553,6 +658,8 @@ class HydragonForceVolumeSystem:
         self._is_simulating: bool = False
         self._physics_step_sub = None
         self._timeline_sub = None
+        self._stage_event_sub = None
+        self._stage_notice_listener = None
 
         self._active_volumes: Dict[str, HydragonForceVolumeZone] = {}
         self._sim_time: float = 0.0
@@ -569,7 +676,7 @@ class HydragonForceVolumeSystem:
         return len(self._active_volumes)
 
     def startup(self):
-        """Initializes subscriptions to timeline and physics simulation."""
+        """Initializes subscriptions to timeline, physics simulation, and stage mutation notices."""
         self._is_active = True
         if not HAS_KIT:
             return
@@ -580,6 +687,16 @@ class HydragonForceVolumeSystem:
                 self._on_timeline_event
             )
             self._subscribe_physics()
+
+            usd_context = omni.usd.get_context() if omni.usd else None
+            if usd_context and hasattr(usd_context, "get_stage_event_stream"):
+                self._stage_event_sub = usd_context.get_stage_event_stream().create_subscription_to_pop(
+                    self._on_stage_event, name="HydragonForceVolumeStageSub"
+                )
+
+            self._register_stage_notice_listener()
+            self._sync_all_force_volumes_on_stage()
+
             if carb:
                 carb.log_info("[hydragon.editor.core] HydragonForceVolumeSystem started.")
         except Exception as e:
@@ -587,14 +704,109 @@ class HydragonForceVolumeSystem:
                 carb.log_error(f"[hydragon.editor.core] HydragonForceVolumeSystem startup failed: {e}")
 
     def shutdown(self):
-        """Cleans up subscriptions and cached volume registry."""
+        """Cleans up subscriptions, stage listeners, and cached volume registry."""
         self._is_active = False
         self._is_simulating = False
         self._active_volumes.clear()
         self._timeline_sub = None
         self._physics_step_sub = None
+        self._stage_event_sub = None
+        self._unregister_stage_notice_listener()
         if carb:
             carb.log_info("[hydragon.editor.core] HydragonForceVolumeSystem shut down.")
+
+    def _register_stage_notice_listener(self):
+        if not HAS_KIT:
+            return
+        self._unregister_stage_notice_listener()
+        try:
+            usd_context = omni.usd.get_context() if omni.usd else None
+            stage = usd_context.get_stage() if usd_context else None
+            if stage and Tf and hasattr(Tf, "Notice") and hasattr(Usd, "Notice"):
+                self._stage_notice_listener = Tf.Notice.Register(
+                    Usd.Notice.ObjectsChanged,
+                    self._on_objects_changed,
+                    stage,
+                )
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to register stage notice listener: {e}")
+
+    def _unregister_stage_notice_listener(self):
+        if self._stage_notice_listener:
+            try:
+                self._stage_notice_listener.Revoke()
+            except Exception:
+                pass
+            self._stage_notice_listener = None
+
+    def _on_stage_event(self, event):
+        if not HAS_KIT:
+            return
+        try:
+            event_type = event.type
+            if hasattr(omni.usd, "StageEventType"):
+                if event_type in (
+                    int(omni.usd.StageEventType.OPENED),
+                    int(omni.usd.StageEventType.ATTACHED),
+                ):
+                    self._register_stage_notice_listener()
+                    self._sync_all_force_volumes_on_stage()
+                elif event_type in (
+                    int(omni.usd.StageEventType.CLOSED),
+                    int(omni.usd.StageEventType.DETACHED),
+                ):
+                    self._unregister_stage_notice_listener()
+                    self._active_volumes.clear()
+        except Exception:
+            pass
+
+    def _sync_all_force_volumes_on_stage(self):
+        """One-time scan on stage open/startup to ensure all ForceVolume wireframes match authored shapes."""
+        if not HAS_KIT:
+            return
+        try:
+            usd_context = omni.usd.get_context() if omni.usd else None
+            stage = usd_context.get_stage() if usd_context else None
+            if not stage:
+                return
+            for prim in stage.Traverse():
+                if prim and prim.IsValid() and HydragonForceVolume.is_applied(prim):
+                    sync_force_volume_wireframe(prim)
+        except Exception:
+            pass
+
+    def _on_objects_changed(self, notice, stage):
+        """
+        Listens to USD stage object mutation notices (Usd.Notice.ObjectsChanged).
+        When force:volumeShape changes on any prim in UI or code, immediately updates
+        the wireframe guide BasisCurves to the selected shape (Box, Sphere, Cylinder, Plane).
+        """
+        if not stage:
+            return
+
+        try:
+            if hasattr(notice, "GetChangedInfoOnlyPaths"):
+                for p in notice.GetChangedInfoOnlyPaths():
+                    prop_name = p.name if hasattr(p, "name") else ""
+                    if prop_name == "force:volumeShape":
+                        prim_path = p.GetPrimPath()
+                        prim = stage.GetPrimAtPath(prim_path)
+                        if prim and prim.IsValid():
+                            sync_force_volume_wireframe(prim)
+                            path_str = prim_path.pathString if hasattr(prim_path, "pathString") else str(prim_path)
+                            if path_str in self._active_volumes:
+                                self._active_volumes[path_str]._cache_bounds_and_transforms()
+
+            if hasattr(notice, "GetResyncedPaths"):
+                for p in notice.GetResyncedPaths():
+                    if hasattr(p, "IsPrimPath") and p.IsPrimPath():
+                        prim = stage.GetPrimAtPath(p)
+                        if prim and prim.IsValid() and prim.HasAttribute("force:volumeShape"):
+                            sync_force_volume_wireframe(prim)
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Error processing stage mutation notice: {e}")
 
     def _subscribe_physics(self) -> bool:
         if not HAS_KIT:
