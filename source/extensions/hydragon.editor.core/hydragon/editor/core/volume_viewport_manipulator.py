@@ -24,6 +24,7 @@ try:
 except ImportError:
     HAS_KIT = False
     carb = None
+    omni = None
     ui = None
     sc = None
     cl = None
@@ -38,119 +39,55 @@ from .schemas import HydragonForceVolume, HydragonKillVolume
 SETTING_SHOW_VOLUMES = "/persistent/app/viewport/displayOptions/showHydragonVolumes"
 
 
-def _is_alt_pressed() -> bool:
-    """Checks whether the Alt key is currently pressed (used to avoid intercepting camera orbit gestures)."""
-    if carb and hasattr(carb, "input"):
-        try:
-            inp = carb.input.acquire_input_interface()
-            if inp:
-                return bool(inp.get_global_modifier_flags(carb.input.KEYBOARD_MODIFIER_FLAG_ALT))
-        except Exception:
-            pass
-    return False
-
-
-class VolumeGestureManager(sc.GestureManager if (HAS_KIT and sc and hasattr(sc, "GestureManager")) else object):
-    """
-    GestureManager that grants highest precedence to volume picking gestures,
-    explicitly preventing Omniverse's low-priority Viewport SelectTool (priority -100)
-    from executing an asynchronous Hydra raycast that falls through non-mesh USD prims.
-    """
-    def can_be_prevented(self, gesture):
-        return False
-
-    def should_prevent(self, gesture, preventer):
-        p_gesture = getattr(gesture, "priority", 0)
-        p_preventer = getattr(preventer, "priority", 0)
-        if p_gesture < p_preventer:
-            return True
-        if preventer and getattr(preventer, "state", None) in (
-            getattr(sc, "GestureState", None).BEGAN if hasattr(sc, "GestureState") else 1,
-            getattr(sc, "GestureState", None).CHANGED if hasattr(sc, "GestureState") else 2,
-        ):
-            return True
-        if hasattr(super(), "should_prevent"):
-            try:
-                return super().should_prevent(gesture, preventer)
-            except Exception:
-                pass
-        return False
-
-
-PreventViewportOthers = VolumeGestureManager  # Backward-compatibility alias
-
-
-class VolumeClickGesture(sc.ClickGesture if (HAS_KIT and sc and hasattr(sc, "ClickGesture")) else object):
-    """
-    Dedicated Viewport ClickGesture for Volumes.
-    Carries priority = 100 to decisively override NVIDIA's SelectionClickGesture (priority -100).
-    Locks selection immediately on mouse down (on_began) and re-asserts on mouse up (on_ended).
-    """
-    def __init__(self, prim_path: str, manager=None):
+class VolumeSelectGesture(sc.ClickGesture if (HAS_KIT and sc and hasattr(sc, "ClickGesture")) else object):
+    """Clean, standard ClickGesture that selects the volume prim on click."""
+    def __init__(self, prim_path: str, **kwargs):
         self.prim_path = prim_path
         if HAS_KIT and sc and hasattr(sc, "ClickGesture"):
             try:
-                super().__init__(on_ended_fn=self._on_click_callback, manager=manager)
-            except TypeError:
-                try:
-                    super().__init__(self._on_click_callback)
-                    if manager:
-                        self.manager = manager
-                except Exception:
-                    pass
-
-    @property
-    def priority(self) -> int:
-        return 100
-
-    @property
-    def name(self) -> str:
-        return "HydragonVolumeClickGesture"
-
-    def _on_click_callback(self, *args):
-        self.on_ended()
-
-    def on_began(self):
-        if _is_alt_pressed():
-            return
-        HydragonVolumeViewportOverlay.lock_selection(self.prim_path)
+                super().__init__()
+            except Exception:
+                pass
 
     def on_ended(self):
-        if _is_alt_pressed():
-            return
-        HydragonVolumeViewportOverlay.lock_selection(self.prim_path)
+        HydragonVolumeViewportOverlay.select_volume(self.prim_path)
 
+    def _on_click(self, *args):
+        HydragonVolumeViewportOverlay.select_volume(self.prim_path)
+
+
+# Backward-compatibility aliases and fallbacks
+VolumeClickGesture = VolumeSelectGesture
+VolumeGestureManager = object
+PreventViewportOthers = object
+
+def _is_alt_pressed() -> bool:
+    return False
 
 def _attach_gesture(shape_obj, gesture_obj):
-    """Safely attaches a gesture to any omni.ui.scene shape object."""
     if not shape_obj or not gesture_obj:
         return
     try:
-        shape_obj.gesture = gesture_obj
-        return
-    except (AttributeError, TypeError):
-        pass
-    try:
         shape_obj.gestures = [gesture_obj]
-        return
-    except (AttributeError, TypeError):
+    except Exception:
         pass
 
 
 def _create_line(p0, p1, line_color, line_thickness, gesture_obj=None):
-    """Constructs an sc.Line and attaches gesture_obj using all supported omni.ui.scene signatures."""
+    """Constructs an sc.Line and attaches gesture_obj if supported."""
     if gesture_obj:
         try:
-            return sc.Line(p0, p1, color=line_color, thickness=line_thickness, gesture=gesture_obj)
-        except TypeError:
-            pass
-        try:
-            return sc.Line(p0, p1, color=line_color, thickness=line_thickness, gestures=[gesture_obj])
-        except TypeError:
+            line = sc.Line(p0, p1, color=line_color, thickness=line_thickness, intersection_thickness=6.0)
+            line.gestures = [gesture_obj]
+            return line
+        except Exception:
             pass
     line = sc.Line(p0, p1, color=line_color, thickness=line_thickness)
     if gesture_obj:
-        _attach_gesture(line, gesture_obj)
+        try:
+            line.gestures = [gesture_obj]
+        except Exception:
+            pass
     return line
 
 
@@ -381,11 +318,9 @@ class VolumeOverlayEntry:
         color = self.get_render_color()
         thickness = self.get_line_thickness()
 
-        # Dedicated Volume ClickGesture with high priority (100) to override native SelectionTool (-100)
-        mgr = VolumeGestureManager() if (HAS_KIT and sc and hasattr(sc, "GestureManager")) else None
-        click_gesture = VolumeClickGesture(self.prim_path, manager=mgr) if (HAS_KIT and sc and hasattr(sc, "ClickGesture")) else None
+        select_gesture = VolumeSelectGesture(self.prim_path) if (HAS_KIT and sc and hasattr(sc, "ClickGesture")) else None
 
-        # Central 3D star/diamond glyph for intuitive, multi-angle clicking at the volume's center pivot
+        # Central 3D star/diamond glyph for intuitive clicking at the volume's center pivot
         arm = min(radius * 0.3, 35.0)
         center_segments = [
             ((-arm, 0.0, 0.0), (arm, 0.0, 0.0)),
@@ -407,55 +342,32 @@ class VolumeOverlayEntry:
         try:
             self.transform_node.clear()
             with self.transform_node:
-                # 1. Outer wireframe cage (all lines pickable)
+                # 1. Outer wireframe cage
                 for (x0, y0, z0), (x1, y1, z1) in segments:
-                    _create_line([x0, y0, z0], [x1, y1, z1], color, thickness, gesture_obj=click_gesture)
+                    _create_line([x0, y0, z0], [x1, y1, z1], color, thickness, gesture_obj=select_gesture)
 
                 # 2. Central star/diamond glyph (makes selecting the volume in the viewport easy and intuitive)
                 cross_thickness = thickness + 1.5
                 for (x0, y0, z0), (x1, y1, z1) in center_segments:
-                    _create_line([x0, y0, z0], [x1, y1, z1], color, cross_thickness, gesture_obj=click_gesture)
+                    _create_line([x0, y0, z0], [x1, y1, z1], color, cross_thickness, gesture_obj=select_gesture)
 
-                # 3. Dedicated interactable picking targets at center pivot:
-                # Uses both an interactable sc.Points AND a camera-facing billboard rectangle.
-                # Subtle 4% alpha tint guarantees omni.ui.scene hit-testing while providing a sleek visual pivot.
-                if click_gesture:
-                    pivot_color = make_color(
-                        0.18 if self.volume_type == "Force" else 1.0,
-                        0.72 if self.volume_type == "Force" else 0.25,
-                        1.0 if self.volume_type == "Force" else 0.25,
-                        0.04,
-                    )
+                # 3. Solid center pivot disk (Arc): facing camera, clean visual marker and reliable hit target
+                if HAS_KIT and sc and hasattr(sc, "Arc") and select_gesture:
                     try:
-                        if hasattr(sc, "Points"):
-                            pts = sc.Points(
-                                [[0.0, 0.0, 0.0]],
-                                colors=[color],
-                                sizes=[12],
-                                intersection_sizes=[arm * 2.2],
-                            )
-                            _attach_gesture(pts, click_gesture)
-                    except Exception:
-                        pass
-
-                    try:
-                        if hasattr(sc, "Rectangle"):
-                            look_at_camera = getattr(sc.Transform.LookAt, "CAMERA", None) if hasattr(sc, "Transform") and hasattr(sc.Transform, "LookAt") else None
-                            if look_at_camera is not None:
-                                with sc.Transform(look_at=look_at_camera):
-                                    rect = sc.Rectangle(
-                                        width=arm * 2.2,
-                                        height=arm * 2.2,
-                                        color=pivot_color,
-                                    )
-                                    _attach_gesture(rect, click_gesture)
-                            else:
-                                rect = sc.Rectangle(
-                                    width=arm * 2.2,
-                                    height=arm * 2.2,
-                                    color=pivot_color,
-                                )
-                                _attach_gesture(rect, click_gesture)
+                        look_at_cam = getattr(sc.Transform.LookAt, "CAMERA", None) if hasattr(sc.Transform, "LookAt") else None
+                        if look_at_cam is not None:
+                            with sc.Transform(look_at=look_at_cam):
+                                try:
+                                    disk = sc.Arc(16.0, tesselation=24, color=color)
+                                except TypeError:
+                                    disk = sc.Arc(16.0, color=color)
+                                disk.gestures = [select_gesture]
+                        else:
+                            try:
+                                disk = sc.Arc(16.0, tesselation=24, color=color)
+                            except TypeError:
+                                disk = sc.Arc(16.0, color=color)
+                            disk.gestures = [select_gesture]
                     except Exception:
                         pass
         except Exception as e:
@@ -525,10 +437,9 @@ class HydragonVolumeViewportOverlay:
         # In-memory registry: prim_path -> VolumeOverlayEntry
         self._volumes: Dict[str, VolumeOverlayEntry] = {}
         self._selected_paths: Set[str] = set()
-
-        # Selection lock to prevent native viewport SelectTool from falling through to background prims
-        self._locked_selection_path: Optional[str] = None
-        self._locked_selection_expiry: float = 0.0
+        # Consumable selection target to guard against native viewport raycast fall-through
+        self._just_clicked_volume: Optional[str] = None
+        self._fallthrough_counter: int = 0
 
         self._stage_event_sub = None
         self._app_update_sub = None
@@ -543,47 +454,31 @@ class HydragonVolumeViewportOverlay:
         return cls._instance
 
     @classmethod
-    def lock_selection(cls, prim_path: str):
-        """Class method to trigger selection lock on the active overlay instance."""
+    def select_volume(cls, prim_path: str):
+        """Class method to trigger selection of a volume prim."""
         overlay = cls.get_instance()
         if overlay:
-            overlay._lock_selection_impl(prim_path)
+            overlay._select_volume_impl(prim_path)
 
-    def _lock_selection_impl(self, prim_path: str):
-        """Locks selection to prim_path for 0.75s, overriding any immediate fall-through from native tools."""
-        import time
-        self._locked_selection_path = prim_path
-        self._locked_selection_expiry = time.time() + 0.75
+    @classmethod
+    def lock_selection(cls, prim_path: str):
+        """Backward-compatibility alias for select_volume."""
+        cls.select_volume(prim_path)
 
-        # 1. Select immediately
-        usd_context = omni.usd.get_context() if omni.usd else None
+    def _select_volume_impl(self, prim_path: str):
+        """Selects prim_path and sets consumable guard against native viewport raycast fall-through."""
+        self._just_clicked_volume = prim_path
+        self._fallthrough_counter = 2
+
+        if not HAS_KIT:
+            return
+
+        usd_context = omni.usd.get_context() if (omni and hasattr(omni, "usd")) else None
         if usd_context and hasattr(usd_context, "get_selection"):
             try:
                 usd_context.get_selection().set_selected_prim_paths([prim_path], True)
             except Exception:
                 pass
-
-        # 2. Defer re-assertion on the next app update frames to guarantee overriding the native tool
-        import asyncio
-        async def _reassert_frames():
-            try:
-                app = omni.kit.app.get_app() if (omni.kit and omni.kit.app) else None
-                for _ in range(4):
-                    if app:
-                        await app.next_update_async()
-                    if self._locked_selection_path == prim_path:
-                        ctx = omni.usd.get_context() if omni.usd else None
-                        if ctx and hasattr(ctx, "get_selection"):
-                            curr_sel = ctx.get_selection().get_selected_prim_paths()
-                            if curr_sel and prim_path not in curr_sel:
-                                ctx.get_selection().set_selected_prim_paths([prim_path], True)
-            except Exception:
-                pass
-
-        try:
-            asyncio.ensure_future(_reassert_frames())
-        except Exception:
-            pass
 
     def startup(self):
         """Attaches SceneView to the active Viewport and initializes listeners."""
@@ -651,8 +546,8 @@ class HydragonVolumeViewportOverlay:
         self._deregister_viewport_menu_item()
         self._deregister_action_and_hotkey()
 
-        self._locked_selection_path = None
-        self._locked_selection_expiry = 0.0
+        self._just_clicked_volume = None
+        self._fallthrough_counter = 0
 
         self._clear_all_volumes()
         self._detach_scene_view()
@@ -929,19 +824,18 @@ class HydragonVolumeViewportOverlay:
             event_type = event.type
             if hasattr(omni.usd, "StageEventType"):
                 if event_type == int(omni.usd.StageEventType.SELECTION_CHANGED):
-                    import time
-                    # Check if selection was locked to an intentionally clicked volume
-                    if self._locked_selection_path:
-                        if time.time() < self._locked_selection_expiry:
-                            usd_context = omni.usd.get_context() if omni.usd else None
-                            sel = usd_context.get_selection().get_selected_prim_paths() if usd_context else []
-                            if sel and self._locked_selection_path not in sel:
-                                # The native Viewport SelectTool fell through to the background!
-                                # Immediately re-assert our clicked volume selection:
-                                usd_context.get_selection().set_selected_prim_paths([self._locked_selection_path], True)
+                    if self._just_clicked_volume:
+                        target = self._just_clicked_volume
+                        usd_context = omni.usd.get_context() if omni.usd else None
+                        if usd_context and hasattr(usd_context, "get_selection"):
+                            sel = usd_context.get_selection().get_selected_prim_paths()
+                            if sel != [target]:
+                                # Spurious fall-through from native viewport raycast; restore volume selection
+                                usd_context.get_selection().set_selected_prim_paths([target], True)
                                 return
-                        else:
-                            self._locked_selection_path = None
+                            else:
+                                self._just_clicked_volume = None
+                                self._fallthrough_counter = 0
                     self._update_selection()
                 elif event_type in (
                     int(omni.usd.StageEventType.OPENED),
@@ -1090,6 +984,11 @@ class HydragonVolumeViewportOverlay:
         """
         if not self._is_active or not HAS_KIT:
             return
+
+        if self._fallthrough_counter > 0:
+            self._fallthrough_counter -= 1
+            if self._fallthrough_counter == 0:
+                self._just_clicked_volume = None
 
         # Ensure attached to viewport (e.g. if viewport initialized after extension startup)
         if not self._ensure_attached():

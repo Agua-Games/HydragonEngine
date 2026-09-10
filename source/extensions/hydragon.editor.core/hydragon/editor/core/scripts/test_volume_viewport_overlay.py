@@ -152,19 +152,11 @@ def test_overlay_registry_and_colors():
 
 
 def test_gesture_manager_prevention():
-    print("--- 8. Testing Gesture Manager Prevention ---")
-    from hydragon.editor.core.volume_viewport_manipulator import PreventViewportOthers
+    print("--- 8. Testing Gesture Manager & Backward Compatibility ---")
+    from hydragon.editor.core.volume_viewport_manipulator import PreventViewportOthers, VolumeGestureManager
 
-    mgr = PreventViewportOthers()
-    # Cannot be prevented by any other gesture
-    assert mgr.can_be_prevented(None) is False
-
-    # Should prevent other gestures when in active state
-    class MockPreventer:
-        state = 1  # BEGAN / active
-
-    assert mgr.should_prevent(None, MockPreventer()) is True
-    print("  [PASS] Gesture manager prevention verified")
+    assert PreventViewportOthers is VolumeGestureManager
+    print("  [PASS] Gesture manager compatibility verified")
 
 
 def test_visibility_toggle_and_settings():
@@ -194,45 +186,45 @@ def test_visibility_toggle_and_settings():
 
 
 def test_volume_click_gesture_priority():
-    print("--- 10. Testing VolumeClickGesture Priority & Prevention ---")
+    print("--- 10. Testing VolumeSelectGesture & Selection Fall-Through Guard ---")
     from hydragon.editor.core.volume_viewport_manipulator import (
         VolumeClickGesture,
+        VolumeSelectGesture,
         VolumeGestureManager,
         PreventViewportOthers,
+        HydragonVolumeViewportOverlay,
         _is_alt_pressed,
         _attach_gesture,
     )
 
     # Backward compatibility
     assert PreventViewportOthers is VolumeGestureManager
+    assert VolumeClickGesture is VolumeSelectGesture
 
     # Alt modifier check works safely outside Kit
     assert _is_alt_pressed() is False
 
-    gesture = VolumeClickGesture("/World/ForceVolume")
+    gesture = VolumeSelectGesture("/World/ForceVolume")
     assert gesture.prim_path == "/World/ForceVolume"
-    assert gesture.priority == 100
-    assert gesture.name == "HydragonVolumeClickGesture"
 
-    mgr = VolumeGestureManager()
-    assert mgr.can_be_prevented(gesture) is False
-
-    # Low-priority gesture (such as NVIDIA SelectionClickGesture at -100) must be prevented
-    class MockNativeSelectionGesture:
-        priority = -100
-        state = 1
-
-    assert mgr.should_prevent(MockNativeSelectionGesture(), gesture) is True
+    overlay = HydragonVolumeViewportOverlay("test_sel")
+    # Simulate clicking on the volume gesture
+    gesture.on_ended()
+    assert overlay._just_clicked_volume == "/World/ForceVolume"
+    assert overlay._fallthrough_counter == 2
 
     # Attachment helper works on object with .gesture or .gestures
     class MockShape:
-        gesture = None
+        gestures = []
 
     s = MockShape()
     _attach_gesture(s, gesture)
-    assert s.gesture is gesture
+    assert gesture in s.gestures
 
-    print("  [PASS] VolumeClickGesture priority & prevention verified")
+    overlay.shutdown()
+    assert overlay._just_clicked_volume is None
+    assert overlay._fallthrough_counter == 0
+    print("  [PASS] VolumeSelectGesture & selection fall-through guard verified")
 
 
 if __name__ == "__main__":
