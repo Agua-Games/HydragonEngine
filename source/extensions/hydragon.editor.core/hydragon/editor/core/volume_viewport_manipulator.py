@@ -154,6 +154,7 @@ class VolumeOverlayEntry:
         self.volume_type = volume_type  # "Force" or "Kill"
         self.cached_shape: Optional[str] = None
         self.cached_half_extents: Optional[Tuple[float, float, float]] = None
+        self.cached_transform: Optional[List[float]] = None
         self.is_selected: bool = False
         self.transform_node: Optional["sc.Transform"] = None
 
@@ -260,15 +261,9 @@ class VolumeOverlayEntry:
         color = self.get_render_color()
         thickness = self.get_line_thickness()
 
-        # Selection callback for direct Viewport picking
+        # Selection callback for direct Viewport picking (locks selection against native tool fall-through)
         def _on_click(_shape):
-            try:
-                usd_context = omni.usd.get_context() if omni.usd else None
-                if usd_context and hasattr(usd_context, "get_selection"):
-                    usd_context.get_selection().set_selected_prim_paths([self.prim_path], True)
-            except Exception as e:
-                if carb:
-                    carb.log_warn(f"[hydragon.editor.core] Failed to select prim on click: {e}")
+            HydragonVolumeViewportOverlay.lock_selection(self.prim_path)
 
         def _create_line(p0, p1, line_color, line_thickness):
             gesture = sc.ClickGesture(on_ended_fn=_on_click) if (HAS_KIT and hasattr(sc, "ClickGesture")) else None
@@ -279,13 +274,24 @@ class VolumeOverlayEntry:
                     pass
             return sc.Line(p0, p1, color=line_color, thickness=line_thickness)
 
-        # Central 3D cross glyph for intuitive clicking at the volume's center pivot
-        arm = min(radius * 0.25, 30.0)
+        # Central 3D star/diamond glyph for intuitive, multi-angle clicking at the volume's center pivot
+        arm = min(radius * 0.3, 35.0)
         center_segments = [
             ((-arm, 0.0, 0.0), (arm, 0.0, 0.0)),
             ((0.0, -arm, 0.0), (0.0, arm, 0.0)),
             ((0.0, 0.0, -arm), (0.0, 0.0, arm)),
         ]
+        d = arm * 0.5
+        center_segments.extend([
+            ((-d, 0.0, 0.0), (0.0, d, 0.0)),
+            ((0.0, d, 0.0), (d, 0.0, 0.0)),
+            ((d, 0.0, 0.0), (0.0, -d, 0.0)),
+            ((0.0, -d, 0.0), (-d, 0.0, 0.0)),
+            ((-d, 0.0, 0.0), (0.0, 0.0, d)),
+            ((0.0, 0.0, d), (d, 0.0, 0.0)),
+            ((d, 0.0, 0.0), (0.0, 0.0, -d)),
+            ((0.0, 0.0, -d), (-d, 0.0, 0.0)),
+        ])
 
         try:
             self.transform_node.clear()
@@ -294,8 +300,8 @@ class VolumeOverlayEntry:
                 for (x0, y0, z0), (x1, y1, z1) in segments:
                     _create_line([x0, y0, z0], [x1, y1, z1], color, thickness)
 
-                # 2. Central cross glyph (makes selecting the volume in the viewport easy and intuitive)
-                cross_thickness = thickness + 1.0
+                # 2. Central star/diamond glyph (makes selecting the volume in the viewport easy and intuitive)
+                cross_thickness = thickness + 1.5
                 for (x0, y0, z0), (x1, y1, z1) in center_segments:
                     _create_line([x0, y0, z0], [x1, y1, z1], color, cross_thickness)
         except Exception as e:
@@ -311,7 +317,12 @@ class VolumeOverlayEntry:
             xformable = UsdGeom.Xformable(target_prim)
             world_xf = xformable.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
             flat_m = [float(world_xf[r][c]) for r in range(4) for c in range(4)]
-            self.transform_node.transform = flat_m
+            # CRITICAL: Only set transform_node.transform if matrix ACTUALLY changed!
+            # Re-assigning transform on static volumes every frame dirties the scene graph,
+            # causing a 1-frame camera lag / jitter ("dançando") during viewport navigation.
+            if self.cached_transform is None or flat_m != self.cached_transform:
+                self.cached_transform = flat_m
+                self.transform_node.transform = flat_m
         except Exception:
             pass
 
@@ -358,12 +369,56 @@ class HydragonVolumeViewportOverlay:
         self._volumes: Dict[str, VolumeOverlayEntry] = {}
         self._selected_paths: Set[str] = set()
 
+        # Selection lock to prevent native viewport SelectTool from falling through to background prims
+        self._locked_selection_path: Optional[str] = None
+        self._locked_selection_expiry: float = 0.0
+
         self._stage_event_sub = None
         self._app_update_sub = None
 
     @classmethod
     def get_instance(cls) -> Optional["HydragonVolumeViewportOverlay"]:
         return cls._instance
+
+    @classmethod
+    def lock_selection(cls, prim_path: str):
+        """Class method to trigger selection lock on the active overlay instance."""
+        overlay = cls.get_instance()
+        if overlay:
+            overlay._lock_selection_impl(prim_path)
+
+    def _lock_selection_impl(self, prim_path: str):
+        """Locks selection to prim_path for 0.35s, overriding any immediate fall-through from native tools."""
+        import time
+        self._locked_selection_path = prim_path
+        self._locked_selection_expiry = time.time() + 0.35
+
+        # 1. Select immediately
+        usd_context = omni.usd.get_context() if omni.usd else None
+        if usd_context and hasattr(usd_context, "get_selection"):
+            try:
+                usd_context.get_selection().set_selected_prim_paths([prim_path], True)
+            except Exception:
+                pass
+
+        # 2. Defer re-assertion on the next app update frame to guarantee overriding the native tool
+        import asyncio
+        async def _reassert_next_frame():
+            try:
+                app = omni.kit.app.get_app() if omni.kit and omni.kit.app else None
+                if app:
+                    await app.next_update_async()
+                if self._locked_selection_path == prim_path:
+                    ctx = omni.usd.get_context() if omni.usd else None
+                    if ctx and hasattr(ctx, "get_selection"):
+                        ctx.get_selection().set_selected_prim_paths([prim_path], True)
+            except Exception:
+                pass
+
+        try:
+            asyncio.ensure_future(_reassert_next_frame())
+        except Exception:
+            pass
 
     def startup(self):
         """Attaches SceneView to the active Viewport and initializes listeners."""
@@ -403,6 +458,9 @@ class HydragonVolumeViewportOverlay:
         self._is_active = False
         self._stage_event_sub = None
         self._app_update_sub = None
+
+        self._locked_selection_path = None
+        self._locked_selection_expiry = 0.0
 
         self._clear_all_volumes()
         self._detach_scene_view()
@@ -501,6 +559,7 @@ class HydragonVolumeViewportOverlay:
             try:
                 with self._root_transform:
                     entry.transform_node = sc.Transform(visible=True)
+                entry.cached_transform = None
                 entry.rebuild_lines(prim)
                 entry.update_transform(prim)
             except Exception:
@@ -515,6 +574,16 @@ class HydragonVolumeViewportOverlay:
             event_type = event.type
             if hasattr(omni.usd, "StageEventType"):
                 if event_type == int(omni.usd.StageEventType.SELECTION_CHANGED):
+                    import time
+                    # Check if selection was locked to an intentionally clicked volume
+                    if self._locked_selection_path and time.time() < self._locked_selection_expiry:
+                        usd_context = omni.usd.get_context() if omni.usd else None
+                        sel = usd_context.get_selection().get_selected_prim_paths() if usd_context else []
+                        if sel and self._locked_selection_path not in sel:
+                            # The native Viewport SelectTool fell through to the background!
+                            # Immediately re-assert our clicked volume selection:
+                            usd_context.get_selection().set_selected_prim_paths([self._locked_selection_path], True)
+                            return
                     self._update_selection()
                 elif event_type in (
                     int(omni.usd.StageEventType.OPENED),
