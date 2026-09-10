@@ -37,6 +37,9 @@ SOUNDTRACK_PRIM_CANDIDATES: Tuple[str, ...] = (
     "/Soundtrack",
 )
 
+# Tracks that represent one-shot stingers/fanfares and must never continuously loop
+ONE_SHOT_TRACKS = {"victory", "achievement", "win", "game_over", "death"}
+
 
 class HydragonSoundtrackEntity:
     """
@@ -332,13 +335,24 @@ class HydragonSoundtrackSystem:
 
         if self._active_entity.auto_play:
             target_track = self._active_entity.current_track or "ambient"
+            # Sanitize track: simulation start must always begin on ambient, never on victory/stingers
+            if target_track.lower() in ONE_SHOT_TRACKS:
+                target_track = "ambient"
+                self._active_entity.current_track = "ambient"
             fade_duration = self._active_entity.fade_duration
             vol = self._active_entity.volume
             self.play_track(target_track, fade=True, fade_duration=fade_duration, target_volume=vol)
 
     def _handle_timeline_stop(self):
-        """Stops soundtrack playback on simulation end."""
+        """Stops soundtrack playback on simulation end and resets track to ambient."""
         self.stop_track(fade=False)
+        self._current_track_name = "ambient"
+        if self._active_entity and self._active_entity.is_valid():
+            try:
+                self._active_entity.current_track = "ambient"
+                self._active_entity.track_state = "Stopped"
+            except Exception:
+                pass
 
     def _handle_timeline_pause(self):
         """Pauses soundtrack playback on simulation pause."""
@@ -659,6 +673,10 @@ class HydragonSoundtrackSystem:
         if self._active_entity and self._active_entity.is_valid():
             is_looping = self._active_entity.is_looping
 
+        # One-shot stingers and fanfares must NEVER loop indefinitely
+        if self._current_track_name and self._current_track_name.lower() in ONE_SHOT_TRACKS:
+            is_looping = False
+
         if self._is_playing and not self._is_paused and is_looping:
             audio = self._get_ui_audio()
             if audio and self._current_sound:
@@ -668,6 +686,24 @@ class HydragonSoundtrackSystem:
                         self._mock_loop_restart_count += 1
                 except Exception:
                     pass
+            elif not audio:
+                if not self._mock_sound_playing:
+                    self._mock_loop_restart_count += 1
+        elif self._is_playing and not self._is_paused and not is_looping:
+            audio = self._get_ui_audio()
+            if audio and self._current_sound:
+                try:
+                    if not audio.is_sound_playing(self._current_sound):
+                        self._is_playing = False
+                        if self._active_entity and self._active_entity.is_valid():
+                            self._active_entity.track_state = "Stopped"
+                except Exception:
+                    pass
+            elif not audio:
+                if not self._mock_sound_playing:
+                    self._is_playing = False
+                    if self._active_entity and self._active_entity.is_valid():
+                        self._active_entity.track_state = "Stopped"
 
     # -------------------------------------------------------------------------
     # State Inspection

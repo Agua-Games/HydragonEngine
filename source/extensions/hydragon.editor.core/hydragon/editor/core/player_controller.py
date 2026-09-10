@@ -34,7 +34,7 @@ except ImportError:
     UsdPhysics = None
     PhysxSchema = None
 
-from .schemas import HydragonPlayerController
+from .schemas import HydragonPlayerController, HydragonPhysicsManager
 
 
 def _is_rigid_body(prim) -> bool:
@@ -98,6 +98,7 @@ class HydragonPlayerControllerSystem:
         self._needs_respawn: bool = False
         self._is_respawning: bool = False
         self._respawn_cooldown: float = 0.0
+        self._physics_mgr: Optional[HydragonPhysicsManager] = None
         self._last_log_time = 0.0
 
     @classmethod
@@ -156,6 +157,7 @@ class HydragonPlayerControllerSystem:
         self._needs_respawn = False
         self._is_respawning = False
         self._respawn_cooldown = 0.0
+        self._physics_mgr = None
 
         if not HAS_KIT:
             return
@@ -260,6 +262,8 @@ class HydragonPlayerControllerSystem:
                 self._subscribe_physics()
                 stage = omni.usd.get_context().get_stage()
                 if stage:
+                    self._physics_mgr = self._discover_physics_manager(stage)
+                    self._ensure_physics_scene_settings(stage, self._physics_mgr)
                     player_prim = self.find_player_prim(stage)
                     if player_prim:
                         # Restore player input if previously disabled by victory/game over, unless menu is active
@@ -294,6 +298,7 @@ class HydragonPlayerControllerSystem:
                 self._needs_respawn = False
                 self._is_respawning = False
                 self._respawn_cooldown = 0.0
+                self._physics_mgr = None
                 stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
                 if stage:
                     player_prim = self.find_player_prim(stage)
@@ -337,6 +342,12 @@ class HydragonPlayerControllerSystem:
                         kin_attr = rb_prim.GetAttribute("physics:kinematicEnabled")
                         if kin_attr and kin_attr.IsValid():
                             kin_attr.Set(False)
+                        # Re-enable CCD now that body is dynamic again if requested by PhysicsManager
+                        target_ccd = self._physics_mgr.enable_ccd if self._physics_mgr else True
+                        if target_ccd:
+                            ccd_attr = rb_prim.GetAttribute("physxRigidBody:enableCCD")
+                            if ccd_attr and ccd_attr.IsValid():
+                                ccd_attr.Set(True)
 
         # Attempt to lazily acquire PhysX if not already subscribed
         if self._physics_step_sub is None:
@@ -381,6 +392,106 @@ class HydragonPlayerControllerSystem:
     # -------------------------------------------------------------------------
     # Prim & RigidBody Discovery (Agnostic - Zero Hardcoded Paths or Names)
     # -------------------------------------------------------------------------
+    def _discover_physics_manager(self, stage) -> Optional[HydragonPhysicsManager]:
+        """
+        Discovers active HydragonPhysicsAPI manager prim on simulation start.
+        Checks common candidate paths O(1) first, then falls back to single traversal on PLAY.
+        """
+        if not stage:
+            return None
+
+        candidate_paths = (
+            "/World/Singletons/PhysicsManager",
+            "/World/PhysicsManager",
+            "/World/Singletons/Physics",
+            "/World/Physics",
+            "/World/PhysicsScene",
+            "/PhysicsManager",
+        )
+
+        for path_str in candidate_paths:
+            prim = stage.GetPrimAtPath(path_str)
+            if prim and prim.IsValid() and HydragonPhysicsManager.is_applied(prim):
+                return HydragonPhysicsManager(prim)
+
+        for prim in stage.Traverse():
+            if prim.IsValid() and HydragonPhysicsManager.is_applied(prim):
+                return HydragonPhysicsManager(prim)
+
+        return None
+
+    def _ensure_physics_scene_settings(self, stage, phys_mgr: Optional[HydragonPhysicsManager]):
+        """
+        Ensures the PhysicsScene prim has PhysxSchema.PhysxSceneAPI applied with global
+        Continuous Collision Detection (CCD) enabled and bounce threshold configured.
+        NVIDIA PhysX ignores per-rigidbody CCD flags unless PhysxSceneAPI.enableCCD is True at the scene level!
+        """
+        if not stage:
+            return
+
+        target_ccd = phys_mgr.enable_ccd if phys_mgr else True
+        target_bounce = phys_mgr.bounce_threshold if phys_mgr else 200.0
+
+        # Discover PhysicsScene prim
+        scene_prim = None
+        for path in ("/World/PhysicsScene", "/PhysicsScene"):
+            p = stage.GetPrimAtPath(path)
+            if p and p.IsValid():
+                scene_prim = p
+                break
+
+        if not scene_prim:
+            for p in stage.Traverse():
+                if p.IsValid() and p.GetTypeName() == "PhysicsScene":
+                    scene_prim = p
+                    break
+
+        if not scene_prim:
+            return
+
+        try:
+            if PhysxSchema and hasattr(PhysxSchema, "PhysxSceneAPI"):
+                physx_scene = PhysxSchema.PhysxSceneAPI(scene_prim)
+                if not physx_scene and hasattr(PhysxSchema.PhysxSceneAPI, "Apply"):
+                    physx_scene = PhysxSchema.PhysxSceneAPI.Apply(scene_prim)
+                if physx_scene:
+                    ccd_attr = physx_scene.GetEnableCCDAttr()
+                    if not ccd_attr or not ccd_attr.IsValid():
+                        physx_scene.CreateEnableCCDAttr(target_ccd)
+                    else:
+                        ccd_attr.Set(target_ccd)
+
+                    if hasattr(physx_scene, "GetBounceThresholdAttr"):
+                        b_attr = physx_scene.GetBounceThresholdAttr()
+                        if not b_attr or not b_attr.IsValid():
+                            physx_scene.CreateBounceThresholdAttr(target_bounce)
+                        else:
+                            b_attr.Set(target_bounce)
+            else:
+                # Direct USD attribute fallback (headless / testing outside Kit)
+                if not scene_prim.HasAttribute("physxScene:enableCCD"):
+                    if HAS_PXR and Sdf:
+                        scene_prim.CreateAttribute("physxScene:enableCCD", Sdf.ValueTypeNames.Bool).Set(target_ccd)
+                    elif hasattr(scene_prim, "CreateAttribute"):
+                        scene_prim.CreateAttribute("physxScene:enableCCD", None).Set(target_ccd)
+                else:
+                    attr = scene_prim.GetAttribute("physxScene:enableCCD")
+                    if attr:
+                        attr.Set(target_ccd)
+
+                if hasattr(scene_prim, "HasAttribute") and scene_prim.HasAttribute("physxScene:bounceThreshold"):
+                    b_attr = scene_prim.GetAttribute("physxScene:bounceThreshold")
+                    if b_attr:
+                        b_attr.Set(target_bounce)
+                elif hasattr(scene_prim, "CreateAttribute"):
+                    if HAS_PXR and Sdf:
+                        scene_prim.CreateAttribute("physxScene:bounceThreshold", Sdf.ValueTypeNames.Float).Set(target_bounce)
+                    else:
+                        scene_prim.CreateAttribute("physxScene:bounceThreshold", None).Set(target_bounce)
+        except Exception as err:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Failed to configure PhysicsScene: {err}")
+
     def find_player_prim(self, stage) -> Optional[object]:
         """Locates the active player prim containing HydragonPlayerControllerAPI."""
         if not stage:
@@ -486,8 +597,26 @@ class HydragonPlayerControllerSystem:
 
     def _ensure_rigid_body_damping(self, rb_prim, controller: HydragonPlayerController):
         """Ensures angular damping, linear damping, CCD, max velocities, and solver iterations."""
-        if not HAS_KIT or not rb_prim or not rb_prim.IsValid():
+        if not rb_prim or not rb_prim.IsValid():
             return
+
+        # Fetch Physics Manager settings or apply high-performance defaults
+        phys_mgr = self._physics_mgr
+        target_max_linear_vel = phys_mgr.max_linear_velocity if phys_mgr else 10000.0
+        if 0.0 < target_max_linear_vel < 100.0:
+            target_max_linear_vel *= 100.0
+        target_max_ang_vel = (
+            phys_mgr.max_angular_velocity
+            if phys_mgr
+            else (controller.max_angular_velocity if controller.max_angular_velocity > 0.0 else 3600.0)
+        )
+        if 0.0 < target_max_ang_vel <= 180.0:
+            target_max_ang_vel = math.degrees(target_max_ang_vel)
+        target_lin_damping = phys_mgr.default_linear_damping if phys_mgr else 0.05
+        target_ang_damping = phys_mgr.default_angular_damping if phys_mgr else 0.1
+        target_pos_iters = phys_mgr.solver_position_iterations if phys_mgr else 16
+        target_vel_iters = phys_mgr.solver_velocity_iterations if phys_mgr else 4
+        target_ccd = phys_mgr.enable_ccd if phys_mgr else True
 
         try:
             if UsdPhysics:
@@ -495,15 +624,15 @@ class HydragonPlayerControllerSystem:
                 if rb_api:
                     ang_attr = rb_api.GetAngularDampingAttr()
                     if not ang_attr or not ang_attr.IsValid():
-                        rb_api.CreateAngularDampingAttr(1.0)
-                    elif ang_attr.Get() is None or ang_attr.Get() < 0.1:
-                        ang_attr.Set(1.0)
+                        rb_api.CreateAngularDampingAttr(target_ang_damping)
+                    else:
+                        ang_attr.Set(target_ang_damping)
 
                     lin_attr = rb_api.GetLinearDampingAttr()
                     if not lin_attr or not lin_attr.IsValid():
-                        rb_api.CreateLinearDampingAttr(0.2)
-                    elif lin_attr.Get() is None or lin_attr.Get() < 0.05:
-                        lin_attr.Set(0.2)
+                        rb_api.CreateLinearDampingAttr(target_lin_damping)
+                    else:
+                        lin_attr.Set(target_lin_damping)
         except Exception:
             pass
 
@@ -514,51 +643,81 @@ class HydragonPlayerControllerSystem:
                     physx_rb = PhysxSchema.PhysxRigidBodyAPI.Apply(rb_prim)
                 if physx_rb:
                     max_ang_attr = physx_rb.GetMaxAngularVelocityAttr()
-                    max_val = (
-                        controller.max_angular_velocity
-                        if controller.max_angular_velocity > 0.0
-                        else 25.0
-                    )
                     if not max_ang_attr or not max_ang_attr.IsValid():
-                        physx_rb.CreateMaxAngularVelocityAttr(max_val)
-                    elif max_ang_attr.Get() is None or max_ang_attr.Get() <= 0.0:
-                        max_ang_attr.Set(max_val)
+                        physx_rb.CreateMaxAngularVelocityAttr(target_max_ang_vel)
+                    else:
+                        max_ang_attr.Set(target_max_ang_vel)
 
-                    # Max Linear Velocity clamp to prevent supersonic physics explosions
+                    # Max Linear Velocity clamp: set unconditionally from PhysicsManager
                     if hasattr(physx_rb, "GetMaxLinearVelocityAttr"):
                         max_lin_attr = physx_rb.GetMaxLinearVelocityAttr()
                         if not max_lin_attr or not max_lin_attr.IsValid():
-                            physx_rb.CreateMaxLinearVelocityAttr(3000.0)
-                        elif max_lin_attr.Get() is None or max_lin_attr.Get() <= 0.0 or max_lin_attr.Get() > 3000.0:
-                            max_lin_attr.Set(3000.0)
+                            physx_rb.CreateMaxLinearVelocityAttr(target_max_linear_vel)
+                        else:
+                            max_lin_attr.Set(target_max_linear_vel)
                     elif rb_prim.HasAttribute("physxRigidBody:maxLinearVelocity"):
-                        rb_prim.GetAttribute("physxRigidBody:maxLinearVelocity").Set(3000.0)
+                        rb_prim.GetAttribute("physxRigidBody:maxLinearVelocity").Set(target_max_linear_vel)
 
                     # Solver iteration counts for stable constraint convergence under compression
                     if hasattr(physx_rb, "GetSolverPositionIterationCountAttr"):
                         pos_iter_attr = physx_rb.GetSolverPositionIterationCountAttr()
                         if not pos_iter_attr or not pos_iter_attr.IsValid():
-                            physx_rb.CreateSolverPositionIterationCountAttr(16)
-                        elif pos_iter_attr.Get() is None or pos_iter_attr.Get() < 16:
-                            pos_iter_attr.Set(16)
+                            physx_rb.CreateSolverPositionIterationCountAttr(target_pos_iters)
+                        else:
+                            pos_iter_attr.Set(target_pos_iters)
                     elif rb_prim.HasAttribute("physxRigidBody:solverPositionIterationCount"):
-                        rb_prim.GetAttribute("physxRigidBody:solverPositionIterationCount").Set(16)
+                        rb_prim.GetAttribute("physxRigidBody:solverPositionIterationCount").Set(target_pos_iters)
 
                     if hasattr(physx_rb, "GetSolverVelocityIterationCountAttr"):
                         vel_iter_attr = physx_rb.GetSolverVelocityIterationCountAttr()
                         if not vel_iter_attr or not vel_iter_attr.IsValid():
-                            physx_rb.CreateSolverVelocityIterationCountAttr(4)
-                        elif vel_iter_attr.Get() is None or vel_iter_attr.Get() < 4:
-                            vel_iter_attr.Set(4)
+                            physx_rb.CreateSolverVelocityIterationCountAttr(target_vel_iters)
+                        else:
+                            vel_iter_attr.Set(target_vel_iters)
                     elif rb_prim.HasAttribute("physxRigidBody:solverVelocityIterationCount"):
-                        rb_prim.GetAttribute("physxRigidBody:solverVelocityIterationCount").Set(4)
+                        rb_prim.GetAttribute("physxRigidBody:solverVelocityIterationCount").Set(target_vel_iters)
 
                     # Continuous Collision Detection (CCD) to prevent tunneling through thin floors/obstacles
+                    # NOTE: PhysX throws an error if CCD is enabled on kinematic rigid bodies.
+                    # Only enable CCD if the body is dynamic (not kinematic).
+                    is_kinematic = False
+                    if rb_prim.HasAttribute("physics:kinematicEnabled"):
+                        is_kinematic = bool(rb_prim.GetAttribute("physics:kinematicEnabled").Get() or False)
+
                     ccd_attr = physx_rb.GetEnableCCDAttr()
-                    if not ccd_attr or not ccd_attr.IsValid():
-                        physx_rb.CreateEnableCCDAttr(True)
-                    elif not ccd_attr.Get():
-                        ccd_attr.Set(True)
+                    if is_kinematic:
+                        if ccd_attr and ccd_attr.IsValid():
+                            ccd_attr.Set(False)
+                    else:
+                        if not ccd_attr or not ccd_attr.IsValid():
+                            physx_rb.CreateEnableCCDAttr(target_ccd)
+                        else:
+                            ccd_attr.Set(target_ccd)
+            else:
+                # Direct USD attribute fallback (headless / testing outside Kit)
+                if rb_prim.HasAttribute("physxRigidBody:maxLinearVelocity"):
+                    attr = rb_prim.GetAttribute("physxRigidBody:maxLinearVelocity")
+                    if attr:
+                        attr.Set(target_max_linear_vel)
+                if rb_prim.HasAttribute("physxRigidBody:maxAngularVelocity"):
+                    attr = rb_prim.GetAttribute("physxRigidBody:maxAngularVelocity")
+                    if attr:
+                        attr.Set(target_max_ang_vel)
+                if rb_prim.HasAttribute("physxRigidBody:solverPositionIterationCount"):
+                    attr = rb_prim.GetAttribute("physxRigidBody:solverPositionIterationCount")
+                    if attr:
+                        attr.Set(target_pos_iters)
+                if rb_prim.HasAttribute("physxRigidBody:solverVelocityIterationCount"):
+                    attr = rb_prim.GetAttribute("physxRigidBody:solverVelocityIterationCount")
+                    if attr:
+                        attr.Set(target_vel_iters)
+                if rb_prim.HasAttribute("physxRigidBody:enableCCD"):
+                    is_kinematic = False
+                    if rb_prim.HasAttribute("physics:kinematicEnabled"):
+                        is_kinematic = bool(rb_prim.GetAttribute("physics:kinematicEnabled").Get() or False)
+                    attr = rb_prim.GetAttribute("physxRigidBody:enableCCD")
+                    if attr:
+                        attr.Set(False if is_kinematic else target_ccd)
 
             # Contact Reporting API for native event-based collision detection
             if PhysxSchema and hasattr(PhysxSchema, "PhysxContactReportAPI"):
@@ -782,8 +941,8 @@ class HydragonPlayerControllerSystem:
 
             if can_jump:
                 jump_impulse = controller.jump_impulse
-                if jump_impulse < 1000.0:
-                    jump_impulse = 25000.0
+                if jump_impulse <= 0.0:
+                    jump_impulse = 2500.0
 
                 jump_force = carb.Float3(0.0, jump_impulse, 0.0)
                 sim_iface.apply_force_at_pos(
@@ -879,6 +1038,10 @@ class HydragonPlayerControllerSystem:
         try:
             # 1. Temporarily freeze rigid body as kinematic in PhysX to wipe all velocities and lock pose
             if rb_prim and rb_prim.IsValid():
+                # PhysX forbids CCD on kinematic bodies; disable CCD before enabling kinematic mode
+                ccd_attr = rb_prim.GetAttribute("physxRigidBody:enableCCD")
+                if ccd_attr and ccd_attr.IsValid() and ccd_attr.Get():
+                    ccd_attr.Set(False)
                 kin_attr = rb_prim.GetAttribute("physics:kinematicEnabled")
                 if not kin_attr or not kin_attr.IsValid():
                     kin_attr = rb_prim.CreateAttribute("physics:kinematicEnabled", Sdf.ValueTypeNames.Bool)

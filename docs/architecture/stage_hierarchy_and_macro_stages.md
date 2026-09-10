@@ -32,6 +32,7 @@ game_stage.usda (Macro / Master Stage - Root)
 │   ├── SoundtrackManager      [HydragonSoundtrackAPI]  (BGM, dynamic cross-fading)
 │   ├── GameManager            [HydragonGameAPI]        (Rules, global score, state)
 │   ├── EffectsManager         [HydragonEffectsAPI]     (VFX pools, particle mode)
+│   ├── PhysicsManager         [HydragonPhysicsAPI]     (Global speed clamps, damping, CCD)
 │   └── SaveGameStats          [HydragonSaveStatsAPI]   (Persistent inventory, quests)
 │
 ├── /World/UI (User Interface Component Hierarchy)
@@ -194,6 +195,7 @@ def Xform "World"
 | **Settings Menu** | `HydragonUICanvasAPI` | `HydragonUICanvas` (`canvasType="SettingsMenu"`) | `Create > Hydragon > Settings Menu` |
 | **UI Canvas (Game HUD)** | `HydragonUICanvasAPI` | `HydragonUICanvas` (`canvasType="InGame"`) | `Create > Hydragon > UI Canvas (Game HUD)` |
 | **Effects VFX** | `HydragonEffectsAPI` | `HydragonEffectsManager` | `Create > Hydragon > Effects Manager` |
+| **Physics Policies** | `HydragonPhysicsAPI` | `HydragonPhysicsManager` | `Create > Hydragon > Physics Manager` |
 | **Game Rules** | `HydragonGameAPI` | `HydragonGameManager` | `Create > Hydragon > Game Manager` |
 | **Player** | `HydragonPlayerControllerAPI` | `HydragonPlayerController` | `Create > Hydragon > Player Ball` |
 | **Chaser AI** | `HydragonChaserAIAPI` | `HydragonChaserAI` | `Create > Hydragon > Foe Ball` |

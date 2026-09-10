@@ -35,7 +35,7 @@ except ImportError:
     UsdPhysics = None
     PhysxSchema = None
 
-from .schemas import HydragonActor, HydragonChaserAI, HydragonGameManager, HydragonPlayerController
+from .schemas import HydragonActor, HydragonChaserAI, HydragonGameManager, HydragonPlayerController, HydragonPhysicsManager
 
 
 def _is_rigid_body(prim) -> bool:
@@ -112,11 +112,16 @@ class HydragonAIBrain:
         self._current_pos: Tuple[float, float, float] = self._origin_pos
         self._patrol_waypoint: Tuple[float, float, float] = self._origin_pos
 
-        self._state: str = "Patrol"
+        initial_state = "Patrol"
+        if self._schema and hasattr(self._schema, "state") and self._schema.state in ("Patrol", "Chase"):
+            initial_state = self._schema.state
+        self._state: str = initial_state
         self._patrol_timer: float = 0.0
         self._patrol_duration: float = random.uniform(2.5, 4.5)
         self._is_alive: bool = True
         self._last_stomp_check_time: float = 0.0
+        self._mass: float = 5.0
+        self._radius: float = 50.0
 
         if self._schema and hasattr(self._schema, "state"):
             self._schema.state = self._state
@@ -132,6 +137,22 @@ class HydragonAIBrain:
     @rb_path.setter
     def rb_path(self, path: Optional[str]):
         self._rb_path = path
+
+    @property
+    def mass(self) -> float:
+        return self._mass
+
+    @mass.setter
+    def mass(self, val: float):
+        self._mass = max(0.1, float(val))
+
+    @property
+    def radius(self) -> float:
+        return self._radius
+
+    @radius.setter
+    def radius(self, val: float):
+        self._radius = max(1.0, float(val))
 
     @property
     def target_prim_path(self) -> Optional[str]:
@@ -165,13 +186,28 @@ class HydragonAIBrain:
             return radius_val * 100.0
         return radius_val
 
-    def _get_effective_force(self, force_val: float, default_mag: float = 18000.0) -> float:
-        """Ensures force magnitude is sufficient for centimeter-scale PhysX rigid bodies."""
+    def _get_effective_force(
+        self,
+        force_val: float,
+        default_mag: float = 24500.0,
+        accel_multiplier: float = 14.0,
+        min_accel: float = 2000.0,
+        max_force: float = 38000.0,
+    ) -> float:
+        """
+        Ensures force magnitude is sufficient for centimeter-scale PhysX rigid bodies,
+        scales proportionally with mass, and enforces an upper bound to prevent vertical
+        collision ramp launch during sphere-on-sphere impacts.
+        """
         if force_val >= 1000.0:
-            return force_val
-        if force_val > 0.0:
-            return force_val * 50.0
-        return default_mag
+            calc_force = max(force_val, self._mass * min_accel)
+        elif force_val > 0.0:
+            target_accel = max(force_val * accel_multiplier, min_accel)
+            calc_force = self._mass * target_accel
+        else:
+            calc_force = max(default_mag, self._mass * min_accel)
+
+        return min(calc_force, max_force)
 
     def _pick_new_patrol_waypoint(self):
         """Picks a random 2D navigation target within patrol radius around origin position."""
@@ -235,9 +271,10 @@ class HydragonAIBrain:
             if dist_to_player > 1e-4:
                 nx = p_dx / dist_to_player
                 nz = p_dz / dist_to_player
-                chase_mag = 18000.0
-                if self._schema:
-                    chase_mag = self._get_effective_force(self._schema.chase_force, default_mag=18000.0)
+                chase_val = self._schema.chase_force if self._schema and hasattr(self._schema, "chase_force") else 350.0
+                chase_mag = self._get_effective_force(
+                    chase_val, default_mag=24500.0, accel_multiplier=14.0, min_accel=2000.0, max_force=38000.0
+                )
                 force_x = nx * chase_mag
                 force_z = nz * chase_mag
 
@@ -255,13 +292,16 @@ class HydragonAIBrain:
                 dist_to_waypoint = math.sqrt(w_dx * w_dx + w_dz * w_dz)
 
             if dist_to_waypoint > 1e-4:
-                nx = w_dx / dist_to_waypoint
-                nz = w_dz / dist_to_waypoint
-                patrol_mag = 8000.0
-                if self._schema:
-                    patrol_mag = self._get_effective_force(self._schema.patrol_force, default_mag=8000.0)
-                force_x = nx * patrol_mag
-                force_z = nz * patrol_mag
+                wx_norm = w_dx / dist_to_waypoint
+                wz_norm = w_dz / dist_to_waypoint
+                patrol_val = self._schema.patrol_force if self._schema and hasattr(self._schema, "patrol_force") else 150.0
+                patrol_mag = self._get_effective_force(
+                    patrol_val, default_mag=10500.0, accel_multiplier=14.0, min_accel=1500.0, max_force=20000.0
+                )
+                force_x = wx_norm * patrol_mag
+                force_z = wz_norm * patrol_mag
+
+        return self._state, (force_x, force_z)
 
         return self._state, (force_x, force_z)
 
@@ -319,7 +359,9 @@ class HydragonFoesControllerSystem:
         self._pending_hits: List[Tuple[str, bool]] = []
         self._pending_bounce: bool = False
         self._pending_bounce_foe_pos: Optional[Tuple[float, float, float]] = None
+        self._physics_mgr: Optional[HydragonPhysicsManager] = None
         self._last_log_time: float = 0.0
+        self._last_player_bounce_time: float = 0.0
 
     @classmethod
     def get_instance(cls) -> Optional["HydragonFoesControllerSystem"]:
@@ -328,10 +370,10 @@ class HydragonFoesControllerSystem:
     def is_active_and_simulating(self) -> bool:
         return self._is_active and self._is_simulating
 
-    def queue_foe_destruction(self, prim_path: str, is_stomp: bool = False):
+    def queue_foe_destruction(self, prim_path: str, is_stomp: bool = False, bounce_applied: bool = False):
         """Queues a foe for clean destruction on the main thread (invoked by kill volumes or hazard systems)."""
         with self._hits_lock:
-            self._pending_hits.append((prim_path, is_stomp))
+            self._pending_hits.append((prim_path, is_stomp, bounce_applied))
 
     def startup(self):
         """Initializes subscriptions to timeline, physics step, and app updates."""
@@ -358,6 +400,8 @@ class HydragonFoesControllerSystem:
             self._pending_hits.clear()
         self._pending_bounce = False
         self._pending_bounce_foe_pos = None
+        self._physics_mgr = None
+        self._last_player_bounce_time = 0.0
         self._cached_player_path = None
         self._cached_player_rb_path = None
         self._cached_game_manager_path = None
@@ -490,6 +534,7 @@ class HydragonFoesControllerSystem:
                 self._cached_player_path = None
                 self._cached_player_rb_path = None
                 self._cached_game_manager_path = None
+                self._last_player_bounce_time = 0.0
                 if carb:
                     carb.log_info("[hydragon.editor.core] Play mode stopped. AI brains cleared.")
         except Exception as ex:
@@ -512,7 +557,7 @@ class HydragonFoesControllerSystem:
 
         # Process pending foe hits collected from PhysX contact reports safely on the main thread.
         # Drain the queue atomically under _hits_lock, then process outside the lock to prevent mutex recursion.
-        hits_to_process: List[Tuple[str, bool]] = []
+        hits_to_process: List[Tuple] = []
         with self._hits_lock:
             if self._pending_hits:
                 hits_to_process = list(self._pending_hits)
@@ -520,7 +565,11 @@ class HydragonFoesControllerSystem:
 
         if hits_to_process:
             stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
-            for p_path, is_stomp in hits_to_process:
+            for hit_item in hits_to_process:
+                p_path = hit_item[0]
+                is_stomp = hit_item[1]
+                bounce_applied = hit_item[2] if len(hit_item) > 2 else False
+
                 if p_path in self._destroyed_prim_paths:
                     continue
                 self._destroyed_prim_paths.add(p_path)
@@ -563,11 +612,12 @@ class HydragonFoesControllerSystem:
                         if carb:
                             carb.log_warn(f"[hydragon.editor.core] Failed to spawn foe destruction VFX: {ex}")
 
-                    try:
-                        self._apply_player_bounce(stage, foe_pos=foe_pos, is_stomp=is_stomp)
-                    except Exception as ex:
-                        if carb:
-                            carb.log_warn(f"[hydragon.editor.core] Failed to trigger player bounce: {ex}")
+                    if not bounce_applied:
+                        try:
+                            self._apply_player_bounce(stage, foe_pos=foe_pos, is_stomp=is_stomp)
+                        except Exception as ex:
+                            if carb:
+                                carb.log_warn(f"[hydragon.editor.core] Failed to trigger player bounce: {ex}")
 
         if self._physics_step_sub is None:
             if not self._subscribe_physics():
@@ -612,6 +662,34 @@ class HydragonFoesControllerSystem:
         """Locates the player rigid body path agnostically without hardcoded paths."""
         return self._get_player_paths(stage)[1]
 
+    def _discover_physics_manager(self, stage) -> Optional[HydragonPhysicsManager]:
+        """
+        Discovers active HydragonPhysicsAPI manager prim on simulation start.
+        Checks common candidate paths O(1) first, then falls back to single traversal on PLAY.
+        """
+        if not stage:
+            return None
+
+        candidate_paths = (
+            "/World/Singletons/PhysicsManager",
+            "/World/PhysicsManager",
+            "/World/Singletons/Physics",
+            "/World/Physics",
+            "/World/PhysicsScene",
+            "/PhysicsManager",
+        )
+
+        for path_str in candidate_paths:
+            prim = stage.GetPrimAtPath(path_str)
+            if prim and prim.IsValid() and HydragonPhysicsManager.is_applied(prim):
+                return HydragonPhysicsManager(prim)
+
+        for prim in stage.Traverse():
+            if prim.IsValid() and HydragonPhysicsManager.is_applied(prim):
+                return HydragonPhysicsManager(prim)
+
+        return None
+
     def _discover_entities_once(self, stage):
         """
         Discovers all adversary entities, players, and game manager once on simulation start.
@@ -623,6 +701,7 @@ class HydragonFoesControllerSystem:
         self._cached_player_path = None
         self._cached_player_rb_path = None
         self._cached_game_manager_path = None
+        self._physics_mgr = self._discover_physics_manager(stage)
 
         if not stage:
             return
@@ -652,6 +731,25 @@ class HydragonFoesControllerSystem:
                     rb_path = rb_prim.GetPath().pathString
                     brain.rb_path = rb_path
                     self._ensure_rigid_body_damping(rb_prim)
+
+                    # Compute world scale, mass, and radius
+                    sx, sy, sz = self._compute_prim_world_scale(rb_prim)
+                    scale_avg = (sx + sy + sz) / 3.0
+                    volume_scale = sx * sy * sz
+
+                    base_mass = 5.0
+                    if rb_prim.HasAttribute("physics:mass"):
+                        m_val = rb_prim.GetAttribute("physics:mass").Get()
+                        if m_val is not None and float(m_val) > 0.0:
+                            base_mass = float(m_val)
+                    brain.mass = max(0.1, base_mass * volume_scale)
+
+                    base_radius = 50.0
+                    if rb_prim.HasAttribute("radius"):
+                        r_val = rb_prim.GetAttribute("radius").Get()
+                        if r_val is not None and float(r_val) > 0.0:
+                            base_radius = float(r_val)
+                    brain.radius = max(1.0, base_radius * scale_avg)
 
                     # Initialize origin position directly from authored USD transform (never call PhysX on PLAY before simulation steps)
                     origin = self._compute_prim_usd_world_pos(rb_prim)
@@ -695,15 +793,84 @@ class HydragonFoesControllerSystem:
         except Exception:
             return 0.0, 0.0, 0.0
 
+    def _compute_prim_world_scale(self, prim) -> Tuple[float, float, float]:
+        """Calculates world scale (sx, sy, sz) of a USD prim using OpenUSD without querying PhysX."""
+        if not HAS_KIT or not prim or not hasattr(prim, "IsValid") or not prim.IsValid():
+            return 1.0, 1.0, 1.0
+        try:
+            xformable = UsdGeom.Xformable(prim)
+            tf = xformable.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
+            r0 = tf.GetRow(0)
+            r1 = tf.GetRow(1)
+            r2 = tf.GetRow(2)
+            sx = math.sqrt(r0[0] * r0[0] + r0[1] * r0[1] + r0[2] * r0[2])
+            sy = math.sqrt(r1[0] * r1[0] + r1[1] * r1[1] + r1[2] * r1[2])
+            sz = math.sqrt(r2[0] * r2[0] + r2[1] * r2[1] + r2[2] * r2[2])
+            return (float(sx), float(sy), float(sz))
+        except Exception:
+            return 1.0, 1.0, 1.0
+
+    def _check_foe_grounded(
+        self,
+        rb_prim,
+        rb_path: str,
+        world_pos: Tuple[float, float, float],
+        radius: float,
+    ) -> bool:
+        """
+        Checks whether the foe sphere is resting on or close to the ground plane/obstacle
+        before applying driving traction forces. Prevents horizontal flight while airborne.
+        """
+        bottom_y = world_pos[1] - radius
+
+        if HAS_KIT:
+            try:
+                sq_iface = get_physx_scene_query_interface()
+                if sq_iface and hasattr(sq_iface, "raycast_all"):
+                    origin = carb.Float3(world_pos[0], world_pos[1], world_pos[2])
+                    down_dir = carb.Float3(0.0, -1.0, 0.0)
+                    max_dist = radius + 20.0  # 20 cm ground clearance threshold
+
+                    ground_hits = []
+
+                    def _on_hit(hit):
+                        hit_rb = str(getattr(hit, "rigid_body", "") or "")
+                        hit_col = str(getattr(hit, "collision", "") or "")
+                        if rb_path in hit_rb or rb_path in hit_col:
+                            return True
+                        ground_hits.append(hit)
+                        return True
+
+                    sq_iface.raycast_all(origin, down_dir, max_dist, _on_hit)
+                    if ground_hits:
+                        return True
+            except Exception:
+                pass
+
+        return bottom_y <= 25.0
+
     def _ensure_rigid_body_damping(self, rb_prim):
         """Applies angular damping, linear damping, max velocities, CCD, and solver iterations."""
-        if not HAS_KIT or not rb_prim or not rb_prim.IsValid():
+        if not rb_prim or not rb_prim.IsValid():
             return
 
-        rb_path = rb_prim.GetPath().pathString
+        rb_path = rb_prim.GetPath().pathString if hasattr(rb_prim, "GetPath") else str(id(rb_prim))
         if rb_path in self._configured_rb_paths:
             return
         self._configured_rb_paths.add(rb_path)
+
+        phys_mgr = self._physics_mgr
+        target_max_linear_vel = phys_mgr.max_linear_velocity if phys_mgr else 10000.0
+        if 0.0 < target_max_linear_vel < 100.0:
+            target_max_linear_vel *= 100.0
+        target_max_ang_vel = phys_mgr.max_angular_velocity if phys_mgr else 3600.0
+        if 0.0 < target_max_ang_vel <= 180.0:
+            target_max_ang_vel = math.degrees(target_max_ang_vel)
+        target_lin_damping = phys_mgr.default_linear_damping if phys_mgr else 0.05
+        target_ang_damping = phys_mgr.default_angular_damping if phys_mgr else 0.1
+        target_pos_iters = phys_mgr.solver_position_iterations if phys_mgr else 16
+        target_vel_iters = phys_mgr.solver_velocity_iterations if phys_mgr else 4
+        target_ccd = phys_mgr.enable_ccd if phys_mgr else True
 
         try:
             if UsdPhysics:
@@ -711,15 +878,15 @@ class HydragonFoesControllerSystem:
                 if rb_api:
                     ang_attr = rb_api.GetAngularDampingAttr()
                     if not ang_attr or not ang_attr.IsValid():
-                        rb_api.CreateAngularDampingAttr(1.0)
-                    elif ang_attr.Get() is None or ang_attr.Get() < 0.1:
-                        ang_attr.Set(1.0)
+                        rb_api.CreateAngularDampingAttr(target_ang_damping)
+                    else:
+                        ang_attr.Set(target_ang_damping)
 
                     lin_attr = rb_api.GetLinearDampingAttr()
                     if not lin_attr or not lin_attr.IsValid():
-                        rb_api.CreateLinearDampingAttr(0.2)
-                    elif lin_attr.Get() is None or lin_attr.Get() < 0.05:
-                        lin_attr.Set(0.2)
+                        rb_api.CreateLinearDampingAttr(target_lin_damping)
+                    else:
+                        lin_attr.Set(target_lin_damping)
         except Exception:
             pass
 
@@ -731,45 +898,80 @@ class HydragonFoesControllerSystem:
                 if physx_rb:
                     max_ang_attr = physx_rb.GetMaxAngularVelocityAttr()
                     if not max_ang_attr or not max_ang_attr.IsValid():
-                        physx_rb.CreateMaxAngularVelocityAttr(25.0)
-                    elif max_ang_attr.Get() is None or max_ang_attr.Get() <= 0.0:
-                        max_ang_attr.Set(25.0)
+                        physx_rb.CreateMaxAngularVelocityAttr(target_max_ang_vel)
+                    else:
+                        max_ang_attr.Set(target_max_ang_vel)
 
-                    # Max Linear Velocity clamp to prevent supersonic physics explosions
+                    # Max Linear Velocity clamp: set unconditionally from PhysicsManager
                     if hasattr(physx_rb, "GetMaxLinearVelocityAttr"):
                         max_lin_attr = physx_rb.GetMaxLinearVelocityAttr()
                         if not max_lin_attr or not max_lin_attr.IsValid():
-                            physx_rb.CreateMaxLinearVelocityAttr(3000.0)
-                        elif max_lin_attr.Get() is None or max_lin_attr.Get() <= 0.0 or max_lin_attr.Get() > 3000.0:
-                            max_lin_attr.Set(3000.0)
+                            physx_rb.CreateMaxLinearVelocityAttr(target_max_linear_vel)
+                        else:
+                            max_lin_attr.Set(target_max_linear_vel)
                     elif rb_prim.HasAttribute("physxRigidBody:maxLinearVelocity"):
-                        rb_prim.GetAttribute("physxRigidBody:maxLinearVelocity").Set(3000.0)
+                        rb_prim.GetAttribute("physxRigidBody:maxLinearVelocity").Set(target_max_linear_vel)
 
                     # Solver iteration counts for stable constraint convergence under compression
                     if hasattr(physx_rb, "GetSolverPositionIterationCountAttr"):
                         pos_iter_attr = physx_rb.GetSolverPositionIterationCountAttr()
                         if not pos_iter_attr or not pos_iter_attr.IsValid():
-                            physx_rb.CreateSolverPositionIterationCountAttr(16)
-                        elif pos_iter_attr.Get() is None or pos_iter_attr.Get() < 16:
-                            pos_iter_attr.Set(16)
+                            physx_rb.CreateSolverPositionIterationCountAttr(target_pos_iters)
+                        else:
+                            pos_iter_attr.Set(target_pos_iters)
                     elif rb_prim.HasAttribute("physxRigidBody:solverPositionIterationCount"):
-                        rb_prim.GetAttribute("physxRigidBody:solverPositionIterationCount").Set(16)
+                        rb_prim.GetAttribute("physxRigidBody:solverPositionIterationCount").Set(target_pos_iters)
 
                     if hasattr(physx_rb, "GetSolverVelocityIterationCountAttr"):
                         vel_iter_attr = physx_rb.GetSolverVelocityIterationCountAttr()
                         if not vel_iter_attr or not vel_iter_attr.IsValid():
-                            physx_rb.CreateSolverVelocityIterationCountAttr(4)
-                        elif vel_iter_attr.Get() is None or vel_iter_attr.Get() < 4:
-                            vel_iter_attr.Set(4)
+                            physx_rb.CreateSolverVelocityIterationCountAttr(target_vel_iters)
+                        else:
+                            vel_iter_attr.Set(target_vel_iters)
                     elif rb_prim.HasAttribute("physxRigidBody:solverVelocityIterationCount"):
-                        rb_prim.GetAttribute("physxRigidBody:solverVelocityIterationCount").Set(4)
+                        rb_prim.GetAttribute("physxRigidBody:solverVelocityIterationCount").Set(target_vel_iters)
 
                     # Continuous Collision Detection (CCD) to prevent floor tunneling
+                    # NOTE: PhysX throws an error if CCD is enabled on kinematic rigid bodies.
+                    # Only enable CCD if the body is dynamic (not kinematic).
+                    is_kinematic = False
+                    if rb_prim.HasAttribute("physics:kinematicEnabled"):
+                        is_kinematic = bool(rb_prim.GetAttribute("physics:kinematicEnabled").Get() or False)
+
                     ccd_attr = physx_rb.GetEnableCCDAttr()
-                    if not ccd_attr or not ccd_attr.IsValid():
-                        physx_rb.CreateEnableCCDAttr(True)
-                    elif not ccd_attr.Get():
-                        ccd_attr.Set(True)
+                    if is_kinematic:
+                        if ccd_attr and ccd_attr.IsValid():
+                            ccd_attr.Set(False)
+                    else:
+                        if not ccd_attr or not ccd_attr.IsValid():
+                            physx_rb.CreateEnableCCDAttr(target_ccd)
+                        else:
+                            ccd_attr.Set(target_ccd)
+            else:
+                # Direct USD attribute fallback (headless / testing outside Kit)
+                if rb_prim.HasAttribute("physxRigidBody:maxLinearVelocity"):
+                    attr = rb_prim.GetAttribute("physxRigidBody:maxLinearVelocity")
+                    if attr:
+                        attr.Set(target_max_linear_vel)
+                if rb_prim.HasAttribute("physxRigidBody:maxAngularVelocity"):
+                    attr = rb_prim.GetAttribute("physxRigidBody:maxAngularVelocity")
+                    if attr:
+                        attr.Set(target_max_ang_vel)
+                if rb_prim.HasAttribute("physxRigidBody:solverPositionIterationCount"):
+                    attr = rb_prim.GetAttribute("physxRigidBody:solverPositionIterationCount")
+                    if attr:
+                        attr.Set(target_pos_iters)
+                if rb_prim.HasAttribute("physxRigidBody:solverVelocityIterationCount"):
+                    attr = rb_prim.GetAttribute("physxRigidBody:solverVelocityIterationCount")
+                    if attr:
+                        attr.Set(target_vel_iters)
+                if rb_prim.HasAttribute("physxRigidBody:enableCCD"):
+                    is_kinematic = False
+                    if rb_prim.HasAttribute("physics:kinematicEnabled"):
+                        is_kinematic = bool(rb_prim.GetAttribute("physics:kinematicEnabled").Get() or False)
+                    attr = rb_prim.GetAttribute("physxRigidBody:enableCCD")
+                    if attr:
+                        attr.Set(False if is_kinematic else target_ccd)
 
             # Contact Reporting API for native event-based collision detection
             if PhysxSchema and hasattr(PhysxSchema, "PhysxContactReportAPI"):
@@ -924,14 +1126,15 @@ class HydragonFoesControllerSystem:
             with self._hits_lock:
                 for b_path, is_stomp in local_hits:
                     idx_found = -1
-                    for idx, (hp, hs) in enumerate(self._pending_hits):
-                        if hp == b_path:
+                    for idx, h in enumerate(self._pending_hits):
+                        if h[0] == b_path:
                             idx_found = idx
                             break
                     if idx_found == -1:
-                        self._pending_hits.append((b_path, is_stomp))
+                        self._pending_hits.append((b_path, is_stomp, False))
                     elif is_stomp and not self._pending_hits[idx_found][1]:
-                        self._pending_hits[idx_found] = (b_path, True)
+                        bounce_applied = self._pending_hits[idx_found][2] if len(self._pending_hits[idx_found]) > 2 else False
+                        self._pending_hits[idx_found] = (b_path, True, bounce_applied)
 
     # -------------------------------------------------------------------------
     # Physics Simulation Step (O(N) iteration - ZERO per-frame traversals)
@@ -1006,7 +1209,7 @@ class HydragonFoesControllerSystem:
             if world_pos[1] < self.KILL_FLOOR_Y:
                 with self._hits_lock:
                     if not any(h[0] == prim_path for h in self._pending_hits):
-                        self._pending_hits.append((prim_path, False))
+                        self._pending_hits.append((prim_path, False, True))
                 dead_paths.append(prim_path)
                 continue
 
@@ -1022,16 +1225,6 @@ class HydragonFoesControllerSystem:
                 # Expand threshold to 135cm to reliably catch dynamic high-velocity collisions and post-solver bounces
                 if dist_3d <= 135.0 or (horiz_dist < 120.0 and abs(dy) < 110.0):
                     is_stomp = (horiz_dist < 90.0 and 20.0 < dy < 150.0)
-                    with self._hits_lock:
-                        idx_found = -1
-                        for idx, (hp, hs) in enumerate(self._pending_hits):
-                            if hp == prim_path:
-                                idx_found = idx
-                                break
-                        if idx_found == -1:
-                            self._pending_hits.append((prim_path, is_stomp))
-                        elif is_stomp and not self._pending_hits[idx_found][1]:
-                            self._pending_hits[idx_found] = (prim_path, True)
                     self._apply_player_bounce(
                         stage,
                         stage_id=stage_id,
@@ -1039,6 +1232,16 @@ class HydragonFoesControllerSystem:
                         foe_pos=world_pos,
                         is_stomp=is_stomp,
                     )
+                    with self._hits_lock:
+                        idx_found = -1
+                        for idx, h in enumerate(self._pending_hits):
+                            if h[0] == prim_path:
+                                idx_found = idx
+                                break
+                        if idx_found == -1:
+                            self._pending_hits.append((prim_path, is_stomp, True))
+                        else:
+                            self._pending_hits[idx_found] = (prim_path, is_stomp or self._pending_hits[idx_found][1], True)
                     brain._is_alive = False
                     dead_paths.append(prim_path)
                     continue
@@ -1055,7 +1258,13 @@ class HydragonFoesControllerSystem:
             # Update state machine and calculate horizontal actuation force
             state, (fx, fz) = brain.update_state_machine(dt, target_pos)
 
-            # Apply force strictly at true center of mass
+            # Ground traction check: ensure sphere is grounded before applying driving force
+            # When airborne, eliminate driving force so gravity brings the sphere down cleanly without gliding
+            is_grounded = self._check_foe_grounded(rb_prim, rb_path, world_pos, brain.radius)
+            if not is_grounded:
+                fx, fz = 0.0, 0.0
+
+            # Apply force strictly at true center of mass (pure linear force with surface friction provides natural rolling torque)
             if abs(fx) > 1e-4 or abs(fz) > 1e-4:
                 prim_id = PhysicsSchemaTools.sdfPathToInt(rb_path)
                 force_vec = carb.Float3(fx, 0.0, fz)
@@ -1073,18 +1282,26 @@ class HydragonFoesControllerSystem:
         sim_iface=None,
         foe_pos: Optional[Tuple[float, float, float]] = None,
         is_stomp: bool = False,
+        force_bounce: bool = False,
     ):
         """
-        Applies a high-velocity arcade rebound impulse to the player rigid body:
+        Applies a calibrated arcade rebound velocity to the player rigid body:
         - Calculates horizontal rebound direction away from the foe (nx, nz)
-        - Direct PhysX linear velocity kick (stomp: vy += 1200 cm/s; lateral: vy += 650 cm/s, recoil 850 cm/s)
-        - PhysX solver impulse via sim_iface.apply_force_at_pos(..., "Impulse")
+        - Direct PhysX linear velocity kick (stomp: vy += 900 cm/s; lateral: vy += 350 cm/s, recoil 450 cm/s)
+        - Strictly clamps resulting velocity to PhysicsManager max_linear_velocity
+        - Applies via physx_iface, or gentle fallback impulse if interface unavailable
         """
+        if not force_bounce:
+            now = time.time()
+            if now - self._last_player_bounce_time < 0.15:
+                return
+            self._last_player_bounce_time = now
+
         player_rb = self._get_player_rb_path(stage)
         if not player_rb:
             return
         try:
-            player_prim = stage.GetPrimAtPath(player_rb)
+            player_prim = stage.GetPrimAtPath(player_rb) if stage else None
             if not (player_prim and player_prim.IsValid()):
                 return
 
@@ -1102,9 +1319,17 @@ class HydragonFoesControllerSystem:
             if nx == 0.0 and nz == 0.0:
                 nz = 1.0
 
-            # 2. Instantaneous Velocity Kick via PhysX Interface
+            # Query max linear velocity from PhysicsManager or fallback with gameplay-safe floor
+            phys_mgr = self._physics_mgr
+            raw_max_vel = phys_mgr.max_linear_velocity if phys_mgr else 10000.0
+            if 0.0 < raw_max_vel < 100.0:
+                raw_max_vel *= 100.0
+            max_linear_vel = max(raw_max_vel, 3000.0)
+
+            # 2. Instantaneous Calibrated Arcade Velocity Kick via PhysX Interface
             physx_iface = get_physx_interface()
             new_vx, new_vy, new_vz = 0.0, 0.0, 0.0
+
             if physx_iface:
                 cur_v = None
                 for get_m in ("get_rigidbody_linear_velocity", "get_linear_velocity"):
@@ -1121,13 +1346,23 @@ class HydragonFoesControllerSystem:
                 vz = float(cur_v[2]) if cur_v is not None else 0.0
 
                 if is_stomp:
-                    new_vy = max(vy, 0.0) + 1200.0
-                    new_vx = vx * 0.4 + nx * 350.0
-                    new_vz = vz * 0.4 + nz * 350.0
+                    # Mario-style stomp leap (~100cm height under -13000 cm/s^2 gravity)
+                    new_vy = max(vy, 0.0) + 1600.0
+                    new_vx = vx * 0.5 + nx * 400.0
+                    new_vz = vz * 0.5 + nz * 400.0
                 else:
+                    # Snappy lateral knockback recoil and pop hop (~25cm height)
                     new_vy = max(vy, 0.0) + 650.0
-                    new_vx = nx * 850.0
-                    new_vz = nz * 850.0
+                    new_vx = nx * 1000.0
+                    new_vz = nz * 1000.0
+
+                # Strictly clamp resulting speed to effective max linear velocity
+                speed = math.sqrt(new_vx * new_vx + new_vy * new_vy + new_vz * new_vz)
+                if speed > max_linear_vel and speed > 1e-4:
+                    scale = max_linear_vel / speed
+                    new_vx *= scale
+                    new_vy *= scale
+                    new_vz *= scale
 
                 for set_m in ("set_rigidbody_linear_velocity", "set_linear_velocity"):
                     if hasattr(physx_iface, set_m):
@@ -1137,7 +1372,7 @@ class HydragonFoesControllerSystem:
                         except Exception:
                             pass
 
-            # 3. Apply PhysX solver impulse as complementary kinetic force
+            # 3. PhysX solver impulse for physical momentum transfer and contact reaction
             if sim_iface is None:
                 sim_iface = get_physx_simulation_interface()
             if stage_id is None and stage:
@@ -1149,11 +1384,11 @@ class HydragonFoesControllerSystem:
             if sim_iface and stage_id is not None:
                 prim_id = PhysicsSchemaTools.sdfPathToInt(player_rb)
                 if is_stomp:
-                    horiz_imp = 15000.0
-                    vert_imp = 35000.0
+                    horiz_imp = 2000.0
+                    vert_imp = 8000.0
                 else:
-                    horiz_imp = 25000.0
-                    vert_imp = 18000.0
+                    horiz_imp = 5000.0
+                    vert_imp = 3500.0
                 bounce_vec = carb.Float3(nx * horiz_imp, vert_imp, nz * horiz_imp)
                 force_pos = carb.Float3(world_pos[0], world_pos[1], world_pos[2])
                 sim_iface.apply_force_at_pos(stage_id, prim_id, bounce_vec, force_pos, "Impulse")

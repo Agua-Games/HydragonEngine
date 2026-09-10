@@ -1213,21 +1213,21 @@ class HydragonForceVolume:
         linear_enabled: bool = False,
         linear_coord_space: str = "Volume",
         linear_direction: tuple = (0.0, 1.0, 0.0),
-        linear_magnitude: float = 500.0,
+        linear_magnitude: float = 25000.0,
         radial_enabled: bool = False,
-        radial_magnitude: float = 1000.0,
+        radial_magnitude: float = 25000.0,
         radial_falloff: str = "Linear",
-        radial_radius: float = 500.0,
+        radial_radius: float = 1000.0,
         turbulence_enabled: bool = False,
-        turbulence_magnitude: float = 200.0,
+        turbulence_magnitude: float = 5000.0,
         turbulence_frequency: float = 2.0,
         dampening_enabled: bool = False,
         linear_damping: float = 0.5,
         angular_damping: float = 0.5,
         vortex_enabled: bool = False,
         vortex_axis: tuple = (0.0, 1.0, 0.0),
-        vortex_magnitude: float = 800.0,
-        vortex_inward_pull: float = 200.0,
+        vortex_magnitude: float = 20000.0,
+        vortex_inward_pull: float = 10000.0,
     ):
         _ensure_api_schema(prim, cls.SCHEMA_NAME)
         vol = cls(prim)
@@ -1359,7 +1359,7 @@ class HydragonForceVolume:
 
     @property
     def linear_magnitude(self) -> float:
-        return float(_get_attr_value(self._prim, "force:linearMagnitude", 500.0))
+        return float(_get_attr_value(self._prim, "force:linearMagnitude", 25000.0))
 
     @linear_magnitude.setter
     def linear_magnitude(self, val: float):
@@ -1376,7 +1376,7 @@ class HydragonForceVolume:
 
     @property
     def radial_magnitude(self) -> float:
-        return float(_get_attr_value(self._prim, "force:radialMagnitude", 1000.0))
+        return float(_get_attr_value(self._prim, "force:radialMagnitude", 25000.0))
 
     @radial_magnitude.setter
     def radial_magnitude(self, val: float):
@@ -1398,7 +1398,7 @@ class HydragonForceVolume:
 
     @property
     def radial_radius(self) -> float:
-        return float(_get_attr_value(self._prim, "force:radialRadius", 500.0))
+        return float(_get_attr_value(self._prim, "force:radialRadius", 1000.0))
 
     @radial_radius.setter
     def radial_radius(self, val: float):
@@ -1415,7 +1415,7 @@ class HydragonForceVolume:
 
     @property
     def turbulence_magnitude(self) -> float:
-        return float(_get_attr_value(self._prim, "force:turbulenceMagnitude", 200.0))
+        return float(_get_attr_value(self._prim, "force:turbulenceMagnitude", 5000.0))
 
     @turbulence_magnitude.setter
     def turbulence_magnitude(self, val: float):
@@ -1474,7 +1474,7 @@ class HydragonForceVolume:
 
     @property
     def vortex_magnitude(self) -> float:
-        return float(_get_attr_value(self._prim, "force:vortexMagnitude", 800.0))
+        return float(_get_attr_value(self._prim, "force:vortexMagnitude", 20000.0))
 
     @vortex_magnitude.setter
     def vortex_magnitude(self, val: float):
@@ -1482,7 +1482,7 @@ class HydragonForceVolume:
 
     @property
     def vortex_inward_pull(self) -> float:
-        return float(_get_attr_value(self._prim, "force:vortexInwardPull", 200.0))
+        return float(_get_attr_value(self._prim, "force:vortexInwardPull", 10000.0))
 
     @vortex_inward_pull.setter
     def vortex_inward_pull(self, val: float):
@@ -1657,4 +1657,113 @@ class HydragonKillVolume:
             rel = self._prim.CreateRelationship("kill:respawnTarget")
         target_sdf = Sdf.Path(str(path)) if not isinstance(path, Sdf.Path) else path
         rel.SetTargets([target_sdf])
+
+
+# ==============================================================================
+# HydragonPhysicsManager
+# ==============================================================================
+class HydragonPhysicsManager:
+    SCHEMA_NAME = "HydragonPhysicsAPI"
+
+    def __init__(self, prim):
+        self._prim = prim
+
+    @classmethod
+    def apply(
+        cls,
+        prim,
+        max_linear_velocity: float = 10000.0,
+        max_angular_velocity: float = 3600.0,
+        default_linear_damping: float = 0.05,
+        default_angular_damping: float = 0.1,
+        solver_position_iterations: int = 16,
+        solver_velocity_iterations: int = 4,
+        enable_ccd: bool = True,
+        bounce_threshold: float = 200.0,
+    ):
+        _ensure_api_schema(prim, cls.SCHEMA_NAME)
+        mgr = cls(prim)
+        mgr.max_linear_velocity = max_linear_velocity
+        mgr.max_angular_velocity = max_angular_velocity
+        mgr.default_linear_damping = default_linear_damping
+        mgr.default_angular_damping = default_angular_damping
+        mgr.solver_position_iterations = solver_position_iterations
+        mgr.solver_velocity_iterations = solver_velocity_iterations
+        mgr.enable_ccd = enable_ccd
+        mgr.bounce_threshold = bounce_threshold
+        return mgr
+
+    @classmethod
+    def is_applied(cls, prim) -> bool:
+        return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
+            prim and hasattr(prim, "HasAttribute") and prim.HasAttribute("physics:maxLinearVelocity")
+        )
+
+    @property
+    def prim(self):
+        return self._prim
+
+    @property
+    def max_linear_velocity(self) -> float:
+        return float(_get_attr_value(self._prim, "physics:maxLinearVelocity", 10000.0))
+
+    @max_linear_velocity.setter
+    def max_linear_velocity(self, val: float):
+        _set_attr_value(self._prim, "physics:maxLinearVelocity", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def max_angular_velocity(self) -> float:
+        return float(_get_attr_value(self._prim, "physics:maxAngularVelocity", 3600.0))
+
+    @max_angular_velocity.setter
+    def max_angular_velocity(self, val: float):
+        _set_attr_value(self._prim, "physics:maxAngularVelocity", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def default_linear_damping(self) -> float:
+        return float(_get_attr_value(self._prim, "physics:defaultLinearDamping", 0.05))
+
+    @default_linear_damping.setter
+    def default_linear_damping(self, val: float):
+        _set_attr_value(self._prim, "physics:defaultLinearDamping", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def default_angular_damping(self) -> float:
+        return float(_get_attr_value(self._prim, "physics:defaultAngularDamping", 0.1))
+
+    @default_angular_damping.setter
+    def default_angular_damping(self, val: float):
+        _set_attr_value(self._prim, "physics:defaultAngularDamping", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def solver_position_iterations(self) -> int:
+        return int(_get_attr_value(self._prim, "physics:solverPositionIterations", 16))
+
+    @solver_position_iterations.setter
+    def solver_position_iterations(self, val: int):
+        _set_attr_value(self._prim, "physics:solverPositionIterations", int(val), Sdf.ValueTypeNames.Int if HAS_PXR else None)
+
+    @property
+    def solver_velocity_iterations(self) -> int:
+        return int(_get_attr_value(self._prim, "physics:solverVelocityIterations", 4))
+
+    @solver_velocity_iterations.setter
+    def solver_velocity_iterations(self, val: int):
+        _set_attr_value(self._prim, "physics:solverVelocityIterations", int(val), Sdf.ValueTypeNames.Int if HAS_PXR else None)
+
+    @property
+    def enable_ccd(self) -> bool:
+        return bool(_get_attr_value(self._prim, "physics:enableCCD", True))
+
+    @enable_ccd.setter
+    def enable_ccd(self, val: bool):
+        _set_attr_value(self._prim, "physics:enableCCD", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def bounce_threshold(self) -> float:
+        return float(_get_attr_value(self._prim, "physics:bounceThreshold", 200.0))
+
+    @bounce_threshold.setter
+    def bounce_threshold(self, val: float):
+        _set_attr_value(self._prim, "physics:bounceThreshold", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
 

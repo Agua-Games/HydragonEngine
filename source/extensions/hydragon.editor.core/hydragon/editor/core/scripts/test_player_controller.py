@@ -198,6 +198,174 @@ def test_player_input_restoration():
     print("  [PASS] Player input restoration & respawn scope verified")
 
 
+def test_physics_manager_integration():
+    print("--- 7. Testing HydragonPhysicsManager Integration with Player Controller ---")
+    from hydragon.editor.core.schemas import HydragonPhysicsManager
+
+    system = HydragonPlayerControllerSystem()
+    assert system._physics_mgr is None
+
+    # Test discovery fail-silent when stage is None
+    mgr = system._discover_physics_manager(None)
+    assert mgr is None
+
+    # Test default physics values when _physics_mgr is None
+    class MockPrim:
+        def __init__(self):
+            self.attrs = {}
+        def IsValid(self):
+            return True
+        def HasAttribute(self, name):
+            return name in self.attrs
+
+    class MockController:
+        def __init__(self):
+            self.max_angular_velocity = 0.0
+
+    # Ensure damping doesn't fail when no physics manager
+    system._ensure_rigid_body_damping(MockPrim(), MockController())
+
+    # Set mock physics manager with custom limits
+    class MockPhysicsManager:
+        max_linear_velocity = 25000.0
+        max_angular_velocity = 80.0
+        default_linear_damping = 0.1
+        default_angular_damping = 0.5
+        solver_position_iterations = 32
+        solver_velocity_iterations = 8
+        enable_ccd = True
+        bounce_threshold = 300.0
+
+    system._physics_mgr = MockPhysicsManager()
+    assert system._physics_mgr.max_linear_velocity == 25000.0
+    assert system._physics_mgr.max_angular_velocity == 80.0
+
+    system.shutdown()
+    assert system._physics_mgr is None
+    print("  [PASS] HydragonPhysicsManager integration and lifecycle verified")
+
+
+def test_physics_manager_velocity_clamping_and_ccd():
+    print("--- 8. Testing PhysicsManager Velocity Clamping and Kinematic CCD ---")
+    system = HydragonPlayerControllerSystem()
+
+    class MockAttr:
+        def __init__(self, val):
+            self.val = val
+        def IsValid(self):
+            return True
+        def Get(self):
+            return self.val
+        def Set(self, val):
+            self.val = val
+
+    class MockPrimWithAttrs:
+        def __init__(self, is_kinematic=False, initial_max_vel=10000.0):
+            self.attrs = {
+                "physics:kinematicEnabled": MockAttr(is_kinematic),
+                "physxRigidBody:maxLinearVelocity": MockAttr(initial_max_vel),
+                "physxRigidBody:maxAngularVelocity": MockAttr(60.0),
+                "physxRigidBody:enableCCD": MockAttr(True),
+                "physxRigidBody:solverPositionIterationCount": MockAttr(16),
+                "physxRigidBody:solverVelocityIterationCount": MockAttr(4),
+            }
+        def IsValid(self):
+            return True
+        def HasAttribute(self, name):
+            return name in self.attrs
+        def GetAttribute(self, name):
+            return self.attrs.get(name)
+
+    class MockController:
+        def __init__(self):
+            self.max_angular_velocity = 0.0
+
+    class MockPhysicsManagerLowVel:
+        max_linear_velocity = 10.0
+        max_angular_velocity = 20.0
+        default_linear_damping = 0.5
+        default_angular_damping = 2.0
+        solver_position_iterations = 24
+        solver_velocity_iterations = 6
+        enable_ccd = True
+        bounce_threshold = 100.0
+
+    # 1. Test that max_linear_velocity = 10.0 overwrites existing 10000.0
+    prim = MockPrimWithAttrs(is_kinematic=False, initial_max_vel=10000.0)
+    system._physics_mgr = MockPhysicsManagerLowVel()
+    system._ensure_rigid_body_damping(prim, MockController())
+    assert prim.attrs["physxRigidBody:maxLinearVelocity"].Get() == 1000.0, "maxLinearVelocity was not scaled to 1000.0!"
+    assert prim.attrs["physxRigidBody:maxAngularVelocity"].Get() == math.degrees(20.0), "maxAngularVelocity was not converted from radians to degrees!"
+    assert prim.attrs["physxRigidBody:solverPositionIterationCount"].Get() == 24
+    assert prim.attrs["physxRigidBody:enableCCD"].Get() is True
+
+    # 2. Test that kinematic rigid bodies have CCD disabled
+    kin_prim = MockPrimWithAttrs(is_kinematic=True, initial_max_vel=10000.0)
+    system._ensure_rigid_body_damping(kin_prim, MockController())
+    assert kin_prim.attrs["physxRigidBody:enableCCD"].Get() is False, "CCD must be False for kinematic rigid body!"
+
+    system.shutdown()
+    print("  [PASS] Velocity clamping down to 10 and kinematic CCD protection verified")
+
+
+def test_physics_scene_settings_configuration():
+    print("--- 9. Testing PhysicsScene CCD & Bounce Threshold Configuration ---")
+    system = HydragonPlayerControllerSystem()
+
+    class MockAttr:
+        def __init__(self, val):
+            self.val = val
+        def IsValid(self):
+            return True
+        def Get(self):
+            return self.val
+        def Set(self, val):
+            self.val = val
+
+    class MockScenePrim:
+        def __init__(self):
+            self.attrs = {
+                "physxScene:enableCCD": MockAttr(False),
+                "physxScene:bounceThreshold": MockAttr(0.0),
+            }
+        def IsValid(self):
+            return True
+        def GetTypeName(self):
+            return "PhysicsScene"
+        def HasAttribute(self, name):
+            return name in self.attrs
+        def GetAttribute(self, name):
+            return self.attrs.get(name)
+        def CreateAttribute(self, name, type_name):
+            attr = MockAttr(None)
+            self.attrs[name] = attr
+            return attr
+
+    class MockStage:
+        def __init__(self, scene_prim):
+            self.scene_prim = scene_prim
+        def GetPrimAtPath(self, path):
+            if path in ("/World/PhysicsScene", "/PhysicsScene"):
+                return self.scene_prim
+            return None
+        def Traverse(self):
+            return [self.scene_prim]
+
+    class MockPhysicsManager:
+        enable_ccd = True
+        bounce_threshold = 250.0
+
+    scene = MockScenePrim()
+    stage = MockStage(scene)
+    system._ensure_physics_scene_settings(stage, MockPhysicsManager())
+
+    assert scene.attrs["physxScene:enableCCD"].Get() is True, "PhysicsScene must have enableCCD set to True!"
+    assert scene.attrs["physxScene:bounceThreshold"].Get() == 250.0, "PhysicsScene bounceThreshold not updated!"
+
+    system.shutdown()
+    print("  [PASS] PhysicsScene global CCD and bounce threshold configuration verified")
+
+
 if __name__ == "__main__":
     test_player_controller_system_lifecycle()
     test_camera_axes_math()
@@ -205,6 +373,9 @@ if __name__ == "__main__":
     test_player_discovery_fail_silent()
     test_player_respawn_teleport_logic()
     test_player_input_restoration()
+    test_physics_manager_integration()
+    test_physics_manager_velocity_clamping_and_ccd()
+    test_physics_scene_settings_configuration()
     print("\n=======================================================")
-    print(" ALL PLAYER CONTROLLER SYSTEM TESTS PASSED! (6/6)")
+    print(" ALL PLAYER CONTROLLER SYSTEM TESTS PASSED! (9/9)")
     print("=======================================================")

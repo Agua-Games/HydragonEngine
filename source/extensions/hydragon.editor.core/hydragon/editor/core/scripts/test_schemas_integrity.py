@@ -29,6 +29,7 @@ def test_syntax_usda_files():
         os.path.join(gameplay_dir, "assets", "gameplay", "test_stage_rolling_ball.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_force_volume", "force_volume.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_kill_volume", "kill_volume.usda"),
+        os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_physics_manager", "physics_manager.usda"),
         os.path.join(gameplay_dir, "assets", "ui", "hydragon_ui_system", "ui_system.usda"),
         os.path.join(gameplay_dir, "assets", "ui", "hydragon_main_menu", "main_menu.usda"),
         os.path.join(gameplay_dir, "assets", "ui", "hydragon_pause_menu", "pause_menu.usda"),
@@ -117,8 +118,9 @@ def test_python_module():
             HydragonEffectsManager,
             HydragonForceVolume,
             HydragonKillVolume,
+            HydragonPhysicsManager,
         )
-        print("  [PASS] Successfully imported all 11 Hydragon API schema classes from hydragon.editor.core")
+        print("  [PASS] Successfully imported all 12 Hydragon API schema classes from hydragon.editor.core")
     except Exception as e:
         print(f"  [FAIL] Failed to import from hydragon.editor.core: {e}")
         return False
@@ -135,6 +137,7 @@ def test_python_module():
     assert HydragonEffectsManager.SCHEMA_NAME == "HydragonEffectsAPI"
     assert HydragonForceVolume.SCHEMA_NAME == "HydragonForceVolumeAPI"
     assert HydragonKillVolume.SCHEMA_NAME == "HydragonKillVolumeAPI"
+    assert HydragonPhysicsManager.SCHEMA_NAME == "HydragonPhysicsAPI"
     print("  [PASS] All SCHEMA_NAME constants verified")
 
     # Test fallback behavior when prim is None (Fail-Silent)
@@ -218,21 +221,21 @@ def test_python_module():
     assert fv.linear_enabled is False
     assert fv.linear_coord_space == "Volume"
     assert fv.linear_direction == (0.0, 1.0, 0.0)
-    assert fv.linear_magnitude == 500.0
+    assert fv.linear_magnitude == 25000.0
     assert fv.radial_enabled is False
-    assert fv.radial_magnitude == 1000.0
+    assert fv.radial_magnitude == 25000.0
     assert fv.radial_falloff == "Linear"
-    assert fv.radial_radius == 500.0
+    assert fv.radial_radius == 1000.0
     assert fv.turbulence_enabled is False
-    assert fv.turbulence_magnitude == 200.0
+    assert fv.turbulence_magnitude == 5000.0
     assert fv.turbulence_frequency == 2.0
     assert fv.dampening_enabled is False
     assert fv.linear_damping == 0.5
     assert fv.angular_damping == 0.5
     assert fv.vortex_enabled is False
     assert fv.vortex_axis == (0.0, 1.0, 0.0)
-    assert fv.vortex_magnitude == 800.0
-    assert fv.vortex_inward_pull == 200.0
+    assert fv.vortex_magnitude == 20000.0
+    assert fv.vortex_inward_pull == 10000.0
     print("  [PASS] HydragonForceVolume fail-silent defaults verified")
 
     kv = HydragonKillVolume(None)
@@ -248,6 +251,17 @@ def test_python_module():
     assert kv.spawn_effects is True
     assert kv.respawn_target is None
     print("  [PASS] HydragonKillVolume fail-silent defaults verified")
+
+    pm = HydragonPhysicsManager(None)
+    assert pm.max_linear_velocity == 10000.0
+    assert pm.max_angular_velocity == 3600.0
+    assert pm.default_linear_damping == 0.05
+    assert pm.default_angular_damping == 0.1
+    assert pm.solver_position_iterations == 16
+    assert pm.solver_velocity_iterations == 4
+    assert pm.enable_ccd is True
+    assert pm.bounce_threshold == 200.0
+    print("  [PASS] HydragonPhysicsManager fail-silent defaults verified")
 
     from hydragon.editor.core.menu import HydragonMenuManager
     menu_mgr = HydragonMenuManager("hydragon.editor.core")
@@ -394,6 +408,7 @@ def test_menu_instantiation_policy():
         "UI Canvas (Game HUD)",
         "Soundtrack Manager",
         "Effects Manager",
+        "Physics Manager",
     ]
     for singleton in reference_singletons:
         assert f'"{singleton}"' in menu_code

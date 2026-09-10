@@ -33,6 +33,7 @@ from .schemas import (
     HydragonEffectsManager,
     HydragonForceVolume,
     HydragonKillVolume,
+    HydragonPhysicsManager,
 )
 
 
@@ -241,6 +242,16 @@ if HAS_PROPERTY_WINDOW:
                 schema_check_fn=HydragonEffectsManager.is_applied,
             )
 
+
+    class HydragonPhysicsPropertyWidget(HydragonBasePropertyWidget):
+        """Dedicated property panel for HydragonPhysicsAPI."""
+        def __init__(self):
+            super().__init__(
+                title="Hydragon Physics Manager",
+                prefix="physics:",
+                schema_check_fn=HydragonPhysicsManager.is_applied,
+            )
+
 else:
     class HydragonBasePropertyWidget:
         def __init__(self, *args, **kwargs):
@@ -277,6 +288,9 @@ else:
         pass
 
     class HydragonEffectsPropertyWidget(HydragonBasePropertyWidget):
+        pass
+
+    class HydragonPhysicsPropertyWidget(HydragonBasePropertyWidget):
         pass
 
 
@@ -339,6 +353,7 @@ class HydragonPropertyWidgetsManager:
                 ("hydragon_force_volume", HydragonForcePropertyWidget()),
                 ("hydragon_kill_volume", HydragonKillPropertyWidget()),
                 ("hydragon_effects", HydragonEffectsPropertyWidget()),
+                ("hydragon_physics", HydragonPhysicsPropertyWidget()),
             ]
 
             for name, widget in self._widgets:
@@ -346,7 +361,7 @@ class HydragonPropertyWidgetsManager:
 
             self._registered = True
             if carb:
-                carb.log_info("[hydragon.editor.core] Successfully registered 11 dedicated Hydragon property widgets.")
+                carb.log_info("[hydragon.editor.core] Successfully registered 12 dedicated Hydragon property widgets.")
             return True
         except Exception as e:
             if carb:

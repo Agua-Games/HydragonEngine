@@ -137,12 +137,22 @@ def update_wireframe_guide(
         curves.GetCurveVertexCountsAttr().Set(counts)
         curves.GetPointsAttr().Set(points)
         curves.GetExtentAttr().Set(extent)
-        curves.GetWidthsAttr().Set([1.0] * len(points))
+        curves.GetWidthsAttr().Set([2.5] * len(points))
+        if hasattr(curves.GetWidthsAttr(), "SetMetadata"):
+            try:
+                curves.GetWidthsAttr().SetMetadata("interpolation", "constant")
+            except Exception:
+                pass
         curves.GetDisplayColorAttr().Set([Gf.Vec3f(*color)])
+        if hasattr(curves.GetDisplayColorAttr(), "SetMetadata"):
+            try:
+                curves.GetDisplayColorAttr().SetMetadata("interpolation", "constant")
+            except Exception:
+                pass
         if bounds_prim.HasAttribute("purpose"):
-            bounds_prim.GetAttribute("purpose").Set("guide")
+            bounds_prim.GetAttribute("purpose").Set("default")
         else:
-            bounds_prim.CreateAttribute("purpose", Sdf.ValueTypeNames.Token).Set("guide")
+            bounds_prim.CreateAttribute("purpose", Sdf.ValueTypeNames.Token).Set("default")
 
     except Exception as e:
         if carb:
@@ -505,9 +515,14 @@ class HydragonForceVolumeZone:
                 v_mag = schema.vortex_magnitude
                 in_pull = schema.vortex_inward_pull
 
-                fx += tx * v_mag + in_x * in_pull
-                fy += ty * v_mag + in_y * in_pull
-                fz += tz * v_mag + in_z * in_pull
+                # Attenuate inward pull smoothly towards the vortex eye
+                # to prevent radial sign-flip oscillations across the axis and allow stable orbits
+                pull_ratio = min(1.0, p_dist / 50.0)
+                effective_pull = in_pull * pull_ratio
+
+                fx += tx * v_mag + in_x * effective_pull
+                fy += ty * v_mag + in_y * effective_pull
+                fz += tz * v_mag + in_z * effective_pull
 
         # 5. Dampening (Linear & Angular Drag)
         damped_v = body_vel

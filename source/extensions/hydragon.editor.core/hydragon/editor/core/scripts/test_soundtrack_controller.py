@@ -274,3 +274,52 @@ def test_soundtrack_dormant_without_prim():
     print("  [PASS] Soundtrack plays when HydragonSoundtrack entity is authored and auto_play is True")
 
     system.shutdown()
+
+
+def test_one_shot_tracks_and_timeline_reset():
+    print("--- 8. Testing One-Shot Track Non-Looping & Timeline Reset ---")
+    system = HydragonSoundtrackSystem()
+    system.startup()
+
+    mock_prim = MockPrim()
+    entity = HydragonSoundtrackEntity(mock_prim)
+    system._active_entity = entity
+
+    # If stage had saved current_track as "victory", playing timeline must sanitize to "ambient"
+    entity.current_track = "victory"
+    system._handle_timeline_play()
+    assert system.current_track_name == "ambient", "Timeline PLAY must sanitize 'victory' to 'ambient'!"
+    assert entity.current_track == "ambient"
+
+    # Play victory track directly (e.g. goal reached)
+    system.play_track("victory", fade=False)
+    assert system.current_track_name == "victory"
+
+    # Simulate app update loop check: victory is one-shot, must NOT increment loop restart count
+    initial_restarts = system._mock_loop_restart_count
+    system._mock_sound_playing = False
+    system._on_app_update(0.016)
+    assert system._mock_loop_restart_count == initial_restarts, "Victory track must not continuously loop!"
+    assert system.is_playing is False, "One-shot track must stop after playback ends"
+
+    # On timeline stop, current track must reset to ambient
+    system._handle_timeline_stop()
+    assert system.current_track_name == "ambient"
+    assert entity.current_track == "ambient"
+
+    system.shutdown()
+    print("  [PASS] One-shot track non-looping and timeline reset verified")
+
+
+if __name__ == "__main__":
+    test_soundtrack_schema_and_entity()
+    test_soundtrack_system_lifecycle()
+    test_soundtrack_playback_and_states()
+    test_soundtrack_fading_in_and_out()
+    test_soundtrack_crossfading()
+    test_soundtrack_asset_file_resolution()
+    test_soundtrack_dormant_without_prim()
+    test_one_shot_tracks_and_timeline_reset()
+    print("\n=======================================================")
+    print(" ALL SOUNDTRACK SYSTEM TESTS PASSED! (8/8)")
+    print("=======================================================")

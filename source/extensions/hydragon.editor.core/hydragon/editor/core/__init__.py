@@ -11,6 +11,7 @@ from .schemas import (
     HydragonEffectsManager,
     HydragonForceVolume,
     HydragonKillVolume,
+    HydragonPhysicsManager,
 )
 from .player_controller import HydragonPlayerControllerSystem
 from .camera_controller import HydragonCameraControllerSystem

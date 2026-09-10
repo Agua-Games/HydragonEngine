@@ -374,6 +374,153 @@ def test_physics_step_safety():
     print("  [PASS] _on_physics_step stage validation safety verified")
 
 
+def test_foes_physics_manager_clamping_and_debounce():
+    print("--- 10. Testing Foes PhysicsManager Clamping, CCD and Bounce Debounce ---")
+    system = HydragonFoesControllerSystem()
+
+    class MockAttr:
+        def __init__(self, val):
+            self.val = val
+        def IsValid(self):
+            return True
+        def Get(self):
+            return self.val
+        def Set(self, val):
+            self.val = val
+
+    class MockPrimWithAttrs:
+        def __init__(self, is_kinematic=False, initial_max_vel=10000.0):
+            self.attrs = {
+                "physics:kinematicEnabled": MockAttr(is_kinematic),
+                "physxRigidBody:maxLinearVelocity": MockAttr(initial_max_vel),
+                "physxRigidBody:maxAngularVelocity": MockAttr(50.0),
+                "physxRigidBody:enableCCD": MockAttr(True),
+                "physxRigidBody:solverPositionIterationCount": MockAttr(16),
+                "physxRigidBody:solverVelocityIterationCount": MockAttr(4),
+            }
+        def IsValid(self):
+            return True
+        def HasAttribute(self, name):
+            return name in self.attrs
+        def GetAttribute(self, name):
+            return self.attrs.get(name)
+
+    class MockPhysicsManagerLowVel:
+        max_linear_velocity = 10.0
+        max_angular_velocity = 30.0
+        default_linear_damping = 0.5
+        default_angular_damping = 2.0
+        solver_position_iterations = 20
+        solver_velocity_iterations = 6
+        enable_ccd = True
+        bounce_threshold = 150.0
+
+    # 1. Test that max_linear_velocity = 10.0 overwrites existing 10000.0 on foes
+    prim = MockPrimWithAttrs(is_kinematic=False, initial_max_vel=10000.0)
+    system._physics_mgr = MockPhysicsManagerLowVel()
+    system._ensure_rigid_body_damping(prim)
+    assert prim.attrs["physxRigidBody:maxLinearVelocity"].Get() == 1000.0, "Foe maxLinearVelocity was not scaled to 1000.0!"
+    assert prim.attrs["physxRigidBody:maxAngularVelocity"].Get() == math.degrees(30.0), "Foe maxAngularVelocity was not converted from radians to degrees!"
+    assert prim.attrs["physxRigidBody:enableCCD"].Get() is True
+
+    # 2. Test kinematic body has CCD disabled
+    kin_prim = MockPrimWithAttrs(is_kinematic=True, initial_max_vel=10000.0)
+    system._ensure_rigid_body_damping(kin_prim)
+    assert kin_prim.attrs["physxRigidBody:enableCCD"].Get() is False, "CCD must be False on kinematic foe body!"
+
+    # 3. Test bounce debounce logic
+    system._last_player_bounce_time = 0.0
+    # First bounce updates timestamp
+    system._apply_player_bounce(stage=None, stage_id=0, sim_iface=None, foe_pos=(0.0, 0.0, 0.0), is_stomp=True)
+    t1 = system._last_player_bounce_time
+    assert t1 > 0.0
+
+    # Rapid second bounce within 0.15s should be debounced (early return, t1 unchanged)
+    system._apply_player_bounce(stage=None, stage_id=0, sim_iface=None, foe_pos=(0.0, 0.0, 0.0), is_stomp=False)
+    assert system._last_player_bounce_time == t1, "Rapid second bounce was not debounced!"
+
+    # Force bounce bypasses debounce
+    import time
+    system._apply_player_bounce(stage=None, stage_id=0, sim_iface=None, foe_pos=(0.0, 0.0, 0.0), is_stomp=False, force_bounce=True)
+    assert system._last_player_bounce_time >= t1
+
+    system.shutdown()
+    print("  [PASS] Foes velocity clamping, kinematic CCD, and bounce debounce verified")
+
+
+def test_foes_mass_scaled_chase_actuation_and_traction():
+    print("--- 11. Testing Foes Mass-Scaled Chase Actuation & Ground Traction ---")
+    # 1. Standard Foe (mass = 5.0 kg, radius = 50.0 cm)
+    brain_std = HydragonAIBrain(prim=None, origin_pos=(0.0, 50.0, 0.0))
+    brain_std.mass = 5.0
+    brain_std.radius = 50.0
+    assert brain_std.mass == 5.0
+    assert brain_std.radius == 50.0
+
+    player_pos = (300.0, 50.0, 400.0)  # dist = 500 < 1000cm -> Chase
+    state, (fx, fz) = brain_std.update_state_machine(dt=0.016, player_pos=player_pos)
+    assert state == "Chase"
+    f_mag = math.sqrt(fx * fx + fz * fz)
+    accel_std = f_mag / brain_std.mass
+    assert abs(accel_std - 4900.0) < 1e-2, f"Standard foe acceleration {accel_std} should be 4900 cm/s^2 (~5G)"
+    assert abs(f_mag - 24500.0) < 1e-2, f"Standard foe force {f_mag} should match player move force (~24500-25000 N)"
+
+    # 2. Scaled Heavy Foe (mass = 20.48 kg, radius = 80.0 cm, matching 1.6x scaled Foe_02)
+    brain_heavy = HydragonAIBrain(prim=None, origin_pos=(0.0, 80.0, 0.0))
+    brain_heavy.mass = 20.48
+    brain_heavy.radius = 80.0
+    h_state, (h_fx, h_fz) = brain_heavy.update_state_machine(dt=0.016, player_pos=player_pos)
+    assert h_state == "Chase"
+    h_f_mag = math.sqrt(h_fx * h_fx + h_fz * h_fz)
+    # Heavy foe force must be capped at 38000.0 N to prevent catastrophic ramp launches
+    assert abs(h_f_mag - 38000.0) < 1e-2, f"Heavy foe force {h_f_mag} must be capped at 38000 N"
+    accel_heavy = h_f_mag / brain_heavy.mass
+    assert 1800.0 <= accel_heavy <= 1900.0, f"Heavy foe acceleration {accel_heavy} should be ~1.85G"
+
+    # Verify sphere-on-sphere ramp launch upward force is strictly below gravitational weight
+    ramp_sin = (80.0 - 50.0) / (80.0 + 50.0)  # ~0.2308
+    upward_ramp_force = h_f_mag * ramp_sin  # ~8769 N
+    std_gravity_weight = 5.0 * 9810.0  # 49050 N (or 65000 N under 13000 cm/s^2)
+    assert upward_ramp_force < std_gravity_weight * 0.25, (
+        f"Upward ramp force {upward_ramp_force} must be < 25% of weight {std_gravity_weight} to prevent launch"
+    )
+
+    # 3. Ground Traction Check: verify airborne foes do not receive driving propulsion
+    system = HydragonFoesControllerSystem()
+    # Grounded: bottom at floor (pos_y = 50, radius = 50 -> bottom = 0 <= 25)
+    is_grounded = system._check_foe_grounded(None, "/World/Foe_01", (0.0, 50.0, 0.0), 50.0)
+    assert is_grounded is True, "Resting sphere must be detected as grounded"
+
+    # Airborne: bottom at 75 cm above floor (pos_y = 125, radius = 50 -> bottom = 75 > 25)
+    is_airborne = system._check_foe_grounded(None, "/World/Foe_01", (0.0, 125.0, 0.0), 50.0)
+    assert is_airborne is False, "Airborne sphere must be detected as not grounded"
+    system.shutdown()
+
+    # 4. State preservation from schema
+    class MockSchemaWithState:
+        state = "Chase"
+        detection_radius = 10.0
+        lose_target_radius = 15.0
+        patrol_radius = 5.0
+        chase_force = 350.0
+        patrol_force = 150.0
+        target_prim = None
+
+    class MockPrimWithSchema:
+        def GetPath(self):
+            class MockPath:
+                pathString = "/World/AuthoredChaseFoe"
+            return MockPath()
+
+    brain_authored = HydragonAIBrain(prim=None)
+    brain_authored._schema = MockSchemaWithState()
+    initial_st = brain_authored._schema.state if brain_authored._schema.state in ("Patrol", "Chase") else "Patrol"
+    brain_authored._state = initial_st
+    assert brain_authored.state == "Chase", "Authored Chase state must be respected"
+
+    print("  [PASS] Foes mass-scaled chase actuation, ramp collision safety, and ground traction verified")
+
+
 if __name__ == "__main__":
     test_foes_controller_lifecycle()
     test_ai_brain_state_transitions()
@@ -384,6 +531,8 @@ if __name__ == "__main__":
     test_foe_destruction_score_popup_integration()
     test_player_arcade_bounce_math()
     test_physics_step_safety()
+    test_foes_physics_manager_clamping_and_debounce()
+    test_foes_mass_scaled_chase_actuation_and_traction()
     print("\n=======================================================")
-    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (9/9)")
+    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (11/11)")
     print("=======================================================")

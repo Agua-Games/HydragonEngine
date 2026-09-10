@@ -33,6 +33,7 @@ from .schemas import (
     HydragonEffectsManager,
     HydragonForceVolume,
     HydragonKillVolume,
+    HydragonPhysicsManager,
 )
 
 
@@ -300,6 +301,10 @@ class HydragonMenuManager:
                 onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_effects_manager/effects_manager.usda", "EffectsManager", as_payload=False)
             ),
             MenuItemDescription(
+                name="Physics Manager",
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_physics_manager/physics_manager.usda", "PhysicsManager", as_payload=False)
+            ),
+            MenuItemDescription(
                 name="Force Volume",
                 onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_force_volume/force_volume.usda", "ForceVolume", as_payload=True)
             ),
@@ -350,6 +355,10 @@ class HydragonMenuManager:
                         onclick_fn=lambda: self._apply_schema(HydragonEffectsManager)
                     ),
                     MenuItemDescription(
+                        name="Apply HydragonPhysicsAPI",
+                        onclick_fn=lambda: self._apply_schema(HydragonPhysicsManager)
+                    ),
+                    MenuItemDescription(
                         name="Apply HydragonForceVolumeAPI",
                         onclick_fn=lambda: self._apply_schema(HydragonForceVolume)
                     ),
@@ -388,6 +397,7 @@ class HydragonMenuManager:
                 {"name": "Apply HydragonUICanvasAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonUICanvas)},
                 {"name": "Apply HydragonSoundtrackAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonSoundtrack)},
                 {"name": "Apply HydragonEffectsAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonEffectsManager)},
+                {"name": "Apply HydragonPhysicsAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonPhysicsManager)},
                 {"name": "Apply HydragonForceVolumeAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonForceVolume)},
                 {"name": "Apply HydragonKillVolumeAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonKillVolume)},
             ]
@@ -440,6 +450,10 @@ class HydragonMenuManager:
                 {
                     "name": "Effects Manager",
                     "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_effects_manager/effects_manager.usda", "EffectsManager", as_payload=False)
+                },
+                {
+                    "name": "Physics Manager",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_physics_manager/physics_manager.usda", "PhysicsManager", as_payload=False)
                 },
                 {
                     "name": "Force Volume",
