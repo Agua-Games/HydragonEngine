@@ -303,6 +303,44 @@ def test_scene_host_contract_and_lifecycle():
     print("  [PASS] Scene host contract and lifecycle wiring verified")
 
 
+def test_selection_override_window():
+    """
+    The native selection is applied by an async raycast (`viewport_api.request_pick`) that can
+    land several frames after the gizmo click, which is why a frame-counter guard raced and lost.
+    The overlay therefore defends the clicked volume for a bounded time window. This pins the
+    arming/expiry logic - the part that can be exercised without Kit.
+    """
+    print("--- 13. Testing Bounded Selection Override Window ---")
+    from hydragon.editor.core.volume_viewport_manipulator import (
+        HydragonVolumeViewportOverlay,
+        SELECTION_OVERRIDE_WINDOW_S,
+    )
+
+    overlay = HydragonVolumeViewportOverlay("test_override")
+
+    # Unarmed by default.
+    assert overlay._override_target() is None
+
+    # Arming defends the clicked path for a bounded, non-zero window.
+    assert SELECTION_OVERRIDE_WINDOW_S > 0.0
+    overlay._arm_selection_override("/World/ForceVolume")
+    assert overlay._override_path == "/World/ForceVolume"
+    assert overlay._override_target() == "/World/ForceVolume"
+    assert overlay._override_deadline > 0.0
+
+    # Expiry must silently disarm, so a stale override can never fight a later selection.
+    overlay._override_deadline = 0.0
+    assert overlay._override_target() is None
+    assert overlay._override_path is None
+
+    # Shutdown must drop a still-pending override too.
+    overlay._arm_selection_override("/World/ForceVolume")
+    overlay.shutdown()
+    assert overlay._override_path is None
+
+    print("  [PASS] Bounded selection override window verified")
+
+
 if __name__ == "__main__":
     test_overlay_lifecycle()
     test_wireframe_segment_math_box()
@@ -316,4 +354,5 @@ if __name__ == "__main__":
     test_volume_click_gesture_priority()
     test_objects_changed_flags_rebuild()
     test_scene_host_contract_and_lifecycle()
-    print("ALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (12/12)")
+    test_selection_override_window()
+    print("ALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (13/13)")

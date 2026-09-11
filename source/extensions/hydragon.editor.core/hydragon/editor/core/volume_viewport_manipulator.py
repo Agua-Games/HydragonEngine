@@ -7,6 +7,7 @@ Cylinder, Plane). Zero USD stage pollution and zero RTX raytracing overhead.
 """
 
 import math
+import time
 from typing import Dict, List, Optional, Set, Tuple
 
 try:
@@ -37,20 +38,35 @@ from .schemas import HydragonForceVolume, HydragonKillVolume
 
 SETTING_SHOW_VOLUMES = "/persistent/app/hydragon/viewport/showVolumes"
 
+#: How long a click on a volume gizmo keeps defending its selection, in seconds.
+#:
+#: The native selection is applied by an *asynchronous* raycast: the viewport's selection
+#: manipulator calls `viewport_api.request_pick()`, which resolves through a completion callback
+#: some frames later. Gesture arbitration is supposed to prevent that gesture from running at all
+#: (`_SelectionPreventer` + `priority`), but it demonstrably does not for a third-party scene, so
+#: the native write can land after ours. This window exists to outlive that late write; it is
+#: cancelled the moment the user starts a new click anywhere.
+SELECTION_OVERRIDE_WINDOW_S = 1.0
+
 
 class VolumeSelectGesture(sc.ClickGesture if (HAS_KIT and sc and hasattr(sc, "ClickGesture")) else object):
     """
     Click gesture that selects the volume prim when its wireframe is clicked.
 
     The native single-click selection is itself an ``sc.ClickGesture``
-    (``omni.kit.manipulator.selection.SelectionClickGesture``) declared with
-    ``priority = -100``. ``omni.ui.scene`` arbitrates competing gestures through
-    ``GestureManager.should_prevent``, which resolves in favour of the highest
-    ``priority``. Declaring a positive priority here is what actually stops a click from
-    falling through to the prim geometrically behind the gizmo.
+    (``omni.kit.manipulator.selection.SelectionClickGesture``) carrying ``priority = -100``, and
+    ``omni.ui.scene`` is documented to arbitrate competing gestures through
+    ``GestureManager.should_prevent``, which resolves in favour of the highest ``priority``.
+
+    Measured behaviour is that this arbitration does **not** take effect against a third-party
+    scene: even with this overlay hosted inside the viewport's own ``sc.SceneView`` through
+    ``RegisterScene``, the native gesture still runs, its ``viewport_api.request_pick()`` raycast
+    still resolves asynchronously, and its result can still overwrite our selection. The priority
+    is kept to express the intended contract, while `HydragonVolumeViewportOverlay` defends the
+    outcome through its bounded override window.
     """
 
-    #: Must outrank SelectionClickGesture (-100) so the native selector yields to us.
+    #: Documents the intent: outrank SelectionClickGesture (-100). Not sufficient on its own.
     SELECT_PRIORITY = 100
 
     def __init__(self, prim_path: str, **kwargs):
@@ -482,6 +498,12 @@ class HydragonVolumeViewportOverlay:
         self._objects_changed_notice_key = None
         self._objects_changed_listener = None
 
+        # Bounded defence window against the native selection's late asynchronous pick.
+        self._override_path: Optional[str] = None
+        self._override_deadline: float = 0.0
+        self._mouse_iface = None
+        self._mouse_sub = None
+
     @classmethod
     def get_instance(cls) -> Optional["HydragonVolumeViewportOverlay"]:
         return cls._instance
@@ -489,15 +511,75 @@ class HydragonVolumeViewportOverlay:
     @classmethod
     def select_volume(cls, prim_path: str):
         """
-        Selects a volume prim as the result of a viewport click on its gizmo.
+        Selects a volume prim as the result of a viewport click on its gizmo, and arms the
+        bounded defence window that outlives the native selection's late asynchronous pick.
 
-        No native-selection suppression is needed here: `VolumeSelectGesture` shares the
-        viewport's scene and outranks `SelectionClickGesture`, so the scene's gesture manager
-        prevents the native gesture before it can run its picking raycast.
+        Sharing the viewport's scene was meant to let `_SelectionPreventer` prevent the native
+        `SelectionClickGesture` outright; measured behaviour shows it does not, so the pick still
+        runs and its result is written a few frames later. This window wins that last write
+        instead of trying to race it with a frame counter.
         """
         overlay = cls.get_instance()
         if overlay:
             overlay._select_volume_impl(prim_path)
+            overlay._arm_selection_override(prim_path)
+
+    def _arm_selection_override(self, prim_path: str) -> None:
+        """Starts defending `prim_path` for SELECTION_OVERRIDE_WINDOW_S seconds."""
+        self._override_path = prim_path
+        self._override_deadline = time.monotonic() + SELECTION_OVERRIDE_WINDOW_S
+        if carb:
+            carb.log_info(
+                f"[hydragon.editor.core] Selection override armed for {prim_path} "
+                f"({SELECTION_OVERRIDE_WINDOW_S:g}s)."
+            )
+
+    def _override_target(self) -> Optional[str]:
+        """Prim path still defended by the click override, or None when unarmed/expired."""
+        if not self._override_path:
+            return None
+        if time.monotonic() > self._override_deadline:
+            self._override_path = None
+            return None
+        return self._override_path
+
+    def _enforce_selection_override(self) -> bool:
+        """
+        Re-asserts the clicked volume when the native pick overwrites the selection.
+
+        Returns True when the incoming SELECTION_CHANGED was ours to correct, in which case the
+        caller must not fall through to `_update_selection()` (re-entering selection handling
+        would rebuild every highlight twice).
+        """
+        target = self._override_target()
+        if target is None:
+            return False
+
+        usd_context = omni.usd.get_context() if (omni and hasattr(omni, "usd")) else None
+        selection = usd_context.get_selection() if usd_context and hasattr(usd_context, "get_selection") else None
+        if selection is None:
+            return False
+
+        try:
+            current = selection.get_selected_prim_paths()
+        except Exception:
+            return False
+
+        if current == [target]:
+            # Our own write round-tripped; nothing has stolen the selection.
+            self._override_path = None
+            return False
+
+        try:
+            selection.set_selected_prim_paths([target], True)
+            if carb:
+                carb.log_info(
+                    f"[hydragon.editor.core] Volume selection re-asserted over {current!r} "
+                    "- the native pick landed after the gizmo click."
+                )
+        except Exception:
+            pass
+        return True
 
     def _select_volume_impl(self, prim_path: str):
         """Sets USD selection directly to the volume prim."""
@@ -510,6 +592,54 @@ class HydragonVolumeViewportOverlay:
                 usd_context.get_selection().set_selected_prim_paths([prim_path], True)
             except Exception:
                 pass
+
+    def _register_mouse_watch(self):
+        """
+        Subscribes to raw mouse events, read-only.
+
+        The callback never consumes anything - it exists solely to cancel a pending selection
+        override the moment the user starts a new click, so the override can never fight a
+        selection the user made somewhere else.
+        """
+        if not HAS_KIT or not carb:
+            return
+        try:
+            import omni.appwindow
+            app_window = omni.appwindow.get_default_app_window()
+            mouse = app_window.get_mouse() if app_window else None
+            if not mouse:
+                return
+            self._mouse_iface = carb.input.acquire_input_interface()
+            if self._mouse_iface:
+                self._mouse_sub = self._mouse_iface.subscribe_to_mouse_events(mouse, self._on_mouse_event)
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Could not watch mouse events: {e}")
+
+    def _unregister_mouse_watch(self):
+        if self._mouse_iface and self._mouse_sub is not None:
+            try:
+                import omni.appwindow
+                app_window = omni.appwindow.get_default_app_window()
+                mouse = app_window.get_mouse() if app_window else None
+                if mouse:
+                    self._mouse_iface.unsubscribe_to_mouse_events(mouse, self._mouse_sub)
+            except Exception:
+                pass
+        self._mouse_sub = None
+        self._mouse_iface = None
+
+    def _on_mouse_event(self, event) -> bool:
+        """Never consumes: only clears a pending override when a new click begins."""
+        try:
+            if event.type == carb.input.MouseEventType.LEFT_BUTTON_DOWN:
+                if self._override_path:
+                    self._override_path = None
+                    if carb:
+                        carb.log_info("[hydragon.editor.core] Selection override cancelled by a new click.")
+        except Exception:
+            pass
+        return False
 
     def startup(self):
         """Registers the viewport scene host and initializes listeners."""
@@ -557,7 +687,10 @@ class HydragonVolumeViewportOverlay:
                     self._on_app_update, name="HydragonVolumeOverlayUpdateSub"
                 )
 
-            # 7. Initial discovery of existing volumes in the open stage
+            # 7. Watch the mouse so a new click anywhere cancels a pending selection override
+            self._register_mouse_watch()
+
+            # 8. Initial discovery of existing volumes in the open stage
             self._scan_stage_volumes()
             self._update_selection()
 
@@ -640,9 +773,11 @@ class HydragonVolumeViewportOverlay:
         self._deregister_viewport_menu_item()
         self._deregister_action_and_hotkey()
         self._unregister_objects_changed_notice()
+        self._unregister_mouse_watch()
 
         self._clear_all_volumes()
         self._unregister_scene_host()
+        self._override_path = None
 
         # The host instance belongs to the viewport layer; never keep a stale reference.
         self._scene_host = None
@@ -869,6 +1004,10 @@ class HydragonVolumeViewportOverlay:
             event_type = event.type
             if hasattr(omni.usd, "StageEventType"):
                 if event_type == int(omni.usd.StageEventType.SELECTION_CHANGED):
+                    # The native async pick writes the selection a few frames after our click;
+                    # correct it before doing anything else with the incoming selection.
+                    if self._enforce_selection_override():
+                        return
                     self._update_selection()
                 elif event_type in (
                     int(omni.usd.StageEventType.OPENED),
