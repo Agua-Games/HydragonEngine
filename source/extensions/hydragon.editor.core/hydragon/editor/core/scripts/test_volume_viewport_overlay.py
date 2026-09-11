@@ -198,7 +198,7 @@ def test_visibility_toggle_and_settings():
 
 
 def test_volume_click_gesture_priority():
-    print("--- 10. Testing VolumeSelectGesture & Selection Fall-Through Guard ---")
+    print("--- 10. Testing VolumeSelectGesture & Native Selection Suppression ---")
     from hydragon.editor.core.volume_viewport_manipulator import (
         VolumeSelectGesture,
         HydragonVolumeViewportOverlay,
@@ -207,22 +207,61 @@ def test_volume_click_gesture_priority():
     # The overlay is constructed first so that __init__ registers the singleton
     # that VolumeSelectGesture.on_ended() resolves via get_instance().
     overlay = HydragonVolumeViewportOverlay("test_sel")
-    assert overlay._just_clicked_volume is None
-    assert overlay._fallthrough_counter == 0
+    assert overlay._selection_lock is None
 
     gesture = VolumeSelectGesture("/World/ForceVolume")
     assert gesture.prim_path == "/World/ForceVolume"
 
-    # Simulate clicking on the volume gesture
-    gesture.on_ended()
-    assert overlay._just_clicked_volume == "/World/ForceVolume"
-    assert overlay._fallthrough_counter == 2
+    # Must outrank the native SelectionClickGesture (priority = -100), otherwise the
+    # click is re-dispatched to the prim geometrically behind the gizmo.
+    assert gesture.priority > 0, "VolumeSelectGesture must outrank the native selector"
 
-    # Shutdown must clear the guard so stale state cannot leak into a restart
+    # Outside Kit there is no viewport to select into; this must stay fail-silent.
+    gesture.on_ended()
+
+    # Shutdown must release any held selection lock so native selection is restored.
     overlay.shutdown()
-    assert overlay._just_clicked_volume is None
-    assert overlay._fallthrough_counter == 0
-    print("  [PASS] VolumeSelectGesture & selection fall-through guard verified")
+    assert overlay._selection_lock is None
+    print("  [PASS] VolumeSelectGesture priority and selection suppression verified")
+
+
+def test_objects_changed_flags_rebuild():
+    """
+    Regression guard: Usd.Notice.ObjectsChanged yields Sdf.Path objects, which have no
+    GetPath(). The previous implementation called it anyway and swallowed the resulting
+    AttributeError, silently disabling the listener and therefore live shape updates.
+    """
+    print("--- 11. Testing ObjectsChanged -> needs_rebuild Flagging ---")
+    import hydragon.editor.core.volume_viewport_manipulator as vvm
+    from hydragon.editor.core.volume_viewport_manipulator import (
+        HydragonVolumeViewportOverlay,
+        VolumeOverlayEntry,
+    )
+
+    class FakeNotice:
+        """Mimics a resolved Usd.Notice.ObjectsChanged payload."""
+
+        def GetResyncedPaths(self):
+            return ["/World/ForceVolume/volumes/force_bounds"]
+
+        def GetChangedInfoOnlyPaths(self):
+            return []
+
+    original_has_kit = vvm.HAS_KIT
+    vvm.HAS_KIT = True
+    try:
+        overlay = HydragonVolumeViewportOverlay("test_notice")
+        overlay._is_active = True
+        entry = VolumeOverlayEntry("/World/ForceVolume", "Force", None)
+        overlay._volumes["/World/ForceVolume"] = entry
+
+        assert entry.needs_rebuild is False
+        overlay._on_objects_changed(FakeNotice(), None)
+        assert entry.needs_rebuild is True, "A resynced sub-path must flag the volume for rebuild"
+    finally:
+        vvm.HAS_KIT = original_has_kit
+
+    print("  [PASS] ObjectsChanged flagging verified")
 
 
 if __name__ == "__main__":
@@ -236,4 +275,5 @@ if __name__ == "__main__":
     test_legacy_aliases_removed()
     test_visibility_toggle_and_settings()
     test_volume_click_gesture_priority()
-    print("\nALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (10/10)")
+    test_objects_changed_flags_rebuild()
+    print("ALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (11/11)")
