@@ -198,7 +198,7 @@ def test_visibility_toggle_and_settings():
 
 
 def test_volume_click_gesture_priority():
-    print("--- 10. Testing VolumeSelectGesture & Native Selection Suppression ---")
+    print("--- 10. Testing VolumeSelectGesture Priority ---")
     from hydragon.editor.core.volume_viewport_manipulator import (
         VolumeSelectGesture,
         HydragonVolumeViewportOverlay,
@@ -207,22 +207,22 @@ def test_volume_click_gesture_priority():
     # The overlay is constructed first so that __init__ registers the singleton
     # that VolumeSelectGesture.on_ended() resolves via get_instance().
     overlay = HydragonVolumeViewportOverlay("test_sel")
-    assert overlay._selection_lock is None
 
     gesture = VolumeSelectGesture("/World/ForceVolume")
     assert gesture.prim_path == "/World/ForceVolume"
 
-    # Must outrank the native SelectionClickGesture (priority = -100), otherwise the
-    # click is re-dispatched to the prim geometrically behind the gizmo.
-    assert gesture.priority > 0, "VolumeSelectGesture must outrank the native selector"
+    # omni.kit.manipulator.selection.SelectionClickGesture declares priority = -100, and its
+    # own _SelectionPreventer only prevents a gesture in favour of a strictly higher priority.
+    # Sharing the viewport's scene graph (via RegisterScene) is what makes that comparison
+    # happen at all - a private SceneView registered with add_scene_view() never took part.
+    NATIVE_SELECTION_PRIORITY = -100
+    assert gesture.priority > NATIVE_SELECTION_PRIORITY, "must outrank the native selector"
 
-    # Outside Kit there is no viewport to select into; this must stay fail-silent.
+    # Outside Kit there is no stage to select into; this must stay fail-silent.
     gesture.on_ended()
 
-    # Shutdown must release any held selection lock so native selection is restored.
     overlay.shutdown()
-    assert overlay._selection_lock is None
-    print("  [PASS] VolumeSelectGesture priority and selection suppression verified")
+    print("  [PASS] VolumeSelectGesture priority verified")
 
 
 def test_objects_changed_flags_rebuild():
@@ -264,6 +264,45 @@ def test_objects_changed_flags_rebuild():
     print("  [PASS] ObjectsChanged flagging verified")
 
 
+def test_scene_host_contract_and_lifecycle():
+    """
+    The viewport registry instantiates the scene factory and immediately reads `visible`,
+    `name` and `categories` off the instance, then calls `destroy()` on removal. A missing
+    attribute makes ViewportSceneLayer log "Error loading <factory>" and the overlay silently
+    never renders, so this contract is worth pinning down.
+    """
+    print("--- 12. Testing Scene Host Contract and Overlay Lifecycle Wiring ---")
+    from hydragon.editor.core.volume_viewport_manipulator import (
+        HydragonVolumeSceneHost,
+        HydragonVolumeViewportOverlay,
+        _create_volume_scene_host,
+    )
+
+    overlay = HydragonVolumeViewportOverlay("test_host")
+
+    # The factory handed to RegisterScene must produce a host instance, and constructing that
+    # instance must hand it to the live overlay singleton.
+    host = _create_volume_scene_host({"viewport_api": None})
+    assert isinstance(host, HydragonVolumeSceneHost)
+    assert overlay._scene_host is host
+    assert host.name == "HydragonVolumes"
+    assert "manipulator" in host.categories
+
+    # on_build() hands the viewport-scoped root transform to the overlay.
+    sentinel = object()
+    host.root_transform = sentinel
+    overlay._on_scene_host_built(host)
+    assert overlay._root_transform is sentinel
+
+    # destroy() must drop every transform reference it handed out.
+    overlay._on_scene_host_destroyed(host)
+    assert overlay._scene_host is None
+    assert overlay._root_transform is None
+
+    overlay.shutdown()
+    print("  [PASS] Scene host contract and lifecycle wiring verified")
+
+
 if __name__ == "__main__":
     test_overlay_lifecycle()
     test_wireframe_segment_math_box()
@@ -276,4 +315,5 @@ if __name__ == "__main__":
     test_visibility_toggle_and_settings()
     test_volume_click_gesture_priority()
     test_objects_changed_flags_rebuild()
-    print("ALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (11/11)")
+    test_scene_host_contract_and_lifecycle()
+    print("ALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (12/12)")

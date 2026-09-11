@@ -6,7 +6,6 @@ editor-only wireframe bounds for Force Volumes and Kill Volumes (Box, Sphere,
 Cylinder, Plane). Zero USD stage pollution and zero RTX raytracing overhead.
 """
 
-import asyncio
 import math
 from typing import Dict, List, Optional, Set, Tuple
 
@@ -19,7 +18,6 @@ try:
     import omni.ui as ui
     from omni.ui import scene as sc
     from omni.ui import color as cl
-    import omni.kit.viewport.utility as vp_util
     from pxr import Usd, UsdGeom, Gf, Sdf, Tf
     HAS_KIT = True
 except ImportError:
@@ -29,7 +27,6 @@ except ImportError:
     ui = None
     sc = None
     cl = None
-    vp_util = None
     Usd = None
     UsdGeom = None
     Gf = None
@@ -367,14 +364,92 @@ class VolumeOverlayEntry:
                 self.transform_node.visible = is_visible
 
 
+class HydragonVolumeSceneHost(sc.Manipulator if (HAS_KIT and sc and hasattr(sc, "Manipulator")) else object):
+    """
+    Per-viewport host that places the volume overlay inside the viewport's own scene graph.
+
+    `omni.kit.viewport.window`'s `ViewportSceneLayer` creates a single `sc.SceneView` per
+    viewport, calls `add_event_delegation(...)` on it, and instantiates every factory registered
+    with `RegisterScene` inside that one scene. Sharing the scene is what makes gesture
+    arbitration work at all: the native selection click is a `SelectionClickGesture` carrying
+    `priority = -100`, and its `_SelectionPreventer` gesture manager only prevents a gesture in
+    favour of a *strictly higher* priority. `VolumeSelectGesture` declares 100, so the native
+    selection is prevented instead of running a raycast pick behind the gizmo.
+
+    The previous implementation created a private `sc.SceneView` and handed it to
+    `viewport_api.add_scene_view()`. That call only forwards view/projection matrices
+    (`omni.kit.widget.viewport/api.py`), so those gestures were never arbitrated at all — which
+    is why `priority` had no effect on the fall-through.
+
+    The registry contract requires `name`, `categories`, `visible` and `destroy()`. All remaining
+    behaviour (registry, selection sync, notices, transforms) stays in
+    `HydragonVolumeViewportOverlay`.
+    """
+
+    def __init__(self, viewport_desc: dict, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.viewport_api = viewport_desc.get("viewport_api")
+        self.root_transform = None
+
+        overlay = HydragonVolumeViewportOverlay.get_instance()
+        if overlay:
+            overlay._on_scene_host_created(self)
+
+        if carb:
+            carb.log_info("[hydragon.editor.core] Volume scene host created for a viewport.")
+
+    @property
+    def name(self) -> str:
+        return "HydragonVolumes"
+
+    @property
+    def categories(self):
+        return ("manipulator",)
+
+    def on_build(self):
+        """
+        Creates the root transform for this viewport.
+
+        Called by the `omni.ui.scene` framework while the manipulator's scene context is open,
+        which is why the overlay rebuilds its per-volume transforms from here.
+        """
+        if not HAS_KIT or not sc:
+            return
+        self.root_transform = sc.Transform(visible=True)
+
+        overlay = HydragonVolumeViewportOverlay.get_instance()
+        if overlay:
+            overlay._on_scene_host_built(self)
+
+    def destroy(self):
+        overlay = HydragonVolumeViewportOverlay.get_instance()
+        if overlay:
+            overlay._on_scene_host_destroyed(self)
+
+        self.root_transform = None
+        self.viewport_api = None
+
+        if HAS_KIT:
+            try:
+                super().destroy()
+            except Exception:
+                pass
+
+
+def _create_volume_scene_host(viewport_desc: dict):
+    """Factory handed to `RegisterScene`; invoked once per viewport by the viewport layer."""
+    return HydragonVolumeSceneHost(viewport_desc)
+
+
 class HydragonVolumeViewportOverlay:
     """
     Editor viewport overlay that renders interactive wireframe cages for active
     Hydragon Force Volumes and Kill Volumes using `omni.ui.scene`.
 
     Adheres strictly to high-performance guidelines:
+    - Lives inside the viewport's own `sc.SceneView` via `RegisterScene`, so its gestures are
+      arbitrated against the native selection click by the scene's gesture manager.
     - Creates UI scene elements once and reuses them.
-    - Attached via `viewport_window.get_frame(...)` to guarantee correct viewport rendering.
     - Updates transform matrices on frame ticks without recreating objects.
     - Only regenerates line geometry when the authored shape or extent changes.
     - Bypasses Hydra RTX BVH raytracing and leaves 0 bytes in the USD stage.
@@ -390,8 +465,9 @@ class HydragonVolumeViewportOverlay:
         self._is_active: bool = False
         self._is_visible: bool = True
 
-        self._viewport_window = None
-        self._scene_view = None
+        #: Scene host registered through the viewport registry, plus its root transform.
+        self._scene_host = None
+        self._scene_host_registration = None
         self._root_transform = None
 
         # In-memory registry: prim_path -> VolumeOverlayEntry
@@ -406,55 +482,22 @@ class HydragonVolumeViewportOverlay:
         self._objects_changed_notice_key = None
         self._objects_changed_listener = None
 
-        # RAII handle returned by vp_util.disable_selection(), held only for the frame in
-        # which a volume click is processed so the native click selector cannot override it.
-        self._selection_lock = None
-
     @classmethod
     def get_instance(cls) -> Optional["HydragonVolumeViewportOverlay"]:
         return cls._instance
 
     @classmethod
     def select_volume(cls, prim_path: str):
-        """Selects a volume prim as the result of a viewport click on its gizmo."""
+        """
+        Selects a volume prim as the result of a viewport click on its gizmo.
+
+        No native-selection suppression is needed here: `VolumeSelectGesture` shares the
+        viewport's scene and outranks `SelectionClickGesture`, so the scene's gesture manager
+        prevents the native gesture before it can run its picking raycast.
+        """
         overlay = cls.get_instance()
         if overlay:
-            overlay._select_volume_from_click(prim_path)
-
-    def _select_volume_from_click(self, prim_path: str):
-        """
-        Selects `prim_path` while suspending the native viewport click selection.
-
-        Gesture `priority` is the primary defence (see `VolumeSelectGesture`), but this overlay
-        draws into its own `sc.SceneView` rather than the viewport's scene, so arbitration
-        against `SelectionClickGesture` is not guaranteed. Suspending the native selection layers
-        through the official RAII helper for the duration of the click makes the outcome
-        deterministic. The lock is dropped on the next update.
-        """
-        if not HAS_KIT:
-            return
-
-        try:
-            if vp_util and hasattr(vp_util, "disable_selection"):
-                viewport_window = vp_util.get_active_viewport_window()
-                if viewport_window is not None:
-                    self._selection_lock = vp_util.disable_selection(viewport_window, disable_click=True)
-        except Exception:
-            self._selection_lock = None
-
-        self._select_volume_impl(prim_path)
-
-        app = omni.kit.app.get_app() if (omni and omni.kit and omni.kit.app) else None
-        if app is not None and self._selection_lock is not None:
-            asyncio.ensure_future(self._release_selection_lock(app))
-
-    async def _release_selection_lock(self, app):
-        """Drops the RAII selection lock after the current frame, restoring native selection."""
-        try:
-            await app.next_update_async()
-        except Exception:
-            pass
-        self._selection_lock = None
+            overlay._select_volume_impl(prim_path)
 
     def _select_volume_impl(self, prim_path: str):
         """Sets USD selection directly to the volume prim."""
@@ -469,7 +512,7 @@ class HydragonVolumeViewportOverlay:
                 pass
 
     def startup(self):
-        """Attaches SceneView to the active Viewport and initializes listeners."""
+        """Registers the viewport scene host and initializes listeners."""
         self._is_active = True
         if not HAS_KIT:
             return
@@ -488,30 +531,33 @@ class HydragonVolumeViewportOverlay:
                 except Exception:
                     pass
 
-            self._ensure_attached()
+            # 2. Join the viewport's own scene graph. The viewport layer instantiates this
+            #    factory per viewport, inside the SceneView it drives with
+            #    add_event_delegation(), which is what makes gesture arbitration possible.
+            self._register_scene_host()
 
-            # 2. Register Viewport Eye Menu item ("Show By Type") and hotkey Shift+V
+            # 3. Register Viewport Eye Menu item ("Show By Type") and hotkey Shift+V
             self._register_viewport_menu_item()
             self._register_action_and_hotkey()
 
-            # 3. Listen to USD selection and stage events
+            # 4. Listen to USD selection and stage events
             usd_context = omni.usd.get_context() if omni.usd else None
             if usd_context and hasattr(usd_context, "get_stage_event_stream"):
                 self._stage_event_sub = usd_context.get_stage_event_stream().create_subscription_to_pop(
                     self._on_stage_event, name="HydragonVolumeOverlayStageSub"
                 )
 
-            # 4. Listen for USD ObjectsChanged notices for zero-per-frame-traversal property updates
+            # 5. Listen for USD ObjectsChanged notices for zero-per-frame-traversal property updates
             self._register_objects_changed_notice()
 
-            # 5. Listen to app update stream for smooth transform updates & viewport sync
+            # 6. Listen to app update stream for smooth transform updates
             app = omni.kit.app.get_app() if omni.kit and omni.kit.app else None
             if app:
                 self._app_update_sub = app.get_update_event_stream().create_subscription_to_pop(
                     self._on_app_update, name="HydragonVolumeOverlayUpdateSub"
                 )
 
-            # 6. Initial discovery of existing volumes in the open stage
+            # 7. Initial discovery of existing volumes in the open stage
             self._scan_stage_volumes()
             self._update_selection()
 
@@ -521,8 +567,65 @@ class HydragonVolumeViewportOverlay:
             if carb:
                 carb.log_error(f"[hydragon.editor.core] HydragonVolumeViewportOverlay startup failed: {e}")
 
+    def _register_scene_host(self):
+        """
+        Registers the per-viewport scene host with `omni.kit.viewport.registry`.
+
+        `RegisterScene` is the supported entry point for `omni.ui.scene` content that must live
+        inside the viewport's scene - the same mechanism the selection, camera, object-click,
+        paint, physics and prim-manipulator scenes use.
+        """
+        try:
+            from omni.kit.viewport.registry import RegisterScene
+            self._scene_host_registration = RegisterScene(_create_volume_scene_host, self._ext_id)
+            if carb:
+                carb.log_info("[hydragon.editor.core] Registered the Hydragon volume scene host with the viewport registry.")
+        except Exception as e:
+            if carb:
+                carb.log_error(f"[hydragon.editor.core] Could not register the volume scene host: {e}")
+
+    def _unregister_scene_host(self):
+        """Removes the scene host registration; the viewport layer then destroys the instance."""
+        registration, self._scene_host_registration = self._scene_host_registration, None
+        if registration is not None:
+            try:
+                registration.destroy()
+            except Exception:
+                pass
+
+    def _on_scene_host_created(self, host):
+        """Called by the scene host as soon as the viewport layer instantiates it."""
+        previous, self._scene_host = self._scene_host, host
+        if previous is not None and previous is not host and carb:
+            carb.log_warn("[hydragon.editor.core] More than one viewport requested the volume overlay; following the most recent one.")
+
+    def _on_scene_host_built(self, host):
+        """Called from the host's `on_build()`, i.e. inside the viewport's scene context."""
+        if host is not self._scene_host:
+            return
+
+        first_build = self._root_transform is None
+        self._root_transform = host.root_transform
+        if self._root_transform is not None:
+            try:
+                self._root_transform.visible = self._is_visible
+            except Exception:
+                pass
+        self._repopulate_scene_graph()
+
+        if first_build and carb:
+            carb.log_info("[hydragon.editor.core] Volume scene host built inside the viewport scene.")
+
+    def _on_scene_host_destroyed(self, host):
+        """Called from the host's `destroy()`; drops every transform built for that viewport."""
+        if host is not self._scene_host:
+            return
+        self._clear_all_volumes()
+        self._root_transform = None
+        self._scene_host = None
+
     def shutdown(self):
-        """Detaches SceneView from viewport and cleans up resources."""
+        """Unregisters the scene host and cleans up resources."""
         self._is_active = False
         self._stage_event_sub = None
         self._app_update_sub = None
@@ -539,10 +642,11 @@ class HydragonVolumeViewportOverlay:
         self._unregister_objects_changed_notice()
 
         self._clear_all_volumes()
-        self._detach_scene_view()
+        self._unregister_scene_host()
 
-        # Drop any selection lock still held so native selection is restored on shutdown.
-        self._selection_lock = None
+        # The host instance belongs to the viewport layer; never keep a stale reference.
+        self._scene_host = None
+        self._root_transform = None
 
         if carb:
             carb.log_info("[hydragon.editor.core] HydragonVolumeViewportOverlay shut down.")
@@ -732,82 +836,9 @@ class HydragonVolumeViewportOverlay:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] ObjectsChanged handling failed: {e}")
 
-    def _ensure_attached(self) -> bool:
-        """Ensures SceneView is created within the viewport frame and registered with viewport_api."""
-        if not HAS_KIT or not sc or not vp_util:
-            return False
-
-        try:
-            current_vp = vp_util.get_active_viewport_window()
-            if not current_vp:
-                return False
-
-            # If already attached to the same window and scene_view is live, all good
-            if self._viewport_window is current_vp and self._scene_view is not None:
-                return True
-
-            # If window changed or needs fresh attach, detach first
-            if self._viewport_window is not None:
-                self._detach_scene_view()
-
-            self._viewport_window = current_vp
-
-            # 1. Open the frame container on the viewport window (required for viewport UI rendering)
-            frame = current_vp.get_frame(self._ext_id) if hasattr(current_vp, "get_frame") else None
-            if frame:
-                with frame:
-                    self._scene_view = sc.SceneView()
-                    with self._scene_view.scene:
-                        self._root_transform = sc.Transform(visible=self._is_visible)
-            else:
-                self._scene_view = sc.SceneView()
-                with self._scene_view.scene:
-                    self._root_transform = sc.Transform(visible=self._is_visible)
-
-            # 2. Register SceneView with the Viewport API
-            if hasattr(current_vp, "viewport_api") and current_vp.viewport_api and hasattr(current_vp.viewport_api, "add_scene_view"):
-                current_vp.viewport_api.add_scene_view(self._scene_view)
-            elif hasattr(current_vp, "add_scene_view"):
-                current_vp.add_scene_view(self._scene_view)
-
-            # 3. Rebuild existing volumes in the new root transform
-            self._repopulate_scene_graph()
-
-            if carb:
-                carb.log_info(f"[hydragon.editor.core] SceneView successfully attached to Viewport frame '{self._ext_id}'.")
-            return True
-
-        except Exception as e:
-            if carb:
-                carb.log_warn(f"[hydragon.editor.core] Failed to attach SceneView to Viewport: {e}")
-            self._scene_view = None
-            self._root_transform = None
-            return False
-
-    def _detach_scene_view(self):
-        """Removes SceneView from viewport and clears graphics."""
-        if self._viewport_window and self._scene_view:
-            try:
-                if hasattr(self._viewport_window, "viewport_api") and self._viewport_window.viewport_api and hasattr(self._viewport_window.viewport_api, "remove_scene_view"):
-                    self._viewport_window.viewport_api.remove_scene_view(self._scene_view)
-                elif hasattr(self._viewport_window, "remove_scene_view"):
-                    self._viewport_window.remove_scene_view(self._scene_view)
-            except Exception:
-                pass
-
-        if self._scene_view:
-            try:
-                self._scene_view.scene.clear()
-            except Exception:
-                pass
-
-        self._scene_view = None
-        self._root_transform = None
-        self._viewport_window = None
-
     def _repopulate_scene_graph(self):
         """Reconstructs transform nodes for all currently registered volumes under the root transform."""
-        if not self._root_transform:
+        if not HAS_KIT or not self._root_transform:
             return
 
         usd_context = omni.usd.get_context() if omni.usd else None
@@ -987,8 +1018,8 @@ class HydragonVolumeViewportOverlay:
         if not self._is_active or not HAS_KIT:
             return
 
-        # Ensure attached to viewport (e.g. if viewport initialized after extension startup)
-        if not self._ensure_attached():
+        # The viewport layer owns the scene host; there is nothing to update until it is built.
+        if not self._root_transform:
             return
 
         if not self._volumes:
