@@ -48,7 +48,8 @@
                 "command": "${workspaceRoot}${/}repo.bat"
             },
             "args": [
-                "launch"
+                "launch",
+                "hydragon.editor.kit"
             ],
             "group": "none",
             "presentation": {
@@ -65,7 +66,10 @@
             },
             "args": [
                 "launch",
-                "-d"
+                "hydragon.editor.kit",
+                "--",
+                "--enable",
+                "omni.kit.debug.vscode"
             ],
             "group": "none",
             "presentation": {

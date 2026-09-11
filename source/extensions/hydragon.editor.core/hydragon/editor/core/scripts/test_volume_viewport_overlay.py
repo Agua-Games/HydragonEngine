@@ -151,12 +151,23 @@ def test_overlay_registry_and_colors():
     print("  [PASS] Volume registry and color encoding verified")
 
 
-def test_gesture_manager_prevention():
-    print("--- 8. Testing Gesture Manager & Backward Compatibility ---")
-    from hydragon.editor.core.volume_viewport_manipulator import PreventViewportOthers, VolumeGestureManager
+def test_legacy_aliases_removed():
+    print("--- 8. Testing Removal of Legacy Compatibility Aliases ---")
+    import hydragon.editor.core.volume_viewport_manipulator as vvm
 
-    assert PreventViewportOthers is VolumeGestureManager
-    print("  [PASS] Gesture manager compatibility verified")
+    # These shims were dead code (never referenced by the Kit gesture pipeline)
+    # and were intentionally removed. Guard against silent reintroduction.
+    removed_symbols = (
+        "VolumeClickGesture",
+        "VolumeGestureManager",
+        "PreventViewportOthers",
+        "_is_alt_pressed",
+        "_attach_gesture",
+        "make_color",
+    )
+    for symbol in removed_symbols:
+        assert not hasattr(vvm, symbol), f"Legacy alias '{symbol}' should have been removed"
+    print("  [PASS] Legacy compatibility aliases confirmed removed")
 
 
 def test_visibility_toggle_and_settings():
@@ -166,7 +177,8 @@ def test_visibility_toggle_and_settings():
         SETTING_SHOW_VOLUMES,
     )
 
-    assert SETTING_SHOW_VOLUMES == "/persistent/app/viewport/displayOptions/showHydragonVolumes"
+    # Namespaced under hydragon.viewport, not the legacy viewport/displayOptions path.
+    assert SETTING_SHOW_VOLUMES == "/persistent/app/hydragon/viewport/showVolumes"
 
     overlay = HydragonVolumeViewportOverlay("test_vis")
     assert overlay._is_visible is True
@@ -188,39 +200,25 @@ def test_visibility_toggle_and_settings():
 def test_volume_click_gesture_priority():
     print("--- 10. Testing VolumeSelectGesture & Selection Fall-Through Guard ---")
     from hydragon.editor.core.volume_viewport_manipulator import (
-        VolumeClickGesture,
         VolumeSelectGesture,
-        VolumeGestureManager,
-        PreventViewportOthers,
         HydragonVolumeViewportOverlay,
-        _is_alt_pressed,
-        _attach_gesture,
     )
 
-    # Backward compatibility
-    assert PreventViewportOthers is VolumeGestureManager
-    assert VolumeClickGesture is VolumeSelectGesture
-
-    # Alt modifier check works safely outside Kit
-    assert _is_alt_pressed() is False
+    # The overlay is constructed first so that __init__ registers the singleton
+    # that VolumeSelectGesture.on_ended() resolves via get_instance().
+    overlay = HydragonVolumeViewportOverlay("test_sel")
+    assert overlay._just_clicked_volume is None
+    assert overlay._fallthrough_counter == 0
 
     gesture = VolumeSelectGesture("/World/ForceVolume")
     assert gesture.prim_path == "/World/ForceVolume"
 
-    overlay = HydragonVolumeViewportOverlay("test_sel")
     # Simulate clicking on the volume gesture
     gesture.on_ended()
     assert overlay._just_clicked_volume == "/World/ForceVolume"
     assert overlay._fallthrough_counter == 2
 
-    # Attachment helper works on object with .gesture or .gestures
-    class MockShape:
-        gestures = []
-
-    s = MockShape()
-    _attach_gesture(s, gesture)
-    assert gesture in s.gestures
-
+    # Shutdown must clear the guard so stale state cannot leak into a restart
     overlay.shutdown()
     assert overlay._just_clicked_volume is None
     assert overlay._fallthrough_counter == 0
@@ -235,7 +233,7 @@ if __name__ == "__main__":
     test_wireframe_segment_math_plane()
     test_caching_and_rebuild_logic()
     test_overlay_registry_and_colors()
-    test_gesture_manager_prevention()
+    test_legacy_aliases_removed()
     test_visibility_toggle_and_settings()
     test_volume_click_gesture_priority()
     print("\nALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (10/10)")

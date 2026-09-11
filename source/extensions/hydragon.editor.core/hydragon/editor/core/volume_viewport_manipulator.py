@@ -19,7 +19,7 @@ try:
     from omni.ui import scene as sc
     from omni.ui import color as cl
     import omni.kit.viewport.utility as vp_util
-    from pxr import Usd, UsdGeom, Gf, Sdf
+    from pxr import Usd, UsdGeom, Gf, Sdf, Tf
     HAS_KIT = True
 except ImportError:
     HAS_KIT = False
@@ -33,15 +33,17 @@ except ImportError:
     UsdGeom = None
     Gf = None
     Sdf = None
+    Tf = None
 
 from .schemas import HydragonForceVolume, HydragonKillVolume
 
-SETTING_SHOW_VOLUMES = "/persistent/app/viewport/displayOptions/showHydragonVolumes"
+SETTING_SHOW_VOLUMES = "/persistent/app/hydragon/viewport/showVolumes"
 
 
 class VolumeSelectGesture(sc.ClickGesture if (HAS_KIT and sc and hasattr(sc, "ClickGesture")) else object):
-    """Clean, standard ClickGesture that selects the volume prim on click."""
-    def __init__(self, prim_path: str, **kwargs):
+    """Click gesture that selects the volume prim and suppresses native viewport raycasting."""
+
+    def __init__(self, prim_path: str):
         self.prim_path = prim_path
         if HAS_KIT and sc and hasattr(sc, "ClickGesture"):
             try:
@@ -50,39 +52,18 @@ class VolumeSelectGesture(sc.ClickGesture if (HAS_KIT and sc and hasattr(sc, "Cl
                 pass
 
     def on_ended(self):
+        # Set the fall-through guard so _on_stage_event knows we initiated this selection
+        overlay = HydragonVolumeViewportOverlay.get_instance()
+        if overlay:
+            overlay._just_clicked_volume = self.prim_path
+            overlay._fallthrough_counter = 2
+
         HydragonVolumeViewportOverlay.select_volume(self.prim_path)
-
-    def _on_click(self, *args):
-        HydragonVolumeViewportOverlay.select_volume(self.prim_path)
-
-
-# Backward-compatibility aliases and fallbacks
-VolumeClickGesture = VolumeSelectGesture
-VolumeGestureManager = object
-PreventViewportOthers = object
-
-def _is_alt_pressed() -> bool:
-    return False
-
-def _attach_gesture(shape_obj, gesture_obj):
-    if not shape_obj or not gesture_obj:
-        return
-    try:
-        shape_obj.gestures = [gesture_obj]
-    except Exception:
-        pass
 
 
 def _create_line(p0, p1, line_color, line_thickness, gesture_obj=None):
     """Constructs an sc.Line and attaches gesture_obj if supported."""
-    if gesture_obj:
-        try:
-            line = sc.Line(p0, p1, color=line_color, thickness=line_thickness, intersection_thickness=6.0)
-            line.gestures = [gesture_obj]
-            return line
-        except Exception:
-            pass
-    line = sc.Line(p0, p1, color=line_color, thickness=line_thickness)
+    line = sc.Line(p0, p1, color=line_color, thickness=line_thickness, intersection_thickness=6.0)
     if gesture_obj:
         try:
             line.gestures = [gesture_obj]
@@ -91,29 +72,17 @@ def _create_line(p0, p1, line_color, line_thickness, gesture_obj=None):
     return line
 
 
-def make_color(r: float, g: float, b: float, a: float = 1.0):
-    """Produces an omni.ui compatible color object or 32-bit uint color fallback."""
-    if cl:
-        try:
-            return cl(r, g, b, a)
-        except Exception:
-            pass
-        try:
-            return cl.color(r, g, b, a)
-        except Exception:
-            pass
-    ir = int(max(0.0, min(1.0, r)) * 255)
-    ig = int(max(0.0, min(1.0, g)) * 255)
-    ib = int(max(0.0, min(1.0, b)) * 255)
-    ia = int(max(0.0, min(1.0, a)) * 255)
-    return (ia << 24) | (ib << 16) | (ig << 8) | ir
-
-
-# Color palette for volumes (Default vs Selected)
-COLOR_FORCE_DEFAULT = make_color(0.18, 0.72, 1.0, 0.85)   # Cyan / Blue
-COLOR_FORCE_SELECTED = make_color(0.35, 0.92, 1.0, 1.0)   # Electric Cyan
-COLOR_KILL_DEFAULT = make_color(1.0, 0.25, 0.25, 0.85)    # Coral Red
-COLOR_KILL_SELECTED = make_color(1.0, 0.55, 0.45, 1.0)    # Hot Neon Red
+# Direct color palette for volumes (Default vs Selected)
+if HAS_KIT and cl:
+    COLOR_FORCE_DEFAULT = cl(0.18, 0.72, 1.0, 0.85)   # Cyan / Blue
+    COLOR_FORCE_SELECTED = cl(0.35, 0.92, 1.0, 1.0)   # Electric Cyan
+    COLOR_KILL_DEFAULT = cl(1.0, 0.25, 0.25, 0.85)    # Coral Red
+    COLOR_KILL_SELECTED = cl(1.0, 0.55, 0.45, 1.0)    # Hot Neon Red
+else:
+    COLOR_FORCE_DEFAULT = 0xD9FFB82E
+    COLOR_FORCE_SELECTED = 0xFFFFAA00
+    COLOR_KILL_DEFAULT = 0xD94040FF
+    COLOR_KILL_SELECTED = 0xFF738CFF
 
 
 # Line segment math generator for all 4 volume shapes
@@ -200,6 +169,12 @@ def generate_shape_wireframe_segments(
     return segments
 
 
+BOUNDS_PRIM_REL_PATH = {
+    "Force": "volumes/force_bounds",
+    "Kill": "volumes/kill_bounds",
+}
+
+
 class VolumeOverlayEntry:
     """
     Maintains a dedicated `sc.Transform` and wireframe geometry for a single registered volume.
@@ -213,6 +188,7 @@ class VolumeOverlayEntry:
         self.cached_half_extents: Optional[Tuple[float, float, float]] = None
         self.cached_transform: Optional[List[float]] = None
         self.is_selected: bool = False
+        self.needs_rebuild: bool = False
         self.transform_node: Optional["sc.Transform"] = None
 
         if HAS_KIT and sc and parent_transform:
@@ -263,36 +239,19 @@ class VolumeOverlayEntry:
     def read_dimensions(self, prim) -> Tuple[Tuple[float, float, float], float, float]:
         target_prim = self.get_target_xform_prim(prim)
         is_sub_volume = (target_prim != prim)
+        default_extent = 100.0 if self.volume_type == "Force" else (50.0 if is_sub_volume else 500.0)
+        base_hx, base_hy, base_hz = default_extent, default_extent, default_extent
 
-        if self.volume_type == "Force":
-            base_hx, base_hy, base_hz = 100.0, 100.0, 100.0
-            bounds_prim = prim.GetPrimAtPath("volumes/force_bounds")
-            if bounds_prim and bounds_prim.IsValid():
-                ext_attr = bounds_prim.GetAttribute("extent")
-                if ext_attr and ext_attr.IsValid():
-                    ext_val = ext_attr.Get()
-                    if ext_val and len(ext_val) >= 2:
-                        base_hx = max(10.0, max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0]))))
-                        base_hy = max(10.0, max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1]))))
-                        base_hz = max(10.0, max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2]))))
-        else:  # Kill
-            bounds_prim = prim.GetPrimAtPath("volumes/kill_bounds")
-            if bounds_prim and bounds_prim.IsValid():
-                ext_attr = bounds_prim.GetAttribute("extent")
-                if ext_attr and ext_attr.IsValid():
-                    ext_val = ext_attr.Get()
-                    if ext_val and len(ext_val) >= 2:
-                        base_hx = max(10.0, max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0]))))
-                        base_hy = max(10.0, max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1]))))
-                        base_hz = max(10.0, max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2]))))
-                    else:
-                        base_hx, base_hy, base_hz = 50.0, 50.0, 50.0
-                else:
-                    base_hx, base_hy, base_hz = 50.0, 50.0, 50.0
-            elif is_sub_volume:
-                base_hx, base_hy, base_hz = 50.0, 50.0, 50.0
-            else:
-                base_hx, base_hy, base_hz = 500.0, 50.0, 500.0
+        bounds_rel_path = BOUNDS_PRIM_REL_PATH.get(self.volume_type, "volumes/force_bounds")
+        bounds_prim = prim.GetPrimAtPath(bounds_rel_path)
+        if bounds_prim and bounds_prim.IsValid():
+            ext_attr = bounds_prim.GetAttribute("extent")
+            if ext_attr and ext_attr.IsValid():
+                ext_val = ext_attr.Get()
+                if ext_val and len(ext_val) >= 2:
+                    base_hx = max(10.0, max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0]))))
+                    base_hy = max(10.0, max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1]))))
+                    base_hz = max(10.0, max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2]))))
 
         half_extents = (base_hx, base_hy, base_hz)
         radius = max(base_hx, base_hz)
@@ -396,22 +355,21 @@ class VolumeOverlayEntry:
         if not HAS_KIT or not prim:
             return
 
-        shape = self.read_shape(prim)
-        if shape != self.cached_shape:
+        if self.needs_rebuild:
+            self.needs_rebuild = False
             self.rebuild_lines(prim)
 
         self.update_transform(prim)
-        if self.transform_node and is_visible and not self.transform_node.visible:
-            self.transform_node.visible = True
-        elif self.transform_node and not is_visible and self.transform_node.visible:
-            self.transform_node.visible = False
+        if self.transform_node:
+            if is_visible != self.transform_node.visible:
+                self.transform_node.visible = is_visible
 
 
 class HydragonVolumeViewportOverlay:
     """
     Editor viewport overlay that renders interactive wireframe cages for active
     Hydragon Force Volumes and Kill Volumes using `omni.ui.scene`.
-    
+
     Adheres strictly to high-performance guidelines:
     - Creates UI scene elements once and reuses them.
     - Attached via `viewport_window.get_frame(...)` to guarantee correct viewport rendering.
@@ -437,17 +395,18 @@ class HydragonVolumeViewportOverlay:
         # In-memory registry: prim_path -> VolumeOverlayEntry
         self._volumes: Dict[str, VolumeOverlayEntry] = {}
         self._selected_paths: Set[str] = set()
-        # Consumable selection target to guard against native viewport raycast fall-through
-        self._just_clicked_volume: Optional[str] = None
-        self._fallthrough_counter: int = 0
-
         self._stage_event_sub = None
         self._app_update_sub = None
         self._setting_sub = None
         self._menu_item = None
         self._action = None
         self._hotkey_registered: bool = False
-        self._keyboard_sub = None
+        self._objects_changed_notice_key = None
+        self._objects_changed_listener = None
+
+        # Selection fall-through guard state (used by VolumeSelectGesture + stage events)
+        self._just_clicked_volume: Optional[str] = None
+        self._fallthrough_counter: int = 0
 
     @classmethod
     def get_instance(cls) -> Optional["HydragonVolumeViewportOverlay"]:
@@ -460,16 +419,8 @@ class HydragonVolumeViewportOverlay:
         if overlay:
             overlay._select_volume_impl(prim_path)
 
-    @classmethod
-    def lock_selection(cls, prim_path: str):
-        """Backward-compatibility alias for select_volume."""
-        cls.select_volume(prim_path)
-
     def _select_volume_impl(self, prim_path: str):
-        """Selects prim_path and sets consumable guard against native viewport raycast fall-through."""
-        self._just_clicked_volume = prim_path
-        self._fallthrough_counter = 2
-
+        """Sets USD selection directly to the volume prim."""
         if not HAS_KIT:
             return
 
@@ -513,14 +464,17 @@ class HydragonVolumeViewportOverlay:
                     self._on_stage_event, name="HydragonVolumeOverlayStageSub"
                 )
 
-            # 4. Listen to app update stream for smooth transform updates & viewport sync
+            # 4. Listen for USD ObjectsChanged notices for zero-per-frame-traversal property updates
+            self._register_objects_changed_notice()
+
+            # 5. Listen to app update stream for smooth transform updates & viewport sync
             app = omni.kit.app.get_app() if omni.kit and omni.kit.app else None
             if app:
                 self._app_update_sub = app.get_update_event_stream().create_subscription_to_pop(
                     self._on_app_update, name="HydragonVolumeOverlayUpdateSub"
                 )
 
-            # 5. Initial discovery of existing volumes in the open stage
+            # 6. Initial discovery of existing volumes in the open stage
             self._scan_stage_volumes()
             self._update_selection()
 
@@ -545,12 +499,15 @@ class HydragonVolumeViewportOverlay:
 
         self._deregister_viewport_menu_item()
         self._deregister_action_and_hotkey()
-
-        self._just_clicked_volume = None
-        self._fallthrough_counter = 0
+        self._unregister_objects_changed_notice()
 
         self._clear_all_volumes()
         self._detach_scene_view()
+
+        # Clear the selection fall-through guard so stale state cannot leak
+        # into the next startup of this (singleton) overlay instance.
+        self._just_clicked_volume = None
+        self._fallthrough_counter = 0
 
         if carb:
             carb.log_info("[hydragon.editor.core] HydragonVolumeViewportOverlay shut down.")
@@ -617,7 +574,6 @@ class HydragonVolumeViewportOverlay:
         """Registers action in omni.kit.actions.core and hotkey Shift+V in omni.kit.hotkeys.core."""
         if not HAS_KIT:
             return
-        # 1. Register Action
         try:
             import omni.kit.actions.core as kit_actions
             action_reg = kit_actions.get_action_registry()
@@ -633,7 +589,6 @@ class HydragonVolumeViewportOverlay:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Could not register action 'toggle_volume_visibility': {e}")
 
-        # 2. Register Hotkey via omni.kit.hotkeys.core
         try:
             import omni.kit.hotkeys.core as kit_hotkeys
             hotkey_reg = kit_hotkeys.get_hotkey_registry()
@@ -651,37 +606,7 @@ class HydragonVolumeViewportOverlay:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Could not register hotkey 'Shift+V': {e}")
 
-        # 3. Fallback keyboard event subscription via carb.input
-        try:
-            if carb and hasattr(carb, "input"):
-                import omni.appwindow
-                appwindow = omni.appwindow.get_default_app_window()
-                input_iface = carb.input.acquire_input_interface()
-                if appwindow and input_iface:
-                    keyboard = appwindow.get_keyboard()
-                    if keyboard:
-                        self._keyboard_sub = input_iface.subscribe_to_keyboard_events(
-                            keyboard, self._on_keyboard_event
-                        )
-        except Exception:
-            pass
-
     def _deregister_action_and_hotkey(self):
-        # 1. Fallback keyboard sub
-        if self._keyboard_sub and carb and hasattr(carb, "input"):
-            try:
-                import omni.appwindow
-                appwindow = omni.appwindow.get_default_app_window()
-                input_iface = carb.input.acquire_input_interface()
-                if appwindow and input_iface:
-                    keyboard = appwindow.get_keyboard()
-                    if keyboard:
-                        input_iface.unsubscribe_to_keyboard_events(keyboard, self._keyboard_sub)
-            except Exception:
-                pass
-            self._keyboard_sub = None
-
-        # 2. Hotkey
         if self._hotkey_registered:
             try:
                 import omni.kit.hotkeys.core as kit_hotkeys
@@ -692,7 +617,6 @@ class HydragonVolumeViewportOverlay:
                 pass
             self._hotkey_registered = False
 
-        # 3. Action
         if self._action:
             try:
                 import omni.kit.actions.core as kit_actions
@@ -703,20 +627,71 @@ class HydragonVolumeViewportOverlay:
                 pass
             self._action = None
 
-    def _on_keyboard_event(self, event):
-        if not self._is_active or not carb or not hasattr(carb, "input"):
-            return True
+    def _register_objects_changed_notice(self):
+        """Subscribes to USD ObjectsChanged notices to flag volumes for rebuild without per-frame traversal."""
+        if not HAS_KIT:
+            return
+
         try:
-            if event.type == carb.input.KeyboardEventType.KEY_PRESS:
-                if event.key == carb.input.KeyboardInput.V:
-                    input_iface = carb.input.acquire_input_interface()
-                    mods = input_iface.get_global_modifier_flags(carb.input.KEYBOARD_MODIFIER_FLAG_SHIFT)
-                    if bool(mods & carb.input.KEYBOARD_MODIFIER_FLAG_SHIFT):
-                        if not self._hotkey_registered:
-                            self.toggle_volumes_visibility()
+            usd_context = omni.usd.get_context() if omni.usd else None
+            if not usd_context:
+                return
+            stage = usd_context.get_stage()
+            if not stage:
+                return
+
+            # Usd.Notice.ObjectsChanged requires a listener with a callback
+            # Use Tf.Notice.Register to listen for stage-level object changes
+            if Tf and hasattr(Tf, "Notice"):
+                self._objects_changed_listener = Tf.Notice.Register(
+                    Usd.Notice.ObjectsChanged,
+                    self._on_objects_changed,
+                    stage
+                )
+                if carb:
+                    carb.log_info("[hydragon.editor.core] Registered Usd.Notice.ObjectsChanged listener for volume overlay.")
+        except Exception as e:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Could not register ObjectsChanged notice: {e}")
+
+    def _unregister_objects_changed_notice(self):
+        """Removes the USD ObjectsChanged listener."""
+        if self._objects_changed_listener:
+            try:
+                # Tf.Notice listener uses Revoke() to unregister
+                if hasattr(self._objects_changed_listener, "Revoke"):
+                    self._objects_changed_listener.Revoke()
+                else:
+                    self._objects_changed_listener = None
+            except Exception:
+                pass
+            self._objects_changed_listener = None
+
+    def _on_objects_changed(self, notice, sender):
+        """Flags registered volumes for rebuild when their properties change (zero per-frame traversal)."""
+        if not self._is_active or not HAS_KIT:
+            return
+
+        try:
+            # Get the set of paths that changed
+            changed_paths = set()
+            if hasattr(notice, "GetResyncedPaths"):
+                for p in notice.GetResyncedPaths():
+                    changed_paths.add(str(p.GetPath()))
+            if hasattr(notice, "GetChangedInfoOnlyPaths"):
+                for p in notice.GetChangedInfoOnlyPaths():
+                    changed_paths.add(str(p.GetPath()))
+
+            # Flag any registered volume whose path or sub-path changed
+            usd_context = omni.usd.get_context() if omni.usd else None
+            stage = usd_context.get_stage() if usd_context else None
+            for path_str, entry in self._volumes.items():
+                for changed in changed_paths:
+                    if changed == path_str or changed.startswith(path_str + "/"):
+                        entry.needs_rebuild = True
+                        break
         except Exception:
             pass
-        return True
 
     def _ensure_attached(self) -> bool:
         """Ensures SceneView is created within the viewport frame and registered with viewport_api."""
