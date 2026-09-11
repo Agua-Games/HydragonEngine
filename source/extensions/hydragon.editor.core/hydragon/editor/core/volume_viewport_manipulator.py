@@ -44,9 +44,10 @@ SETTING_SHOW_VOLUMES = "/persistent/app/hydragon/viewport/showVolumes"
 #: manipulator calls `viewport_api.request_pick()`, which resolves through a completion callback
 #: some frames later. Gesture arbitration is supposed to prevent that gesture from running at all
 #: (`_SelectionPreventer` + `priority`), but it demonstrably does not for a third-party scene, so
-#: the native write can land after ours. This window exists to outlive that late write; it is
-#: cancelled the moment the user starts a new click anywhere.
-SELECTION_OVERRIDE_WINDOW_S = 1.0
+#: the native write lands after ours. Measured latency is ~24 ms, so this is a generous multiple
+#: of the observed delay while keeping the period in which the overlay owns the selection short.
+#: A new click anywhere cancels the window immediately.
+SELECTION_OVERRIDE_WINDOW_S = 0.5
 
 
 class VolumeSelectGesture(sc.ClickGesture if (HAS_KIT and sc and hasattr(sc, "ClickGesture")) else object):
@@ -566,8 +567,9 @@ class HydragonVolumeViewportOverlay:
             return False
 
         if current == [target]:
-            # Our own write round-tripped; nothing has stolen the selection.
-            self._override_path = None
+            # Our own write round-tripped. Keep the window armed: omni.usd delivers stage events
+            # on the next update, so this echo can arrive *after* `_arm_selection_override()` and
+            # disarming here would drop the window before the native pick lands.
             return False
 
         try:
@@ -1004,8 +1006,9 @@ class HydragonVolumeViewportOverlay:
             event_type = event.type
             if hasattr(omni.usd, "StageEventType"):
                 if event_type == int(omni.usd.StageEventType.SELECTION_CHANGED):
-                    # The native async pick writes the selection a few frames after our click;
-                    # correct it before doing anything else with the incoming selection.
+                    # Fast path: correct the native pick's late write before doing anything else
+                    # with the incoming selection. `_on_app_update` re-checks every frame as the
+                    # authoritative backstop, because this event may also be our own echo.
                     if self._enforce_selection_override():
                         return
                     self._update_selection()
@@ -1156,6 +1159,11 @@ class HydragonVolumeViewportOverlay:
         """
         if not self._is_active or not HAS_KIT:
             return
+
+        # Polling beats event ordering here: the native pick's write and the echo of our own write
+        # race in the stage event queue, so the correction must not depend on their order. This
+        # costs one in-memory call per frame, and only while a window is armed.
+        self._enforce_selection_override()
 
         # The viewport layer owns the scene host; there is nothing to update until it is built.
         if not self._root_transform:

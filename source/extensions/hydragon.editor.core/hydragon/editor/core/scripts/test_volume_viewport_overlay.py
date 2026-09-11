@@ -341,6 +341,62 @@ def test_selection_override_window():
     print("  [PASS] Bounded selection override window verified")
 
 
+def test_override_survives_own_write_echo():
+    """
+    Regression guard for the bug that made the fix intermittent.
+
+    omni.usd delivers SELECTION_CHANGED on the next update, so the echo of our own write arrives
+    *after* the window is armed. If the window disarms on that echo, the native pick lands with
+    nothing left to correct it - which made the fix work only when the pick's write happened to
+    reach the event queue first.
+    """
+    print("--- 14. Testing Override Survives Our Own Write Echo ---")
+    import types
+    import hydragon.editor.core.volume_viewport_manipulator as vvm
+    from hydragon.editor.core.volume_viewport_manipulator import HydragonVolumeViewportOverlay
+
+    class FakeSelection:
+        def __init__(self):
+            self.paths = []
+
+        def get_selected_prim_paths(self):
+            return list(self.paths)
+
+        def set_selected_prim_paths(self, paths, expand):
+            self.paths = list(paths)
+
+    selection = FakeSelection()
+    context = types.SimpleNamespace(get_selection=lambda: selection)
+
+    original_has_kit, original_omni = vvm.HAS_KIT, vvm.omni
+    vvm.HAS_KIT = True
+    vvm.omni = types.SimpleNamespace(usd=types.SimpleNamespace(get_context=lambda: context))
+
+    overlay = HydragonVolumeViewportOverlay("test_echo")
+    try:
+        overlay._arm_selection_override("/World/ForceVolume")
+
+        # Echo of our own write: no re-assert, and the window must stay armed.
+        selection.paths = ["/World/ForceVolume"]
+        assert overlay._enforce_selection_override() is False
+        assert overlay._override_path == "/World/ForceVolume", "window must survive our own echo"
+
+        # The native pick's late write must be corrected.
+        selection.paths = ["/World/impulse_wall_02"]
+        assert overlay._enforce_selection_override() is True
+        assert selection.paths == ["/World/ForceVolume"]
+
+        # And the window keeps standing after a correction, until expiry or a new click.
+        selection.paths = ["/World/Environment/Ground"]
+        assert overlay._enforce_selection_override() is True
+        assert selection.paths == ["/World/ForceVolume"]
+    finally:
+        vvm.HAS_KIT, vvm.omni = original_has_kit, original_omni
+        overlay.shutdown()
+
+    print("  [PASS] Override survives our own write echo")
+
+
 if __name__ == "__main__":
     test_overlay_lifecycle()
     test_wireframe_segment_math_box()
@@ -355,4 +411,5 @@ if __name__ == "__main__":
     test_objects_changed_flags_rebuild()
     test_scene_host_contract_and_lifecycle()
     test_selection_override_window()
-    print("ALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (13/13)")
+    test_override_survives_own_write_echo()
+    print("ALL VOLUME VIEWPORT OVERLAY TESTS PASSED! (14/14)")
