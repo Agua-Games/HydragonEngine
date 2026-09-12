@@ -53,6 +53,26 @@ This document defines the core engineering standards and conventions for all AI 
 * **Never leave a persistent setting mutated.** Anything written under `/persistent/...` survives a restart and silently changes behaviour for every later session. This includes `/persistent/physics/visualizationDisplayColliders` and `/persistent/app/hydragon/viewport/showVolumes` (the Hydragon volume wireframe toggle, owned by `volume_triggers.VolumeDisplayToggle`). Restore the previous value when the operation that changed it finishes, or scope the change to something non-persistent.
 * **Weigh the cost before enabling a scene-wide debug visualisation.** `visualizationDisplayColliders` is a None / Selected / All radiobox with no per-prim granularity: "All" enables debug drawing for *every* collider in the stage, including large triangle-mesh colliders such as ground planes and vehicle meshes. Use "Selected", or expect the editor to seize up.
 
+---
+
+## Omniverse Platform Notes — read before building viewport or physics UI
+
+`docs/omniverse_architecture/` holds platform-level knowledge that was expensive to establish and that is NOT documented by NVIDIA:
+
+| document | read it before... |
+|---|---|
+| [`README.md`](docs/omniverse_architecture/README.md) | choosing how to draw anything in a viewport |
+| [`viewport_drawing_and_gizmos.md`](docs/omniverse_architecture/viewport_drawing_and_gizmos.md) | building a gizmo, manipulator, overlay or visual helper |
+| [`collision_triggers_and_scene_queries.md`](docs/omniverse_architecture/collision_triggers_and_scene_queries.md) | authoring a collider, a trigger, or any raycast/overlap |
+| [`debugging_and_tooling.md`](docs/omniverse_architecture/debugging_and_tooling.md) | attaching a debugger, finding a log, writing a probe |
+
+**Check it first; do not re-derive it from a live editor.** Every claim there is tagged `[verified]` or `[inferred]` — respect the distinction, and add your own findings there rather than in a scratch file.
+
+Two rules from it that are violated most often:
+
+* **Only rasterized prims are clickable.** The native viewport pick reads the hydra pick buffer, not a raycast. So a prim that does not render cannot be clicked, and a prim that renders *will* be clicked over the area it draws. Never "hide" a helper with a shading hint (`primvars:isVolume`) — use `visibility = "invisible"` on a prim that is separate from the visual one.
+* **A scene query cannot be given a collision channel.** `raycast_all` / `overlap_*` take no filter argument and the bindings expose no `PxQueryFilterCallback`. Any collider you generate is therefore visible to **every** raycast in the engine. When you add one, grep for `raycast` / `scene_query` / `overlap_` and decide per call site whether it should count as a hit.
+
 ## Codebase Memory MCP
 
 **MANDATORY: use Codebase Memory MCP graph tools FIRST — before reading files or making code changes.**
