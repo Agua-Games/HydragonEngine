@@ -62,7 +62,7 @@ class MessagingTest(AsyncTestCase):
 
         # Capture extension root path
         extension = "hydragon.viewer.messaging"
-        ext_root = Path(carb.tokens.get_tokens_interface().resolve({% raw %}f"${{{extension}}}"{% endraw %}))
+        ext_root = Path(carb.tokens.get_tokens_interface().resolve(f"${{{extension}}}"))
         self._data_path = ext_root / "data"
 
     async def test_stage_loading_incoming(self):
