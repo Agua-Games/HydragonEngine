@@ -11,7 +11,7 @@ Implements component-driven physics volumes (HydragonForceVolumeAPI) supporting:
 
 import math
 import time
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, Optional, Set, Tuple
 
 try:
     import carb
@@ -23,22 +23,17 @@ try:
         get_physx_interface,
         get_physx_simulation_interface,
     )
-    from pxr import Usd, UsdGeom, Sdf, Gf, Tf, UsdPhysics, UsdUtils, PhysicsSchemaTools
-    try:
-        from pxr import Vt
-    except ImportError:
-        Vt = None
+    from pxr import Usd, UsdGeom, Gf, Tf, UsdUtils, PhysicsSchemaTools
     HAS_KIT = True
 except ImportError:
     HAS_KIT = False
     carb = None
+    omni = None
     PhysicsSchemaTools = None
     UsdUtils = None
     UsdGeom = None
     Tf = None
-    Vt = None
     Gf = None
-    Sdf = None
 
 if not HAS_KIT or Gf is None:
     class MockVec3f(tuple):
@@ -49,227 +44,17 @@ if not HAS_KIT or Gf is None:
     if Gf is None:
         Gf = MockGf
 
+from . import volume_bounds, volume_triggers
 from .schemas import HydragonForceVolume, HydragonActor
 
 
-def update_wireframe_guide(
-    bounds_prim,
-    shape: str,
-    half_extents: Tuple[float, float, float] = (100.0, 100.0, 100.0),
-    radius: float = 100.0,
-    half_height: float = 100.0,
-    color: Tuple[float, float, float] = (0.2, 0.7, 1.0),
-):
-    """
-    Updates or converts bounds_prim to a hollow wireframe BasisCurves cage.
-    Supports 'Box', 'Sphere', 'Cylinder', and 'Plane'. Zero solid faces/fill.
-    """
-    if not bounds_prim or not hasattr(bounds_prim, "IsValid") or not bounds_prim.IsValid():
-        return
-
-    try:
-        if hasattr(bounds_prim, "GetTypeName") and hasattr(bounds_prim, "SetTypeName"):
-            if bounds_prim.GetTypeName() != "BasisCurves":
-                bounds_prim.SetTypeName("BasisCurves")
-
-        if UsdGeom and hasattr(UsdGeom, "BasisCurves"):
-            curves = UsdGeom.BasisCurves(bounds_prim)
-        elif hasattr(bounds_prim, "curves"):
-            curves = bounds_prim.curves
-        else:
-            curves = None
-
-        if not curves:
-            return
-
-        type_attr = curves.GetTypeAttr()
-        if not type_attr or not type_attr.IsValid():
-            type_attr = curves.CreateTypeAttr()
-        if type_attr:
-            type_attr.Set("linear")
-
-        wrap_attr = curves.GetWrapAttr()
-        if not wrap_attr or not wrap_attr.IsValid():
-            wrap_attr = curves.CreateWrapAttr()
-        if wrap_attr:
-            wrap_attr.Set("nonperiodic")
-
-        counts = []
-        points = []
-
-        if shape == "Sphere":
-            segs = 32
-            r = radius
-            for plane in ("XY", "XZ", "YZ"):
-                counts.append(segs + 1)
-                for i in range(segs + 1):
-                    theta = 2.0 * math.pi * (i / segs)
-                    cos_t = math.cos(theta) * r
-                    sin_t = math.sin(theta) * r
-                    if plane == "XY":
-                        points.append(Gf.Vec3f(cos_t, sin_t, 0.0))
-                    elif plane == "XZ":
-                        points.append(Gf.Vec3f(cos_t, 0.0, sin_t))
-                    else:
-                        points.append(Gf.Vec3f(0.0, cos_t, sin_t))
-
-            extent = [Gf.Vec3f(-r, -r, -r), Gf.Vec3f(r, r, r)]
-
-        elif shape == "Cylinder":
-            segs = 32
-            r = radius
-            h = half_height
-            counts.append(segs + 1)
-            for i in range(segs + 1):
-                theta = 2.0 * math.pi * (i / segs)
-                points.append(Gf.Vec3f(math.cos(theta) * r, h, math.sin(theta) * r))
-            counts.append(segs + 1)
-            for i in range(segs + 1):
-                theta = 2.0 * math.pi * (i / segs)
-                points.append(Gf.Vec3f(math.cos(theta) * r, -h, math.sin(theta) * r))
-            for angle in (0.0, math.pi * 0.5, math.pi, math.pi * 1.5):
-                counts.append(2)
-                cx = math.cos(angle) * r
-                cz = math.sin(angle) * r
-                points.append(Gf.Vec3f(cx, -h, cz))
-                points.append(Gf.Vec3f(cx, h, cz))
-
-            extent = [Gf.Vec3f(-r, -h, -r), Gf.Vec3f(r, h, r)]
-
-        elif shape == "Plane":
-            hx, hz = half_extents[0], half_extents[2]
-            counts.append(5)
-            points.extend([
-                Gf.Vec3f(-hx, 0.0, -hz),
-                Gf.Vec3f(hx, 0.0, -hz),
-                Gf.Vec3f(hx, 0.0, hz),
-                Gf.Vec3f(-hx, 0.0, hz),
-                Gf.Vec3f(-hx, 0.0, -hz),
-            ])
-            counts.append(2)
-            points.extend([Gf.Vec3f(-hx, 0.0, -hz), Gf.Vec3f(hx, 0.0, hz)])
-            counts.append(2)
-            points.extend([Gf.Vec3f(hx, 0.0, -hz), Gf.Vec3f(-hx, 0.0, hz)])
-            extent = [Gf.Vec3f(-hx, 0.0, -hz), Gf.Vec3f(hx, 0.0, hz)]
-
-        else:  # Box
-            hx, hy, hz = half_extents
-            counts = [2] * 12
-            points = [
-                Gf.Vec3f(-hx, -hy, -hz), Gf.Vec3f(hx, -hy, -hz),
-                Gf.Vec3f(hx, -hy, -hz), Gf.Vec3f(hx, -hy, hz),
-                Gf.Vec3f(hx, -hy, hz), Gf.Vec3f(-hx, -hy, hz),
-                Gf.Vec3f(-hx, -hy, hz), Gf.Vec3f(-hx, -hy, -hz),
-                Gf.Vec3f(-hx, hy, -hz), Gf.Vec3f(hx, hy, -hz),
-                Gf.Vec3f(hx, hy, -hz), Gf.Vec3f(hx, hy, hz),
-                Gf.Vec3f(hx, hy, hz), Gf.Vec3f(-hx, hy, hz),
-                Gf.Vec3f(-hx, hy, hz), Gf.Vec3f(-hx, hy, -hz),
-                Gf.Vec3f(-hx, -hy, -hz), Gf.Vec3f(-hx, hy, -hz),
-                Gf.Vec3f(hx, -hy, -hz), Gf.Vec3f(hx, hy, -hz),
-                Gf.Vec3f(hx, -hy, hz), Gf.Vec3f(hx, hy, hz),
-                Gf.Vec3f(-hx, -hy, hz), Gf.Vec3f(-hx, hy, hz),
-            ]
-            extent = [Gf.Vec3f(-hx, -hy, -hz), Gf.Vec3f(hx, hy, hz)]
-
-        counts_attr = curves.GetCurveVertexCountsAttr()
-        if not counts_attr or not counts_attr.IsValid():
-            counts_attr = curves.CreateCurveVertexCountsAttr()
-        if counts_attr:
-            counts_attr.Set(Vt.IntArray(counts) if Vt else counts)
-
-        points_attr = curves.GetPointsAttr()
-        if not points_attr or not points_attr.IsValid():
-            points_attr = curves.CreatePointsAttr()
-        if points_attr:
-            points_attr.Set(Vt.Vec3fArray(points) if Vt else points)
-
-        extent_attr = curves.GetExtentAttr()
-        if not extent_attr or not extent_attr.IsValid():
-            extent_attr = curves.CreateExtentAttr()
-        if extent_attr:
-            extent_attr.Set(Vt.Vec3fArray(extent) if Vt else extent)
-
-        widths_attr = curves.GetWidthsAttr()
-        if not widths_attr or not widths_attr.IsValid():
-            widths_attr = curves.CreateWidthsAttr()
-        if widths_attr:
-            widths_attr.Set(Vt.FloatArray([2.5]) if Vt else [2.5])
-            if hasattr(widths_attr, "SetMetadata"):
-                try:
-                    widths_attr.SetMetadata("interpolation", "constant")
-                except Exception:
-                    pass
-
-        color_attr = curves.GetDisplayColorAttr()
-        if not color_attr or not color_attr.IsValid():
-            color_attr = curves.CreateDisplayColorAttr()
-        if color_attr:
-            color_attr.Set(Vt.Vec3fArray([Gf.Vec3f(*color)]) if Vt else [Gf.Vec3f(*color)])
-            if hasattr(color_attr, "SetMetadata"):
-                try:
-                    color_attr.SetMetadata("interpolation", "constant")
-                except Exception:
-                    pass
-
-        if hasattr(bounds_prim, "HasAttribute") and hasattr(bounds_prim, "GetAttribute"):
-            if bounds_prim.HasAttribute("purpose"):
-                bounds_prim.GetAttribute("purpose").Set("default")
-            elif hasattr(bounds_prim, "CreateAttribute") and Sdf:
-                bounds_prim.CreateAttribute("purpose", Sdf.ValueTypeNames.Token).Set("default")
-
-    except Exception as e:
-        if carb:
-            carb.log_warn(f"[hydragon.editor.core] Failed to update wireframe guide: {e}")
-
-
-def sync_force_volume_wireframe(volume_prim):
-    """
-    Synchronizes the 'volumes/force_bounds' BasisCurves wireframe
-    to match the current force:volumeShape ('Box', 'Sphere', 'Cylinder', 'Plane').
-    """
-    if not volume_prim or not hasattr(volume_prim, "IsValid") or not volume_prim.IsValid():
-        return
-
-    bounds_prim = None
-    if hasattr(volume_prim, "GetPrimAtPath"):
-        bounds_prim = volume_prim.GetPrimAtPath("volumes/force_bounds")
-        if not bounds_prim or not bounds_prim.IsValid():
-            bounds_prim = volume_prim.GetPrimAtPath("force_bounds")
-    elif hasattr(volume_prim, "GetChildren"):
-        for c in volume_prim.GetChildren():
-            if hasattr(c, "GetName") and c.GetName() in ("force_bounds", "volumes"):
-                bounds_prim = c
-                break
-
-    if not bounds_prim or not hasattr(bounds_prim, "IsValid") or not bounds_prim.IsValid():
-        return
-
-    shape = "Box"
-    if volume_prim.HasAttribute("force:volumeShape"):
-        attr = volume_prim.GetAttribute("force:volumeShape")
-        if attr and attr.IsValid():
-            shape = str(attr.Get() or "Box")
-
-    base_hx, base_hy, base_hz = 100.0, 100.0, 100.0
-    extent_attr = bounds_prim.GetAttribute("extent")
-    if extent_attr and extent_attr.IsValid():
-        ext_val = extent_attr.Get()
-        if ext_val and len(ext_val) >= 2:
-            base_hx = max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0])))
-            base_hy = max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1])))
-            base_hz = max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2])))
-            base_hx = max(10.0, base_hx)
-            base_hy = max(10.0, base_hy)
-            base_hz = max(10.0, base_hz)
-
-    update_wireframe_guide(
-        bounds_prim,
-        shape=shape,
-        half_extents=(base_hx, base_hy, base_hz),
-        radius=max(base_hx, base_hz),
-        half_height=base_hy,
-        color=(0.2, 0.7, 1.0),
-    )
+# NOTE: `update_wireframe_guide()` and `sync_force_volume_wireframe()` used to live here. Neither
+# was ever called, and both were harmful if they had been: they emitted `curveVertexCounts = [2] * 12`
+# for a Box, which is INVALID for `linear` + `nonperiodic` (the schema requires more than two
+# vertices per curve), and they wrote through whatever edit target happened to be current, so the
+# geometry could land in a layer that is never saved. Their role is now filled by
+# `volume_triggers.ensure_wireframe()`, which generates schema-valid geometry from
+# `volume_geometry` and always authors into the root layer, so the volume travels with the stage.
 
 
 class HydragonForceVolumeZone:
@@ -285,10 +70,14 @@ class HydragonForceVolumeZone:
 
         self._world_pos: Tuple[float, float, float] = world_pos
         self._world_transform: Optional[Any] = None
-        self._inv_world_matrix: Optional[Any] = None
         self._half_extents: Tuple[float, float, float] = (100.0, 100.0, 100.0)
         self._radius: float = 100.0
         self._half_height: float = 100.0
+
+        #: The measured region centre, in the volume's OWN local frame. Kept as the record of where
+        #: the geometry actually sits, since the wireframe is not necessarily centred on the volume
+        #: root - the shipped asset offsets `force_bounds` with xformOp:translate.
+        self._local_centre: Tuple[float, float, float] = (0.0, 0.0, 0.0)
 
         self._impulse_timers: Dict[str, float] = {}
 
@@ -301,6 +90,11 @@ class HydragonForceVolumeZone:
     @property
     def world_pos(self) -> Tuple[float, float, float]:
         return self._world_pos
+
+    @property
+    def local_centre(self) -> Tuple[float, float, float]:
+        """The region centre in the volume's own local frame, i.e. the frame the shape tests use."""
+        return self._local_centre
 
     @property
     def is_enabled(self) -> bool:
@@ -356,136 +150,68 @@ class HydragonForceVolumeZone:
     def half_height(self, val: float):
         self._half_height = val
 
+    def refresh_bounds(self) -> bool:
+        """Re-derives the shape parameters from the volume's own geometry.
+
+        Called after `volume_triggers.ensure_volume()` has regenerated the wireframe, and after a
+        USD notice reports that the geometry was edited. There is no per-physics-step polling any
+        more: the geometry is validated on change, and overlap detection no longer reads these
+        numbers at all - PhysX does, from the trigger collider.
+        """
+        previous = (self._half_extents, self._radius, self._half_height)
+        self._cache_bounds_and_transforms()
+        return (self._half_extents, self._radius, self._half_height) != previous
+
     def _cache_bounds_and_transforms(self):
-        """Extracts world transform matrix, extents, and shape dimensions from USD."""
+        """Caches the world transform, the region centre, and the shape parameters.
+
+        The dimensions and the centre are measured from the WIREFRAME in the volume root's own
+        frame. Expressing them in that frame is what makes them usable: a WORLD-space measurement
+        would apply the volume's own scale a second time. Measured on the shipped asset, that
+        mistake made a volume 6x too large in every axis.
+
+        These numbers now serve only the continuous force maths (radial and vortex are polar around
+        the centre) - overlap detection itself is PhysX's job, from the trigger collider, which is
+        generated from this same measurement.
+        """
         if not HAS_KIT or not self._prim or not hasattr(self._prim, "IsValid") or not self._prim.IsValid():
             return
 
         try:
-            bounds_prim = self._prim.GetPrimAtPath("volumes/force_bounds")
-            if bounds_prim and bounds_prim.IsValid():
-                bxform = UsdGeom.Xformable(bounds_prim)
-                b_xf = bxform.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
-                self._world_transform = b_xf
-                try:
-                    self._inv_world_matrix = b_xf.GetInverse()
-                except Exception:
-                    self._inv_world_matrix = None
+            world_xf = UsdGeom.Xformable(self._prim).ComputeLocalToWorldTransform(Usd.TimeCode.Default())
+            self._world_transform = world_xf
 
-                t = b_xf.ExtractTranslation()
-                self._world_pos = (float(t[0]), float(t[1]), float(t[2]))
+            self._half_extents, self._radius, self._half_height = volume_bounds.measure_shape_parameters(
+                self._prim, "Force", default_half_extent=100.0
+            )
 
-                b_scale = (
-                    float(b_xf.GetRow(0).GetLength()),
-                    float(b_xf.GetRow(1).GetLength()),
-                    float(b_xf.GetRow(2).GetLength()),
-                )
-
-                base_hx, base_hy, base_hz = 100.0, 100.0, 100.0
-                extent_attr = bounds_prim.GetAttribute("extent")
-                if extent_attr and extent_attr.IsValid():
-                    ext_val = extent_attr.Get()
-                    if ext_val and len(ext_val) >= 2:
-                        base_hx = max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0])))
-                        base_hy = max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1])))
-                        base_hz = max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2])))
-                elif bounds_prim.GetTypeName() == "Cube":
-                    cube_geom = UsdGeom.Cube(bounds_prim)
-                    size = float(cube_geom.GetSizeAttr().Get() or 200.0) if cube_geom.GetSizeAttr() else 200.0
-                    base_hx = base_hy = base_hz = size * 0.5
-
-                hx = base_hx * b_scale[0]
-                hy = base_hy * b_scale[1]
-                hz = base_hz * b_scale[2]
-                self._half_extents = (hx, hy, hz)
-                self._radius = max(hx, hz)
-                self._half_height = hy
+            # The region is centred on the GEOMETRY, not on the volume root's origin: the shipped
+            # asset offsets force_bounds with xformOp:translate = (0, 22, 0).
+            bound = volume_bounds.measure_bound(self._prim, "Force")
+            if bound is not None:
+                # `bound[0]` is the centre expressed in the volume root's frame - the very frame
+                # `check_shape_overlap` works in - so it can be stored as the local centre as-is.
+                self._local_centre = tuple(float(v) for v in bound[0])
+                world_centre = world_xf.Transform(Gf.Vec3d(*bound[0]))
             else:
-                xformable = UsdGeom.Xformable(self._prim)
-                world_xf = xformable.ComputeLocalToWorldTransform(Usd.TimeCode.Default())
-                self._world_transform = world_xf
-                try:
-                    self._inv_world_matrix = world_xf.GetInverse()
-                except Exception:
-                    self._inv_world_matrix = None
-                t = world_xf.ExtractTranslation()
-                self._world_pos = (float(t[0]), float(t[1]), float(t[2]))
-                scale_vec = (
-                    float(world_xf.GetRow(0).GetLength()),
-                    float(world_xf.GetRow(1).GetLength()),
-                    float(world_xf.GetRow(2).GetLength()),
-                )
-                self._half_extents = (100.0 * scale_vec[0], 100.0 * scale_vec[1], 100.0 * scale_vec[2])
-                self._radius = max(self._half_extents[0], self._half_extents[2])
-                self._half_height = self._half_extents[1]
+                self._local_centre = (0.0, 0.0, 0.0)
+                world_centre = world_xf.ExtractTranslation()
+            self._world_pos = (float(world_centre[0]), float(world_centre[1]), float(world_centre[2]))
 
         except Exception as e:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Failed to cache bounds for force volume {self._prim_path}: {e}")
 
-    def check_shape_overlap(self, point: Tuple[float, float, float]) -> bool:
-        """
-        Evaluates whether point (world coordinates) is inside this volume's oriented geometric bounds.
-        Supports Box (OBB), Sphere, and Cylinder.
-        """
-        shape = self.volume_shape
-
-        # Sphere check (in world space directly)
-        if shape == "Sphere":
-            dx = point[0] - self._world_pos[0]
-            dy = point[1] - self._world_pos[1]
-            dz = point[2] - self._world_pos[2]
-            dist_sq = dx * dx + dy * dy + dz * dz
-            return dist_sq <= (self._radius * self._radius)
-
-        # Local space transformation for Box and Cylinder
-        local_x, local_y, local_z = 0.0, 0.0, 0.0
-        if self._inv_world_matrix is not None and HAS_KIT:
-            try:
-                pt_world = Gf.Vec3d(point[0], point[1], point[2])
-                pt_local = self._inv_world_matrix.Transform(pt_world)
-                local_x = float(pt_local[0])
-                local_y = float(pt_local[1])
-                local_z = float(pt_local[2])
-            except Exception:
-                local_x = point[0] - self._world_pos[0]
-                local_y = point[1] - self._world_pos[1]
-                local_z = point[2] - self._world_pos[2]
-        else:
-            local_x = point[0] - self._world_pos[0]
-            local_y = point[1] - self._world_pos[1]
-            local_z = point[2] - self._world_pos[2]
-
-        if shape == "Cylinder":
-            r_sq = local_x * local_x + local_z * local_z
-            return (r_sq <= self._radius * self._radius) and (abs(local_y) <= self._half_height)
-
-        # Default: Box (Oriented Bounding Box)
-        hx, hy, hz = self._half_extents
-        return (abs(local_x) <= hx) and (abs(local_y) <= hy) and (abs(local_z) <= hz)
-
-    def check_overlap(self, point: Tuple[float, float, float]) -> bool:
-        """
-        Evaluates whether point (world coordinates) is affected by this volume.
-        Encompasses primary shape bounds, and uncoupled radial force radius.
-        """
-        if not self.is_enabled:
-            return False
-
-        if self.check_shape_overlap(point):
-            return True
-
-        # Uncoupled radial force influence zone
-        if self._schema and self._schema.radial_enabled:
-            dx = point[0] - self._world_pos[0]
-            dy = point[1] - self._world_pos[1]
-            dz = point[2] - self._world_pos[2]
-            dist_sq = dx * dx + dy * dy + dz * dz
-            rad = max(0.0, self._schema.radial_radius)
-            if dist_sq <= rad * rad:
-                return True
-
-        return False
+    # NOTE: `check_shape_overlap()` and `check_overlap()` used to live here. They are gone because
+    # overlap is no longer decided in Python: the volume's trigger collider lets PhysX resolve it,
+    # on its own threads, against the same shape. A body that reaches `compute_forces` with
+    # `in_shape=True` is one PhysX has already reported as inside.
+    #
+    # One deliberate behaviour change comes with that. The old `check_overlap()` also accepted a
+    # body OUTSIDE the drawn volume but within `force:radialRadius` - an uncoupled influence zone.
+    # Influence is now bounded by the trigger volume, i.e. by the cage the artist drew and can see,
+    # which is the whole point of the migration: the gizmo and the affected region can no longer
+    # disagree. A volume that relied on reaching past its own bounds needs its cage enlarged.
 
     def can_apply_impulse(self, rb_path: str, current_time: float) -> bool:
         """Evaluates impulse cooldown for a specific rigid body."""
@@ -511,13 +237,17 @@ class HydragonForceVolumeZone:
         """
         Calculates total physical force, and dampened linear/angular velocities.
         Returns: (net_force_vector, damped_linear_velocity, damped_angular_velocity)
+
+        Called only for bodies PhysX has reported inside this volume's trigger collider, so the
+        shape-dependent terms (linear, turbulence, vortex, dampening) are always in play. The radial
+        term keeps its own distance falloff, which is a property of the force, not of the boundary.
         """
         if not self._schema:
             return (0.0, 0.0, 0.0), body_vel, body_ang_vel
 
         schema = self._schema
         fx, fy, fz = 0.0, 0.0, 0.0
-        in_shape = self.check_shape_overlap(body_pos)
+        in_shape = True
 
         # 1. Linear Force
         if schema.linear_enabled and in_shape:
@@ -655,10 +385,25 @@ class HydragonForceVolumeSystem:
         self._is_simulating: bool = False
         self._physics_step_sub = None
         self._timeline_sub = None
-        self._stage_event_sub = None
+        self._app_update_sub = None
+        #: USD ObjectsChanged listener, so an edit to a volume revalidates its geometry.
         self._stage_notice_listener = None
+        #: Reported-once guard. AGENTS.md section E: a defect must cost one log line per session.
+        self._trigger_failure_logged: bool = False
+        self._report_error_logged: bool = False
 
         self._active_volumes: Dict[str, HydragonForceVolumeZone] = {}
+        #: volume path -> its trigger collider prim, so the per-step read needs no stage lookup.
+        self._trigger_prims: Dict[str, Any] = {}
+        #: volume path -> {collider path: resolved body record} as of the PREVIOUS physics step.
+        #: The enter edge is computed by differencing snapshots rather than taken from a report,
+        #: which also catches a body that was already inside when the simulation started.
+        self._inside: Dict[str, Dict[str, Dict[str, Any]]] = {}
+        #: A USD edit arrived; coalesce it into one resync on the next app update instead of
+        #: authoring from inside a USD notice callback.
+        self._sync_pending: bool = False
+        self._stage_id: int = 0
+        self._last_dt: float = 0.0
         self._sim_time: float = 0.0
 
     @classmethod
@@ -673,7 +418,7 @@ class HydragonForceVolumeSystem:
         return len(self._active_volumes)
 
     def startup(self):
-        """Initializes subscriptions to timeline and physics simulation."""
+        """Initializes subscriptions to timeline, physics simulation and the app update stream."""
         self._is_active = True
         if not HAS_KIT:
             return
@@ -684,6 +429,15 @@ class HydragonForceVolumeSystem:
                 self._on_timeline_event
             )
             self._subscribe_physics()
+            app = omni.kit.app.get_app() if omni.kit and omni.kit.app else None
+            if app:
+                self._app_update_sub = app.get_update_event_stream().create_subscription_to_pop(
+                    self._on_app_update, name="HydragonForceVolumeSync"
+                )
+            self._register_objects_changed_notice()
+            # The geometry is authored DATA, so it must be present and correct even before the
+            # simulation starts - the artist has to be able to see the cage while editing.
+            self._sync_volumes_now()
             if carb:
                 carb.log_info("[hydragon.editor.core] HydragonForceVolumeSystem started.")
         except Exception as e:
@@ -691,12 +445,18 @@ class HydragonForceVolumeSystem:
                 carb.log_error(f"[hydragon.editor.core] HydragonForceVolumeSystem startup failed: {e}")
 
     def shutdown(self):
-        """Cleans up subscriptions and cached volume registry."""
+        """Cleans up every subscription and the cached volume registry."""
         self._is_active = False
         self._is_simulating = False
+        self._unregister_objects_changed_notice()
+        for volume_path in list(self._active_volumes):
+            volume_triggers.forget(volume_path)
+        self._inside.clear()
+        self._trigger_prims.clear()
         self._active_volumes.clear()
         self._timeline_sub = None
         self._physics_step_sub = None
+        self._app_update_sub = None
         if carb:
             carb.log_info("[hydragon.editor.core] HydragonForceVolumeSystem shut down.")
 
@@ -719,154 +479,294 @@ class HydragonForceVolumeSystem:
         if event_type == int(omni.timeline.TimelineEventType.PLAY):
             self._is_simulating = True
             self._sim_time = 0.0
-            self._discover_volumes_on_play()
+            self._inside.clear()
+            self._sync_volumes_now()
         elif event_type in (
             int(omni.timeline.TimelineEventType.STOP),
             int(omni.timeline.TimelineEventType.PAUSE),
         ):
             self._is_simulating = False
+            self._inside.clear()
             self._active_volumes.clear()
+            self._trigger_prims.clear()
 
-    def _discover_volumes_on_play(self):
-        """Discovers and caches all prims with HydragonForceVolumeAPI applied."""
-        self._active_volumes.clear()
-        if not HAS_KIT:
+    def _register_objects_changed_notice(self):
+        """Listens for USD edits so a changed volume is revalidated without any polling."""
+        try:
+            stage = volume_triggers.current_stage()
+            if not stage or not Tf or not hasattr(Tf, "Notice"):
+                return
+            self._stage_notice_listener = Tf.Notice.Register(
+                Usd.Notice.ObjectsChanged, self._on_objects_changed, stage
+            )
+        except Exception as error:
+            if carb:
+                carb.log_warn(f"[hydragon.editor.core] Could not register the volume USD notice: {error}")
+
+    def _unregister_objects_changed_notice(self):
+        if self._stage_notice_listener is not None:
+            try:
+                self._stage_notice_listener.Revoke()
+            except Exception:
+                pass
+            self._stage_notice_listener = None
+
+    def _on_objects_changed(self, notice, sender):
+        """Flags a resync when an edit affects a volume, or IS a volume.
+
+        Setting a flag rather than reacting directly is deliberate: authoring USD from inside a USD
+        notice callback is a re-entrancy hazard, and the flag also coalesces a burst of edits into
+        one resync.
+
+        BOTH halves matter. Reacting only to paths UNDER a registered volume meant the first volume
+        placed in a scene was never seen - nothing was registered yet, so nothing could match - and
+        its wireframe only showed up at the next PLAY. That was exactly the reported symptom of
+        `Create > Hydragon > Force Volume` producing a bare prim with no `volumes/force_bounds`.
+        """
+        if not self._is_active:
             return
+        try:
+            changed_paths = volume_triggers.notice_prim_paths(notice)
+            if not changed_paths:
+                return
+            if volume_triggers.touches_any(changed_paths, self._active_volumes):
+                self._sync_pending = True
+                return
+            if volume_triggers.paths_include_volume(changed_paths, HydragonForceVolume.is_applied):
+                self._sync_pending = True
+        except Exception:
+            pass
 
-        stage = omni.usd.get_context().get_stage() if omni.usd.get_context() else None
+    def _on_app_update(self, event):
+        """Runs a coalesced resync. One boolean check per frame; no traversal unless an edit came in."""
+        if self._sync_pending:
+            self._sync_pending = False
+            self._sync_volumes_now()
+
+    def _sync_volumes_now(self) -> None:
+        """Syncs the registry and the authored geometry against the open stage.
+
+        Guarded, because this is reached from the timeline callback and the per-frame app update
+        stream. An exception escaping here would repeat on every event, which is the log-spam failure
+        mode of AGENTS.md section E; it is reported once and then stops.
+        """
+        stage = volume_triggers.current_stage()
         if not stage:
             return
+        try:
+            self._sync_volumes(stage)
+        except Exception as error:
+            if not self._report_error_logged:
+                self._report_error_logged = True
+                if carb:
+                    carb.log_error(f"[hydragon.editor.core] Force volume sync failed: {error}")
+                    try:
+                        import traceback
+
+                        carb.log_error(traceback.format_exc())
+                    except Exception:
+                        pass
+
+    def _sync_volumes(self, stage) -> None:
+        """Authors geometry for every Force Volume and rebuilds the in-memory registry.
+
+        Idempotent, because `volume_triggers` skips authoring when nothing changed - which is what
+        makes it safe to call after an arbitrary USD edit, and what stops the authoring itself from
+        producing an endless stream of further edits.
+        """
+        if not HAS_KIT or not stage:
+            return
+
+        self._stage_id = UsdUtils.StageCache.Get().GetId(stage).ToLongInt() if UsdUtils else 0
+        seen: Set[str] = set()
 
         for prim in stage.Traverse():
             if not prim or not prim.IsValid():
                 continue
-            if HydragonForceVolume.is_applied(prim):
+            # AGENTS.md section C destroys an entity with SetActive(False); an inactive volume must
+            # not stay registered, and it must not keep a trigger collider in the simulation.
+            if not prim.IsActive():
+                continue
+            if not HydragonForceVolume.is_applied(prim):
+                continue
+
+            volume_path = str(prim.GetPath())
+            seen.add(volume_path)
+
+            _wireframe, trigger = volume_triggers.ensure_volume(prim, "Force")
+            if trigger is None:
+                self._report_trigger_failure(volume_path)
+                continue
+
+            self._trigger_prims[volume_path] = trigger
+
+            zone = self._active_volumes.get(volume_path)
+            if zone is None:
                 zone = HydragonForceVolumeZone(prim)
-                self._active_volumes[zone.prim_path] = zone
+                self._active_volumes[volume_path] = zone
                 if carb:
                     carb.log_info(
-                        f"[hydragon.editor.core] Registered Force Volume: {zone.prim_path} (mode={zone.mode}, shape={zone.volume_shape})"
+                        f"[hydragon.editor.core] Registered Force Volume: {volume_path} "
+                        f"(mode={zone.mode}, shape={zone.volume_shape})"
                     )
+            else:
+                # The geometry was just re-authored, so the cached centre and extents may have moved.
+                zone.refresh_bounds()
+
+        for stale_path in [p for p in self._active_volumes if p not in seen]:
+            self._active_volumes.pop(stale_path)
+            self._inside.pop(stale_path, None)
+            self._trigger_prims.pop(stale_path, None)
+            volume_triggers.forget(stale_path)
+            if carb:
+                carb.log_info(f"[hydragon.editor.core] Unregistered Force Volume: {stale_path}")
+
+    def _report_trigger_failure(self, volume_path: str) -> None:
+        """Fails loud, once. Without a trigger the volume has no gameplay effect at all.
+
+        Deliberately NOT a silent fallback to the old analytic test: a fallback would hide an
+        incomplete migration and quietly reinstate the second source of truth the whole change
+        exists to remove.
+        """
+        if self._trigger_failure_logged:
+            return
+        self._trigger_failure_logged = True
+        if carb:
+            carb.log_error(
+                "[hydragon.editor.core] Could not author a PhysX trigger for Force Volume "
+                f"'{volume_path}'. Force volumes will have NO effect until this is fixed. "
+                "Check that UsdPhysics/PhysxSchema are available and that the prim is a valid Gprim."
+            )
 
     def _on_physics_step(self, dt: float):
+        """Applies the forces for whatever PhysX currently reports inside each volume.
+
+        The old version scanned every volume against every tracked body, every step. There is no scan
+        now, and no Python overlap test either: PhysX resolves the overlap in its own broadphase and
+        keeps `physxTrigger:triggeredCollisions` current, so this reads that back and differences it
+        against the previous step.
+
+        Reading a SNAPSHOT rather than consuming edges also closes a hole an event model has: a body
+        already inside when the simulation starts never produces an enter event, but it is present in
+        the first snapshot.
+        """
         if not self._is_simulating or not self._active_volumes:
             return
 
         self._sim_time += dt
-        now = time.time()
+        self._last_dt = dt
 
-        stage = omni.usd.get_context().get_stage() if HAS_KIT and omni.usd.get_context() else None
-        if not stage:
-            return
-
-        stage_id = UsdUtils.StageCache.Get().GetId(stage).ToLongInt() if HAS_KIT and UsdUtils else 0
-        physx_iface = get_physx_interface() if HAS_KIT else None
-        sim_iface = get_physx_simulation_interface() if HAS_KIT else None
-
-        # 1. Collect tracked dynamic bodies
-        tracked_bodies = self._gather_active_rigid_bodies(stage, physx_iface)
-
-        # 2. Iterate each volume zone
-        for zone in self._active_volumes.values():
-            if not zone.is_enabled:
+        for volume_path, zone in list(self._active_volumes.items()):
+            trigger_prim = self._trigger_prims.get(volume_path)
+            if trigger_prim is None or not trigger_prim.IsValid():
                 continue
 
-            filter_fac = zone.filter_faction
-            mode = zone.mode
+            previous = self._inside.get(volume_path, {})
+            current: Dict[str, Dict[str, Any]] = {}
+            for collider_path in volume_triggers.triggered_colliders(trigger_prim):
+                record = volume_triggers.resolve_inside_body(collider_path, zone.filter_faction)
+                if record is not None:
+                    current[collider_path] = record
 
-            for rb_info in tracked_bodies:
-                faction = rb_info.get("faction", "Unknown")
-                if filter_fac != "All" and filter_fac != "RigidBodies" and filter_fac != faction:
-                    continue
+            for collider_path, record in current.items():
+                if zone.mode == "Impulse":
+                    # An impulse is the ENTERING EDGE only. A body present in the first snapshot
+                    # counts as entering, which is why `previous` starts empty.
+                    if collider_path not in previous:
+                        self._apply_force_to_body(zone, record["rb_path"], mode="Impulse")
+                else:
+                    self._apply_force_to_body(zone, record["rb_path"], mode="Force")
 
-                pos = rb_info["world_pos"]
-                rb_path = rb_info["rb_path"]
-                prim_id = rb_info["prim_id"]
-                vel = rb_info["linear_vel"]
-                ang_vel = rb_info["angular_vel"]
+            self._inside[volume_path] = current
 
-                # Overlap check
-                if not zone.check_overlap(pos):
-                    continue
+    def _apply_force_to_body(self, zone, body_path: str, mode: str) -> None:
+        """Evaluates a volume's force for one body and hands it to PhysX."""
+        if mode == "Impulse" and not zone.can_apply_impulse(body_path, time.time()):
+            return
 
-                # Impulse vs Continuous logic
-                if mode == "Impulse":
-                    if not zone.can_apply_impulse(rb_path, now):
-                        continue
-                    force_vec, _, _ = zone.compute_forces(pos, vel, ang_vel, self._sim_time, dt)
-                    if sim_iface and any(abs(c) > 1e-3 for c in force_vec):
-                        sim_iface.apply_force_at_pos(
-                            stage_id, prim_id, carb.Float3(force_vec[0], force_vec[1], force_vec[2]), carb.Float3(pos[0], pos[1], pos[2]), "Impulse"
-                        )
-                else:  # Continuous
-                    force_vec, damped_v, damped_w = zone.compute_forces(pos, vel, ang_vel, self._sim_time, dt)
-                    # Apply continuous force
-                    if sim_iface and any(abs(c) > 1e-3 for c in force_vec):
-                        sim_iface.apply_force_at_pos(
-                            stage_id, prim_id, carb.Float3(force_vec[0], force_vec[1], force_vec[2]), carb.Float3(pos[0], pos[1], pos[2]), "Force"
-                        )
-                    # Apply dampening directly if changed
-                    if physx_iface and (damped_v != vel or damped_w != ang_vel):
-                        try:
-                            for set_m in ("set_rigidbody_linear_velocity", "set_linear_velocity"):
-                                if hasattr(physx_iface, set_m):
-                                    getattr(physx_iface, set_m)(rb_path, carb.Float3(damped_v[0], damped_v[1], damped_v[2]))
-                                    break
-                            for set_wm in ("set_rigidbody_angular_velocity", "set_angular_velocity"):
-                                if hasattr(physx_iface, set_wm):
-                                    getattr(physx_iface, set_wm)(rb_path, carb.Float3(damped_w[0], damped_w[1], damped_w[2]))
-                                    break
-                        except Exception:
-                            pass
+        state = self._body_state(body_path)
+        if state is None:
+            return
 
-    def _gather_active_rigid_bodies(self, stage, physx_iface) -> List[Dict[str, Any]]:
-        """Collects Player and Foes active rigid bodies from in-memory controllers."""
-        bodies = []
+        sim_iface = get_physx_simulation_interface() if HAS_KIT else None
+        if sim_iface is None:
+            return
 
-        # A. Player Body
+        position = state["world_pos"]
+        force_vec, damped_v, damped_w = zone.compute_forces(
+            position, state["linear_vel"], state["angular_vel"], self._sim_time, self._last_dt
+        )
+
+        if any(abs(component) > 1e-3 for component in force_vec):
+            sim_iface.apply_force_at_pos(
+                self._stage_id,
+                state["prim_id"],
+                carb.Float3(force_vec[0], force_vec[1], force_vec[2]),
+                carb.Float3(position[0], position[1], position[2]),
+                mode,
+            )
+
+        if mode != "Impulse" and (
+            damped_v != state["linear_vel"] or damped_w != state["angular_vel"]
+        ):
+            self._set_body_velocities(body_path, damped_v, damped_w)
+
+    def _set_body_velocities(self, body_path: str, linear, angular) -> None:
+        """Writes damped velocities back to a body.
+
+        Dampening is applied by writing velocities rather than by PhysX damping attributes, so that
+        it stops the instant the body leaves the volume.
+        """
+        physx_iface = get_physx_interface() if HAS_KIT else None
+        if not physx_iface:
+            return
         try:
-            from .player_controller import HydragonPlayerControllerSystem
-            player_sys = HydragonPlayerControllerSystem.get_instance()
-            if player_sys and player_sys.is_active_and_simulating():
-                rb_path = player_sys.get_player_rb_path()
-                pos = player_sys.get_player_world_pos()
-                if rb_path and pos:
-                    prim_id = PhysicsSchemaTools.sdfPathToInt(rb_path) if PhysicsSchemaTools else 0
-                    vel, w_vel = self._get_body_velocities(physx_iface, rb_path)
-                    bodies.append({
-                        "rb_path": rb_path,
-                        "prim_id": prim_id,
-                        "world_pos": pos,
-                        "linear_vel": vel,
-                        "angular_vel": w_vel,
-                        "faction": "Player",
-                    })
+            for set_linear in ("set_rigidbody_linear_velocity", "set_linear_velocity"):
+                if hasattr(physx_iface, set_linear):
+                    getattr(physx_iface, set_linear)(
+                        body_path, carb.Float3(linear[0], linear[1], linear[2])
+                    )
+                    break
+            for set_angular in ("set_rigidbody_angular_velocity", "set_angular_velocity"):
+                if hasattr(physx_iface, set_angular):
+                    getattr(physx_iface, set_angular)(
+                        body_path, carb.Float3(angular[0], angular[1], angular[2])
+                    )
+                    break
         except Exception:
             pass
 
-        # B. Foes Bodies
-        try:
-            from .foes_controller import HydragonFoesControllerSystem
-            foes_sys = HydragonFoesControllerSystem.get_instance()
-            if foes_sys and foes_sys.is_active_and_simulating():
-                for brain in getattr(foes_sys, "_active_brains", {}).values():
-                    if brain and brain.is_alive and getattr(brain, "_rb_path", None):
-                        rb_path = brain._rb_path
-                        pos = brain._current_pos
-                        prim_id = PhysicsSchemaTools.sdfPathToInt(rb_path) if PhysicsSchemaTools else 0
-                        vel, w_vel = self._get_body_velocities(physx_iface, rb_path)
-                        bodies.append({
-                            "rb_path": rb_path,
-                            "prim_id": prim_id,
-                            "world_pos": pos,
-                            "linear_vel": vel,
-                            "angular_vel": w_vel,
-                            "faction": "Enemy",
-                        })
-        except Exception:
-            pass
+    def _body_state(self, body_path: str) -> Optional[Dict[str, Any]]:
+        """Reads a body's simulated state from PhysX.
 
-        return bodies
+        `get_rigidbody_transformation` returns the body's own transform, i.e. its centre of mass.
+        That is where AGENTS.md section D requires a force to be applied, and it is a correction:
+        the previous implementation applied forces at the prim position reported by the controller,
+        which is not the same point for a body with an offset collider.
+        """
+        physx_iface = get_physx_interface() if HAS_KIT else None
+        if not physx_iface or not body_path:
+            return None
+
+        try:
+            transform = physx_iface.get_rigidbody_transformation(body_path)
+            position = None
+            if isinstance(transform, dict):
+                position = transform.get("position")
+            elif transform is not None and hasattr(transform, "position"):
+                position = transform.position
+            if position is None:
+                return None
+
+            linear, angular = self._get_body_velocities(physx_iface, body_path)
+            return {
+                "world_pos": (float(position[0]), float(position[1]), float(position[2])),
+                "linear_vel": linear,
+                "angular_vel": angular,
+                "prim_id": PhysicsSchemaTools.sdfPathToInt(body_path) if PhysicsSchemaTools else 0,
+            }
+        except Exception:
+            return None
 
     def _get_body_velocities(self, physx_iface, rb_path: str) -> Tuple[Tuple[float, float, float], Tuple[float, float, float]]:
         """Extracts current linear and angular velocities from PhysX interface."""

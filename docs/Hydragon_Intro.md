@@ -151,7 +151,7 @@ hydragon.editor.core.foes_controller
 hydragon.editor.core.effects_controller
 hydragon.editor.core.game_hud
 hydragon.editor.core.menu
-hydragon.editor.core.volume_viewport_manipulator
+hydragon.editor.core.volume_triggers
 ```
 
 A further cluster (`_ensure_api_schema`, `_apply_schema`, `_instantiate_asset`, `_build_create_menu`) is the bridge between editor and engine: it builds the creation menu, instantiates assets and applies API Schemas. It is what turns "componentize a prim" from a concept into a UI action.

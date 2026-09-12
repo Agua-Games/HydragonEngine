@@ -39,6 +39,20 @@ This document defines the core engineering standards and conventions for all AI 
 * Always apply physical forces at the rigid body's true simulated center of mass (world_pos from physx_iface.get_rigidbody_transformation), never at the world origin (0, 0, 0).
 * Author and ensure physics:angularDamping and physics:linearDamping on rolling entities to avoid unconstrained rotational energy accumulation.
 
+### E. Per-Frame Callbacks Must Never Spam the Log
+
+* **Every callback on a per-frame or per-step stream must be exception-safe at its top level:** `_on_app_update` (get_update_event_stream), `_on_physics_step` (PhysX step events), and any `Tf.Notice` handler that can fire per frame.
+* **Why this is not optional.** An uncaught exception in a per-frame callback prints a full traceback on *every* frame, for the whole life of the session. Measured in this repository: a single one-line `AttributeError` raised from `_on_app_update` (a missing `self._fallthrough_counter`) produced **893 MB of Kit log in one session** — 258 identical tracebacks inside a 200 KB sample window, roughly 11 MB per hour, sustained.
+* **Fail loud once, then stop.** Guard the callback body and, on the first failure:
+  1. Log with `carb.log_error`, including the full traceback and a clear component tag.
+  2. Set a flag that disables the callback, or at minimum stops the retry.
+  3. Keep it disabled until something explicitly re-enables it (`startup()`, a stage event, a user action).
+
+  This keeps the fail-loud rule from section 1.A while making a one-off defect cost one log line instead of a gigabyte.
+* **Do NOT wrap a whole callback in `try/except Exception: pass`.** Silently swallowing the error is worse than the spam: the feature stops working with no evidence at all. The guard must *report*, not conceal.
+* **Never leave a persistent setting mutated.** Anything written under `/persistent/...` survives a restart and silently changes behaviour for every later session. This includes `/persistent/physics/visualizationDisplayColliders` and `/persistent/app/hydragon/viewport/showVolumes` (the Hydragon volume wireframe toggle, owned by `volume_triggers.VolumeDisplayToggle`). Restore the previous value when the operation that changed it finishes, or scope the change to something non-persistent.
+* **Weigh the cost before enabling a scene-wide debug visualisation.** `visualizationDisplayColliders` is a None / Selected / All radiobox with no per-prim granularity: "All" enables debug drawing for *every* collider in the stage, including large triangle-mesh colliders such as ground planes and vehicle meshes. Use "Selected", or expect the editor to seize up.
+
 ## Codebase Memory MCP
 
 **MANDATORY: use Codebase Memory MCP graph tools FIRST — before reading files or making code changes.**

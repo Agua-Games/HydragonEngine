@@ -211,6 +211,40 @@ class HydragonTriggerZone:
         self._triggered = True
 
 
+def is_hydragon_trigger_entity(prim) -> bool:
+    """Whether a prim is a Hydragon GAMEPLAY trigger entity.
+
+    A Hydragon trigger is marked by its own schema (`HydragonTriggerAPI`, or failing that its
+    `trigger:*` attributes). The prim's NAME may stand in for the schema, for stages authored
+    before the schema existed.
+
+    The presence of PhysX's `PhysxTriggerAPI` is deliberately NOT accepted as a marker. That schema
+    is a physics MECHANISM - applied to any collider that should report overlap instead of blocking -
+    and not an entity tag. Treating it as one meant that the moment the Force and Kill volumes
+    started generating their own trigger colliders, every one of those colliders registered here as a
+    trigger entity. The result was absurd and user-visible: entering a force volume fired the Goal
+    Hole's "level complete" event, because the volume's collider produced a trigger report, that
+    report matched one of these freshly discovered zones, and such a zone has no `trigger:eventType`
+    - so it defaulted to `OnLevelComplete`.
+
+    This is the same distinction AGENTS.md draws: USD API Schemas are ECS components, and an entity
+    is identified by its OWN component, never by a mechanism it happens to use.
+    """
+    if prim is None or not hasattr(prim, "GetName"):
+        return False
+
+    if HydragonTrigger.is_applied(prim):
+        return True
+
+    is_actor = HydragonPlayerController.is_applied(prim)
+    if not is_actor and hasattr(prim, "HasAPI"):
+        is_actor = prim.HasAPI("HydragonChaserAIAPI")
+    if is_actor:
+        return False
+
+    return "goal" in prim.GetName().lower()
+
+
 class HydragonTriggerSystem:
     """
     Manages trigger zones, win-condition evaluation, and game session state.
@@ -677,14 +711,10 @@ class HydragonTriggerSystem:
             if not prim.IsValid() or not prim.IsActive():
                 continue
 
-            # Check for Trigger schema or native trigger / goal prims
-            is_trigger = HydragonTrigger.is_applied(prim)
-            if not is_trigger:
-                prim_name_lower = prim.GetName().lower()
-                if (prim.HasAPI("PhysxTriggerAPI") or "goal" in prim_name_lower) and not (
-                    HydragonPlayerController.is_applied(prim) or prim.HasAPI("HydragonChaserAIAPI")
-                ):
-                    is_trigger = True
+            # Only genuine Hydragon trigger entities. See `is_hydragon_trigger_entity` for why a
+            # physx `PhysxTriggerAPI` collider - such as a Force or Kill volume's generated trigger -
+            # must NOT be accepted here.
+            is_trigger = is_hydragon_trigger_entity(prim)
 
             if is_trigger:
                 prim_path = prim.GetPath().pathString

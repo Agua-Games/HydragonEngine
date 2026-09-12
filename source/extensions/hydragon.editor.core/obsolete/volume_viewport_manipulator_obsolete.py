@@ -1,4 +1,11 @@
 """
+OBSOLETE - retired 2026-09-11. NOT imported, NOT built, NOT shipped. See ./README.md.
+
+Kept for reference only. The `omni.ui.scene` overlay was replaced by USD geometry authored into the
+stage (`volume_triggers.ensure_wireframe()` / `ensure_trigger()`), so the volumes travel with the
+.usda and are visible and pickable in any application that opens it. The file name carries a suffix
+inside a folder outside the build tree, so it can never be imported by accident.
+
 Hydragon Engine - Volume Viewport Overlay Manipulator
 
 High-performance viewport overlay using `omni.ui.scene` to draw lightweight,
@@ -34,6 +41,7 @@ except ImportError:
     Sdf = None
     Tf = None
 
+from . import volume_bounds
 from .schemas import HydragonForceVolume, HydragonKillVolume
 
 SETTING_SHOW_VOLUMES = "/persistent/app/hydragon/viewport/showVolumes"
@@ -209,10 +217,7 @@ def generate_shape_wireframe_segments(
     return segments
 
 
-BOUNDS_PRIM_REL_PATH = {
-    "Force": "volumes/force_bounds",
-    "Kill": "volumes/kill_bounds",
-}
+BOUNDS_PRIM_REL_PATH = volume_bounds.BOUNDS_PRIM_REL_PATH
 
 
 class VolumeOverlayEntry:
@@ -266,37 +271,26 @@ class VolumeOverlayEntry:
         return prim
 
     def read_shape(self, prim) -> str:
-        shape = "Box"
-        attr_name = "force:volumeShape" if self.volume_type == "Force" else "kill:volumeShape"
-        if prim.HasAttribute(attr_name):
-            attr = prim.GetAttribute(attr_name)
-            if attr and attr.IsValid():
-                val = attr.Get()
-                if val:
-                    shape = str(val)
-        return shape
+        """The authored shape token. Delegated so play and the gizmo cannot disagree."""
+        return volume_bounds.read_shape(prim, self.volume_type)
 
     def read_dimensions(self, prim) -> Tuple[Tuple[float, float, float], float, float]:
+        """The volume's size, from the SAME measurement the gameplay overlap test uses.
+
+        The gizmo draws in the `volumes` group's frame (that is the transform its scene node gets),
+        so that frame is declared explicitly. Measuring the raw `extent` attribute instead - as this
+        used to - ignored the bounds prim's own scale, which made the gizmo 3x too small on the
+        shipped `ForceVolume_vortex` asset.
+        """
         target_prim = self.get_target_xform_prim(prim)
         is_sub_volume = (target_prim != prim)
         default_extent = 100.0 if self.volume_type == "Force" else (50.0 if is_sub_volume else 500.0)
-        base_hx, base_hy, base_hz = default_extent, default_extent, default_extent
-
-        bounds_rel_path = BOUNDS_PRIM_REL_PATH.get(self.volume_type, "volumes/force_bounds")
-        bounds_prim = prim.GetPrimAtPath(bounds_rel_path)
-        if bounds_prim and bounds_prim.IsValid():
-            ext_attr = bounds_prim.GetAttribute("extent")
-            if ext_attr and ext_attr.IsValid():
-                ext_val = ext_attr.Get()
-                if ext_val and len(ext_val) >= 2:
-                    base_hx = max(10.0, max(abs(float(ext_val[0][0])), abs(float(ext_val[1][0]))))
-                    base_hy = max(10.0, max(abs(float(ext_val[0][1])), abs(float(ext_val[1][1]))))
-                    base_hz = max(10.0, max(abs(float(ext_val[0][2])), abs(float(ext_val[1][2]))))
-
-        half_extents = (base_hx, base_hy, base_hz)
-        radius = max(base_hx, base_hz)
-        half_height = base_hy
-        return half_extents, radius, half_height
+        return volume_bounds.measure_shape_parameters(
+            prim,
+            self.volume_type,
+            default_half_extent=default_extent,
+            reference_prim=target_prim,
+        )
 
     def rebuild_lines(self, prim):
         if not HAS_KIT or not sc or not self.transform_node:

@@ -23,5 +23,4 @@ from .effects_controller import HydragonEffectsSystem, ActiveExplosionVFX
 from .soundtrack_controller import HydragonSoundtrackSystem, HydragonSoundtrackEntity
 from .force_volume_controller import HydragonForceVolumeSystem, HydragonForceVolumeZone
 from .kill_volume_controller import HydragonKillVolumeSystem, HydragonKillZone
-from .volume_viewport_manipulator import HydragonVolumeViewportOverlay
-
+from .volume_triggers import VolumeDisplayToggle, SETTING_SHOW_VOLUMES

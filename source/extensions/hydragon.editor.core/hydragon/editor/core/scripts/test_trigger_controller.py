@@ -233,6 +233,138 @@ def test_trigger_audio_playback_and_filtering():
     print("  [PASS] Trigger audio playback and one-shot filtering verified")
 
 
+def test_trigger_entity_discovery_rejects_physics_triggers():
+    print("--- 8. Testing Trigger Entity Discovery Rules ---")
+    from hydragon.editor.core.trigger_controller import is_hydragon_trigger_entity
+
+    class MockPrim:
+        """Just enough of a Usd.Prim for the discovery predicate."""
+
+        def __init__(self, name, api_schemas=(), attributes=()):
+            self._name = name
+            self._api_schemas = set(api_schemas)
+            self._attributes = set(attributes)
+
+        def GetName(self):
+            return self._name
+
+        def HasAPI(self, name):
+            return name in self._api_schemas
+
+        def HasAttribute(self, name):
+            return name in self._attributes
+
+        def GetAppliedSchemas(self):
+            return sorted(self._api_schemas)
+
+        def GetMetadata(self, key):
+            return None
+
+    # THE REGRESSION. A Force or Kill volume's generated trigger collider carries PhysxTriggerAPI.
+    # Treating that schema as an entity marker registered every volume's collider as a trigger
+    # entity, so entering a force volume fired the Goal Hole's "level complete" event: the volume
+    # reported an overlap, the report matched one of those zones, and such a zone has no
+    # `trigger:eventType` - so it defaulted to OnLevelComplete.
+    assert not is_hydragon_trigger_entity(
+        MockPrim("force_trigger", api_schemas=("PhysicsCollisionAPI", "PhysxTriggerAPI"))
+    ), "PhysxTriggerAPI is a physics MECHANISM, not a Hydragon trigger entity marker"
+    assert not is_hydragon_trigger_entity(
+        MockPrim("kill_trigger", api_schemas=("PhysxTriggerAPI",))
+    ), "The Kill volume's generated collider must be rejected too"
+
+    # A genuine Hydragon trigger is marked by its OWN schema - or, headless, by its attributes.
+    assert is_hydragon_trigger_entity(
+        MockPrim("hydragon_goal_hole_root", attributes=("trigger:eventType",))
+    ), "A prim carrying the HydragonTrigger attributes IS a trigger entity"
+
+    # The name heuristic still stands in for the schema, for stages authored before it existed.
+    assert is_hydragon_trigger_entity(MockPrim("GoalHole")), "A 'goal' prim is still discovered"
+    assert not is_hydragon_trigger_entity(MockPrim("Ground")), "An unrelated prim is not a trigger"
+    assert not is_hydragon_trigger_entity(None), "None must be handled without raising"
+    print("  [PASS] Trigger entity discovery rules verified")
+
+
+def test_discovery_ignores_volume_trigger_colliders():
+    print("--- 9. Testing Discovery End to End ---")
+    # The predicate test above pins the RULE. This one pins the WIRING: it runs the real discovery
+    # over a stage containing both a volume's generated collider and a genuine goal volume, so that
+    # reinstating a permissive clause inside the discovery loop cannot pass unnoticed.
+
+    class MockPath:
+        def __init__(self, value):
+            self.pathString = value
+
+    class MockPrim:
+        def __init__(self, name, path, api_schemas=(), attributes=()):
+            self._name = name
+            self._path = path
+            self._api_schemas = set(api_schemas)
+            self._attributes = set(attributes)
+
+        def IsValid(self):
+            return True
+
+        def IsActive(self):
+            return True
+
+        def GetName(self):
+            return self._name
+
+        def GetPath(self):
+            return MockPath(self._path)
+
+        def HasAPI(self, name):
+            return name in self._api_schemas
+
+        def HasAttribute(self, name):
+            return name in self._attributes
+
+        def GetAppliedSchemas(self):
+            return sorted(self._api_schemas)
+
+        def GetMetadata(self, key):
+            return None
+
+        def GetPrimAtPath(self, relative):
+            return None
+
+        def GetAllChildren(self):
+            return []
+
+    class MockStage:
+        def __init__(self, prims):
+            self._prims = prims
+
+        def Traverse(self):
+            return iter(self._prims)
+
+    system = HydragonTriggerSystem()
+    system._is_simulating = True
+
+    stage = MockStage([
+        MockPrim(
+            "force_trigger",
+            "/World/ForceVolume_vortex/volumes/force_trigger",
+            api_schemas=("PhysicsCollisionAPI", "PhysxTriggerAPI"),
+        ),
+        MockPrim(
+            "kill_trigger",
+            "/World/KillVolume/volumes/kill_trigger",
+            api_schemas=("PhysicsCollisionAPI", "PhysxTriggerAPI"),
+        ),
+        MockPrim("GoalHole", "/World/GoalHole"),
+    ])
+
+    system._discover_entities_once(stage)
+
+    discovered = sorted(system._active_triggers)
+    assert discovered == ["/World/GoalHole"], (
+        f"Only the genuine goal volume may be discovered, got {discovered}"
+    )
+    system.shutdown()
+    print("  [PASS] Discovery end to end verified")
+
+
 if __name__ == "__main__":
     test_trigger_system_lifecycle()
     test_trigger_zone_overlap_math()
@@ -241,6 +373,8 @@ if __name__ == "__main__":
     test_trigger_report_event_filtering()
     test_repeated_play_session_reset()
     test_trigger_audio_playback_and_filtering()
+    test_trigger_entity_discovery_rejects_physics_triggers()
+    test_discovery_ignores_volume_trigger_colliders()
     print("\n=======================================================")
-    print(" ALL TRIGGER CONTROLLER SYSTEM TESTS PASSED! (7/7)")
+    print(" ALL TRIGGER CONTROLLER SYSTEM TESTS PASSED! (9/9)")
     print("=======================================================")

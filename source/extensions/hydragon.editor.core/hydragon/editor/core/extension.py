@@ -58,14 +58,14 @@ class HydragonEditorCoreExtension(_IExt):
         self._kill_volume_system = HydragonKillVolumeSystem()
         self._kill_volume_system.startup()
 
-        from .volume_viewport_manipulator import HydragonVolumeViewportOverlay
-        self._volume_viewport_overlay = HydragonVolumeViewportOverlay(ext_id)
-        self._volume_viewport_overlay.startup()
+        from .volume_triggers import VolumeDisplayToggle
+        self._volume_display_toggle = VolumeDisplayToggle()
+        self._volume_display_toggle.startup()
 
     def on_shutdown(self):
-        if hasattr(self, "_volume_viewport_overlay") and self._volume_viewport_overlay:
-            self._volume_viewport_overlay.shutdown()
-            self._volume_viewport_overlay = None
+        if hasattr(self, "_volume_display_toggle") and self._volume_display_toggle:
+            self._volume_display_toggle.shutdown()
+            self._volume_display_toggle = None
         if hasattr(self, "_kill_volume_system") and self._kill_volume_system:
             self._kill_volume_system.shutdown()
             self._kill_volume_system = None
@@ -105,14 +105,14 @@ class HydragonEditorCoreExtension(_IExt):
     def _patch_menu_utils(self):
         try:
             import omni.kit.menu.utils.app_menu as app_menu
-            
+
             # Save original method just in case
             self._original_sort_menu_hook = app_menu.AppMenu.sort_menu_hook
-            
+
             @staticmethod
             def patched_sort_menu_hook(merged_menu):
                 from omni.kit.menu.utils.builder_utils import MenuItemDescription
-                
+
                 def priority_sort(menu_entry):
                     if hasattr(menu_entry, "priority"):
                         return menu_entry.priority
@@ -132,9 +132,9 @@ class HydragonEditorCoreExtension(_IExt):
 
                 for name in merged_menu:
                     sort_sub_menu(merged_menu[name])
-                    
+
             app_menu.AppMenu.sort_menu_hook = patched_sort_menu_hook
             carb.log_info("[hydragon.editor.core] Successfully monkeypatched AppMenu.sort_menu_hook to protect against tuple sub_menus.")
-            
+
         except Exception as e:
             carb.log_error(f"[hydragon.editor.core] Failed to monkeypatch omni.kit.menu.utils: {e}")
