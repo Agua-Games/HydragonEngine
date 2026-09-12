@@ -34,6 +34,8 @@ from .schemas import (
     HydragonForceVolume,
     HydragonKillVolume,
     HydragonPhysicsManager,
+    HydragonOcean,
+    HydragonWaterBody,
 )
 
 
@@ -312,6 +314,14 @@ class HydragonMenuManager:
                 name="Kill Volume",
                 onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_kill_volume/kill_volume.usda", "KillVolume", as_payload=True)
             ),
+            MenuItemDescription(
+                name="Ocean",
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_ocean/ocean.usda", "Ocean", as_payload=True)
+            ),
+            MenuItemDescription(
+                name="Water Body",
+                onclick_fn=lambda: self._instantiate_asset("assets/gameplay/hydragon_water_body/water_body.usda", "WaterBody", as_payload=True)
+            ),
             # Separator
             MenuItemDescription(name=""),
             # API Schemas Submenu
@@ -366,6 +376,14 @@ class HydragonMenuManager:
                         name="Apply HydragonKillVolumeAPI",
                         onclick_fn=lambda: self._apply_schema(HydragonKillVolume)
                     ),
+                    MenuItemDescription(
+                        name="Apply HydragonOceanAPI",
+                        onclick_fn=lambda: self._apply_schema(HydragonOcean)
+                    ),
+                    MenuItemDescription(
+                        name="Apply HydragonWaterBodyAPI",
+                        onclick_fn=lambda: self._apply_schema(HydragonWaterBody)
+                    ),
                 ]
             )
         ]
@@ -400,6 +418,8 @@ class HydragonMenuManager:
                 {"name": "Apply HydragonPhysicsAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonPhysicsManager)},
                 {"name": "Apply HydragonForceVolumeAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonForceVolume)},
                 {"name": "Apply HydragonKillVolumeAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonKillVolume)},
+                {"name": "Apply HydragonOceanAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonOcean)},
+                {"name": "Apply HydragonWaterBodyAPI", "onclick_fn": lambda *_: self._apply_schema(HydragonWaterBody)},
             ]
 
             hydragon_items = [
@@ -463,6 +483,14 @@ class HydragonMenuManager:
                     "name": "Kill Volume",
                     "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_kill_volume/kill_volume.usda", "KillVolume", as_payload=True)
                 },
+                {
+                    "name": "Ocean",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_ocean/ocean.usda", "Ocean", as_payload=True)
+                },
+                {
+                    "name": "Water Body",
+                    "onclick_fn": lambda *_: self._instantiate_asset("assets/gameplay/hydragon_water_body/water_body.usda", "WaterBody", as_payload=True)
+                },
                 {"name": ""},
                 {
                     "name": {"Apply Schemas": schemas_sub_menu}
@@ -483,4 +511,3 @@ class HydragonMenuManager:
         except Exception as e:
             if carb:
                 carb.log_warn(f"[hydragon.editor.core] Could not register context menu: {e}")
-

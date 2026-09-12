@@ -28,6 +28,7 @@ relying on a specific name or flag.
 |---|---|
 | [viewport_drawing_and_gizmos.md](viewport_drawing_and_gizmos.md) | the three ways to draw in a viewport, how picking really works, `purpose`, hiding helpers, gesture arbitration, bounds |
 | [collision_triggers_and_scene_queries.md](collision_triggers_and_scene_queries.md) | trigger volumes, the two ways to read overlap (one of them unusable), and why scene queries have no filter |
+| [warp_compute_and_tile_fft.md](warp_compute_and_tile_fft.md) | Warp launch cost, the rules of `wp.tile_fft` (including a silently-wrong-results trap), and how to test GPU kernels headlessly with no editor |
 | [debugging_and_tooling.md](debugging_and_tooling.md) | the live debug link to the editor, log locations, the `_build` junction, MCP servers |
 
 ## Choosing how to draw something

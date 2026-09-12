@@ -34,6 +34,8 @@ from .schemas import (
     HydragonForceVolume,
     HydragonKillVolume,
     HydragonPhysicsManager,
+    HydragonOcean,
+    HydragonWaterBody,
 )
 
 
@@ -252,6 +254,24 @@ if HAS_PROPERTY_WINDOW:
                 schema_check_fn=HydragonPhysicsManager.is_applied,
             )
 
+    class HydragonOceanPropertyWidget(HydragonBasePropertyWidget):
+        """Dedicated property panel for HydragonOceanAPI."""
+        def __init__(self):
+            super().__init__(
+                title="Hydragon Ocean",
+                prefix="ocean:",
+                schema_check_fn=HydragonOcean.is_applied,
+            )
+
+    class HydragonWaterBodyPropertyWidget(HydragonBasePropertyWidget):
+        """Dedicated property panel for HydragonWaterBodyAPI."""
+        def __init__(self):
+            super().__init__(
+                title="Hydragon Water Body",
+                prefix="water:",
+                schema_check_fn=HydragonWaterBody.is_applied,
+            )
+
 else:
     class HydragonBasePropertyWidget:
         def __init__(self, *args, **kwargs):
@@ -291,6 +311,12 @@ else:
         pass
 
     class HydragonPhysicsPropertyWidget(HydragonBasePropertyWidget):
+        pass
+
+    class HydragonOceanPropertyWidget(HydragonBasePropertyWidget):
+        pass
+
+    class HydragonWaterBodyPropertyWidget(HydragonBasePropertyWidget):
         pass
 
 
@@ -354,6 +380,8 @@ class HydragonPropertyWidgetsManager:
                 ("hydragon_kill_volume", HydragonKillPropertyWidget()),
                 ("hydragon_effects", HydragonEffectsPropertyWidget()),
                 ("hydragon_physics", HydragonPhysicsPropertyWidget()),
+                ("hydragon_ocean", HydragonOceanPropertyWidget()),
+                ("hydragon_water_body", HydragonWaterBodyPropertyWidget()),
             ]
 
             for name, widget in self._widgets:
@@ -361,7 +389,7 @@ class HydragonPropertyWidgetsManager:
 
             self._registered = True
             if carb:
-                carb.log_info("[hydragon.editor.core] Successfully registered 12 dedicated Hydragon property widgets.")
+                carb.log_info("[hydragon.editor.core] Successfully registered 14 dedicated Hydragon property widgets.")
             return True
         except Exception as e:
             if carb:

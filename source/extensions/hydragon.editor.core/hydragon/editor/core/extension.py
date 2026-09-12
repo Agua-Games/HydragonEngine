@@ -62,7 +62,23 @@ class HydragonEditorCoreExtension(_IExt):
         self._volume_display_toggle = VolumeDisplayToggle()
         self._volume_display_toggle.startup()
 
+        # The ocean starts BEFORE the water body: the water body queries the ocean
+        # for its wave height, so the ocean has to exist first.
+        from .ocean_controller import HydragonOceanSystem
+        self._ocean_system = HydragonOceanSystem()
+        self._ocean_system.startup()
+
+        from .water_body_controller import HydragonWaterBodySystem
+        self._water_body_system = HydragonWaterBodySystem()
+        self._water_body_system.startup()
+
     def on_shutdown(self):
+        if hasattr(self, "_water_body_system") and self._water_body_system:
+            self._water_body_system.shutdown()
+            self._water_body_system = None
+        if hasattr(self, "_ocean_system") and self._ocean_system:
+            self._ocean_system.shutdown()
+            self._ocean_system = None
         if hasattr(self, "_volume_display_toggle") and self._volume_display_toggle:
             self._volume_display_toggle.shutdown()
             self._volume_display_toggle = None

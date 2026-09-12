@@ -12,6 +12,8 @@ from .schemas import (
     HydragonForceVolume,
     HydragonKillVolume,
     HydragonPhysicsManager,
+    HydragonOcean,
+    HydragonWaterBody,
 )
 from .player_controller import HydragonPlayerControllerSystem
 from .camera_controller import HydragonCameraControllerSystem
@@ -24,3 +26,5 @@ from .soundtrack_controller import HydragonSoundtrackSystem, HydragonSoundtrackE
 from .force_volume_controller import HydragonForceVolumeSystem, HydragonForceVolumeZone
 from .kill_volume_controller import HydragonKillVolumeSystem, HydragonKillZone
 from .volume_triggers import VolumeDisplayToggle, SETTING_SHOW_VOLUMES
+from .ocean_controller import HydragonOceanSystem, HydragonOceanPatch
+from .water_body_controller import HydragonWaterBodySystem, HydragonWaterBodyZone

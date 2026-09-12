@@ -1767,3 +1767,318 @@ class HydragonPhysicsManager:
     def bounce_threshold(self, val: float):
         _set_attr_value(self._prim, "physics:bounceThreshold", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
 
+
+# ==============================================================================
+# HydragonOcean
+# ==============================================================================
+class HydragonOcean:
+    """A spectral ocean patch: the entity that owns the wave simulation."""
+
+    SCHEMA_NAME = "HydragonOceanAPI"
+
+    #: Mirrored from `ocean_spectrum` so the defaults live in one place and the
+    #: schema, the wrapper and the property panel cannot disagree.
+    DEFAULT_RESOLUTION = 256
+    DEFAULT_PATCH_SIZE = 1000.0
+    DEFAULT_WIND_SPEED = 15.0
+    DEFAULT_WIND_DIRECTION = 0.0
+    DEFAULT_SIGNIFICANT_HEIGHT = 0.0
+    DEFAULT_CHOPPINESS = 1.0
+    DEFAULT_SEED = 42
+    DEFAULT_FOAM_THRESHOLD = 0.85
+    DEFAULT_FOAM_BIAS = 0.35
+    DEFAULT_TIME_SCALE = 1.0
+
+    def __init__(self, prim):
+        self._orig_prim = prim
+        self._prim = prim if prim is not None else _InMemoryMockPrim()
+
+    @property
+    def prim(self):
+        return self._prim
+
+    @classmethod
+    def apply(
+        cls,
+        prim,
+        resolution: int = DEFAULT_RESOLUTION,
+        patch_size: float = DEFAULT_PATCH_SIZE,
+        wind_speed: float = DEFAULT_WIND_SPEED,
+        wind_direction: float = DEFAULT_WIND_DIRECTION,
+        significant_height: float = DEFAULT_SIGNIFICANT_HEIGHT,
+        choppiness: float = DEFAULT_CHOPPINESS,
+        seed: int = DEFAULT_SEED,
+        foam_threshold: float = DEFAULT_FOAM_THRESHOLD,
+        foam_bias: float = DEFAULT_FOAM_BIAS,
+        time_scale: float = DEFAULT_TIME_SCALE,
+    ):
+        _ensure_api_schema(prim, cls.SCHEMA_NAME)
+        ocean = cls(prim)
+        ocean.is_enabled = True
+        ocean.resolution = resolution
+        ocean.patch_size = patch_size
+        ocean.wind_speed = wind_speed
+        ocean.wind_direction = wind_direction
+        ocean.significant_height = significant_height
+        ocean.choppiness = choppiness
+        ocean.seed = seed
+        ocean.foam_threshold = foam_threshold
+        ocean.foam_bias = foam_bias
+        ocean.time_scale = time_scale
+        return ocean
+
+    @classmethod
+    def is_applied(cls, prim) -> bool:
+        return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
+            prim and hasattr(prim, "HasAttribute") and (
+                prim.HasAttribute("ocean:windSpeed") or prim.HasAttribute("ocean:patchSize")
+            )
+        )
+
+    @property
+    def is_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "ocean:isEnabled", True))
+
+    @is_enabled.setter
+    def is_enabled(self, val: bool):
+        _set_attr_value(self._prim, "ocean:isEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def resolution(self) -> int:
+        return int(_get_attr_value(self._prim, "ocean:resolution", self.DEFAULT_RESOLUTION))
+
+    @resolution.setter
+    def resolution(self, val: int):
+        _set_attr_value(self._prim, "ocean:resolution", int(val), Sdf.ValueTypeNames.Int if HAS_PXR else None)
+
+    @property
+    def patch_size(self) -> float:
+        return float(_get_attr_value(self._prim, "ocean:patchSize", self.DEFAULT_PATCH_SIZE))
+
+    @patch_size.setter
+    def patch_size(self, val: float):
+        _set_attr_value(self._prim, "ocean:patchSize", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def wind_speed(self) -> float:
+        return float(_get_attr_value(self._prim, "ocean:windSpeed", self.DEFAULT_WIND_SPEED))
+
+    @wind_speed.setter
+    def wind_speed(self, val: float):
+        _set_attr_value(self._prim, "ocean:windSpeed", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def wind_direction(self) -> float:
+        return float(_get_attr_value(self._prim, "ocean:windDirection", self.DEFAULT_WIND_DIRECTION))
+
+    @wind_direction.setter
+    def wind_direction(self, val: float):
+        _set_attr_value(self._prim, "ocean:windDirection", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def significant_height(self) -> float:
+        return float(_get_attr_value(self._prim, "ocean:significantHeight", self.DEFAULT_SIGNIFICANT_HEIGHT))
+
+    @significant_height.setter
+    def significant_height(self, val: float):
+        _set_attr_value(self._prim, "ocean:significantHeight", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def choppiness(self) -> float:
+        return float(_get_attr_value(self._prim, "ocean:choppiness", self.DEFAULT_CHOPPINESS))
+
+    @choppiness.setter
+    def choppiness(self, val: float):
+        _set_attr_value(self._prim, "ocean:choppiness", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def seed(self) -> int:
+        return int(_get_attr_value(self._prim, "ocean:seed", self.DEFAULT_SEED))
+
+    @seed.setter
+    def seed(self, val: int):
+        _set_attr_value(self._prim, "ocean:seed", int(val), Sdf.ValueTypeNames.Int if HAS_PXR else None)
+
+    @property
+    def foam_threshold(self) -> float:
+        return float(_get_attr_value(self._prim, "ocean:foamThreshold", self.DEFAULT_FOAM_THRESHOLD))
+
+    @foam_threshold.setter
+    def foam_threshold(self, val: float):
+        _set_attr_value(self._prim, "ocean:foamThreshold", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def foam_bias(self) -> float:
+        return float(_get_attr_value(self._prim, "ocean:foamBias", self.DEFAULT_FOAM_BIAS))
+
+    @foam_bias.setter
+    def foam_bias(self, val: float):
+        _set_attr_value(self._prim, "ocean:foamBias", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def time_scale(self) -> float:
+        return float(_get_attr_value(self._prim, "ocean:timeScale", self.DEFAULT_TIME_SCALE))
+
+    @time_scale.setter
+    def time_scale(self, val: float):
+        _set_attr_value(self._prim, "ocean:timeScale", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    def to_parameters(self):
+        """Build an `OceanParameters` snapshot from the prim's attributes.
+
+        A `significantHeight` of zero means "derive it from the wind speed", which
+        the parameters express as None.  Zero is used as the sentinel rather than
+        an optional attribute because USD has no notion of an unauthored float
+        that reads back as "unset" without extra bookkeeping.
+
+        The import is local: `schemas.py` is imported by every test suite and by
+        several controllers, so it must not gain a module-level dependency.
+        """
+        from .ocean_spectrum import OceanParameters
+
+        height = self.significant_height
+        return OceanParameters(
+            resolution=self.resolution,
+            patch_size=self.patch_size,
+            wind_speed=self.wind_speed,
+            wind_direction=self.wind_direction,
+            significant_height=height if height > 0.0 else None,
+            choppiness=self.choppiness,
+            seed=self.seed,
+        )
+
+
+# ==============================================================================
+# HydragonWaterBody
+# ==============================================================================
+class HydragonWaterBody:
+    """A body of water as a physics medium: buoyancy, drag and standing on it."""
+
+    SCHEMA_NAME = "HydragonWaterBodyAPI"
+
+    DEFAULT_MODE = "Infinite"
+    DEFAULT_SURFACE_OFFSET = 0.0
+    DEFAULT_DENSITY = 1025.0
+    DEFAULT_BUOYANCY_SCALE = 1.0
+    DEFAULT_LINEAR_DRAG = 0.6
+    DEFAULT_ANGULAR_DRAG = 0.6
+    DEFAULT_GROUNDED_TOLERANCE = 15.0
+    DEFAULT_CAN_JUMP_OFF_SURFACE = True
+
+    def __init__(self, prim):
+        self._orig_prim = prim
+        self._prim = prim if prim is not None else _InMemoryMockPrim()
+
+    @property
+    def prim(self):
+        return self._prim
+
+    @classmethod
+    def apply(
+        cls,
+        prim,
+        mode: str = DEFAULT_MODE,
+        surface_offset: float = DEFAULT_SURFACE_OFFSET,
+        density: float = DEFAULT_DENSITY,
+        buoyancy_scale: float = DEFAULT_BUOYANCY_SCALE,
+        linear_drag: float = DEFAULT_LINEAR_DRAG,
+        angular_drag: float = DEFAULT_ANGULAR_DRAG,
+        grounded_tolerance: float = DEFAULT_GROUNDED_TOLERANCE,
+        can_jump_off_surface: bool = DEFAULT_CAN_JUMP_OFF_SURFACE,
+    ):
+        _ensure_api_schema(prim, cls.SCHEMA_NAME)
+        body = cls(prim)
+        body.is_enabled = True
+        body.mode = mode
+        body.surface_offset = surface_offset
+        body.density = density
+        body.buoyancy_scale = buoyancy_scale
+        body.linear_drag = linear_drag
+        body.angular_drag = angular_drag
+        body.grounded_tolerance = grounded_tolerance
+        body.can_jump_off_surface = can_jump_off_surface
+        return body
+
+    @classmethod
+    def is_applied(cls, prim) -> bool:
+        return _has_api_schema(prim, cls.SCHEMA_NAME) or bool(
+            prim and hasattr(prim, "HasAttribute") and prim.HasAttribute("water:mode")
+        )
+
+    @property
+    def is_enabled(self) -> bool:
+        return bool(_get_attr_value(self._prim, "water:isEnabled", True))
+
+    @is_enabled.setter
+    def is_enabled(self, val: bool):
+        _set_attr_value(self._prim, "water:isEnabled", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)
+
+    @property
+    def mode(self) -> str:
+        return str(_get_attr_value(self._prim, "water:mode", self.DEFAULT_MODE))
+
+    @mode.setter
+    def mode(self, val: str):
+        _set_attr_value(
+            self._prim,
+            "water:mode",
+            str(val),
+            Sdf.ValueTypeNames.Token if HAS_PXR else None,
+            allowed_tokens=["Infinite", "Bounded"],
+        )
+
+    @property
+    def surface_offset(self) -> float:
+        return float(_get_attr_value(self._prim, "water:surfaceOffset", self.DEFAULT_SURFACE_OFFSET))
+
+    @surface_offset.setter
+    def surface_offset(self, val: float):
+        _set_attr_value(self._prim, "water:surfaceOffset", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def density(self) -> float:
+        return float(_get_attr_value(self._prim, "water:density", self.DEFAULT_DENSITY))
+
+    @density.setter
+    def density(self, val: float):
+        _set_attr_value(self._prim, "water:density", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def buoyancy_scale(self) -> float:
+        return float(_get_attr_value(self._prim, "water:buoyancyScale", self.DEFAULT_BUOYANCY_SCALE))
+
+    @buoyancy_scale.setter
+    def buoyancy_scale(self, val: float):
+        _set_attr_value(self._prim, "water:buoyancyScale", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def linear_drag(self) -> float:
+        return float(_get_attr_value(self._prim, "water:linearDrag", self.DEFAULT_LINEAR_DRAG))
+
+    @linear_drag.setter
+    def linear_drag(self, val: float):
+        _set_attr_value(self._prim, "water:linearDrag", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def angular_drag(self) -> float:
+        return float(_get_attr_value(self._prim, "water:angularDrag", self.DEFAULT_ANGULAR_DRAG))
+
+    @angular_drag.setter
+    def angular_drag(self, val: float):
+        _set_attr_value(self._prim, "water:angularDrag", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def grounded_tolerance(self) -> float:
+        return float(_get_attr_value(self._prim, "water:groundedTolerance", self.DEFAULT_GROUNDED_TOLERANCE))
+
+    @grounded_tolerance.setter
+    def grounded_tolerance(self, val: float):
+        _set_attr_value(self._prim, "water:groundedTolerance", float(val), Sdf.ValueTypeNames.Float if HAS_PXR else None)
+
+    @property
+    def can_jump_off_surface(self) -> bool:
+        return bool(_get_attr_value(self._prim, "water:canJumpOffSurface", self.DEFAULT_CAN_JUMP_OFF_SURFACE))
+
+    @can_jump_off_surface.setter
+    def can_jump_off_surface(self, val: bool):
+        _set_attr_value(self._prim, "water:canJumpOffSurface", bool(val), Sdf.ValueTypeNames.Bool if HAS_PXR else None)

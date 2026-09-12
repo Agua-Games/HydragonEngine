@@ -17,7 +17,7 @@ def test_syntax_usda_files():
     """Validates balanced braces/brackets/parentheses and basic structure of USDA files."""
     print("--- 1. Validating USDA File Syntax ---")
     gameplay_dir = os.path.join(ext_dir, "data")
-    
+
     usda_files = [
         os.path.join(gameplay_dir, "schemas", "hydragon_gameplay_schemas.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_player_ball", "player_ball.usda"),
@@ -30,6 +30,8 @@ def test_syntax_usda_files():
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_force_volume", "force_volume.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_kill_volume", "kill_volume.usda"),
         os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_physics_manager", "physics_manager.usda"),
+        os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_ocean", "ocean.usda"),
+        os.path.join(gameplay_dir, "assets", "gameplay", "hydragon_water_body", "water_body.usda"),
         os.path.join(gameplay_dir, "assets", "ui", "hydragon_ui_system", "ui_system.usda"),
         os.path.join(gameplay_dir, "assets", "ui", "hydragon_main_menu", "main_menu.usda"),
         os.path.join(gameplay_dir, "assets", "ui", "hydragon_pause_menu", "pause_menu.usda"),
@@ -59,8 +61,19 @@ def test_syntax_usda_files():
         in_string = False
         quote_char = None
         escape = False
+        in_comment = False
 
         for i, char in enumerate(content):
+            # Comments must be skipped to the end of the line, not just for the
+            # '#' character.  Otherwise any bracket or apostrophe inside a comment
+            # is parsed as structure: an apostrophe opens a string that never
+            # closes, and every brace after it is ignored, which reports the file
+            # as having unclosed braces when it is perfectly valid.
+            if in_comment:
+                if char == "\n":
+                    in_comment = False
+                continue
+
             if in_string:
                 if escape:
                     escape = False
@@ -74,9 +87,7 @@ def test_syntax_usda_files():
                 in_string = True
                 quote_char = char
             elif char == '#':
-                # Skip comments until newline (in basic loop, we can just treat until \n)
-                # But let's handle it properly:
-                continue
+                in_comment = True
             elif char in pairs.keys():
                 stack.append((char, i))
             elif char in pairs.values():
@@ -119,8 +130,10 @@ def test_python_module():
             HydragonForceVolume,
             HydragonKillVolume,
             HydragonPhysicsManager,
+            HydragonOcean,
+            HydragonWaterBody,
         )
-        print("  [PASS] Successfully imported all 12 Hydragon API schema classes from hydragon.editor.core")
+        print("  [PASS] Successfully imported all 14 Hydragon API schema classes from hydragon.editor.core")
     except Exception as e:
         print(f"  [FAIL] Failed to import from hydragon.editor.core: {e}")
         return False
@@ -138,6 +151,8 @@ def test_python_module():
     assert HydragonForceVolume.SCHEMA_NAME == "HydragonForceVolumeAPI"
     assert HydragonKillVolume.SCHEMA_NAME == "HydragonKillVolumeAPI"
     assert HydragonPhysicsManager.SCHEMA_NAME == "HydragonPhysicsAPI"
+    assert HydragonOcean.SCHEMA_NAME == "HydragonOceanAPI"
+    assert HydragonWaterBody.SCHEMA_NAME == "HydragonWaterBodyAPI"
     print("  [PASS] All SCHEMA_NAME constants verified")
 
     # Test fallback behavior when prim is None (Fail-Silent)
@@ -262,6 +277,45 @@ def test_python_module():
     assert pm.enable_ccd is True
     assert pm.bounce_threshold == 200.0
     print("  [PASS] HydragonPhysicsManager fail-silent defaults verified")
+
+    oc = HydragonOcean(None)
+    assert oc.is_enabled is True
+    assert oc.resolution == 256
+    assert oc.patch_size == 1000.0
+    assert oc.wind_speed == 15.0
+    assert oc.wind_direction == 0.0
+    assert oc.significant_height == 0.0
+    assert oc.choppiness == 1.0
+    assert oc.seed == 42
+    assert oc.foam_threshold == 0.85
+    assert oc.foam_bias == 0.35
+    assert oc.time_scale == 1.0
+    print("  [PASS] HydragonOcean fail-silent defaults verified")
+
+    # A zero significant height means "derive it from the wind speed", which the
+    # simulation parameters express as None.  If that mapping ever breaks, every
+    # ocean silently requests a flat sea.
+    ocean_parameters = oc.to_parameters()
+    assert ocean_parameters.wind_speed == 15.0
+    assert ocean_parameters.significant_height is None
+    assert ocean_parameters.patch_size == 1000.0
+    assert ocean_parameters.resolution == 256
+    explicit = HydragonOcean(None)
+    explicit.significant_height = 4.0
+    assert explicit.to_parameters().significant_height == 4.0
+    print("  [PASS] HydragonOcean converts to simulation parameters")
+
+    wb = HydragonWaterBody(None)
+    assert wb.is_enabled is True
+    assert wb.mode == "Infinite"
+    assert wb.surface_offset == 0.0
+    assert wb.density == 1025.0
+    assert wb.buoyancy_scale == 1.0
+    assert wb.linear_drag == 0.6
+    assert wb.angular_drag == 0.6
+    assert wb.grounded_tolerance == 15.0
+    assert wb.can_jump_off_surface is True
+    print("  [PASS] HydragonWaterBody fail-silent defaults verified")
 
     from hydragon.editor.core.menu import HydragonMenuManager
     menu_mgr = HydragonMenuManager("hydragon.editor.core")
