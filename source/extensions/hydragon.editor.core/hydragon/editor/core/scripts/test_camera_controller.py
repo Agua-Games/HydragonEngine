@@ -274,6 +274,118 @@ def test_camera_dirty_checking_and_probe_caching():
     print("  [PASS] Camera dirty checking & probe caching verified")
 
 
+def test_probe_ignores_volume_trigger_colliders():
+    print("--- 9. Testing the Anti-Clipping Probe Ignores Volume Trigger Colliders ---")
+    import hydragon.editor.core.camera_controller as cam
+    import hydragon.editor.core.volume_triggers as vt
+
+    # The probe is only reachable with `carb` and the PhysX scene query interface present, so both
+    # are stubbed. `raycast_all` replays a fixed list of hits through the REAL reporting callback,
+    # which is the code under test.
+    class _Vec:
+        def __init__(self, x, y, z):
+            self._v = (x, y, z)
+
+        def __getitem__(self, index):
+            return self._v[index]
+
+    class _StubCarb:
+        """Only what the probe and the lifecycle need: `Float3`, plus the logging the rest of the
+        controller calls unconditionally."""
+
+        @staticmethod
+        def Float3(x, y, z):
+            return _Vec(x, y, z)
+
+        @staticmethod
+        def log_info(message):
+            pass
+
+        @staticmethod
+        def log_warn(message):
+            pass
+
+        @staticmethod
+        def log_error(message):
+            pass
+
+    class _Hit:
+        def __init__(self, collision, rigid_body, position):
+            self.collision = collision
+            self.rigid_body = rigid_body
+            self.position = position
+
+    class _Query:
+        def __init__(self, hits):
+            self._hits = hits
+
+        def raycast_all(self, origin, direction, distance, report_fn, both_sides=False):
+            for hit in self._hits:
+                if not report_fn(hit):
+                    break
+            return True
+
+    TRIGGER = "/World/ForceVolume_vortex/volumes/force_trigger"
+    WALL = "/World/Environment/Wall/collider"
+
+    original_carb = cam.carb
+    # Outside Kit the guarded import never binds these names at all, so `getattr` plus an explicit
+    # delete on the way out is required - assigning None would leave a name the module did not have.
+    had_query = "get_physx_scene_query_interface" in cam.__dict__
+    original_query = cam.__dict__.get("get_physx_scene_query_interface")
+    cam.carb = _StubCarb()
+    try:
+        # Register the collider exactly as `ensure_trigger` does once it has authored one.
+        vt._trigger_colliders.add(TRIGGER)
+        assert vt.is_trigger_collider(TRIGGER)
+        assert vt.is_trigger_collider(TRIGGER + "/child"), "a path under the collider must resolve too"
+        assert not vt.is_trigger_collider(WALL)
+        assert not vt.is_trigger_collider("")
+
+        system = HydragonCameraControllerSystem()
+        system._cached_target_rb_path = "/World/Player"
+        focus = (0.0, 0.0, 0.0)
+        desired = (0.0, 0.0, -800.0)
+
+        def probe(hits):
+            # The cache keys on (focus, desired), and every case below reuses the same pair, so it
+            # has to be invalidated or case 2 would silently return case 1's answer.
+            cam.get_physx_scene_query_interface = lambda: _Query(hits)
+            system._last_probe_focus = None
+            system._last_probe_desired = None
+            system._last_probe_result = None
+            return system._probe_camera_collision(focus, desired)
+
+        # 1. A trigger collider ALONE must not shorten the arm. A hit at 50 is nearer than the arm,
+        #    so without the filter the camera would be clamped to the 100-unit floor - which is
+        #    exactly the "camera rushes into the player" report this test exists for.
+        got = probe([_Hit(TRIGGER, "", (0.0, 0.0, -50.0))])
+        assert got == desired, f"a volume trigger must be ignored, got {got}"
+
+        # 2. Real geometry still shortens the arm: hit at 400, minus the 30 offset -> 370.
+        got = probe([_Hit(WALL, "", (0.0, 0.0, -400.0))])
+        assert abs(got[2] - (-370.0)) < 1e-4, f"a wall must clamp the arm to 370, got {got}"
+
+        # 3. Both at once. This is the case that matters in practice: the trigger is centred exactly
+        #    where the player is, so it is ALWAYS the nearest hit and would always win.
+        got = probe([_Hit(TRIGGER, "", (0.0, 0.0, -50.0)), _Hit(WALL, "", (0.0, 0.0, -400.0))])
+        assert abs(got[2] - (-370.0)) < 1e-4, f"the trigger must not outrank the wall, got {got}"
+
+        # 4. The pre-existing self/target exclusion is unaffected.
+        got = probe([_Hit("/World/Player/geometry/ball_mesh", "/World/Player", (0.0, 0.0, -30.0))])
+        assert got == desired, f"the followed body must be ignored, got {got}"
+
+        system.shutdown()
+        print("  [PASS] Probe ignores volume trigger colliders but still respects geometry")
+    finally:
+        vt._trigger_colliders.discard(TRIGGER)
+        cam.carb = original_carb
+        if had_query:
+            cam.get_physx_scene_query_interface = original_query
+        else:
+            del cam.get_physx_scene_query_interface
+
+
 if __name__ == "__main__":
     test_camera_controller_lifecycle()
     test_spherical_orbit_math()
@@ -283,6 +395,7 @@ if __name__ == "__main__":
     test_mouse_yaw_direction()
     test_target_resolution_methods()
     test_camera_dirty_checking_and_probe_caching()
+    test_probe_ignores_volume_trigger_colliders()
     print("\n=======================================================")
-    print(" ALL CAMERA CONTROLLER SYSTEM TESTS PASSED! (8/8)")
+    print(" ALL CAMERA CONTROLLER SYSTEM TESTS PASSED! (9/9)")
     print("=======================================================")

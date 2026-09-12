@@ -366,6 +366,105 @@ def test_physics_scene_settings_configuration():
     print("  [PASS] PhysicsScene global CCD and bounce threshold configuration verified")
 
 
+def test_ground_probe_ignores_volume_trigger_colliders():
+    print("--- 10. Testing the Ground Probe Ignores Volume Trigger Colliders ---")
+    import hydragon.editor.core.player_controller as pc
+    import hydragon.editor.core.volume_triggers as vt
+
+    TRIGGER = "/World/ForceVolume_launchpad/volumes/force_trigger"
+    FLOOR = "/World/Environment/Ground/collider"
+
+    class _Vec:
+        def __init__(self, x, y, z):
+            self._v = (x, y, z)
+
+        def __getitem__(self, index):
+            return self._v[index]
+
+    class _StubCarb:
+        Float3 = staticmethod(lambda x, y, z: _Vec(x, y, z))
+        log_info = staticmethod(lambda message: None)
+        log_warn = staticmethod(lambda message: None)
+        log_error = staticmethod(lambda message: None)
+
+    class _RadiusAttr:
+        def IsValid(self):
+            return True
+
+        def Get(self):
+            return 50.0
+
+    class _SphereGeom:
+        def GetRadiusAttr(self):
+            return _RadiusAttr()
+
+    class _StubUsdGeom:
+        Sphere = staticmethod(lambda prim: _SphereGeom())
+
+    class _Hit:
+        def __init__(self, collision, position):
+            self.collision = collision
+            self.rigid_body = ""
+            self.position = position
+
+    class _Query:
+        def __init__(self, hits):
+            self._hits = hits
+
+        def raycast_all(self, origin, direction, distance, report_fn, both_sides=False):
+            for hit in self._hits:
+                if not report_fn(hit):
+                    break
+            return True
+
+    class _Prim:
+        def GetPath(self):
+            class _Path:
+                pathString = "/World/Player/geometry/ball_mesh"
+
+            return _Path()
+
+    # Outside Kit the guarded import never binds `UsdGeom` / `get_physx_scene_query_interface` at
+    # all, so "which names existed" has to be recorded and missing ones deleted on the way out -
+    # assigning None would leave behind a name the module never had.
+    patched_names = ("carb", "UsdGeom", "get_physx_scene_query_interface")
+    saved = {name: pc.__dict__[name] for name in patched_names if name in pc.__dict__}
+    pc.carb = _StubCarb()
+    pc.UsdGeom = _StubUsdGeom()
+    try:
+        vt._trigger_colliders.add(TRIGGER)
+
+        system = HydragonPlayerControllerSystem()
+        system._cached_player_path = "/World/Player"
+        # The ball is at y=200 with radius 50: clearly airborne, 150 above the floor. The ground
+        # probe reaches only `radius + 15` = 65, so ONLY a game volume whose floor happens to sit
+        # under the ball can fool it - and that is precisely the reported failure.
+        system._get_rigid_body_world_pos = lambda prim, path: (0.0, 200.0, 0.0)
+
+        def grounded(hits):
+            pc.get_physx_scene_query_interface = lambda: _Query(hits)
+            return system._check_is_grounded(None, _Prim())
+
+        # A volume floor 50 below the ball must NOT count as ground. Without the filter the ball can
+        # jump again in mid-air; that is the bug this test pins.
+        assert grounded([_Hit(TRIGGER, (0.0, 150.0, 0.0))]) is False, (
+            "a volume trigger must not count as ground"
+        )
+
+        # Real ground still does.
+        assert grounded([_Hit(FLOOR, (0.0, 150.0, 0.0))]) is True, "real ground must still count"
+
+        system.shutdown()
+        print("  [PASS] Ground probe ignores volume trigger colliders but still detects ground")
+    finally:
+        vt._trigger_colliders.discard(TRIGGER)
+        for name in patched_names:
+            if name in saved:
+                setattr(pc, name, saved[name])
+            else:
+                pc.__dict__.pop(name, None)
+
+
 if __name__ == "__main__":
     test_player_controller_system_lifecycle()
     test_camera_axes_math()
@@ -376,6 +475,7 @@ if __name__ == "__main__":
     test_physics_manager_integration()
     test_physics_manager_velocity_clamping_and_ccd()
     test_physics_scene_settings_configuration()
+    test_ground_probe_ignores_volume_trigger_colliders()
     print("\n=======================================================")
-    print(" ALL PLAYER CONTROLLER SYSTEM TESTS PASSED! (9/9)")
+    print(" ALL PLAYER CONTROLLER SYSTEM TESTS PASSED! (10/10)")
     print("=======================================================")

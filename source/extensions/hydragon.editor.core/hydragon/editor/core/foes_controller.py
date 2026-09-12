@@ -37,6 +37,16 @@ except ImportError:
 
 from .schemas import HydragonActor, HydragonChaserAI, HydragonGameManager, HydragonPlayerController, HydragonPhysicsManager
 
+# Game volumes (Force/Kill) author a PhysX collider with no geometry inside it, so it must never
+# count as ground. A scene query cannot be told to skip it - see
+# `volume_triggers.is_trigger_collider` - so every one of our raycasts filters it in its own
+# reporting callback instead. Guarded so this optional dependency cannot take the system down.
+try:
+    from .volume_triggers import is_trigger_collider
+except Exception:  # pragma: no cover - defensive
+    def is_trigger_collider(path: str) -> bool:
+        return False
+
 
 def _is_rigid_body(prim) -> bool:
     """Checks whether a prim has rigid body physics enabled using multiple schema inspection techniques."""
@@ -837,6 +847,11 @@ class HydragonFoesControllerSystem:
                         hit_rb = str(getattr(hit, "rigid_body", "") or "")
                         hit_col = str(getattr(hit, "collision", "") or "")
                         if rb_path in hit_rb or rb_path in hit_col:
+                            return True
+                        # A game volume is not ground: without this, a foe airborne inside a volume
+                        # whose floor is within reach of the ray reports as grounded and gets
+                        # horizontal traction, i.e. it flies.
+                        if is_trigger_collider(hit_col) or is_trigger_collider(hit_rb):
                             return True
                         ground_hits.append(hit)
                         return True

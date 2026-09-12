@@ -26,6 +26,17 @@ except ImportError:
 
 from .schemas import HydragonFollowCamera
 
+# Game volumes (Force/Kill) author a PhysX collider with no geometry inside it, so it must never
+# count as an obstacle for us. A scene query cannot be told to skip it - see
+# `volume_triggers.is_trigger_collider` - so every one of our raycasts filters it in its own
+# reporting callback instead. Guarded so this optional dependency cannot take the camera down with
+# it; a failure here just means the probe treats volumes as obstacles again.
+try:
+    from .volume_triggers import is_trigger_collider
+except Exception:  # pragma: no cover - defensive
+    def is_trigger_collider(path: str) -> bool:
+        return False
+
 
 def _is_rigid_body(prim) -> bool:
     """Checks whether a prim has rigid body physics enabled using multiple schema inspection techniques."""
@@ -660,6 +671,12 @@ class HydragonCameraControllerSystem:
                 hit_col = str(getattr(hit, "collision", "") or "")
                 # Ignore self/target
                 if target_root and (hit_rb.startswith(target_root) or hit_col.startswith(target_root)):
+                    return True
+                # Ignore a game volume's trigger collider. It is a physics region, not geometry, so
+                # treating it as an obstacle yanks the camera into the player as soon as the player
+                # steps into a volume. See `volume_triggers.is_trigger_collider` for why this is a
+                # callback filter rather than a PhysX collision channel.
+                if is_trigger_collider(hit_col) or is_trigger_collider(hit_rb):
                     return True
 
                 hit_pos = getattr(hit, "position", None)

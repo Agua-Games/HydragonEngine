@@ -521,6 +521,84 @@ def test_foes_mass_scaled_chase_actuation_and_traction():
     print("  [PASS] Foes mass-scaled chase actuation, ramp collision safety, and ground traction verified")
 
 
+def test_ground_probe_ignores_volume_trigger_colliders():
+    print("--- 12. Testing the Foe Ground Probe Ignores Volume Trigger Colliders ---")
+    import hydragon.editor.core.foes_controller as fc
+    import hydragon.editor.core.volume_triggers as vt
+
+    TRIGGER = "/World/ForceVolume_vortex/volumes/force_trigger"
+    FLOOR = "/World/Environment/Ground/collider"
+
+    class _Vec:
+        def __init__(self, x, y, z):
+            self._v = (x, y, z)
+
+        def __getitem__(self, index):
+            return self._v[index]
+
+    class _StubCarb:
+        Float3 = staticmethod(lambda x, y, z: _Vec(x, y, z))
+        log_info = staticmethod(lambda message: None)
+        log_warn = staticmethod(lambda message: None)
+        log_error = staticmethod(lambda message: None)
+
+    class _Hit:
+        def __init__(self, collision, position):
+            self.collision = collision
+            self.rigid_body = ""
+            self.position = position
+
+    class _Query:
+        def __init__(self, hits):
+            self._hits = hits
+
+        def raycast_all(self, origin, direction, distance, report_fn, both_sides=False):
+            for hit in self._hits:
+                if not report_fn(hit):
+                    break
+            return True
+
+    original_carb = fc.carb
+    original_has_kit = fc.HAS_KIT
+    had_query = "get_physx_scene_query_interface" in fc.__dict__
+    original_query = fc.__dict__.get("get_physx_scene_query_interface")
+    fc.carb = _StubCarb()
+    # Forces the RAYCAST branch instead of the `bottom_y <= 25.0` fallback, which would otherwise
+    # answer the question by itself and never exercise the filter.
+    fc.HAS_KIT = True
+    try:
+        vt._trigger_colliders.add(TRIGGER)
+
+        system = HydragonFoesControllerSystem()
+
+        def grounded(hits):
+            fc.get_physx_scene_query_interface = lambda: _Query(hits)
+            # Foe at y=200 with radius 50: bottom is 150, far above the 25 fallback threshold.
+            return system._check_foe_grounded(None, "/World/Foe_01", (0.0, 200.0, 0.0), 50.0)
+
+        # A volume floor 50 under the foe must NOT count as ground. Without the filter the foe gets
+        # horizontal traction while airborne, i.e. it flies.
+        assert grounded([_Hit(TRIGGER, (0.0, 150.0, 0.0))]) is False, (
+            "a volume trigger must not count as ground"
+        )
+
+        assert grounded([_Hit(FLOOR, (0.0, 150.0, 0.0))]) is True, "real ground must still count"
+
+        # An empty scene falls through to the geometric fallback, which must be unaffected.
+        assert grounded([]) is False, "an airborne foe with nothing below is not grounded"
+
+        system.shutdown()
+        print("  [PASS] Foe ground probe ignores volume trigger colliders but still detects ground")
+    finally:
+        vt._trigger_colliders.discard(TRIGGER)
+        fc.carb = original_carb
+        fc.HAS_KIT = original_has_kit
+        if had_query:
+            fc.get_physx_scene_query_interface = original_query
+        else:
+            del fc.get_physx_scene_query_interface
+
+
 if __name__ == "__main__":
     test_foes_controller_lifecycle()
     test_ai_brain_state_transitions()
@@ -533,6 +611,7 @@ if __name__ == "__main__":
     test_physics_step_safety()
     test_foes_physics_manager_clamping_and_debounce()
     test_foes_mass_scaled_chase_actuation_and_traction()
+    test_ground_probe_ignores_volume_trigger_colliders()
     print("\n=======================================================")
-    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (11/11)")
+    print(" ALL FOES CONTROLLER SYSTEM TESTS PASSED! (12/12)")
     print("=======================================================")
