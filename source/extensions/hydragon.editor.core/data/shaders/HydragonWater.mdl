@@ -1,0 +1,113 @@
+// =============================================================================
+// HydragonWater.mdl
+// The engine's own water surface material.
+//
+// It reads ONE texture: the packed surface field that HydragonOceanSystem
+// publishes to a `dynamic://` GPU resource every frame, in this layout:
+//
+//     x = surface height, in metres      (physics / host-side channel)
+//     y = surface normal, world X
+//     z = surface normal, world Z
+//     w = foam, 0..1
+//
+// `normal.y` is not stored. It is non-negative by construction, so it is
+// reconstructed as sqrt(1 - x^2 - z^2): a subtraction would drift below zero in
+// float32 and a negative value under a square root is a NaN in the renderer.
+//
+// SPACE CONVENTION. The normals are expressed in the patch's own frame, and the
+// surface mesh is a horizontal plane, so they are already valid as the
+// world-space shading normals MDL expects. An ocean prim that is ROTATED needs
+// that rotation applied here, because the texture carries no frame of its own.
+//
+// The material is deliberately reflection-dominant with a diffusive base: real
+// water is almost black below the surface and mirror-like at grazing angles, and
+// `df::fresnel_layer` reproduces exactly that, with no screen-space refraction
+// pass and therefore no extra render target.
+// =============================================================================
+
+mdl 1.7;
+
+import ::anno::*;
+import ::df::*;
+import ::math::*;
+import ::state::*;
+import ::tex::*;
+
+export material HydragonWater
+(
+    uniform texture_2d surface_field   = texture_2d(),
+    uniform color      deep_color      = color(0.010, 0.045, 0.060),
+    uniform color      foam_color      = color(0.860, 0.900, 0.940),
+    uniform float      normal_strength = 1.0,
+    uniform float      roughness       = 0.06,
+    uniform float      ior             = 1.333,
+    uniform float      foam_amount     = 1.0,
+    uniform float      foam_roughness  = 0.55,
+    // Optional grayscale mask that modulates the procedural foam: the solver says
+    // WHERE the surface is being compressed, the mask says what that looks like.
+    // An empty texture keeps the multiplier at 1, i.e. the pure procedural look.
+    uniform texture_2d foam_mask_texture = texture_2d(),
+    uniform float      foam_mask_tiling  = 1.0
+)
+[[
+    anno::display_name("Hydragon Water"),
+    anno::description("Ocean surface driven by HydragonOceanSystem. Samples the packed "
+                      "(height, normal.x, normal.z, foam) field that the spectral solver "
+                      "publishes to a dynamic:// texture."),
+    anno::in_group("Hydragon"),
+    anno::author("Agua Games")
+]]
+= let
+{
+    // NO MULTI-COMPONENT SWIZZLES IN THIS DIALECT. `v.yz` is a compile error
+    // ("type 'float4' has no member 'yz'"), which is why every component below is
+    // named explicitly and vectors are built with float2()/float3(). Note also that
+    // `state::texture_coordinate` returns float3, not float2 - hence the pair.
+    float3 coord = state::texture_coordinate(0);
+    float2 uv = float2(coord.x, coord.y);
+    float4 field = tex::lookup_float4(tex: surface_field, coord: uv);
+
+    // `normal_strength` deliberately scales BEFORE the reconstruction, so a value
+    // above 1 sharpens the cut of the waves instead of producing a normal that can
+    // no longer be renormalised into anything meaningful.
+    float2 slope = float2(field.y, field.z) * normal_strength;
+    float  slope_y = math::sqrt(math::saturate(1.0 - math::dot(slope, slope)));
+    float3 normal = math::normalize(float3(slope.x, slope_y, slope.y));
+
+    // The mask is sampled only when it is bound.  The conditional lookup is the
+    // idiom the shipped materials use (`tex::texture_isvalid(t) ? lookup(t, uv) : ...`)
+    // and it is lazy, so an empty texture never reaches the sampler.
+    float3 mask_rgb = tex::texture_isvalid(foam_mask_texture)
+        ? tex::lookup_float3(tex: foam_mask_texture, coord: uv * foam_mask_tiling)
+        : float3(1.0);
+
+    float foam = math::saturate(field.w * foam_amount * mask_rgb.x);
+
+    // Foam is not a decal: it is a rough, bright layer of aerated water, so it
+    // both lightens the base and destroys the gloss. Blending the ROUGHNESS is
+    // what makes it read as foam rather than as white paint.
+    color tint = deep_color * color(1.0 - foam) + foam_color * color(foam);
+    float gloss_roughness = math::lerp(roughness, foam_roughness, foam);
+
+    bsdf water_bsdf = df::fresnel_layer(
+        ior:    ior,
+        weight: 1.0,
+        layer:  df::microfacet_ggx_smith_bsdf(
+            mode:        df::scatter_reflect,
+            tint:        color(1.0),
+            roughness_u: gloss_roughness * gloss_roughness,
+            roughness_v: gloss_roughness * gloss_roughness
+        ),
+        base:   df::diffuse_reflection_bsdf(
+            roughness: 0.0,
+            tint:      tint
+        ),
+        normal: normal
+    );
+
+    material_surface surface = material_surface(scattering: water_bsdf);
+}
+in material(
+    thin_walled: false,
+    surface: surface
+);

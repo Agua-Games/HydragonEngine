@@ -64,7 +64,13 @@ class HydragonEditorCoreExtension(_IExt):
 
         # The ocean starts BEFORE the water body: the water body queries the ocean
         # for its wave height, so the ocean has to exist first.
-        from .ocean_controller import HydragonOceanSystem
+        from .ocean_controller import HydragonOceanSystem, register_mdl_library
+
+        # Before the system starts, because starting it discovers the oceans
+        # already in the stage and binds their material - which needs the engine's
+        # own MDL to be resolvable first.
+        register_mdl_library()
+
         self._ocean_system = HydragonOceanSystem()
         self._ocean_system.startup()
 
@@ -79,6 +85,12 @@ class HydragonEditorCoreExtension(_IExt):
         if hasattr(self, "_ocean_system") and self._ocean_system:
             self._ocean_system.shutdown()
             self._ocean_system = None
+        try:
+            from .ocean_controller import unregister_mdl_library
+
+            unregister_mdl_library()
+        except Exception:  # noqa: BLE001 - shutdown must not raise
+            pass
         if hasattr(self, "_volume_display_toggle") and self._volume_display_toggle:
             self._volume_display_toggle.shutdown()
             self._volume_display_toggle = None

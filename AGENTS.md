@@ -65,6 +65,7 @@ This document defines the core engineering standards and conventions for all AI 
 | [`viewport_drawing_and_gizmos.md`](docs/omniverse_architecture/viewport_drawing_and_gizmos.md) | building a gizmo, manipulator, overlay or visual helper |
 | [`collision_triggers_and_scene_queries.md`](docs/omniverse_architecture/collision_triggers_and_scene_queries.md) | authoring a collider, a trigger, or any raycast/overlap |
 | [`warp_compute_and_tile_fft.md`](docs/omniverse_architecture/warp_compute_and_tile_fft.md) | writing a Warp kernel, using `wp.tile_fft`, or testing GPU compute without an editor |
+| [`mdl_authoring.md`](docs/omniverse_architecture/mdl_authoring.md) | writing or editing an MDL module, or when a surface renders as a flat error colour |
 | [`debugging_and_tooling.md`](docs/omniverse_architecture/debugging_and_tooling.md) | attaching a debugger, finding a log, writing a probe |
 
 **Check it first; do not re-derive it from a live editor.** Every claim there is tagged `[verified]` or `[inferred]` — respect the distinction, and add your own findings there rather than in a scratch file.

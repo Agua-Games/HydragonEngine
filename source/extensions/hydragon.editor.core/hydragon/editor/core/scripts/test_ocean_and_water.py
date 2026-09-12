@@ -376,23 +376,39 @@ def _bootstrap_pxr():
     return (Gf, Sdf, Usd, UsdGeom, Vt), None
 
 
-def test_surface_mesh_authoring() -> None:
-    section("8. Surface mesh authoring")
+def _prepare_ocean_for_usd():
+    """Bootstrap pxr and hand it to `ocean_controller`.
+
+    That module keeps pxr behind a Kit-guarded import, so outside Kit it has
+    collapsed Usd/UsdGeom/Sdf/Gf/Vt to None.  The authoring needs no Kit - only
+    pxr - so it gets the pxr this script bootstrapped.  `schemas` collapsed
+    HAS_PXR the same way, and `_has_api_schema` short-circuits on it.
+    """
     modules, reason = _bootstrap_pxr()
     if modules is None:
-        check("pxr is importable for the mesh test", False, reason)
-        return
+        return None, reason
     Gf, Sdf, Usd, UsdGeom, Vt = modules
 
-    # `ocean_controller` keeps pxr behind a Kit-guarded import, so outside Kit it
-    # has collapsed Usd/UsdGeom/Sdf/Gf/Vt to None.  Authoring needs no Kit - only
-    # pxr - so hand it the pxr this script bootstrapped.
     ocean.HAS_KIT = True
     ocean.Usd = Usd
     ocean.UsdGeom = UsdGeom
     ocean.Sdf = Sdf
     ocean.Gf = Gf
     ocean.Vt = Vt
+
+    from hydragon.editor.core import schemas as schemas_module
+
+    schemas_module.HAS_PXR = True
+    return modules, None
+
+
+def test_surface_mesh_authoring() -> None:
+    section("8. Surface mesh authoring")
+    modules, reason = _prepare_ocean_for_usd()
+    if modules is None:
+        check("pxr is importable for the mesh test", False, reason)
+        return
+    Gf, Sdf, Usd, UsdGeom, Vt = modules
 
     stage = Usd.Stage.CreateInMemory()
     prim = UsdGeom.Xform.Define(stage, "/World/Ocean").GetPrim()
@@ -453,17 +469,11 @@ class _NoticeWith:
 
 def test_deferred_notice_evaluation() -> None:
     section("9. Notices are judged one frame later")
-    modules, reason = _bootstrap_pxr()
+    modules, reason = _prepare_ocean_for_usd()
     if modules is None:
         check("pxr is importable for the notice test", False, reason)
         return
     Gf, Sdf, Usd, UsdGeom, Vt = modules
-
-    # `schemas` collapsed HAS_PXR to False when it was imported without pxr, and
-    # `_has_api_schema` short-circuits on it.
-    from hydragon.editor.core import schemas as schemas_module
-
-    schemas_module.HAS_PXR = True
 
     stage = Usd.Stage.CreateInMemory()
     # A prim as it looks when the payload ARC has been authored but the payload has
@@ -517,6 +527,167 @@ def test_deferred_notice_evaluation() -> None:
     )
 
 
+def _asset_path(value) -> str:
+    """The readable path of an authored asset value.
+
+    `str(Sdf.AssetPath)` is the SERIALISED USD form, delimiters included
+    (`@HydragonWater.mdl@`), so comparing it against a file name never matches.
+    The value itself lives on `.path`.
+    """
+    return getattr(value, "path", None) or str(value)
+
+
+# -----------------------------------------------------------------------------
+# 10. The water material's MDL contract
+# -----------------------------------------------------------------------------
+
+
+def test_water_mdl() -> None:
+    section("10. Water material (MDL)")
+
+    search_path = ocean.mdl_search_path()
+    check(
+        "the MDL search path is the extension's data/shaders",
+        search_path.replace("\\", "/").endswith("hydragon.editor.core/data/shaders"),
+        search_path,
+    )
+    module_file = ocean.water_mdl_file()
+    check("the water material file exists", os.path.isfile(module_file), module_file)
+    if not os.path.isfile(module_file):
+        return
+
+    with open(module_file, encoding="utf-8") as handle:
+        source = handle.read()
+
+    # USD names the MODULE (`HydragonWater.mdl`) and the material INSIDE it
+    # (`HydragonWater`) separately, and `_bind_material` authors both from the
+    # constants above.  Renaming either side has to break these checks rather than
+    # silently bind a material that does not resolve.
+    check(
+        f"the MDL exports the material `{ocean.WATER_MDL_MODULE}`",
+        f"export material {ocean.WATER_MDL_MODULE}" in source,
+        ocean.WATER_MDL_MODULE,
+    )
+    check(
+        f"the MDL samples the `{ocean.WATER_MDL_FIELD_INPUT}` input",
+        ocean.WATER_MDL_FIELD_INPUT in source,
+        ocean.WATER_MDL_FIELD_INPUT,
+    )
+    # The channel layout is a contract between three files: the packer in
+    # `ocean_fft_kernels`, the reference in `ocean_spectrum`, and this reader.
+    # Section 6 pins the packer; this pins the reader from the other end.
+    #
+    # These two checks also pin the DIALECT RULES the MDL compiler enforces and
+    # that cost a round trip to discover: `float4` has no `.yz` member, and
+    # `state::texture_coordinate` returns float3, not float2.
+    check(
+        "the MDL reads the normals and the foam component by component",
+        "float2(field.y, field.z)" in source and "field.w" in source,
+        "expected the (height, normal.x, normal.z, foam) layout",
+    )
+    check(
+        "the MDL converts the float3 texture coordinate explicitly",
+        "float3 coord = state::texture_coordinate(0)" in source
+        and "float2 uv = float2(coord.x, coord.y)" in source,
+        "state::texture_coordinate returns float3",
+    )
+    check(
+        "the MDL guards the reconstructed normal against a negative square root",
+        "math::saturate(1.0 - math::dot(slope, slope))" in source,
+        "a float32 round trip can push the value below zero, which is a NaN",
+    )
+    check(
+        "the MDL takes the foam mask only when it is bound",
+        "tex::texture_isvalid(foam_mask_texture)" in source,
+        "an empty texture must not reach the sampler",
+    )
+
+    # And the AUTHORED USD has to agree with the constants and with the file, or
+    # the material points at a module that does not exist.
+    modules, reason = _prepare_ocean_for_usd()
+    if modules is None:
+        check("pxr is importable for the material test", False, reason)
+        return
+    Gf, Sdf, Usd, UsdGeom, Vt = modules
+
+    stage = Usd.Stage.CreateInMemory()
+    prim = UsdGeom.Xform.Define(stage, "/World/Ocean").GetPrim()
+    patch = ocean.HydragonOceanPatch(prim)
+    patch._bind_material("hydragon_ocean_test")
+
+    shader_prim = stage.GetPrimAtPath("/World/Looks/ocean_surface_mat_World_Ocean/Shader")
+    if not check_and_stop(
+        "the shader is authored in the shared stage-level Looks scope",
+        shader_prim.IsValid(),
+        "expected /World/Looks/...",
+    ):
+        return
+
+    check(
+        "the shader source asset is the engine's own MDL",
+        _asset_path(shader_prim.GetAttribute("info:mdl:sourceAsset").Get())
+        == ocean.WATER_MDL_FILE,
+        _asset_path(shader_prim.GetAttribute("info:mdl:sourceAsset").Get()),
+    )
+    check(
+        "the sub-identifier is the exported material name",
+        str(shader_prim.GetAttribute("info:mdl:sourceAsset:subIdentifier").Get())
+        == ocean.WATER_MDL_MODULE,
+        str(shader_prim.GetAttribute("info:mdl:sourceAsset:subIdentifier").Get()),
+    )
+
+    field_attr = shader_prim.GetAttribute(f"inputs:{ocean.WATER_MDL_FIELD_INPUT}")
+    if not check_and_stop("the surface field input is authored", bool(field_attr), ""):
+        return
+    check(
+        "the surface field points at the dynamic texture",
+        _asset_path(field_attr.Get()) == "dynamic://hydragon_ocean_test",
+        _asset_path(field_attr.Get()),
+    )
+    check(
+        "the surface field is declared as a 2D texture",
+        field_attr.GetMetadata("renderType") == "texture_2d",
+        str(field_attr.GetMetadata("renderType")),
+    )
+
+    # The registration is retried from `_ensure_texture`, so it must be a no-op
+    # once the path is in, or every ocean would add the same path again.
+    ocean._REGISTERED_MDL_PATH = "/already/registered"
+    check(
+        "registering the MDL library twice is a no-op",
+        ocean.register_mdl_library() is True,
+        "it must not call into neuraylib again",
+    )
+    ocean._REGISTERED_MDL_PATH = None
+
+    # MIGRATION. An earlier build of `_bind_material` bound a stock OmniPBR there
+    # and authored `inputs:diffuse_texture`. USD would keep that input alongside
+    # the new `inputs:surface_field`, and the MDL-to-USD mapping would then have to
+    # explain an input the engine's module does not declare.
+    shader_prim.CreateAttribute("info:mdl:sourceAsset", Sdf.ValueTypeNames.Asset).Set(
+        Sdf.AssetPath("OmniPBR.mdl")
+    )
+    shader_prim.CreateAttribute("inputs:diffuse_texture", Sdf.ValueTypeNames.Asset)
+
+    patch._bind_material("hydragon_ocean_test")
+    # The prim is fetched again ON PURPOSE: the stale material was removed and
+    # re-authored, so the handle captured above is expired - which is exactly what
+    # proves this was a replacement rather than a merge.
+    rebound = stage.GetPrimAtPath("/World/Looks/ocean_surface_mat_World_Ocean/Shader")
+    if not check_and_stop("the material is re-authored", rebound.IsValid(), ""):
+        return
+    check(
+        "a stale stock input does not survive the rebind",
+        not rebound.GetAttribute("inputs:diffuse_texture"),
+        "the old OmniPBR input is still there",
+    )
+    check(
+        "the rebound material keeps the engine's input",
+        bool(rebound.GetAttribute(f"inputs:{ocean.WATER_MDL_FIELD_INPUT}")),
+        "",
+    )
+
+
 # -----------------------------------------------------------------------------
 # Runner
 # -----------------------------------------------------------------------------
@@ -533,6 +704,7 @@ def main() -> int:
     test_looks_scope_placement()
     test_surface_mesh_authoring()
     test_deferred_notice_evaluation()
+    test_water_mdl()
 
     print(f"\n{CHECKS[0] - len(FAILURES)}/{CHECKS[0]} checks passed")
     if FAILURES:

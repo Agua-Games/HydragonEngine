@@ -35,6 +35,7 @@
 
 from __future__ import annotations
 
+import os
 import time as _time
 from typing import Dict, List, Optional, Tuple
 
@@ -89,6 +90,18 @@ MESH_GRID = 128
 #: whole stall, which looks like a glitch rather than a slow frame.
 MAX_FRAME_DELTA = 0.1
 
+#: The engine's water material, which lives in the extension's own MDL folder.
+#: The FILE name and the exported material name inside it are named separately by
+#: USD, so both are pinned here and asserted against the .mdl by the tests.
+WATER_MDL_MODULE = "HydragonWater"
+WATER_MDL_FILE = WATER_MDL_MODULE + ".mdl"
+
+#: The input on the water material that receives the packed surface field.
+WATER_MDL_FIELD_INPUT = "surface_field"
+
+#: What `addMdlSearchPath` returned, so it can be removed again on shutdown.
+_REGISTERED_MDL_PATH: Optional[str] = None
+
 
 def _log_info(message: str) -> None:
     if carb:
@@ -103,6 +116,81 @@ def _log_warn(message: str) -> None:
 def _log_error(message: str) -> None:
     if carb:
         carb.log_error(f"[hydragon.ocean] {message}")
+
+
+def mdl_search_path() -> str:
+    """Absolute path of the extension's own MDL folder, `<ext>/data/shaders`."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    return os.path.normpath(os.path.join(here, "..", "..", "..", "data", "shaders"))
+
+
+def water_mdl_file() -> str:
+    """Absolute path of the water material itself."""
+    return os.path.join(mdl_search_path(), WATER_MDL_FILE)
+
+
+def register_mdl_library() -> bool:
+    """Make the engine's own MDL modules resolvable by the renderer.
+
+    `omni.mdl.neuraylib.get_neuraylib().addMdlSearchPath` is the supported call;
+    its predecessor `RegisterExtensionContent` is deprecated.  The path is kept so
+    `unregister_mdl_library` can remove it again.
+
+    The file checks are not paranoia: a material whose module cannot be resolved
+    renders as an unshaded surface and reports nothing about why, so the engine
+    says what is missing instead of leaving a grey ocean to be interpreted.
+
+    IDEMPOTENT, and called again from `_ensure_texture`, because nothing orders
+    this extension after `omni.mdl.neuraylib`: it is started by the RTX renderer,
+    and a startup that runs first would find no neuray library and lose the path
+    for the whole session.
+    """
+    global _REGISTERED_MDL_PATH
+
+    if _REGISTERED_MDL_PATH:
+        return True
+
+    path = mdl_search_path()
+    if not os.path.isdir(path):
+        _log_error(f"the MDL folder does not exist: {path}")
+        return False
+    module_file = water_mdl_file()
+    if not os.path.isfile(module_file):
+        _log_error(f"the water material is missing: {module_file}")
+        return False
+
+    try:
+        import omni.mdl.neuraylib
+
+        registered = omni.mdl.neuraylib.get_neuraylib().addMdlSearchPath(path)
+    except Exception as exc:  # noqa: BLE001 - outside Kit there is no neuraylib
+        _log_warn(f"MDL search path not registered ({exc}); the water material will "
+                  f"not resolve in this process")
+        return False
+
+    if not registered:
+        _log_error(f"the renderer refused the MDL search path {path}")
+        return False
+
+    _REGISTERED_MDL_PATH = registered
+    _log_info(f"MDL search path registered: {registered}")
+    return True
+
+
+def unregister_mdl_library() -> None:
+    """Remove the search path again, leaving no state behind for the next load."""
+    global _REGISTERED_MDL_PATH
+
+    if not _REGISTERED_MDL_PATH:
+        return
+    registered, _REGISTERED_MDL_PATH = _REGISTERED_MDL_PATH, None
+    try:
+        import omni.mdl.neuraylib
+
+        if not omni.mdl.neuraylib.get_neuraylib().removeMdlSearchPath(registered):
+            _log_warn(f"the renderer did not unregister the MDL search path {registered}")
+    except Exception as exc:  # noqa: BLE001
+        _log_warn(f"could not unregister the MDL search path: {exc}")
 
 
 def paths_include_schema(paths: set, is_applied, stage=None) -> bool:
@@ -467,30 +555,28 @@ class HydragonOceanPatch:
             return
 
         name = "hydragon_ocean_" + self._path.strip("/").replace("/", "_")
+        # Retried here rather than trusted from startup: this is the first moment
+        # the MDL has to exist for anything to work, and by now the renderer and
+        # its neuray library are certainly up.  Idempotent.
+        register_mdl_library()
         self._provider = ui.DynamicTextureProvider(name)
         self._texture_name = name
         self._bind_material(name)
 
     def _bind_material(self, texture_name: str) -> None:
-        """Author a surface material that samples the dynamic texture.
+        """Author the material that samples the dynamic surface field.
 
-        PROVISIONAL LOOK. The packed payload is (height, normal.x, normal.z, foam)
-        in ONE RGBA float texture, and no stock material reads that natively:
+        The shader is the ENGINE's own MDL, `data/shaders/HydragonWater.mdl`, which
+        reads the packed `(height, normal.x, normal.z, foam)` payload directly and
+        reconstructs the normal. No stock material can: `OmniSurface` has no
+        normal-map input at all (`geometry_normal_image` wants a TANGENT-space
+        normal map and has no place for the height or the foam), and `OmniPBR`'s
+        `normalmap_texture` has the same problem. It is registered as an MDL search
+        path by `register_mdl_library`, called once from the extension's startup.
 
-        * `OmniSurface` has no `normalmap_texture` input at all - verified against
-          `${kit}/mdl/core/Base/OmniSurface.mdl`, whose normal input is
-          `geometry_normal_image`, and that one wants a TANGENT-space normal map
-          encoded in RGB. Ours carries three different quantities in RGBA and the
-          normals are in the patch's local frame.
-        * `OmniPBR` does have `normalmap_texture`, but it is a tangent-space normal
-          map for exactly the same reason.
-
-        So the field is routed to `diffuse_texture` instead: the patch displays the
-        packed channels as colour (R height, G normal.x, B normal.z, A foam). That
-        is a deliberate DIAGNOSTIC look, not the final one. A moving colour field is
-        unmistakable evidence that the GPU buffer reached the material, which is
-        what this stage of the work has to prove. Final water shading needs an MDL
-        that samples the packed texture and reconstructs the normal itself.
+        If the module cannot be resolved the surface still renders, unshaded, and
+        the renderer's own log names the MDL error - which is why the search path
+        registration reports the missing file itself rather than staying silent.
         """
         from pxr import UsdShade
 
@@ -504,12 +590,31 @@ class HydragonOceanPatch:
         # two oceans cannot share one material inside the shared scope.
         material_name = f"{SURFACE_MATERIAL_NAME}_{self._path.strip('/').replace('/', '_')}"
         material_path = f"{looks_path}/{material_name}"
+
+        # The path is OURS (derived from the ocean prim), so when it already holds
+        # a material bound to something else, that is an earlier version of this
+        # function - a stock material bound before the engine had its own MDL.
+        # USD would happily keep its inputs alongside the new ones
+        # (`inputs:diffuse_texture` next to `inputs:surface_field`), and the
+        # MDL-to-USD mapping would then have to explain an input the module does
+        # not declare. Removing our own generated material is the clean start.
+        existing = stage.GetPrimAtPath(material_path)
+        if existing and existing.IsValid():
+            asset_attr = existing.GetAttribute("info:mdl:sourceAsset")
+            value = (
+                asset_attr.Get()
+                if asset_attr and asset_attr.HasAuthoredValue()
+                else None
+            )
+            if (getattr(value, "path", "") or "") != WATER_MDL_FILE:
+                stage.RemovePrim(material_path)
+
         material = UsdShade.Material.Define(stage, Sdf.Path(material_path))
         shader = UsdShade.Shader.Define(stage, Sdf.Path(material_path + "/Shader"))
-        shader.CreateIdAttr("OmniPBR")
+        shader.CreateIdAttr(WATER_MDL_MODULE)
         shader.CreateImplementationSourceAttr(UsdShade.Tokens.sourceAsset)
-        shader.SetSourceAsset(Sdf.AssetPath("OmniPBR.mdl"), "mdl")
-        shader.SetSourceAssetSubIdentifier("OmniPBR", "mdl")
+        shader.SetSourceAsset(Sdf.AssetPath(WATER_MDL_FILE), "mdl")
+        shader.SetSourceAssetSubIdentifier(WATER_MDL_MODULE, "mdl")
 
         # `renderType` is metadata on the input's ATTRIBUTE, not on the
         # `UsdShade.Input` wrapper - the wrapper only carries SDR metadata
@@ -519,7 +624,7 @@ class HydragonOceanPatch:
         # is what makes the renderer and the material browser treat the asset as a
         # 2D texture. It is a hint, so failing to author it must not abort the
         # binding: report once and carry on with the material.
-        field = shader.CreateInput("diffuse_texture", Sdf.ValueTypeNames.Asset)
+        field = shader.CreateInput(WATER_MDL_FIELD_INPUT, Sdf.ValueTypeNames.Asset)
         field.Set(Sdf.AssetPath(f"dynamic://{texture_name}"))
         try:
             field.GetAttr().SetMetadata("renderType", "texture_2d")
