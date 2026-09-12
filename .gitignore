@@ -37,10 +37,11 @@ deps/**/user.toml
 # Streaming EventTrace
 *.etli
 
-# Hydragon assets, non-versioned (for now)
-/source/extensions/hydragon.editor.core/data/
+# Hydragon assets, non-versioned (for now).  Scope is the ASSETS folder only:
+# data/schemas/ (the API schema definitions) and data/shaders/ (the engine's MDL)
+# are engine content and belong in the repository.
+/source/extensions/hydragon.editor.core/data/assets/
 
 # Local scratch files
 scratch/
 test_rot.txt
-

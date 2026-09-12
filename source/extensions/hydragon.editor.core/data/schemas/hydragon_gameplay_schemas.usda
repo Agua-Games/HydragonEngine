@@ -1,0 +1,451 @@
+#usda 1.0
+(
+    doc = "Hydragon Engine Gameplay API Schemas"
+)
+
+class "HydragonActorAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for any interactive actor entity in Hydragon Engine."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    token actor:faction = "Player" (
+        allowedTokens = ["Player", "Enemy", "Neutral"]
+        doc = "The gameplay faction or team of the actor."
+    )
+    float actor:health = 100.0 (
+        doc = "Current health points."
+    )
+    float actor:maxHealth = 100.0 (
+        doc = "Maximum health points."
+    )
+    float actor:damageOnHit = 100.0 (
+        doc = "Damage dealt on contact or collision."
+    )
+    bool actor:isAlive = true (
+        doc = "Flag indicating whether the actor is alive."
+    )
+}
+
+class "HydragonPlayerControllerAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema providing player input and movement parameters."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    float player:moveForce = 500.0 (
+        doc = "Force applied to the rigid body when moving via keyboard."
+    )
+    float player:jumpImpulse = 400.0 (
+        doc = "Vertical impulse applied when jumping."
+    )
+    float player:maxAngularVelocity = 25.0 (
+        doc = "Maximum angular velocity clamp for rolling stability."
+    )
+    bool player:canJumpInAir = false (
+        doc = "Whether jumping while not grounded is allowed."
+    )
+    bool player:isActive = true (
+        doc = "Whether player input is currently active and accepted."
+    )
+}
+
+class "HydragonFollowCameraAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for an orbital third-person follow camera."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    rel camera:targetPrim (
+        doc = "The target prim (e.g. player sphere) to orbit around."
+    )
+    float camera:armLength = 8.0 (
+        doc = "Distance between camera and target prim."
+    )
+    float camera:pitch = 20.0 (
+        doc = "Vertical orbit angle in degrees."
+    )
+    float camera:yaw = 0.0 (
+        doc = "Horizontal orbit angle in degrees."
+    )
+    float camera:mouseSensitivity = 0.2 (
+        doc = "Mouse look sensitivity."
+    )
+    float camera:minPitch = -20.0 (
+        doc = "Minimum allowable pitch in degrees."
+    )
+    float camera:maxPitch = 80.0 (
+        doc = "Maximum allowable pitch in degrees."
+    )
+    float camera:collisionOffset = 0.2 (
+        doc = "Padding to keep camera clear of walls."
+    )
+    float camera:positionDamping = 8.0 (
+        doc = "Smoothness of camera position tracking. Lower values add more cinematic inertia/ease-in/ease-out."
+    )
+    float camera:rotationDamping = 12.0 (
+        doc = "Smoothness of camera yaw/pitch orbit. Adds gentle rotational inertia when moving the mouse."
+    )
+}
+
+class "HydragonChaserAIAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for patrolling and chasing AI agents."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    float ai:detectionRadius = 10.0 (
+        doc = "Radius within which the AI detects and starts chasing the player."
+    )
+    float ai:loseTargetRadius = 15.0 (
+        doc = "Radius beyond which the AI gives up chasing and returns to patrol."
+    )
+    float ai:patrolRadius = 5.0 (
+        doc = "Wander or patrol radius around spawn point."
+    )
+    float ai:chaseForce = 350.0 (
+        doc = "Force applied to rigid body when chasing."
+    )
+    float ai:patrolForce = 150.0 (
+        doc = "Force applied when patrolling."
+    )
+    token ai:state = "Patrol" (
+        allowedTokens = ["Patrol", "Chase", "Dead"]
+        doc = "Current behavioral state of the AI."
+    )
+    token ai:targetFaction = "Player" (
+        allowedTokens = ["Player", "Enemy", "All"]
+        doc = "Faction that this AI chaser will detect and pursue."
+    )
+    rel ai:targetPrim (
+        doc = "Optional explicit target prim to chase. If empty, chases nearest actor of targetFaction."
+    )
+}
+
+class "HydragonTriggerAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for spatial gameplay triggers."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    token trigger:eventType = "OnLevelComplete" (
+        allowedTokens = ["OnLevelComplete", "OnDamage", "OnCheckpoint", "OnCustomEvent"]
+        doc = "Event type dispatched when trigger volume is penetrated."
+    )
+    token trigger:filterFaction = "Player" (
+        allowedTokens = ["Player", "Enemy", "All"]
+        doc = "Faction that is allowed to activate this trigger."
+    )
+    bool trigger:isOneShot = true (
+        doc = "If true, this trigger will only activate once."
+    )
+    bool trigger:isEnabled = true (
+        doc = "Whether this trigger is active."
+    )
+}
+
+class "HydragonGameAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for level game state and rules management."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    token game:state = "Playing" (
+        allowedTokens = ["Playing", "Victory", "GameOver", "Paused"]
+        doc = "Current global state of the game session."
+    )
+    int game:score = 0 (
+        doc = "Current player score."
+    )
+    int game:foesDestroyed = 0 (
+        doc = "Number of foes destroyed in this session."
+    )
+    int game:totalFoes = 0 (
+        doc = "Total number of foes spawned in the level."
+    )
+    float game:elapsedTime = 0.0 (
+        doc = "Elapsed game time in seconds."
+    )
+}
+
+class "HydragonUICanvasAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for declarative UI canvas and in-game HUD configuration."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    token hud:canvasType = "InGame" (
+        allowedTokens = ["InGame", "PauseMenu", "VictoryModal", "Custom"]
+        doc = "Visual layout and role of this UI canvas."
+    )
+    bool hud:showControls = true (
+        doc = "Whether to display the hotkey controls overlay card."
+    )
+    bool hud:showCountdown = true (
+        doc = "Whether to display the initial 3-2-1 countdown banner on simulation start."
+    )
+    bool hud:showScorePopups = true (
+        doc = "Whether to spawn floating score badges when foes are defeated."
+    )
+    bool hud:autoActivateOnPlay = true (
+        doc = "Whether this UI canvas automatically activates on timeline PLAY."
+    )
+}
+
+class "HydragonForceVolumeAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for spatial force volumes (Linear, Radial, Turbulence, Dampening, Vortex)."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    bool force:isEnabled = true (
+        doc = "Master toggle for force volume evaluation."
+    )
+    token force:mode = "Continuous" (
+        allowedTokens = ["Continuous", "Impulse"]
+        doc = "Continuous force per physics step or instantaneous impulse on volume entry."
+    )
+    token force:volumeShape = "Box" (
+        allowedTokens = ["Box", "Sphere", "Cylinder"]
+        doc = "Bounding shape of the force volume."
+    )
+    token force:filterFaction = "All" (
+        allowedTokens = ["All", "Player", "Enemy", "RigidBodies"]
+        doc = "Faction or body filter affected by this force volume."
+    )
+    float force:impulseCooldown = 1.0 (
+        doc = "Cooldown in seconds between successive impulse applications per actor."
+    )
+    bool force:linearEnabled = false (
+        doc = "Whether directional linear force is enabled."
+    )
+    token force:linearCoordSpace = "Volume" (
+        allowedTokens = ["Volume", "World"]
+        doc = "Coordinate space for linear force: Volume (prim local axes: +Z forward, +Y up, -X right) or World (global axes)."
+    )
+    float3 force:linearDirection = (0.0, 1.0, 0.0) (
+        doc = "Normalized direction vector of linear force."
+    )
+    float force:linearMagnitude = 250000.0 (
+        doc = "Magnitude of the linear force in scene units."
+    )
+    bool force:radialEnabled = false (
+        doc = "Whether radial force (pull or push) is enabled."
+    )
+    float force:radialMagnitude = 1000.0 (
+        doc = "Positive values attract towards volume center (pull), negative values repel away (push)."
+    )
+    token force:radialFalloff = "Linear" (
+        allowedTokens = ["None", "Linear", "Squared"]
+        doc = "Falloff curve of radial force over distance."
+    )
+    float force:radialRadius = 500.0 (
+        doc = "Maximum radius of effect for radial force."
+    )
+    bool force:turbulenceEnabled = false (
+        doc = "Whether chaotic velocity perturbation is enabled."
+    )
+    float force:turbulenceMagnitude = 200.0 (
+        doc = "Maximum random velocity disturbance added to bodies."
+    )
+    float force:turbulenceFrequency = 2.0 (
+        doc = "Spatial/temporal frequency of turbulence noise oscillation."
+    )
+    bool force:dampeningEnabled = false (
+        doc = "Whether velocity dampening (drag/resistance) is enabled."
+    )
+    float force:linearDamping = 0.5 (
+        doc = "Linear velocity damping factor per second."
+    )
+    float force:angularDamping = 0.5 (
+        doc = "Angular velocity damping factor per second."
+    )
+    bool force:vortexEnabled = false (
+        doc = "Whether tangential vortex force is enabled."
+    )
+    float3 force:vortexAxis = (0.0, 1.0, 0.0) (
+        doc = "Axis around which the vortex rotates."
+    )
+    float force:vortexMagnitude = 11500.0 (
+        doc = "Tangential velocity force applied around the vortex axis."
+    )
+    float force:vortexInwardPull = 100000.0 (
+        doc = "Centripetal pull towards the eye of the vortex."
+    )
+}
+
+class "HydragonKillVolumeAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for out-of-bounds boundary and hazard volumes."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    bool kill:isEnabled = true (
+        doc = "Master toggle for kill volume activation."
+    )
+    token kill:filterFaction = "All" (
+        allowedTokens = ["All", "Player", "Enemy"]
+        doc = "Target faction destroyed by this volume."
+    )
+    token kill:volumeShape = "Box" (
+        allowedTokens = ["Box", "Sphere", "Plane"]
+        doc = "Bounding shape of the kill volume."
+    )
+    bool kill:respawnPlayer = true (
+        doc = "Whether player actors respawn at a spawn point upon entering this volume."
+    )
+    int kill:penaltyScore = 50 (
+        doc = "Score deducted from the player session upon falling into this kill volume."
+    )
+    float kill:respawnDelay = 0.5 (
+        doc = "Time delay before the player actor is respawned."
+    )
+    bool kill:destroyFoesInstantly = true (
+        doc = "Whether enemy actors entering this volume are destroyed immediately."
+    )
+    string kill:soundAssetPath = "data/assets/audio/sound_fx_samples/achievement_02.wav" (
+        doc = "Audio sound asset played upon death."
+    )
+    bool kill:soundEnabled = true (
+        doc = "Whether to play sound when an actor enters the kill volume."
+    )
+    bool kill:spawnEffects = true (
+        doc = "Whether to trigger death visual FX upon actor destruction."
+    )
+    rel kill:respawnTarget (
+        doc = "Optional relationship to a specific HydragonSpawnPoint prim."
+    )
+}
+
+class "HydragonPhysicsAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for global physics simulation policies, rigid body speed clamping, and damping defaults."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    float physics:maxLinearVelocity = 10000.0 (
+        doc = "Maximum linear speed clamp for rigid bodies in cm/s. High values allow fast acceleration and launchpad impulses without physics explosions."
+    )
+    float physics:maxAngularVelocity = 60.0 (
+        doc = "Maximum angular velocity clamp for rolling rigid bodies in rad/s."
+    )
+    float physics:defaultLinearDamping = 0.2 (
+        doc = "Default linear damping / air resistance applied to player and rolling actors."
+    )
+    float physics:defaultAngularDamping = 1.0 (
+        doc = "Default angular damping / rolling resistance applied to player and rolling actors."
+    )
+    int physics:solverPositionIterations = 16 (
+        doc = "PhysX solver position iteration count for high-speed collision resolution."
+    )
+    int physics:solverVelocityIterations = 4 (
+        doc = "PhysX solver velocity iteration count for restitution and bounce stability."
+    )
+    bool physics:enableCCD = true (
+        doc = "Whether Continuous Collision Detection (CCD) is enabled to prevent tunneling through thin geometry."
+    )
+    float physics:bounceThreshold = 200.0 (
+        doc = "Minimum relative collision velocity required to trigger a physical bounce."
+    )
+}
+
+class "HydragonOceanAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for a spectral (FFT) ocean patch. The surface is generated on the GPU and published as a dynamic texture; this prim is the entity that owns the simulation parameters."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    bool ocean:isEnabled = true (
+        doc = "Whether the patch simulates and publishes. Disabling stops the simulation without deleting the prim."
+    )
+    int ocean:resolution = 256 (
+        doc = "Side of the FFT grid. Must be a power of two and a multiple of 64. Cost is dominated by launch count, not by this value, so 256 and 512 measure within 20 percent of each other."
+    )
+    float ocean:patchSize = 1000.0 (
+        doc = "Edge length of the simulated patch, in METRES (the stage is centimetres per unit, so this is 100000 units). The patch must span several dominant wavelengths or the longest waves are truncated and the sea state comes out low."
+    )
+    float ocean:windSpeed = 15.0 (
+        doc = "Wind speed in metres per second. This is the primary sea state control: the significant wave height is derived from it unless overridden below."
+    )
+    float ocean:windDirection = 0.0 (
+        doc = "Wind direction in radians about the up axis. Zero points along +X."
+    )
+    float ocean:significantHeight = 0.0 (
+        doc = "Significant wave height in metres. ZERO means derive it from windSpeed through the empirical relation Hs = 0.21 * V^2 / g. Set it to override the derived sea state."
+    )
+    float ocean:choppiness = 1.0 (
+        doc = "Scale of the horizontal vertex displacement that sharpens wave crests. Zero gives symmetric crests and no foam, because the Jacobian used for foam never compresses."
+    )
+    int ocean:seed = 42 (
+        doc = "Seed of the wave field. The same seed reproduces the same sea exactly."
+    )
+    float ocean:foamThreshold = 0.85 (
+        doc = "Jacobian value below which foam appears. A value near 1.0 foams on most crests, a value near 0.5 only on breaking ones."
+    )
+    float ocean:foamBias = 0.35 (
+        doc = "Width of the transition from no foam to full foam, in Jacobian units. Must be positive."
+    )
+    float ocean:timeScale = 1.0 (
+        doc = "Multiplier on simulated time, for slow motion or a sped-up sea."
+    )
+}
+
+class "HydragonWaterBodyAPI" (
+    inherits = </APISchemaBase>
+    doc = "API schema for a body of water as a physics medium: buoyancy, drag and standing on the surface. Containment is analytic, so a water body costs no collider and is invisible to scene queries."
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    bool water:isEnabled = true (
+        doc = "Whether the water body affects rigid bodies."
+    )
+    token water:mode = "Infinite" (
+        allowedTokens = ["Infinite", "Bounded"]
+        doc = "Infinite treats the whole world below the surface as submerged. Bounded restricts it to the measured bounds of the child prim named water_volume_bound."
+    )
+    float water:surfaceOffset = 0.0 (
+        doc = "Vertical offset of the still-water surface from this prim's origin, in metres. Waves are added on top of it."
+    )
+    float water:density = 1025.0 (
+        doc = "Water density in kilograms per cubic metre. 1025 is sea water, 1000 fresh water. Drives buoyancy."
+    )
+    float water:buoyancyScale = 1.0 (
+        doc = "Multiplier on the buoyant force. Above 1.0 floats objects higher than physically correct."
+    )
+    float water:linearDrag = 0.6 (
+        doc = "Linear damping applied to a body while it is submerged. This is the viscous drag that stops a ball skipping across the surface."
+    )
+    float water:angularDrag = 0.6 (
+        doc = "Angular damping applied to a body while it is submerged."
+    )
+    float water:groundedTolerance = 15.0 (
+        doc = "Distance in centimetres within which a body resting on the surface counts as grounded, mirroring the existing ground check tolerance."
+    )
+    bool water:canJumpOffSurface = true (
+        doc = "Whether a body standing on the water surface may jump, giving the classic water-bounce behaviour."
+    )
+}
